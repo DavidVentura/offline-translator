@@ -17,11 +17,15 @@
 
 package dev.davidv.translator
 
+import android.util.Log
 import dev.davidv.bergamot.LangDetect
+import dev.davidv.translator.FilePathManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class LanguageDetector {
+  private val TAG = this.javaClass.name.substringAfterLast('.')
+
   private val langDetect = LangDetect()
 
   suspend fun detectLanguage(
@@ -39,5 +43,34 @@ class LanguageDetector {
       } else {
         null
       }
+    }
+
+  suspend fun detectLanguageRobust(
+    text: String,
+    hint: Language?,
+    filePathManager: FilePathManager,
+  ): Language? =
+    withContext(Dispatchers.IO) {
+      Log.d(TAG, "detectLanguageRobust: ${hint ?: "null"} | $text")
+      val initialDetection = detectLanguage(text, hint)
+      if (initialDetection != null) {
+        return@withContext initialDetection
+      }
+
+      val downloadedLanguages = getDownloadedLanguages(filePathManager.getDataDir())
+      for (lang in downloadedLanguages) {
+        if (lang == hint) continue // Already tried
+        Log.d(TAG, "trying ${lang.code}")
+        val detected = langDetect.detectLanguage(text, lang.code)
+        if (detected.isReliable) {
+          val detectedLang = Language.entries.firstOrNull { it.code == detected.language }
+          if (detectedLang == lang) {
+            return@withContext lang
+          }
+        }
+      }
+
+      Log.w(TAG, "no reliable detection")
+      return@withContext null
     }
 }

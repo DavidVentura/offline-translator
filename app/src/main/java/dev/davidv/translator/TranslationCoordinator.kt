@@ -77,6 +77,11 @@ class TranslationCoordinator(
     hint: Language?,
   ): Language? = languageDetector.detectLanguage(text, hint)
 
+  suspend fun detectLanguageRobust(
+    text: String,
+    hint: Language?,
+  ): Language? = languageDetector.detectLanguageRobust(text, hint, translationService.filePathManager)
+
   fun correctBitmap(uri: Uri): Bitmap {
     val originalBitmap = imageProcessor.loadBitmapFromUri(uri)
     val correctedBitmap = imageProcessor.correctImageOrientation(uri, originalBitmap)

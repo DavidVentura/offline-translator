@@ -25,7 +25,7 @@ import kotlin.system.measureTimeMillis
 
 class TranslationService(
   private val settingsManager: SettingsManager,
-  private val filePathManager: FilePathManager,
+  val filePathManager: FilePathManager,
 ) {
   companion object {
     @Volatile

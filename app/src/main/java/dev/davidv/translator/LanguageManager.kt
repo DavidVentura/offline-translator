@@ -324,3 +324,12 @@ fun missingFilesTo(
 }
 
 fun getAvailableTessLanguages(tessData: File): List<Language> = Language.entries.filter { File(tessData, it.tessFilename).exists() }
+
+fun getDownloadedLanguages(dataPath: File): List<Language> {
+  return Language.entries.filter { lang ->
+    if (lang == Language.ENGLISH) return@filter true
+    val toEnglishExists = toEnglishFiles.containsKey(lang) && missingFilesTo(dataPath, lang).second.isEmpty()
+    val fromEnglishExists = fromEnglishFiles.containsKey(lang) && missingFilesFrom(dataPath, lang).second.isEmpty()
+    toEnglishExists || fromEnglishExists
+  }
+}
