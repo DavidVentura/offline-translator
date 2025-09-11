@@ -103,6 +103,14 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".AidlTranslationService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="dev.davidv.translator.ITranslationService" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>
