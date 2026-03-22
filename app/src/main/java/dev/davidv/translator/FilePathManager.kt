@@ -48,19 +48,19 @@ class FilePathManager(
 
     // Delete to English files
     val toEnglishFiles = toEnglishFiles[language]
-    toEnglishFiles?.allFiles()?.forEach { fileName ->
-      val file = File(dataPath, fileName)
+    toEnglishFiles?.allFiles()?.forEach { modelFile ->
+      val file = File(dataPath, modelFile.name)
       if (file.exists() && file.delete()) {
-        Log.i("FilePathManager", "Deleted: $fileName")
+        Log.i("FilePathManager", "Deleted: ${modelFile.name}")
       }
     }
 
     // Delete from English files
     val fromEnglishFiles = fromEnglishFiles[language]
-    fromEnglishFiles?.allFiles()?.forEach { fileName ->
-      val file = File(dataPath, fileName)
+    fromEnglishFiles?.allFiles()?.forEach { modelFile ->
+      val file = File(dataPath, modelFile.name)
       if (file.exists() && file.delete()) {
-        Log.i("FilePathManager", "Deleted: $fileName")
+        Log.i("FilePathManager", "Deleted: ${modelFile.name}")
       }
     }
 

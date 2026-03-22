@@ -40,7 +40,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.InputStream
 import java.net.URL
-import java.util.zip.GZIPInputStream
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 import kotlin.math.max
@@ -254,23 +253,13 @@ class DownloadService : Service() {
           val engTessFile = File(tessDir, Language.ENGLISH.tessFilename)
           var toDownload = (fromSize + toSize).toLong()
           if (missingTo.isNotEmpty()) {
-            val tasks = downloadLanguageFiles(dataDir, language, Language.ENGLISH, toEnglishFiles[language]!!.quality, missingTo, language)
+            val tasks = downloadLanguageFiles(dataDir, missingTo, language)
             downloadTasks.addAll(tasks)
           }
 
           if (missingFrom.isNotEmpty()) {
-            val tasks =
-              downloadLanguageFiles(
-                dataDir,
-                Language.ENGLISH,
-                language,
-                fromEnglishFiles[language]!!.quality,
-                missingFrom,
-                language,
-              )
-            downloadTasks.addAll(
-              tasks,
-            )
+            val tasks = downloadLanguageFiles(dataDir, missingFrom, language)
+            downloadTasks.addAll(tasks)
           }
 
           if (!tessFile.exists()) {
@@ -488,22 +477,19 @@ class DownloadService : Service() {
 
   private fun downloadLanguageFiles(
     dataPath: File,
-    from: Language,
-    to: Language,
-    modelType: ModelType,
-    files: List<String>,
+    files: List<ModelFile>,
     targetLanguage: Language,
   ): List<suspend () -> Boolean> {
     val base = settingsManager.settings.value.translationModelsBaseUrl
     val downloadJobs =
-      files.mapNotNull { fileName ->
-        val file = File(dataPath, fileName)
+      files.mapNotNull { modelFile ->
+        val file = File(dataPath, modelFile.name)
         if (!file.exists()) {
-          val url = "$base/$modelType/${from.code}${to.code}/$fileName.gz"
+          val url = "$base/${modelFile.path}"
           suspend {
             try {
               val success =
-                downloadAndDecompress(url, file) { incrementalProgress ->
+                download(url, file) { incrementalProgress ->
                   incrementDownloadBytes(targetLanguage, incrementalProgress)
                 }
               Log.i("DownloadService", "Downloaded $url to $file = $success")
@@ -572,7 +558,6 @@ class DownloadService : Service() {
   private suspend fun download(
     url: String,
     outputFile: File,
-    decompress: Boolean = false,
     onProgress: (Long) -> Unit,
   ) = withContext(Dispatchers.IO) {
     val conn = URL(url).openConnection()
@@ -593,8 +578,7 @@ class DownloadService : Service() {
           }
 
         tempFile.outputStream().use { output ->
-          val processedInput = if (decompress) GZIPInputStream(trackingStream) else trackingStream
-          processedInput.use { stream ->
+          trackingStream.use { stream ->
             val buffer = ByteArray(16384)
             var bytesRead: Int
             while (stream.read(buffer).also { bytesRead = it } != -1) {
@@ -615,8 +599,7 @@ class DownloadService : Service() {
         false
       }
     } catch (e: Exception) {
-      val operation = if (decompress) "decompressing" else "downloading"
-      Log.e("DownloadService", "Error $operation file from $url to $outputFile: ${e.javaClass.simpleName}: ${e.message}", e)
+      Log.e("DownloadService", "Error downloading file from $url to $outputFile: ${e.javaClass.simpleName}: ${e.message}", e)
       if (tempFile.exists()) {
         tempFile.delete()
       }
@@ -626,12 +609,6 @@ class DownloadService : Service() {
       false
     }
   }
-
-  private suspend fun downloadAndDecompress(
-    url: String,
-    outputFile: File,
-    onProgress: (Long) -> Unit,
-  ) = download(url, outputFile, decompress = true, onProgress)
 
   private suspend fun downloadDictionaryFile(
     language: Language,

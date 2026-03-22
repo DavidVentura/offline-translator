@@ -298,7 +298,7 @@ private fun LanguageItem(
 fun missingFiles(
   dataFiles: Set<String>,
   lang: Language,
-): Pair<Int, List<String>> {
+): Pair<Int, List<ModelFile>> {
   val (toSize, toFiles) = missingFilesTo(dataFiles, lang)
   val (fromSize, fromFiles) = missingFilesFrom(dataFiles, lang)
   return Pair(toSize + fromSize, toFiles + fromFiles)
@@ -307,25 +307,23 @@ fun missingFiles(
 fun missingFilesFrom(
   dataFiles: Set<String>,
   lang: Language,
-): Pair<Int, List<String>> {
+): Pair<Int, List<ModelFile>> {
   val languageFiles = fromEnglishFiles[lang]!!
-  val fileSizePairs = listOf(languageFiles.model, languageFiles.srcVocab, languageFiles.tgtVocab, languageFiles.lex).distinct()
-  val missingFiles = fileSizePairs.filter { (filename, _) -> filename !in dataFiles }
-  val totalSize = missingFiles.sumOf { (_, size) -> size }
-  val filenames = missingFiles.map { (filename, _) -> filename }
-  return Pair(totalSize, filenames)
+  val allModelFiles = listOf(languageFiles.model, languageFiles.srcVocab, languageFiles.tgtVocab, languageFiles.lex).distinctBy { it.name }
+  val missing = allModelFiles.filter { it.name !in dataFiles }
+  val totalSize = missing.sumOf { it.size }
+  return Pair(totalSize, missing)
 }
 
 fun missingFilesTo(
   dataFiles: Set<String>,
   lang: Language,
-): Pair<Int, List<String>> {
+): Pair<Int, List<ModelFile>> {
   val languageFiles = toEnglishFiles[lang]!!
-  val fileSizePairs = listOf(languageFiles.model, languageFiles.srcVocab, languageFiles.tgtVocab, languageFiles.lex).distinct()
-  val missingFiles = fileSizePairs.filter { (filename, _) -> filename !in dataFiles }
-  val totalSize = missingFiles.sumOf { (_, size) -> size }
-  val filenames = missingFiles.map { (filename, _) -> filename }
-  return Pair(totalSize, filenames)
+  val allModelFiles = listOf(languageFiles.model, languageFiles.srcVocab, languageFiles.tgtVocab, languageFiles.lex).distinctBy { it.name }
+  val missing = allModelFiles.filter { it.name !in dataFiles }
+  val totalSize = missing.sumOf { it.size }
+  return Pair(totalSize, missing)
 }
 
 fun getAvailableTessLanguages(tessData: File): List<Language> = Language.entries.filter { File(tessData, it.tessFilename).exists() }

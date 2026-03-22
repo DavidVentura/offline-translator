@@ -60,7 +60,7 @@ class SettingsManager(
       }
 
     val translationModelsBaseUrl =
-      prefs.getString("translation_models_base_url_v2", null)
+      prefs.getString("translation_models_base_url_v3", null)
         ?: defaults.translationModelsBaseUrl
 
     val tesseractModelsBaseUrl =
@@ -138,8 +138,8 @@ class SettingsManager(
         modifiedSettings.add("default_source_language")
       }
       if (newSettings.translationModelsBaseUrl != currentSettings.translationModelsBaseUrl) {
-        putString("translation_models_base_url_v2", newSettings.translationModelsBaseUrl)
-        modifiedSettings.add("translation_models_base_url_v2")
+        putString("translation_models_base_url_v3", newSettings.translationModelsBaseUrl)
+        modifiedSettings.add("translation_models_base_url_v3")
       }
       if (newSettings.tesseractModelsBaseUrl != currentSettings.tesseractModelsBaseUrl) {
         putString("tesseract_models_base_url", newSettings.tesseractModelsBaseUrl)

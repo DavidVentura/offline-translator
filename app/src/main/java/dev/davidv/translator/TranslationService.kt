@@ -229,10 +229,10 @@ class TranslationService(
 
     return """
 models:
-  - $dataPath/${languageFiles.model.first}
+  - $dataPath/${languageFiles.model.name}
 vocabs:
-  - $dataPath/${languageFiles.srcVocab.first}
-  - $dataPath/${languageFiles.tgtVocab.first}
+  - $dataPath/${languageFiles.srcVocab.name}
+  - $dataPath/${languageFiles.tgtVocab.name}
 beam-size: 1
 normalize: 1.0
 word-penalty: 0

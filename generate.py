@@ -1,24 +1,17 @@
 #!/usr/bin/env python3
-"""
-Generate Kotlin enum class for language pairs from model repository structure.
-Usage: python generate_language_enum.py <repository_path>
-"""
-
 import os
 import sys
 import json
 import asyncio
 import aiohttp
-from pathlib import Path
 from typing import Dict, Set, Tuple
 
-COMMIT = "6ffda9ba34d107a8b50ec766273b252ef92ebafc"
-TRANSLATION_BASE_URL = f"https://media.githubusercontent.com/media/mozilla/firefox-translations-models/{COMMIT}/models"
+REMOTE_SETTINGS_URL = "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/translations-models/records"
+CDN_BASE_URL = "https://firefox-settings-attachments.cdn.mozilla.net"
 TESSERACT_BASE_URL = "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main"
 DICTIONARY_BASE_URL = "https://translator.davidv.dev/dictionaries"
 DICT_VERSION = 1
 
-# Language code to display name mapping
 LANGUAGE_NAMES = {
     'ar': 'Arabic',
     'az': 'Azerbaijani',
@@ -74,181 +67,135 @@ LANGUAGE_NAMES = {
 }
 
 TESSERACT_LANGUAGE_MAPPINGS = {
-    'ar': 'ara',          # Arabic
-    'az': 'aze',          # Azerbaijani
-    'be': 'bel',          # Belarusian
-    'bg': 'bul',          # Bulgarian
-    'bn': 'ben',          # Bengali
-    'bs': 'bos',          # Bosnian
-    'ca': 'cat',          # Catalan
-    'cs': 'ces',          # Czech
-    'da': 'dan',          # Danish
-    'de': 'deu',          # German
-    'el': 'ell',          # Greek
-    'en': 'eng',          # English
-    'es': 'spa',          # Spanish
-    'et': 'est',          # Estonian
-    'fa': 'fas',          # Persian
-    'fi': 'fin',          # Finnish
-    'fr': 'fra',          # French
-    'gu': 'guj',          # Gujarati
-    'he': 'heb',          # Hebrew
-    'hi': 'hin',          # Hindi
-    'hr': 'hrv',          # Croatian
-    'hu': 'hun',          # Hungarian
-    'id': 'ind',          # Indonesian
-    'is': 'isl',          # Icelandic
-    'it': 'ita',          # Italian
-    'ja': 'jpn',          # Japanese
-    'kn': 'kan',          # Kannada
-    'ko': 'kor',          # Korean
-    'lt': 'lit',          # Lithuanian
-    'lv': 'lav',          # Latvian
-    'ml': 'mal',          # Malayalam
-    'ms': 'msa',          # Malay
-    'mt': 'mlt',          # Maltese
-    'nb': 'nor',          # Norwegian Bokmål (using nor for Norwegian)
-    'nl': 'nld',          # Dutch
-    'nn': 'nor',          # Norwegian Nynorsk (using nor for Norwegian)
-    'pl': 'pol',          # Polish
-    'pt': 'por',          # Portuguese
-    'ro': 'ron',          # Romanian
-    'ru': 'rus',          # Russian
-    'sk': 'slk',          # Slovak
-    'sl': 'slv',          # Slovenian
-    'sq': 'sqi',          # Albanian
-    'sr': 'srp',          # Serbian
-    'sv': 'swe',          # Swedish
-    'ta': 'tam',          # Tamil
-    'te': 'tel',          # Telugu
-    'tr': 'tur',          # Turkish
-    'uk': 'ukr',          # Ukrainian
-    'vi': 'vie',          # Vietnamese
-    'zh': 'chi_sim',      # Chinese (using simplified Chinese as default)
+    'ar': 'ara',
+    'az': 'aze',
+    'be': 'bel',
+    'bg': 'bul',
+    'bn': 'ben',
+    'bs': 'bos',
+    'ca': 'cat',
+    'cs': 'ces',
+    'da': 'dan',
+    'de': 'deu',
+    'el': 'ell',
+    'en': 'eng',
+    'es': 'spa',
+    'et': 'est',
+    'fa': 'fas',
+    'fi': 'fin',
+    'fr': 'fra',
+    'gu': 'guj',
+    'he': 'heb',
+    'hi': 'hin',
+    'hr': 'hrv',
+    'hu': 'hun',
+    'id': 'ind',
+    'is': 'isl',
+    'it': 'ita',
+    'ja': 'jpn',
+    'kn': 'kan',
+    'ko': 'kor',
+    'lt': 'lit',
+    'lv': 'lav',
+    'ml': 'mal',
+    'ms': 'msa',
+    'mt': 'mlt',
+    'nb': 'nor',
+    'nl': 'nld',
+    'nn': 'nor',
+    'pl': 'pol',
+    'pt': 'por',
+    'ro': 'ron',
+    'ru': 'rus',
+    'sk': 'slk',
+    'sl': 'slv',
+    'sq': 'sqi',
+    'sr': 'srp',
+    'sv': 'swe',
+    'ta': 'tam',
+    'te': 'tel',
+    'tr': 'tur',
+    'uk': 'ukr',
+    'vi': 'vie',
+    'zh': 'chi_sim',
 }
 
-# Script mappings for transliteration (ICU4J script names)
 LANGUAGE_SCRIPTS = {
-    'ar': 'Arabic',       # Arabic script
-    'az': 'Latin',        # Azerbaijan uses Latin script (post-1991)
-    'be': 'Cyrillic',     # Belarusian uses Cyrillic
-    'bg': 'Cyrillic',     # Bulgarian uses Cyrillic
-    'bn': 'Bengali',      # Bengali script (also called Bangla)
-    'bs': 'Latin',        # Bosnian uses Latin script
-    'ca': 'Latin',        # Catalan uses Latin
-    'cs': 'Latin',        # Czech uses Latin
-    'da': 'Latin',        # Danish uses Latin
-    'de': 'Latin',        # German uses Latin
-    'el': 'Greek',        # Greek script
-    'en': 'Latin',        # English uses Latin
-    'es': 'Latin',        # Spanish uses Latin
-    'et': 'Latin',        # Estonian uses Latin
-    'fa': 'Arabic',       # Persian uses Arabic script (modified)
-    'fi': 'Latin',        # Finnish uses Latin
-    'fr': 'Latin',        # French uses Latin
-    'gu': 'Gujarati',     # Gujarati script
-    'he': 'Hebrew',       # Hebrew script
-    'hi': 'Devanagari',   # Hindi uses Devanagari
-    'hr': 'Latin',        # Croatian uses Latin
-    'hu': 'Latin',        # Hungarian uses Latin
-    'id': 'Latin',        # Indonesian uses Latin
-    'is': 'Latin',        # Icelandic uses Latin
-    'it': 'Latin',        # Italian uses Latin
-    'ja': 'Japanese',     # Japanese (mixed: Hiragana, Katakana, Han)
-    'kn': 'Kannada',      # Kannada script
-    'ko': 'Hangul',       # Korean uses Hangul
-    'lt': 'Latin',        # Lithuanian uses Latin
-    'lv': 'Latin',        # Latvian uses Latin
-    'ml': 'Malayalam',    # Malayalam script
-    'ms': 'Latin',        # Malay uses Latin
-    'mt': 'Latin',        # Maltese uses Latin
-    'nb': 'Latin',        # Norwegian Bokmål uses Latin
-    'nl': 'Latin',        # Dutch uses Latin
-    'nn': 'Latin',        # Norwegian Nynorsk uses Latin
-    'pl': 'Latin',        # Polish uses Latin
-    'pt': 'Latin',        # Portuguese uses Latin
-    'ro': 'Latin',        # Romanian uses Latin
-    'ru': 'Cyrillic',     # Russian uses Cyrillic
-    'sk': 'Latin',        # Slovak uses Latin
-    'sl': 'Latin',        # Slovenian uses Latin
-    'sq': 'Latin',        # Albanian uses Latin
-    'sr': 'Cyrillic',     # Serbian primarily uses Cyrillic
-    'sv': 'Latin',        # Swedish uses Latin
-    'ta': 'Tamil',        # Tamil script
-    'te': 'Telugu',       # Telugu script
-    'tr': 'Latin',        # Turkish uses Latin
-    'uk': 'Cyrillic',     # Ukrainian uses Cyrillic
-    'vi': 'Latin',        # Vietnamese uses Latin
-    'zh': 'Han',          # Chinese uses Han characters
+    'ar': 'Arabic',
+    'az': 'Latin',
+    'be': 'Cyrillic',
+    'bg': 'Cyrillic',
+    'bn': 'Bengali',
+    'bs': 'Latin',
+    'ca': 'Latin',
+    'cs': 'Latin',
+    'da': 'Latin',
+    'de': 'Latin',
+    'el': 'Greek',
+    'en': 'Latin',
+    'es': 'Latin',
+    'et': 'Latin',
+    'fa': 'Arabic',
+    'fi': 'Latin',
+    'fr': 'Latin',
+    'gu': 'Gujarati',
+    'he': 'Hebrew',
+    'hi': 'Devanagari',
+    'hr': 'Latin',
+    'hu': 'Latin',
+    'id': 'Latin',
+    'is': 'Latin',
+    'it': 'Latin',
+    'ja': 'Japanese',
+    'kn': 'Kannada',
+    'ko': 'Hangul',
+    'lt': 'Latin',
+    'lv': 'Latin',
+    'ml': 'Malayalam',
+    'ms': 'Latin',
+    'mt': 'Latin',
+    'nb': 'Latin',
+    'nl': 'Latin',
+    'nn': 'Latin',
+    'pl': 'Latin',
+    'pt': 'Latin',
+    'ro': 'Latin',
+    'ru': 'Cyrillic',
+    'sk': 'Latin',
+    'sl': 'Latin',
+    'sq': 'Latin',
+    'sr': 'Cyrillic',
+    'sv': 'Latin',
+    'ta': 'Tamil',
+    'te': 'Telugu',
+    'tr': 'Latin',
+    'uk': 'Cyrillic',
+    'vi': 'Latin',
+    'zh': 'Han',
 }
 
-def extract_language_pairs(repo_path: Path) -> Dict[str, Set[str]]:
-    """
-    Extract language pairs from repository structure.
-    Returns dict mapping model_type -> set of language pairs
-    Validates that all found pairs are in the supported list.
-    """
-    language_pairs = {'base': set(), 'base-memory': set(), 'tiny': set()}
+PAIR_CODE_MAPPING = {
+    'enzh-Hans': 'enzh',
+    'enzh-Hant': 'enzh',
+    'zh-Hansen': 'zhen',
+    'zh-Hanten': 'zhen',
+    'ensq': 'ensq',
+}
 
-    # Scan models/base, models/base-memory, and models/tiny directories
-    for model_type in ['base', 'base-memory', 'tiny']:
-        models_dir = repo_path / 'models' / model_type
-        if models_dir.exists():
-            for item in models_dir.iterdir():
-                if item.is_dir():
-                    # Directory name should be language pair (e.g., 'enar', 'enru')
-                    pair_name = item.name
-                    src, tgt = parse_language_pair(pair_name)
-                    if src not in LANGUAGE_NAMES or tgt not in LANGUAGE_NAMES:
-                        print(f"Error: Unsupported language pair '{pair_name}' found in {model_type}")
-                        print(f"Supported pairs: {sorted(LANGUAGE_NAMES.keys())}")
-                        sys.exit(1)
-                    language_pairs[model_type].add(pair_name)
+def normalize_pair_code(pair_code: str) -> str | None:
+    if pair_code in PAIR_CODE_MAPPING:
+        return PAIR_CODE_MAPPING[pair_code]
+    if len(pair_code) == 4:
+        return pair_code
+    return None
 
-    return language_pairs
 
 def parse_language_pair(pair: str) -> Tuple[str, str]:
-    """
-    Parse language pair string to extract source and target language codes.
-    Asserts the pair is exactly 4 characters and splits it in half.
-    """
-    if len(pair) != 4:
-        print(f"Error: Language pair '{pair}' must be exactly 4 characters")
-        sys.exit(1)
+    assert len(pair) == 4, f"Language pair '{pair}' must be exactly 4 characters"
+    return pair[:2], pair[2:]
 
-    # Split the 4-character pair in half
-    src = pair[:2]
-    tgt = pair[2:]
-
-    return src, tgt
-
-def get_non_english_language(pair: str) -> Tuple[str, str]:
-    """
-    Get the non-English language code and name from a language pair.
-    Returns (language_code, language_name)
-    Validates that the language code exists in LANGUAGE_NAMES.
-    """
-    src, tgt = parse_language_pair(pair)
-
-    if src == 'en':
-        lang_code = tgt
-    elif tgt == 'en':
-        lang_code = src
-    else:
-        # If neither is English, return the target language
-        lang_code = tgt
-
-    if lang_code not in LANGUAGE_NAMES:
-        print(f"Error: Language code '{lang_code}' from pair '{pair}' not found in supported language names")
-        print(f"Supported language codes: {sorted(LANGUAGE_NAMES.keys())}")
-        sys.exit(1)
-
-    return lang_code, LANGUAGE_NAMES[lang_code]
 
 def get_best_model_type(model_types: Set[str]) -> str:
-    """
-    Get the best model type based on priority: base-memory > base > tiny
-    """
     if 'base-memory' in model_types:
         return 'base-memory'
     elif 'base' in model_types:
@@ -258,156 +205,212 @@ def get_best_model_type(model_types: Set[str]) -> str:
     else:
         raise ValueError(f"No valid model type found in {model_types}")
 
-def generate_files_for_language(from_code: str, to_code: str) -> Dict[str, str]:
-    """
-    Generate file paths for a language pair based on the Kotlin filesFor logic.
-    Returns dict with keys: model, lex, srcVocab, tgtVocab
-    """
-    lang_pair = f"{from_code}{to_code}"
-    model = f"model.{lang_pair}.intgemm.alphas.bin"
-    lex = f"lex.50.50.{lang_pair}.s2t.bin"
 
-    # Split vocab for Chinese and Japanese
-    split_vocab_langs = {'zh', 'ja', 'ko'}
+async def fetch_records() -> list[dict]:
+    cache_file = "data/remote_settings_v1.json"
+    if os.path.exists(cache_file):
+        with open(cache_file) as f:
+            return json.load(f)
 
-    if to_code in split_vocab_langs:
-        src_vocab = f"srcvocab.{from_code}{to_code}.spm"
-        tgt_vocab = f"trgvocab.{from_code}{to_code}.spm"
-    else:
-        vocab_file = f"vocab.{lang_pair}.spm"
-        src_vocab = vocab_file
-        tgt_vocab = vocab_file
+    async with aiohttp.ClientSession() as session:
+        async with session.get(REMOTE_SETTINGS_URL) as resp:
+            data = await resp.json()
+            records = data["data"]
 
-    return {
-        'model': model,
-        'lex': lex,
-        'srcVocab': src_vocab,
-        'tgtVocab': tgt_vocab
-    }
+    os.makedirs("data", exist_ok=True)
+    with open(cache_file, 'w') as f:
+        json.dump(records, f, indent=2)
 
-def generate_kotlin_enum(language_pairs: Dict[str, Set[str]], existing_sizes: dict[str, dict[str, int]]) -> str:
-    """
-    Generate Kotlin enum classes for Language and LanguagePair.
-    """
-    # Collect all unique languages
+    return records
+
+
+def build_model_index(records: list[dict]) -> dict:
+    index = {}
+    for record in records:
+        from_lang = record.get("fromLang")
+        to_lang = record.get("toLang")
+        if not from_lang or not to_lang:
+            continue
+
+        raw_pair = f"{from_lang}{to_lang}"
+        pair = normalize_pair_code(raw_pair)
+        if pair is None:
+            continue
+
+        name = record.get("name", "")
+        attachment = record.get("attachment", {})
+        location = attachment.get("location", "")
+        size = attachment.get("size", 0)
+        file_type = record.get("fileType", "")
+        version = record.get("version", "")
+
+        if not location or not name:
+            continue
+
+        key = f"{pair}/{name}"
+
+        existing = index.get(key)
+        if existing and existing["version"] >= version:
+            continue
+
+        index[key] = {
+            "name": name,
+            "size": size,
+            "path": location,
+            "fileType": file_type,
+            "fromLang": from_lang,
+            "toLang": to_lang,
+            "version": version,
+        }
+
+    return index
+
+
+def build_language_data(index: dict) -> Tuple[dict, dict, set]:
+    from_english = {}
+    to_english = {}
     all_languages = set()
-    for pairs in language_pairs.values():
-        for pair in pairs:
-            src_code, tgt_code = parse_language_pair(pair)
-            all_languages.add(src_code)
-            all_languages.add(tgt_code)
 
-    all_languages.add("en")
+    pair_files = {}
+    for key, entry in index.items():
+        pair = key.split("/")[0]
+        if pair not in pair_files:
+            pair_files[pair] = {}
+        pair_files[pair][entry["fileType"]] = entry
 
-    # Collect all unique language pairs with their model types
-    pairs_data = {}  # pair -> (src_code, tgt_code, model_types)
+    for pair, files in pair_files.items():
+        if "model" not in files:
+            continue
 
-    for model_type, pairs in language_pairs.items():
-        for pair in pairs:
-            src_code, tgt_code = parse_language_pair(pair)
+        src, tgt = parse_language_pair(pair)
+        if src != 'en' and tgt != 'en':
+            continue
 
-            # Assert that pairs are only to or from English
-            if src_code != 'en' and tgt_code != 'en':
-                print(f"Error: Language pair '{pair}' is not to or from English")
-                print(f"Only English-to-X or X-to-English pairs are supported")
-                sys.exit(1)
+        all_languages.add(src)
+        all_languages.add(tgt)
 
-            if pair not in pairs_data:
-                pairs_data[pair] = (src_code, tgt_code, set())
-            pairs_data[pair][2].add(model_type)
+        model = files["model"]
+        lex = files.get("lex")
+        vocab = files.get("vocab")
+        src_vocab = files.get("srcvocab", vocab)
+        tgt_vocab = files.get("trgvocab", vocab)
 
-    # Separate into fromEnglish and toEnglish
-    from_english = {}  # lang_code -> model_type
-    to_english = {}    # lang_code -> model_type
+        if not all([model, lex, src_vocab, tgt_vocab]):
+            print(f"Warning: incomplete files for {pair}, skipping")
+            continue
 
-    for pair, (src_code, tgt_code, model_types) in pairs_data.items():
-        best_model_type = get_best_model_type(model_types)
+        entry = {
+            "model": model,
+            "srcVocab": src_vocab,
+            "tgtVocab": tgt_vocab,
+            "lex": lex,
+        }
 
-        if src_code == 'en':
-            # English to other language
-            from_english[tgt_code] = best_model_type
+        if src == 'en':
+            from_english[tgt] = entry
         else:
-            # Other language to English
-            to_english[src_code] = best_model_type
+            to_english[src] = entry
 
-    # Ensure 2 way translation
-    from_english = {k: v for k, v in from_english.items() if k in to_english}
-    to_english = {k: v for k, v in to_english.items() if k in from_english}
+    bidirectional = set(from_english.keys()) & set(to_english.keys())
+    from_english = {k: v for k, v in from_english.items() if k in bidirectional}
+    to_english = {k: v for k, v in to_english.items() if k in bidirectional}
+    all_languages = bidirectional | {'en'}
 
-    # Get sizes
-    all_lang_codes = set(from_english.keys())
-    all_lang_codes.add('en')
+    return from_english, to_english, all_languages
 
-    for lang_code in sorted(all_lang_codes):
-        if lang_code not in existing_sizes:
-            print(f"Fetching size for {lang_code}")
-            existing_sizes[lang_code] = asyncio.run(get_language_sizes(lang_code, language_pairs))
-            save_sizes(existing_sizes)
 
-    # Generate Language enum entries
+async def get_tessdata_sizes(languages: set) -> dict:
+    sizes = {}
+    async with aiohttp.ClientSession() as session:
+        for lang_code in sorted(languages):
+            if lang_code not in TESSERACT_LANGUAGE_MAPPINGS:
+                continue
+            tess_name = TESSERACT_LANGUAGE_MAPPINGS[lang_code]
+            filename = f"{tess_name}.traineddata"
+            url = f"{TESSERACT_BASE_URL}/{filename}"
+            try:
+                async with session.head(url) as resp:
+                    if resp.status == 200:
+                        sizes[lang_code] = int(resp.headers.get("Content-Length", 0))
+                    else:
+                        print(f"Warning: tessdata HEAD failed for {lang_code}: {resp.status}")
+                        sizes[lang_code] = 0
+            except Exception as e:
+                print(f"Warning: tessdata HEAD error for {lang_code}: {e}")
+                sizes[lang_code] = 0
+    return sizes
+
+
+def compute_language_size(lang_code: str, from_english: dict, to_english: dict, tessdata_sizes: dict) -> int:
+    total = 0
+    if lang_code in from_english:
+        seen = set()
+        for file_entry in from_english[lang_code].values():
+            name = file_entry["name"]
+            if name not in seen:
+                total += file_entry["size"]
+                seen.add(name)
+    if lang_code in to_english:
+        seen = set()
+        for file_entry in to_english[lang_code].values():
+            name = file_entry["name"]
+            if name not in seen:
+                total += file_entry["size"]
+                seen.add(name)
+    total += tessdata_sizes.get(lang_code, 0)
+    return total
+
+
+def format_model_file(entry: dict) -> str:
+    return f'ModelFile("{entry["name"]}", {entry["size"]}, "{entry["path"]}")'
+
+
+def generate_kotlin(from_english: dict, to_english: dict, all_languages: set, tessdata_sizes: dict) -> str:
     language_entries = []
     for lang_code in sorted(all_languages):
-        # from_english is bidirectional with to_english
-        if lang_code not in from_english and lang_code != 'en':
-          continue
+        if lang_code not in LANGUAGE_NAMES:
+            continue
+        if lang_code != 'en' and lang_code not in from_english:
+            continue
         lang_name = LANGUAGE_NAMES[lang_code]
         tess_name = TESSERACT_LANGUAGE_MAPPINGS[lang_code]
         script = LANGUAGE_SCRIPTS[lang_code]
         enum_name = lang_name.upper().replace(' ', '_').replace('Å', 'A')
-
-        sizes = existing_sizes[lang_code]
-        tess_filename = f"{tess_name}.traineddata"
-        tessdata_size = sizes[tess_filename]
-
-        # full, including tessdata
-        translation_size = sum(v for v in sizes.values())
-
-        language_entries.append(f'    {enum_name}("{lang_code}", "{tess_name}", "{lang_name}", "{script}", {translation_size}, {tessdata_size})')
+        tess_size = tessdata_sizes.get(lang_code, 0)
+        total_size = compute_language_size(lang_code, from_english, to_english, tessdata_sizes)
+        language_entries.append(f'  {enum_name}("{lang_code}", "{tess_name}", "{lang_name}", "{script}", {total_size}, {tess_size})')
 
     language_entries = sorted(language_entries)
 
-    # Generate fromEnglishFiles map entries
-    from_english_files_entries = []
+    from_entries = []
     for lang_code in sorted(from_english.keys()):
         lang_name = LANGUAGE_NAMES[lang_code]
         lang_enum = f'Language.{lang_name.upper().replace(" ", "_").replace("Å", "A")}'
-        model_type_enum = f'ModelType.{from_english[lang_code].upper().replace("-", "_")}'
-        files = generate_files_for_language('en', lang_code)
-        sizes = existing_sizes[lang_code]
+        e = from_english[lang_code]
+        from_entries.append(
+            f'  {lang_enum} to LanguageFiles({format_model_file(e["model"])}, '
+            f'{format_model_file(e["srcVocab"])}, {format_model_file(e["tgtVocab"])}, '
+            f'{format_model_file(e["lex"])})'
+        )
 
-        model_size = sizes[files["model"]]
-        src_vocab_size = sizes[files["srcVocab"]]
-        tgt_vocab_size = sizes[files["tgtVocab"]]
-        lex_size = sizes[files["lex"]]
-
-        from_english_files_entries.append(f'    {lang_enum} to LanguageFiles(Pair("{files["model"]}", {model_size}), Pair("{files["srcVocab"]}", {src_vocab_size}), Pair("{files["tgtVocab"]}", {tgt_vocab_size}), Pair("{files["lex"]}", {lex_size}), {model_type_enum})')
-
-    # Generate toEnglishFiles map entries
-    to_english_files_entries = []
+    to_entries = []
     for lang_code in sorted(to_english.keys()):
         lang_name = LANGUAGE_NAMES[lang_code]
         lang_enum = f'Language.{lang_name.upper().replace(" ", "_").replace("Å", "A")}'
-        model_type_enum = f'ModelType.{to_english[lang_code].upper().replace("-", "_")}'
-        files = generate_files_for_language(lang_code, 'en')
-        sizes = existing_sizes[lang_code]
+        e = to_english[lang_code]
+        to_entries.append(
+            f'  {lang_enum} to LanguageFiles({format_model_file(e["model"])}, '
+            f'{format_model_file(e["srcVocab"])}, {format_model_file(e["tgtVocab"])}, '
+            f'{format_model_file(e["lex"])})'
+        )
 
-        model_size = sizes[files["model"]]
-        src_vocab_size = sizes[files["srcVocab"]]
-        tgt_vocab_size = sizes[files["tgtVocab"]]
-        lex_size = sizes[files["lex"]]
-
-        to_english_files_entries.append(f'    {lang_enum} to LanguageFiles(Pair("{files["model"]}", {model_size}), Pair("{files["srcVocab"]}", {src_vocab_size}), Pair("{files["tgtVocab"]}", {tgt_vocab_size}), Pair("{files["lex"]}", {lex_size}), {model_type_enum})')
-
-    to_english_lines = ",\n".join(to_english_files_entries)
-    from_english_lines = ",\n".join(from_english_files_entries)
     language_lines = ",\n".join(language_entries)
+    from_lines = ",\n".join(from_entries)
+    to_lines = ",\n".join(to_entries)
 
-    extra_files_entries = []
-    extra_files_entries.append('    Language.JAPANESE to listOf("mucab.bin")')
-    extra_files_lines = ",\n".join(extra_files_entries)
+    extra_files_lines = '  Language.JAPANESE to listOf("mucab.bin")'
 
-    # Generate the complete enum classes and maps
-    kotlin_code = f"""/*
+    return f"""/*
  * Copyright (C) 2024 David V
  *
  * This program is free software: you can redistribute it and/or modify
@@ -424,172 +427,75 @@ def generate_kotlin_enum(language_pairs: Dict[str, Set[str]], existing_sizes: di
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// This file was generated by `generated.py`. Do not edit.
+// This file was generated by `generate.py`. Do not edit.
 
 package dev.davidv.translator
 
 object Constants {{
   const val DICT_VERSION = {DICT_VERSION}
   const val DEFAULT_TRANSLATION_MODELS_BASE_URL =
-    "{TRANSLATION_BASE_URL}"
+    "{CDN_BASE_URL}"
   const val DEFAULT_TESSERACT_MODELS_BASE_URL = "{TESSERACT_BASE_URL}"
   const val DEFAULT_DICTIONARY_BASE_URL = "{DICTIONARY_BASE_URL}"
 }}
 
-enum class ModelType(private val pathName: String) {{
-    BASE("base"),
-    BASE_MEMORY("base-memory"),
-    TINY("tiny");
-
-    override fun toString(): String = pathName
-}}
+data class ModelFile(
+  val name: String,
+  val size: Int,
+  val path: String,
+)
 
 enum class Language(val code: String, val tessName: String, val displayName: String, val script: String, val sizeBytes: Int, val tessdataSizeBytes: Int) {{
 {language_lines};
 
-    val tessFilename: String
-        get() = "$tessName.traineddata"
+  val tessFilename: String
+    get() = "$tessName.traineddata"
 }}
 
 data class LanguageFiles(
-    val model: Pair<String, Int>,
-    val srcVocab: Pair<String, Int>,
-    val tgtVocab: Pair<String, Int>,
-    val lex: Pair<String, Int>,
-    val quality: ModelType
+  val model: ModelFile,
+  val srcVocab: ModelFile,
+  val tgtVocab: ModelFile,
+  val lex: ModelFile,
 ) {{
-    fun allFiles(): List<String> = listOf(model.first, srcVocab.first, tgtVocab.first, lex.first).distinct()
+  fun allFiles(): List<ModelFile> = listOf(model, srcVocab, tgtVocab, lex).distinctBy {{ it.name }}
 }}
 
 val fromEnglishFiles = mapOf(
-{from_english_lines}
+{from_lines}
 )
 
 val toEnglishFiles = mapOf(
-{to_english_lines}
+{to_lines}
 )
 
 val extraFiles = mapOf(
 {extra_files_lines}
 )"""
 
-    return kotlin_code
 
-async def get_file_size(session: aiohttp.ClientSession, url: str) -> int:
-    """Get file size using HTTP HEAD request."""
-    try:
-        async with session.head(url) as response:
-            if response.status == 200:
-                content_length = response.headers.get('Content-Length')
-                if content_length:
-                    return int(content_length)
-    except Exception as e:
-        print(f"Error getting size for {url}: {e}")
-    return 0
+async def main():
+    print("Fetching records from Remote Settings API...")
+    records = await fetch_records()
+    print(f"Got {len(records)} records")
 
-async def get_language_sizes(lang_code: str, language_pairs: Dict[str, Set[str]]) -> dict:
-    """Get sizes for all files related to a specific language."""
-    sizes = {}
+    index = build_model_index(records)
+    print(f"Built index with {len(index)} entries")
 
-    async with aiohttp.ClientSession() as session:
-        # Find pairs involving this language
-        relevant_pairs = []
-        for model_type, pairs in language_pairs.items():
-            for pair in pairs:
-                src_code, tgt_code = parse_language_pair(pair)
-                non_en_lang = tgt_code if src_code == 'en' else src_code
+    from_english, to_english, all_languages = build_language_data(index)
+    print(f"Languages: {len(all_languages)}, from_english: {len(from_english)}, to_english: {len(to_english)}")
 
-                if non_en_lang == lang_code:
-                    if pair not in [p[0] for p in relevant_pairs]:
-                        relevant_pairs.append((pair, src_code, tgt_code, set()))
+    print("Fetching tessdata sizes...")
+    tessdata_sizes = await get_tessdata_sizes(all_languages)
 
-                    # Find the pair in our list and add this model type
-                    for i, (p, s, t, model_types) in enumerate(relevant_pairs):
-                        if p == pair:
-                            relevant_pairs[i] = (p, s, t, model_types | {model_type})
-                            break
+    kotlin_code = generate_kotlin(from_english, to_english, all_languages, tessdata_sizes)
 
-        # Collect all URLs to fetch concurrently
-        url_to_filename = {}
-
-        # Get translation model URLs
-        for pair, src_code, tgt_code, model_types in relevant_pairs:
-            best_model_type = get_best_model_type(model_types)
-            files = generate_files_for_language(src_code, tgt_code)
-
-            for filename in sorted(set(files.values())):
-                if filename not in sizes:
-                    url = f"{TRANSLATION_BASE_URL}/{best_model_type}/{src_code}{tgt_code}/{filename}.gz"
-                    url_to_filename[url] = filename
-
-        # Get tesseract URL
-        tess_name = TESSERACT_LANGUAGE_MAPPINGS[lang_code]
-        tess_filename = f"{tess_name}.traineddata"
-        tess_url = f"{TESSERACT_BASE_URL}/{tess_filename}"
-        url_to_filename[tess_url] = tess_filename
-
-        # Execute all HTTP HEAD requests concurrently
-        tasks = [get_file_size(session, url) for url in url_to_filename.keys()]
-        results = await asyncio.gather(*tasks)
-
-        # Map results back to filenames
-        for url, size in zip(url_to_filename.keys(), results):
-            filename = url_to_filename[url]
-            if size > 0:
-                sizes[filename] = size
-
-    return sizes
-
-def load_existing_sizes() -> dict:
-    """Load existing sizes from JSON file if it exists."""
-    sizes_file = f"data/{COMMIT}.json"
-    if os.path.exists(sizes_file):
-        with open(sizes_file, 'r') as f:
-            return json.load(f)
-    return {}
-
-def save_sizes(sizes: dict):
-    """Save sizes to JSON file."""
-    sizes_file = f"data/{COMMIT}.json"
-    with open(sizes_file, 'w') as f:
-        json.dump(sizes, f, indent=2, sort_keys=True)
-
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: python generate_language_enum.py <repository_path>")
-        sys.exit(1)
-
-    repo_path = sys.argv[1]
-
-    if not os.path.exists(repo_path):
-        print(f"Error: Repository path '{repo_path}' does not exist")
-        sys.exit(1)
-
-    print(f"Scanning repository at: {repo_path}")
-
-    # Extract language pairs
-    language_pairs = extract_language_pairs(Path(repo_path))
-
-    existing_sizes = load_existing_sizes()
-    print(f"Found {len(language_pairs['base'])} base language pairs")
-    print(f"Found {len(language_pairs['base-memory'])} base-memory language pairs")
-    print(f"Found {len(language_pairs['tiny'])} tiny language pairs")
-
-    if not language_pairs['base'] and not language_pairs['base-memory'] and not language_pairs['tiny']:
-        print("No language pairs found. Please check the repository structure.")
-        sys.exit(1)
-
-    # Generate Kotlin enum
-    kotlin_code = generate_kotlin_enum(language_pairs, existing_sizes)
-
-    # Write to file
-    output_file = "Language.kt"
+    output_file = "app/src/main/java/dev/davidv/translator/Language.kt"
     with open(output_file, 'w') as f:
         f.write(kotlin_code)
 
-    print(f"Generated Kotlin enum class in {output_file}")
-    print("\nPreview:")
-    print(kotlin_code)
+    print(f"Generated {output_file}")
+
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
