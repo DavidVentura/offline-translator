@@ -71,6 +71,7 @@ will trigger a build in a docker container, matching the CI environment.
 - Create a tag that is `v${versionName}` (eg: `v0.1.0`)
 - Create a Github release named `v${versionName}` (eg: `v0.1.0`)
   - Upload the _signed_ APK to the release
+  - `gh release create v0.2.4 -F fastlane/metadata/android/en-US/changelogs/9.txt signed/translator-0.2.4.apk`
 
 ## Signing APK
 ```sh
