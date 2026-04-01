@@ -2,6 +2,7 @@ package dev.davidv.translator.accessibilityOverlay
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Rect
@@ -406,18 +407,78 @@ class OverlayUI(
   ) {
     val bgColor = colors?.background ?: Color.parseColor("#F0FFFFFF")
     val fgColor = colors?.foreground ?: Color.BLACK
+    val overlayWidth = maxOf(bounds.width(), dpToPx(48))
+    val overlayHeight = maxOf(bounds.height(), dpToPx(32))
+    val screenBounds =
+      Rect(
+        0,
+        0,
+        service.resources.displayMetrics.widthPixels,
+        service.resources.displayMetrics.heightPixels,
+      )
+    val overlayRect = Rect(bounds.left, bounds.top, bounds.left + overlayWidth, bounds.top + overlayHeight)
+    val visibleBounds = Rect(overlayRect)
+    if (!visibleBounds.intersect(screenBounds)) return
 
+    // When text is at the bottom of the screen we don't know how much is cropped.
+    // Take system font size as a minimum size to prevent all the block's text from
+    // being crammed into 1-line-tall blocks.
+    val screenHeight = screenBounds.height()
+    val isClippedVertically =
+      bounds.bottom >= screenHeight - getNavBarHeight() - dpToPx(4) ||
+        bounds.top <= getStatusBarHeight() + dpToPx(4)
+    val minTextSizePx =
+      if (isClippedVertically) 16f * service.resources.displayMetrics.scaledDensity else 0f
+
+    val fullBitmap =
+      renderTextOverlayBitmap(
+        translatedText = translatedText,
+        width = overlayWidth,
+        minHeight = overlayHeight,
+        bgColor = bgColor,
+        fgColor = fgColor,
+        minTextSizePx = minTextSizePx,
+      )
+    val cropLeft = visibleBounds.left - overlayRect.left
+    val cropTop = visibleBounds.top - overlayRect.top
+    val croppedBitmap =
+      Bitmap.createBitmap(
+        fullBitmap,
+        cropLeft,
+        cropTop,
+        visibleBounds.width(),
+        visibleBounds.height(),
+      )
+    if (croppedBitmap != fullBitmap) {
+      fullBitmap.recycle()
+    }
+    showBitmapOverlay(croppedBitmap, visibleBounds)
+  }
+
+  private fun renderTextOverlayBitmap(
+    translatedText: String,
+    width: Int,
+    minHeight: Int,
+    bgColor: Int,
+    fgColor: Int,
+    minTextSizePx: Float = 0f,
+  ): Bitmap {
     val container = FrameLayout(service)
     val overlayBg = GradientDrawable()
     overlayBg.setColor(bgColor)
     overlayBg.cornerRadius = dpToPx(8).toFloat()
     container.background = overlayBg
 
-    val textView = TextView(service)
-    textView.text = translatedText
-    textView.setTextColor(fgColor)
-    textView.typeface = Typeface.DEFAULT
-    textView.setAutoSizeTextTypeUniformWithConfiguration(8, 48, 1, TypedValue.COMPLEX_UNIT_SP)
+    val sizingTextView = buildOverlayTextView(translatedText, fgColor)
+    val exactWidth = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY)
+    val exactMinHeight = View.MeasureSpec.makeMeasureSpec(minHeight, View.MeasureSpec.EXACTLY)
+    sizingTextView.measure(exactWidth, exactMinHeight)
+    sizingTextView.layout(0, 0, width, minHeight)
+    val resolvedTextSizePx = maxOf(sizingTextView.textSize, minTextSizePx)
+
+    val textView = buildOverlayTextView(translatedText, fgColor)
+    textView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE)
+    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resolvedTextSizePx)
     container.addView(
       textView,
       FrameLayout.LayoutParams(
@@ -426,20 +487,29 @@ class OverlayUI(
       ),
     )
 
-    val params =
-      WindowManager.LayoutParams(
-        maxOf(bounds.width(), dpToPx(48)),
-        maxOf(bounds.height(), dpToPx(32)),
-        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-        PixelFormat.TRANSLUCENT,
-      )
-    params.gravity = Gravity.TOP or Gravity.START
-    params.x = bounds.left
-    params.y = bounds.top
+    val screenHeight = service.resources.displayMetrics.heightPixels
+    val renderHeightBudget = minOf(maxOf(minHeight * 6, dpToPx(256)), screenHeight * 2)
+    val maxHeight = View.MeasureSpec.makeMeasureSpec(renderHeightBudget, View.MeasureSpec.AT_MOST)
+    container.measure(exactWidth, maxHeight)
+    val actualHeight = maxOf(container.measuredHeight, minHeight)
+    container.layout(0, 0, width, actualHeight)
 
-    windowManager.addView(container, params)
-    translationOverlays.add(container)
+    val bitmap = Bitmap.createBitmap(width, actualHeight, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    container.draw(canvas)
+    return bitmap
+  }
+
+  private fun buildOverlayTextView(
+    translatedText: String,
+    fgColor: Int,
+  ): TextView {
+    return TextView(service).apply {
+      text = translatedText
+      setTextColor(fgColor)
+      typeface = Typeface.DEFAULT
+      setAutoSizeTextTypeUniformWithConfiguration(8, 48, 1, TypedValue.COMPLEX_UNIT_SP)
+    }
   }
 
   fun showBitmapOverlay(

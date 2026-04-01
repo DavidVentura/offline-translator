@@ -193,7 +193,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
       return
     }
 
-    val nodes = input.collectVisibleTextNodes(root)
+    val nodes = input.collectVisibleTextBlocks(root).map { it.text to it.bounds }
     if (nodes.isEmpty()) {
       ui.showOverlayMessage("No visible text found")
       return
@@ -368,20 +368,15 @@ class TranslatorAccessibilityService : AccessibilityService() {
       return
     }
 
-    val node = input.findNodeAtPoint(root, x, y)
-    if (node == null) {
-      Log.d(tag, "No text node at ($x, $y)")
+    val textBlock = input.extractTextBlockAtPoint(root, x, y)
+    if (textBlock == null) {
+      Log.d(tag, "No text block at ($x, $y)")
+      ui.showOverlayMessage("No element found at position")
       return
     }
 
-    val text = input.extractText(node)
-    if (text.isNullOrBlank()) {
-      Log.d(tag, "No text at ($x, $y)")
-      return
-    }
-
-    val bounds = Rect()
-    node.getBoundsInScreen(bounds)
+    val text = textBlock.text
+    val bounds = textBlock.bounds
     Log.d(tag, "Found text: '$text' at $bounds")
 
     withOptionalScreenshotColor(bounds) { colors -> translateAndShow(text, bounds, colors) }

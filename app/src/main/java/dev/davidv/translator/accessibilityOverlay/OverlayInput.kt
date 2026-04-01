@@ -15,13 +15,22 @@ import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.getOverlayColors
 import dev.davidv.translator.Rect as TranslatorRect
 
+data class TapTextBlock(
+  val text: String,
+  val bounds: Rect,
+)
+
+private data class TextFragment(
+  val text: String,
+  val bounds: Rect,
+)
+
 class OverlayInput(
   private val service: TranslatorAccessibilityService,
   private val windowManager: WindowManager,
   private val ui: OverlayUI,
   private val settingsManager: SettingsManager,
 ) {
-  private val tag = "OverlayInput"
   private var touchInterceptOverlay: View? = null
   private var selectionRectView: View? = null
   private var selectionRectDrawView: SelectionRectView? = null
@@ -160,85 +169,116 @@ class OverlayInput(
     x: Int,
     y: Int,
   ): AccessibilityNodeInfo? {
+    val node = findDeepestNodeAtPoint(root, x, y) ?: return null
+    var current: AccessibilityNodeInfo? = node
+    while (current != null) {
+      val text = current.text
+      if (text != null && text.isNotBlank()) {
+        val bounds = Rect()
+        current.getBoundsInScreen(bounds)
+        val screenWidth = service.resources.displayMetrics.widthPixels
+        val screenHeight = service.resources.displayMetrics.heightPixels
+        val boundsArea = bounds.width().toLong() * bounds.height().toLong()
+        val screenArea = screenWidth.toLong() * screenHeight.toLong()
+        if (boundsArea <= screenArea / 2) return current
+      }
+      current = current.parent
+    }
+    return null
+  }
+
+  private fun findDeepestNodeAtPoint(
+    root: AccessibilityNodeInfo?,
+    x: Int,
+    y: Int,
+  ): AccessibilityNodeInfo? {
     if (root == null) return null
     val bounds = Rect()
     root.getBoundsInScreen(bounds)
     if (!bounds.contains(x, y)) return null
     for (i in root.childCount - 1 downTo 0) {
       val child = root.getChild(i) ?: continue
-      val found = findNodeAtPoint(child, x, y)
+      val found = findDeepestNodeAtPoint(child, x, y)
       if (found != null) return found
     }
-    val text = root.text ?: root.contentDescription
-    if (text != null && text.isNotBlank()) {
-      val screenWidth = service.resources.displayMetrics.widthPixels
-      val screenHeight = service.resources.displayMetrics.heightPixels
-      val boundsArea = bounds.width().toLong() * bounds.height().toLong()
-      val screenArea = screenWidth.toLong() * screenHeight.toLong()
-      if (boundsArea > screenArea / 2) return null
-      return root
-    }
-    return null
+    return root
   }
 
-  fun extractText(node: AccessibilityNodeInfo): String? {
-    node.text?.let { return it.toString().trim() }
-    node.contentDescription?.let { return it.toString().trim() }
-    val sb = StringBuilder()
-    for (i in 0 until node.childCount) {
-      val child = node.getChild(i) ?: continue
-      val childText = extractText(child)
-      if (!childText.isNullOrBlank()) {
-        if (sb.isNotEmpty()) sb.append(" ")
-        sb.append(childText)
-      }
+  fun extractTextBlockAtPoint(
+    root: AccessibilityNodeInfo?,
+    x: Int,
+    y: Int,
+  ): TapTextBlock? {
+    val node = findDeepestNodeAtPoint(root, x, y) ?: return null
+
+    var current: AccessibilityNodeInfo? = node
+    var bestFragments = emptyList<TextFragment>()
+    while (current != null) {
+      bestFragments = collectTextFragments(current)
+      if (bestFragments.isNotEmpty()) break
+      current = current.parent
     }
-    return sb.toString().ifBlank { null }
+    if (current == null || bestFragments.isEmpty()) return null
+
+    val tapMargin = ui.dpToPx(8)
+    val tapNearFragment =
+      bestFragments.any { fragment ->
+        val expanded = Rect(fragment.bounds)
+        expanded.inset(-tapMargin, -tapMargin)
+        expanded.contains(x, y)
+      }
+    if (!tapNearFragment) return null
+
+    val deepestBounds = Rect()
+    node.getBoundsInScreen(deepestBounds)
+    val initialBlock = buildTextBlock(bestFragments)
+    if (current !== node && initialBlock != null && isOversizedTapFallback(deepestBounds, initialBlock.bounds, bestFragments.size)) {
+      return null
+    }
+
+    var ancestor = current.parent
+    while (ancestor != null) {
+      val ancestorFragments = collectTextFragments(ancestor)
+      val consecutive = ancestorFragments.isNotEmpty() && fragmentsFormConsecutiveFlow(ancestorFragments)
+      if (!consecutive) break
+      bestFragments = ancestorFragments
+      ancestor = ancestor.parent
+    }
+
+    return buildTextBlock(bestFragments)
   }
 
-  fun collectVisibleTextNodes(root: AccessibilityNodeInfo): List<Pair<String, Rect>> {
-    val screenWidth = service.resources.displayMetrics.widthPixels
-    val screenHeight = service.resources.displayMetrics.heightPixels
-    val screenArea = screenWidth.toLong() * screenHeight.toLong()
-    val results = mutableListOf<Pair<String, Rect>>()
-    collectVisibleTextNodesRecursive(root, screenWidth, screenHeight, screenArea, results)
-    return results
-  }
+  fun collectVisibleTextBlocks(root: AccessibilityNodeInfo): List<TapTextBlock> {
+    val fragments = collectTextFragments(root)
+    if (fragments.isEmpty()) return emptyList()
 
-  private fun collectVisibleTextNodesRecursive(
-    node: AccessibilityNodeInfo,
-    screenWidth: Int,
-    screenHeight: Int,
-    screenArea: Long,
-    results: MutableList<Pair<String, Rect>>,
-  ) {
-    val bounds = Rect()
-    node.getBoundsInScreen(bounds)
+    val blocks = mutableListOf<TapTextBlock>()
+    var currentFragments = mutableListOf<TextFragment>()
+    var currentBounds: Rect? = null
 
-    if (bounds.right <= 0 || bounds.bottom <= 0 || bounds.left >= screenWidth || bounds.top >= screenHeight) return
-    if (bounds.width() <= 0 || bounds.height() <= 0) return
-
-    val boundsArea = bounds.width().toLong() * bounds.height().toLong()
-    if (boundsArea > screenArea / 2) {
-      for (i in 0 until node.childCount) {
-        val child = node.getChild(i) ?: continue
-        collectVisibleTextNodesRecursive(child, screenWidth, screenHeight, screenArea, results)
+    for (fragment in fragments) {
+      val groupBounds = currentBounds
+      if (groupBounds == null) {
+        currentFragments.add(fragment)
+        currentBounds = Rect(fragment.bounds)
+        continue
       }
-      return
-    }
 
-    val sizeBefore = results.size
-    for (i in 0 until node.childCount) {
-      val child = node.getChild(i) ?: continue
-      collectVisibleTextNodesRecursive(child, screenWidth, screenHeight, screenArea, results)
-    }
-
-    if (results.size == sizeBefore) {
-      val text = node.text
-      if (text != null && text.isNotBlank()) {
-        results.add(Pair(text.toString().trim(), Rect(bounds)))
+      if (hasVerticalOverlap(groupBounds, fragment.bounds)) {
+        currentFragments.add(fragment)
+        groupBounds.union(fragment.bounds)
+      } else {
+        buildTextBlock(currentFragments)?.let { blocks.add(it) }
+        currentFragments = mutableListOf(fragment)
+        currentBounds = Rect(fragment.bounds)
       }
     }
+
+    if (currentFragments.isNotEmpty()) {
+      buildTextBlock(currentFragments)?.let { blocks.add(it) }
+    }
+
+    return blocks
   }
 
   fun sampleColorsFromScreenshot(
@@ -250,7 +290,195 @@ class OverlayInput(
     return getOverlayColors(bitmap, translatorBounds, bgMode)
   }
 
-  private class SelectionRectView(context: android.content.Context) : View(context) {
+  private fun collectTextFragments(node: AccessibilityNodeInfo): List<TextFragment> {
+    val screenWidth = service.resources.displayMetrics.widthPixels
+    val screenHeight = service.resources.displayMetrics.heightPixels
+    val screenArea = screenWidth.toLong() * screenHeight.toLong()
+    val results = mutableListOf<TextFragment>()
+    collectTextFragmentsRecursive(node, screenWidth, screenHeight, screenArea, results)
+    return results
+  }
+
+  private fun collectTextFragmentsRecursive(
+    node: AccessibilityNodeInfo,
+    screenWidth: Int,
+    screenHeight: Int,
+    screenArea: Long,
+    results: MutableList<TextFragment>,
+  ): Boolean {
+    if (!node.isVisibleToUser) return false
+
+    val childStartIndex = results.size
+    for (i in 0 until node.childCount) {
+      val child = node.getChild(i) ?: continue
+      collectTextFragmentsRecursive(child, screenWidth, screenHeight, screenArea, results)
+    }
+
+    val text = node.text?.toString()?.trim()
+    if (text.isNullOrEmpty()) return results.size > childStartIndex
+
+    val bounds = Rect()
+    node.getBoundsInScreen(bounds)
+    if (bounds.right <= 0 || bounds.bottom <= 0 || bounds.left >= screenWidth || bounds.top >= screenHeight) return results.size > childStartIndex
+    if (bounds.width() <= 0 || bounds.height() <= 0) return results.size > childStartIndex
+
+    val boundsArea = bounds.width().toLong() * bounds.height().toLong()
+    if (boundsArea > screenArea / 2) return results.size > childStartIndex
+
+    if (results.size > childStartIndex) {
+      val childText =
+        results
+          .subList(childStartIndex, results.size)
+          .joinToString(" ") { it.text }
+      if (areEquivalentTexts(text, childText)) return true
+      results.subList(childStartIndex, results.size).clear()
+    }
+
+    results.add(TextFragment(text, Rect(bounds)))
+    return true
+  }
+
+  private fun fragmentsFormConsecutiveFlow(fragments: List<TextFragment>): Boolean {
+    if (fragments.size <= 1) return true
+
+    val lines = clusterFragmentsIntoLines(fragments)
+    if (lines.size > 6) return false
+
+    val gapThreshold = maxOf(ui.dpToPx(6), (medianHeight(fragments) * 0.5f).toInt())
+    for (i in 1 until lines.size) {
+      val gap = lines[i].first.top - lines[i - 1].second.bottom
+      if (gap > gapThreshold) return false
+    }
+
+    val totalBounds = Rect(lines.first().first)
+    for ((_, lineBounds) in lines.drop(1)) {
+      totalBounds.union(lineBounds)
+    }
+    val maxHeight = minOf(service.resources.displayMetrics.heightPixels / 3, medianHeight(fragments) * 8)
+    if (totalBounds.height() > maxHeight) return false
+
+    return true
+  }
+
+  private fun buildTextBlock(fragments: List<TextFragment>): TapTextBlock? {
+    if (fragments.isEmpty()) return null
+
+    val lines = clusterFragmentsIntoLineFragments(fragments)
+
+    val text =
+      lines
+        .joinToString("\n") { line ->
+          line
+            .fold(StringBuilder()) { sb, fragment ->
+              if (sb.isNotEmpty() && shouldInsertSpace(sb.last(), fragment.text.first())) {
+                sb.append(' ')
+              }
+              sb.append(fragment.text)
+              sb
+            }.toString()
+        }.trim()
+    if (text.isBlank()) return null
+
+    val unionBounds = Rect(fragments.first().bounds)
+    for (fragment in fragments.drop(1)) {
+      unionBounds.union(fragment.bounds)
+    }
+
+    return TapTextBlock(text, unionBounds)
+  }
+
+  private fun medianHeight(fragments: List<TextFragment>): Int {
+    val heights = fragments.map { it.bounds.height() }.sorted()
+    return heights[heights.size / 2].coerceAtLeast(1)
+  }
+
+  private fun isOversizedTapFallback(
+    deepestBounds: Rect,
+    candidateBounds: Rect,
+    fragmentCount: Int,
+  ): Boolean {
+    val screenHeight = service.resources.displayMetrics.heightPixels
+    if (candidateBounds.height() > screenHeight / 3) return true
+    if (fragmentCount > 8) return true
+    if (deepestBounds.width() > 0 && candidateBounds.width() > deepestBounds.width() * 2) return true
+    if (deepestBounds.height() > 0 && candidateBounds.height() > deepestBounds.height() * 2) return true
+    return false
+  }
+
+  private fun clusterFragmentsIntoLines(fragments: List<TextFragment>): List<Pair<Rect, Rect>> =
+    clusterFragmentsIntoLineFragments(fragments).map { line ->
+      val lineBounds = Rect(line.first().bounds)
+      for (fragment in line.drop(1)) {
+        lineBounds.union(fragment.bounds)
+      }
+      line.first().bounds to lineBounds
+    }
+
+  private fun clusterFragmentsIntoLineFragments(fragments: List<TextFragment>): List<List<TextFragment>> {
+    if (fragments.isEmpty()) return emptyList()
+
+    val lineThreshold = maxOf(ui.dpToPx(6), (medianHeight(fragments) * 0.35f).toInt())
+    val lines = mutableListOf<MutableList<TextFragment>>()
+    var currentLine = mutableListOf<TextFragment>()
+    var currentTop = 0
+    var currentBottom = 0
+
+    for (fragment in fragments) {
+      if (currentLine.isEmpty()) {
+        currentLine.add(fragment)
+        currentTop = fragment.bounds.top
+        currentBottom = fragment.bounds.bottom
+        continue
+      }
+
+      val centerDelta = kotlin.math.abs(fragment.bounds.centerY() - (currentTop + currentBottom) / 2)
+      val verticalOverlap = minOf(currentBottom, fragment.bounds.bottom) - maxOf(currentTop, fragment.bounds.top)
+      if (verticalOverlap > 0 || centerDelta <= lineThreshold) {
+        currentLine.add(fragment)
+        currentTop = minOf(currentTop, fragment.bounds.top)
+        currentBottom = maxOf(currentBottom, fragment.bounds.bottom)
+      } else {
+        lines.add(currentLine)
+        currentLine = mutableListOf(fragment)
+        currentTop = fragment.bounds.top
+        currentBottom = fragment.bounds.bottom
+      }
+    }
+    lines.add(currentLine)
+
+    return lines
+  }
+
+  private fun shouldInsertSpace(
+    previous: Char,
+    next: Char,
+  ): Boolean {
+    if (previous.isWhitespace() || next.isWhitespace()) return false
+    if (next in charArrayOf('.', ',', ';', ':', '!', '?', ')', ']', '}', '%')) return false
+    if (previous in charArrayOf('(', '[', '{', '/', '-', '\n')) return false
+    return true
+  }
+
+  private fun areEquivalentTexts(
+    first: String,
+    second: String,
+  ): Boolean = normalizeTextForComparison(first) == normalizeTextForComparison(second)
+
+  private fun normalizeTextForComparison(text: String): String =
+    text
+      .replace(Regex("\\s+"), " ")
+      .replace(Regex("\\s+([.,;:!?])"), "$1")
+      .trim()
+      .lowercase()
+
+  private fun hasVerticalOverlap(
+    first: Rect,
+    second: Rect,
+  ): Boolean = minOf(first.bottom, second.bottom) - maxOf(first.top, second.top) >= -ui.dpToPx(8)
+
+  private class SelectionRectView(
+    context: android.content.Context,
+  ) : View(context) {
     private val fillPaint =
       android.graphics.Paint().apply {
         color = Color.parseColor("#220088FF")
