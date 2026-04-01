@@ -127,6 +127,13 @@ TESSERACT_LANGUAGE_MAPPINGS = {
     'zh_hant': 'chi_tra',
 }
 
+SHORT_DISPLAY_NAMES = {
+    'zh': '简体',
+    'zh_hant': '繁體',
+    'nb': 'Bokmål',
+    'nn': 'Nynorsk',
+}
+
 LANGUAGE_SCRIPTS = {
     'ar': 'Arabic',
     'az': 'Latin',
@@ -429,8 +436,9 @@ def generate_kotlin(
         enum_name = sanitize_enum_name(lang_name)
         tess_size = tessdata_sizes.get(lang_code, 0)
         total_size = compute_language_size(lang_code, from_english, to_english, tessdata_sizes)
+        short_name = SHORT_DISPLAY_NAMES.get(lang_code, lang_name)
         language_entries.append(
-            f'  {enum_name}("{lang_code}", "{tess_name}", "{lang_name}", "{script}", {total_size}, {tess_size})'
+            f'  {enum_name}("{lang_code}", "{tess_name}", "{lang_name}", "{short_name}", "{script}", {total_size}, {tess_size})'
         )
 
     from_entries = []
@@ -493,7 +501,7 @@ data class ModelFile(
   val path: String,
 )
 
-enum class Language(val code: String, val tessName: String, val displayName: String, val script: String, val sizeBytes: Int, val tessdataSizeBytes: Int) {{
+enum class Language(val code: String, val tessName: String, val displayName: String, val shortDisplayName: String, val script: String, val sizeBytes: Int, val tessdataSizeBytes: Int) {{
 {language_lines};
 
   val tessFilename: String
