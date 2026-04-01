@@ -52,7 +52,7 @@ class OverlayInput(
     var hadOverlayOnDown = false
     val canTakeScreenshot = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
-    overlay.setOnTouchListener { _, event ->
+    overlay.setOnTouchListener { v, event ->
       when (event.action) {
         MotionEvent.ACTION_DOWN -> {
           startX = event.rawX.toInt()
@@ -75,6 +75,7 @@ class OverlayInput(
           true
         }
         MotionEvent.ACTION_UP -> {
+          if (!dragging) v.performClick()
           if (dragging) {
             val endX = event.rawX.toInt()
             val endY = event.rawY.toInt()
