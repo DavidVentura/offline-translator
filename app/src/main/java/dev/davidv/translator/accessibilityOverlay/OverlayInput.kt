@@ -263,7 +263,7 @@ class OverlayInput(
   }
 
   fun collectVisibleTextBlocks(root: AccessibilityNodeInfo): List<TapTextBlock> {
-    val fragments = collectTextFragments(root)
+    val fragments = collectTextFragments(root, skipButtons = true)
     if (fragments.isEmpty()) return emptyList()
 
     val blocks = mutableListOf<TapTextBlock>()
@@ -304,17 +304,21 @@ class OverlayInput(
     return getOverlayColors(bitmap, translatorBounds, bgMode)
   }
 
-  private fun collectTextFragments(node: AccessibilityNodeInfo): List<TextFragment> {
+  private fun collectTextFragments(
+    node: AccessibilityNodeInfo,
+    skipButtons: Boolean = false,
+  ): List<TextFragment> {
     val screenWidth = service.resources.displayMetrics.widthPixels
     val screenHeight = service.resources.displayMetrics.heightPixels
     val screenArea = screenWidth.toLong() * screenHeight.toLong()
     val results = mutableListOf<TextFragment>()
-    collectTextFragmentsRecursive(node, screenWidth, screenHeight, screenArea, results)
+    collectTextFragmentsRecursive(node, screenWidth, screenHeight, screenArea, skipButtons, results)
 
     val minCharWidth = ui.dpToPx(2)
     val minLineHeight = ui.dpToPx(8)
     val duplicateBounds =
-      results.groupBy { it.bounds.toShortString() }
+      results
+        .groupBy { it.bounds.toShortString() }
         .filter { it.value.size > 1 }
         .keys
     return results.filter { fragment ->
@@ -326,19 +330,31 @@ class OverlayInput(
     }
   }
 
+  private val skipClasses =
+    setOf(
+      "android.widget.Image",
+      "android.widget.Button",
+      "android.widget.ToggleButton",
+      "android.widget.ImageButton",
+    )
+
   private fun collectTextFragmentsRecursive(
     node: AccessibilityNodeInfo,
     screenWidth: Int,
     screenHeight: Int,
     screenArea: Long,
+    skipButtons: Boolean,
     results: MutableList<TextFragment>,
   ): Boolean {
     if (!node.isVisibleToUser) return false
+    val cls = node.className?.toString()
+    if (cls == "android.widget.Image") return false
+    if (skipButtons && cls in skipClasses) return false
 
     val childStartIndex = results.size
     for (i in 0 until node.childCount) {
       val child = node.getChild(i) ?: continue
-      collectTextFragmentsRecursive(child, screenWidth, screenHeight, screenArea, results)
+      collectTextFragmentsRecursive(child, screenWidth, screenHeight, screenArea, skipButtons, results)
     }
 
     val text = node.text?.toString()?.trim()
