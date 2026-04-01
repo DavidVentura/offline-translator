@@ -25,6 +25,80 @@ import android.graphics.Paint
 import android.text.TextPaint
 import kotlin.math.floor
 
+data class OverlayColors(val background: Int, val foreground: Int)
+
+fun getOverlayColors(
+  bitmap: Bitmap,
+  bounds: Rect,
+  backgroundMode: BackgroundMode,
+  wordRects: Array<Rect>? = null,
+): OverlayColors {
+  return when (backgroundMode) {
+    BackgroundMode.WHITE_ON_BLACK -> OverlayColors(Color.BLACK, Color.WHITE)
+    BackgroundMode.BLACK_ON_WHITE -> OverlayColors(Color.WHITE, Color.BLACK)
+    BackgroundMode.AUTO_DETECT -> {
+      val bgColor =
+        if (wordRects != null && wordRects.count() > 1) {
+          getBackgroundColorExcludingWords(bitmap, bounds, wordRects)
+        } else if (wordRects != null) {
+          getSurroundingAverageColor(bitmap, bounds)
+        } else {
+          sampleDominantColor(bitmap, bounds)
+        }
+      val fgColor = getForegroundColorByContrast(bitmap, bounds, bgColor)
+      OverlayColors(bgColor, fgColor)
+    }
+  }
+}
+
+fun sampleDominantColor(
+  bitmap: Bitmap,
+  bounds: Rect,
+): Int {
+  val left = bounds.left.coerceIn(0, bitmap.width - 1)
+  val top = bounds.top.coerceIn(0, bitmap.height - 1)
+  val right = bounds.right.coerceIn(left + 1, bitmap.width)
+  val bottom = bounds.bottom.coerceIn(top + 1, bitmap.height)
+  val w = right - left
+  val h = bottom - top
+  if (w <= 0 || h <= 0) return Color.WHITE
+
+  val pixels = IntArray(w * h)
+  bitmap.getPixels(pixels, 0, w, left, top, w, h)
+
+  val step = maxOf(1, pixels.size / 500)
+
+  data class Bucket(var count: Int, var rSum: Long, var gSum: Long, var bSum: Long)
+  val buckets = mutableMapOf<Int, Bucket>()
+
+  var i = 0
+  while (i < pixels.size) {
+    val pixel = pixels[i]
+    val key = Color.rgb(Color.red(pixel) and 0xF0, Color.green(pixel) and 0xF0, Color.blue(pixel) and 0xF0)
+    val existing = buckets[key]
+    if (existing != null) {
+      existing.count++
+      existing.rSum += Color.red(pixel)
+      existing.gSum += Color.green(pixel)
+      existing.bSum += Color.blue(pixel)
+    } else {
+      buckets[key] = Bucket(1, Color.red(pixel).toLong(), Color.green(pixel).toLong(), Color.blue(pixel).toLong())
+    }
+    i += step
+  }
+
+  val best =
+    buckets.values
+      .maxByOrNull { it.count }
+      ?: return Color.WHITE
+
+  return Color.rgb(
+    (best.rSum / best.count).toInt(),
+    (best.gSum / best.count).toInt(),
+    (best.bSum / best.count).toInt(),
+  )
+}
+
 sealed class TextFitResult {
   object DoesNotFit : TextFitResult()
 
@@ -146,23 +220,9 @@ fun removeTextWithSmartBlur(
   words: Array<Rect>,
   backgroundMode: BackgroundMode = BackgroundMode.AUTO_DETECT,
 ): Int {
-  val (surroundingColor, fgColor) =
-    when (backgroundMode) {
-      BackgroundMode.WHITE_ON_BLACK -> Pair(Color.BLACK, Color.WHITE)
-      BackgroundMode.BLACK_ON_WHITE -> Pair(Color.WHITE, Color.BLACK)
-      BackgroundMode.AUTO_DETECT -> {
-        val detectedSurroundingColor =
-          if (words.count() <= 1) {
-            getSurroundingAverageColor(bitmap, textBounds)
-          } else {
-            getBackgroundColorExcludingWords(bitmap, textBounds, words)
-          }
-        val detectedFgColor =
-          getForegroundColorByContrast(bitmap, textBounds, detectedSurroundingColor)
-
-        Pair(detectedSurroundingColor, detectedFgColor)
-      }
-    }
+  val colors = getOverlayColors(bitmap, textBounds, backgroundMode, words)
+  val surroundingColor = colors.background
+  val fgColor = colors.foreground
   var paint =
     Paint().apply {
       color = surroundingColor

@@ -22,6 +22,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import dev.davidv.translator.Language
 import dev.davidv.translator.MainActivity
+import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.R
 import dev.davidv.translator.SettingsManager
 
@@ -542,5 +543,9 @@ class OverlayUI(
     parent.addView(item)
   }
 
-  private fun dpToPx(dp: Int): Int = (dp * service.resources.displayMetrics.density).toInt()
+  fun cleanup() {
+    handler.removeCallbacksAndMessages(null)
+  }
+
+  internal fun dpToPx(dp: Int): Int = (dp * service.resources.displayMetrics.density).toInt()
 }

@@ -10,11 +10,10 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityNodeInfo
-import dev.davidv.translator.BackgroundMode
+import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.SettingsManager
-import dev.davidv.translator.getLuminance
-
-data class OverlayColors(val background: Int, val foreground: Int)
+import dev.davidv.translator.getOverlayColors
+import dev.davidv.translator.Rect as TranslatorRect
 
 class OverlayInput(
   private val service: TranslatorAccessibilityService,
@@ -33,7 +32,7 @@ class OverlayInput(
     val overlay = View(service)
     overlay.setBackgroundColor(Color.TRANSPARENT)
 
-    val toolbarHeight = dpToPx(48)
+    val toolbarHeight = ui.dpToPx(48)
     val navBarHeight = ui.getNavBarHeight()
     val screenHeight = service.resources.displayMetrics.heightPixels
     val params =
@@ -67,7 +66,7 @@ class OverlayInput(
           if (canTakeScreenshot) {
             val dx = Math.abs(event.rawX.toInt() - startX)
             val dy = Math.abs(event.rawY.toInt() - startY)
-            if (dx > dpToPx(10) || dy > dpToPx(10)) {
+            if (dx > ui.dpToPx(10) || dy > ui.dpToPx(10)) {
               dragging = true
               ui.removeTranslationOverlays()
               updateSelectionRect(startX, startY, event.rawX.toInt(), event.rawY.toInt())
@@ -87,7 +86,7 @@ class OverlayInput(
                 maxOf(startX, endX),
                 maxOf(startY, endY),
               )
-            if (region.width() > dpToPx(20) && region.height() > dpToPx(20)) {
+            if (region.width() > ui.dpToPx(20) && region.height() > ui.dpToPx(20)) {
               service.handleRegionCapture(region)
             }
           } else if (hadOverlayOnDown || ui.hasTranslationOverlays()) {
@@ -199,69 +198,9 @@ class OverlayInput(
     bounds: Rect,
   ): OverlayColors {
     val bgMode = settingsManager.settings.value.backgroundMode
-    return when (bgMode) {
-      BackgroundMode.WHITE_ON_BLACK -> OverlayColors(Color.BLACK, Color.WHITE)
-      BackgroundMode.BLACK_ON_WHITE -> OverlayColors(Color.WHITE, Color.BLACK)
-      BackgroundMode.AUTO_DETECT -> {
-        val bgColor = sampleDominantColor(bitmap, bounds)
-        val luminance = getLuminance(bgColor)
-        val fgColor = if (luminance > 0.5f) Color.BLACK else Color.WHITE
-        OverlayColors(bgColor, fgColor)
-      }
-    }
+    val translatorBounds = TranslatorRect(bounds.left, bounds.top, bounds.right, bounds.bottom)
+    return getOverlayColors(bitmap, translatorBounds, bgMode)
   }
-
-  private fun sampleDominantColor(
-    bitmap: Bitmap,
-    bounds: Rect,
-  ): Int {
-    val left = bounds.left.coerceIn(0, bitmap.width - 1)
-    val top = bounds.top.coerceIn(0, bitmap.height - 1)
-    val right = bounds.right.coerceIn(left + 1, bitmap.width)
-    val bottom = bounds.bottom.coerceIn(top + 1, bitmap.height)
-    val w = right - left
-    val h = bottom - top
-    if (w <= 0 || h <= 0) return Color.WHITE
-
-    val pixels = IntArray(w * h)
-    bitmap.getPixels(pixels, 0, w, left, top, w, h)
-
-    val step = maxOf(1, pixels.size / 500)
-
-    data class Bucket(var count: Int, var rSum: Long, var gSum: Long, var bSum: Long)
-    val buckets = mutableMapOf<Int, Bucket>()
-
-    var i = 0
-    while (i < pixels.size) {
-      val pixel = pixels[i]
-      val key = Color.rgb(Color.red(pixel) and 0xF0, Color.green(pixel) and 0xF0, Color.blue(pixel) and 0xF0)
-      val existing = buckets[key]
-      if (existing != null) {
-        existing.count++
-        existing.rSum += Color.red(pixel)
-        existing.gSum += Color.green(pixel)
-        existing.bSum += Color.blue(pixel)
-      } else {
-        buckets[key] = Bucket(1, Color.red(pixel).toLong(), Color.green(pixel).toLong(), Color.blue(pixel).toLong())
-      }
-      i += step
-    }
-
-    val maxCount = buckets.values.maxOfOrNull { it.count } ?: return Color.WHITE
-    val best =
-      buckets.values
-        .filter { it.count >= maxCount / 10 }
-        .maxByOrNull { getLuminance(Color.rgb((it.rSum / it.count).toInt(), (it.gSum / it.count).toInt(), (it.bSum / it.count).toInt())) }
-        ?: return Color.WHITE
-
-    return Color.rgb(
-      (best.rSum / best.count).toInt(),
-      (best.gSum / best.count).toInt(),
-      (best.bSum / best.count).toInt(),
-    )
-  }
-
-  private fun dpToPx(dp: Int): Int = (dp * service.resources.displayMetrics.density).toInt()
 
   private class SelectionRectView(context: android.content.Context) : View(context) {
     private val fillPaint =

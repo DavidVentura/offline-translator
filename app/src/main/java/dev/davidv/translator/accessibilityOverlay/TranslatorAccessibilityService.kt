@@ -19,6 +19,7 @@ import dev.davidv.translator.LanguageDetector
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.OCRService
+import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationResult
@@ -88,6 +89,8 @@ class TranslatorAccessibilityService : AccessibilityService() {
       androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED,
     )
 
+    serviceInfo = serviceInfo.apply { eventTypes = 0 }
+
     ui.showFloatingButton()
   }
 
@@ -112,6 +115,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
     deactivate()
     ui.removeFloatingButton()
     ui.dismissMenu()
+    ui.cleanup()
     serviceScope.cancel()
     TranslationService.cleanup()
     super.onDestroy()
@@ -120,6 +124,10 @@ class TranslatorAccessibilityService : AccessibilityService() {
   fun activate() {
     if (active) return
     active = true
+    serviceInfo =
+      serviceInfo.apply {
+        eventTypes = AccessibilityEvent.TYPE_VIEW_SCROLLED or AccessibilityEvent.TYPE_VIEW_CLICKED
+      }
     langStateManager.refreshLanguageAvailability()
     ui.removeFloatingButton()
     ui.removeTranslationOverlays()
@@ -129,6 +137,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
 
   fun deactivate() {
     active = false
+    serviceInfo = serviceInfo.apply { eventTypes = 0 }
     ui.removeToolbar()
     input.removeTouchInterceptOverlay()
     ui.removeTranslationOverlays()
@@ -180,41 +189,52 @@ class TranslatorAccessibilityService : AccessibilityService() {
       return
     }
 
-    takeScreenshot(
-      Display.DEFAULT_DISPLAY,
-      mainExecutor,
-      object : TakeScreenshotCallback {
-        override fun onSuccess(screenshot: ScreenshotResult) {
-          val hwBitmap = Bitmap.wrapHardwareBuffer(screenshot.hardwareBuffer, screenshot.colorSpace)
-          screenshot.hardwareBuffer.close()
-          if (hwBitmap == null) return
-          val fullBitmap = hwBitmap.copy(Bitmap.Config.ARGB_8888, false)
-          hwBitmap.recycle()
+    input.removeTouchInterceptOverlay()
+    ui.removeToolbar()
 
-          val cropLeft = region.left.coerceIn(0, fullBitmap.width - 1)
-          val cropTop = region.top.coerceIn(0, fullBitmap.height - 1)
-          val cropWidth = region.width().coerceAtMost(fullBitmap.width - cropLeft)
-          val cropHeight = region.height().coerceAtMost(fullBitmap.height - cropTop)
-          if (cropWidth <= 0 || cropHeight <= 0) {
+    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+      takeScreenshot(
+        Display.DEFAULT_DISPLAY,
+        mainExecutor,
+        object : TakeScreenshotCallback {
+          override fun onSuccess(screenshot: ScreenshotResult) {
+            input.showInteractionOverlay()
+            ui.showToolbar(forcedSourceLanguage, forcedTargetLanguage)
+
+            val hwBitmap = Bitmap.wrapHardwareBuffer(screenshot.hardwareBuffer, screenshot.colorSpace)
+            screenshot.hardwareBuffer.close()
+            if (hwBitmap == null) return
+            val fullBitmap = hwBitmap.copy(Bitmap.Config.ARGB_8888, false)
+            hwBitmap.recycle()
+
+            val cropLeft = region.left.coerceIn(0, fullBitmap.width - 1)
+            val cropTop = region.top.coerceIn(0, fullBitmap.height - 1)
+            val cropWidth = region.width().coerceAtMost(fullBitmap.width - cropLeft)
+            val cropHeight = region.height().coerceAtMost(fullBitmap.height - cropTop)
+            if (cropWidth <= 0 || cropHeight <= 0) {
+              fullBitmap.recycle()
+              return
+            }
+
+            val croppedBitmap = Bitmap.createBitmap(fullBitmap, cropLeft, cropTop, cropWidth, cropHeight)
+            val colors = input.sampleColorsFromScreenshot(fullBitmap, region)
             fullBitmap.recycle()
-            return
+
+            ui.showLoadingOverlay(region, colors)
+
+            serviceScope.launch {
+              translateRegionBitmap(croppedBitmap, region)
+            }
           }
 
-          val croppedBitmap = Bitmap.createBitmap(fullBitmap, cropLeft, cropTop, cropWidth, cropHeight)
-          fullBitmap.recycle()
-
-          ui.showLoadingOverlay(region, null)
-
-          serviceScope.launch {
-            translateRegionBitmap(croppedBitmap, region)
+          override fun onFailure(errorCode: Int) {
+            Log.w(tag, "Screenshot failed: $errorCode")
+            input.showInteractionOverlay()
+            ui.showToolbar(forcedSourceLanguage, forcedTargetLanguage)
           }
-        }
-
-        override fun onFailure(errorCode: Int) {
-          Log.w(tag, "Screenshot failed: $errorCode")
-        }
-      },
-    )
+        },
+      )
+    }, 100)
   }
 
   private suspend fun translateRegionBitmap(
