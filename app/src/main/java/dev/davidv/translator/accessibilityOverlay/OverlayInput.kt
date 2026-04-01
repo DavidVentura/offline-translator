@@ -232,7 +232,7 @@ class OverlayInput(
     }
 
     if (results.size == sizeBefore) {
-      val text = node.text ?: node.contentDescription
+      val text = node.text
       if (text != null && text.isNotBlank()) {
         results.add(Pair(text.toString().trim(), Rect(bounds)))
       }
