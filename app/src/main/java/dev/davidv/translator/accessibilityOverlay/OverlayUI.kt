@@ -28,6 +28,7 @@ import dev.davidv.translator.SettingsManager
 class OverlayUI(
   private val service: TranslatorAccessibilityService,
   private val windowManager: WindowManager,
+  private val settingsManager: SettingsManager,
 ) {
   private val handler = Handler(Looper.getMainLooper())
   private var floatingButton: View? = null
@@ -176,7 +177,7 @@ class OverlayUI(
     swapBtn.setOnClickListener { service.swapLanguages() }
     langRow.addView(swapBtn, LinearLayout.LayoutParams(swapSize + swapPad * 2, swapSize))
 
-    val currentTarget = forcedTargetLanguage ?: SettingsManager(service).settings.value.defaultTargetLanguage
+    val currentTarget = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
     val targetLabel = TextView(service)
     targetLabel.text = currentTarget.shortDisplayName
     targetLabel.setTextColor(Color.WHITE)
@@ -229,7 +230,7 @@ class OverlayUI(
     forcedTargetLanguage: Language?,
   ) {
     sourceLabelView?.text = forcedSourceLanguage?.shortDisplayName ?: "Auto"
-    val currentTarget = forcedTargetLanguage ?: SettingsManager(service).settings.value.defaultTargetLanguage
+    val currentTarget = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
     targetLabelView?.text = currentTarget.shortDisplayName
   }
 

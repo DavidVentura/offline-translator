@@ -19,6 +19,7 @@ class OverlayInput(
   private val service: TranslatorAccessibilityService,
   private val windowManager: WindowManager,
   private val ui: OverlayUI,
+  private val settingsManager: SettingsManager,
 ) {
   private val tag = "OverlayInput"
   private var touchInterceptOverlay: View? = null
@@ -193,7 +194,7 @@ class OverlayInput(
     bitmap: Bitmap,
     bounds: Rect,
   ): OverlayColors {
-    val bgMode = SettingsManager(service).settings.value.backgroundMode
+    val bgMode = settingsManager.settings.value.backgroundMode
     return when (bgMode) {
       BackgroundMode.WHITE_ON_BLACK -> OverlayColors(Color.BLACK, Color.WHITE)
       BackgroundMode.BLACK_ON_WHITE -> OverlayColors(Color.WHITE, Color.BLACK)

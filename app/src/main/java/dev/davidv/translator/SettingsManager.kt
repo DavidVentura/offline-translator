@@ -34,6 +34,15 @@ class SettingsManager(
   private val _settings = MutableStateFlow(loadSettings())
   val settings: StateFlow<AppSettings> = _settings.asStateFlow()
 
+  private val prefsListener =
+    SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+      _settings.value = loadSettings()
+    }
+
+  init {
+    prefs.registerOnSharedPreferenceChangeListener(prefsListener)
+  }
+
   private fun loadSettings(): AppSettings {
     val defaults = AppSettings() // Get current defaults
 

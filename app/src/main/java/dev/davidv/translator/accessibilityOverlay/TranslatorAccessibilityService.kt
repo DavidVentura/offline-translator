@@ -39,6 +39,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
   var forcedTargetLanguage: Language? = null
   private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
+  private lateinit var settingsManager: SettingsManager
   private lateinit var translationCoordinator: TranslationCoordinator
   private lateinit var langStateManager: LanguageStateManager
   private lateinit var languageMetadataManager: LanguageMetadataManager
@@ -68,7 +69,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
     Log.d(tag, "Service connected")
     windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
-    val settingsManager = SettingsManager(this)
+    settingsManager = SettingsManager(this)
     val filePathManager = FilePathManager(this, settingsManager.settings)
     val translationService = TranslationService(settingsManager, filePathManager)
     val languageDetector = LanguageDetector()
@@ -77,8 +78,8 @@ class TranslatorAccessibilityService : AccessibilityService() {
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
     languageMetadataManager = LanguageMetadataManager(this)
 
-    ui = OverlayUI(this, windowManager)
-    input = OverlayInput(this, windowManager, ui)
+    ui = OverlayUI(this, windowManager, settingsManager)
+    input = OverlayInput(this, windowManager, ui, settingsManager)
 
     registerReceiver(disableReceiver, IntentFilter(ACTION_DISABLE), RECEIVER_NOT_EXPORTED)
 
@@ -133,7 +134,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
 
   fun swapLanguages() {
     val oldSource = forcedSourceLanguage
-    val oldTarget = forcedTargetLanguage ?: SettingsManager(this).settings.value.defaultTargetLanguage
+    val oldTarget = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
     forcedSourceLanguage = oldTarget
     forcedTargetLanguage = if (oldSource != null) oldSource else null
     ui.updateToolbarLabels(forcedSourceLanguage, forcedTargetLanguage)
@@ -216,23 +217,11 @@ class TranslatorAccessibilityService : AccessibilityService() {
     region: Rect,
   ) {
     val sourceLang = forcedSourceLanguage ?: return
-    val targetLang = forcedTargetLanguage ?: SettingsManager(applicationContext).settings.value.defaultTargetLanguage
-
-    val freshSettings = SettingsManager(applicationContext)
-    val freshFilePathManager = FilePathManager(applicationContext, freshSettings.settings)
-    val freshCoordinator =
-      TranslationCoordinator(
-        applicationContext,
-        TranslationService(freshSettings, freshFilePathManager),
-        LanguageDetector(),
-        ImageProcessor(applicationContext, OCRService(freshFilePathManager)),
-        freshSettings,
-        false,
-      )
+    val targetLang = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
 
     val result =
       withContext(Dispatchers.IO) {
-        freshCoordinator.translateImageWithOverlay(sourceLang, targetLang, bitmap) {}
+        translationCoordinator.translateImageWithOverlay(sourceLang, targetLang, bitmap) {}
       }
 
     if (result != null) {
@@ -321,7 +310,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
         return@launch
       }
 
-      val to = forcedTargetLanguage ?: SettingsManager(applicationContext).settings.value.defaultTargetLanguage
+      val to = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
       if (from == to) {
         ui.removeTranslationOverlays()
         ui.showOverlayMessage("Already in ${to.displayName}")
