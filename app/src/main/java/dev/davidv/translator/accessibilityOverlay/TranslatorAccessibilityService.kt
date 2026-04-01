@@ -117,7 +117,6 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.dismissMenu()
     ui.cleanup()
     serviceScope.cancel()
-    TranslationService.cleanup()
     super.onDestroy()
   }
 
