@@ -81,7 +81,12 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui = OverlayUI(this, windowManager, settingsManager)
     input = OverlayInput(this, windowManager, ui, settingsManager)
 
-    registerReceiver(disableReceiver, IntentFilter(ACTION_DISABLE), RECEIVER_NOT_EXPORTED)
+    androidx.core.content.ContextCompat.registerReceiver(
+      this,
+      disableReceiver,
+      IntentFilter(ACTION_DISABLE),
+      androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED,
+    )
 
     ui.showFloatingButton()
   }

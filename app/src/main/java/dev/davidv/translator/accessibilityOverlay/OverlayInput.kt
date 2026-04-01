@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Rect
+import android.os.Build
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -50,6 +51,7 @@ class OverlayInput(
     var startY = 0
     var dragging = false
     var hadOverlayOnDown = false
+    val canTakeScreenshot = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
     overlay.setOnTouchListener { _, event ->
       when (event.action) {
@@ -62,12 +64,14 @@ class OverlayInput(
           true
         }
         MotionEvent.ACTION_MOVE -> {
-          val dx = Math.abs(event.rawX.toInt() - startX)
-          val dy = Math.abs(event.rawY.toInt() - startY)
-          if (dx > dpToPx(10) || dy > dpToPx(10)) {
-            dragging = true
-            ui.removeTranslationOverlays()
-            updateSelectionRect(startX, startY, event.rawX.toInt(), event.rawY.toInt())
+          if (canTakeScreenshot) {
+            val dx = Math.abs(event.rawX.toInt() - startX)
+            val dy = Math.abs(event.rawY.toInt() - startY)
+            if (dx > dpToPx(10) || dy > dpToPx(10)) {
+              dragging = true
+              ui.removeTranslationOverlays()
+              updateSelectionRect(startX, startY, event.rawX.toInt(), event.rawY.toInt())
+            }
           }
           true
         }
