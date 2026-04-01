@@ -157,7 +157,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
     val metadata = languageMetadataManager.metadata.value
     val availableLangs =
       langStateManager.languageState.value.availableLanguageMap
-        .filterValues { it.translatorFiles }
+        .filterValues { it.translatorFiles && (!isSource || it.ocrFiles) }
         .keys
         .toList()
         .sortedWith(
