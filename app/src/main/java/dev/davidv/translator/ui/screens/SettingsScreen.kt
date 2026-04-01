@@ -17,6 +17,8 @@
 
 package dev.davidv.translator.ui.screens
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -238,6 +240,26 @@ fun SettingsScreen(
               onSettingsChange(settings.copy(defaultTargetLanguage = language))
             },
           )
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Text(
+              text = "Overlay Translate",
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            TextButton(
+              onClick = {
+                context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+              },
+            ) {
+              Text("Manage")
+            }
+          }
 
           Text(
             text = "Font Size",

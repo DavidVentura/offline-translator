@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Translator</string>
     <string name="translate_text">Translate</string>
+    <string name="accessibility_service_description">Enable this service to translate text on screen. Tap the floating translate button, then tap any text to translate it in place.</string>
 </resources>
