@@ -310,7 +310,20 @@ class OverlayInput(
     val screenArea = screenWidth.toLong() * screenHeight.toLong()
     val results = mutableListOf<TextFragment>()
     collectTextFragmentsRecursive(node, screenWidth, screenHeight, screenArea, results)
-    return results
+
+    val minCharWidth = ui.dpToPx(2)
+    val minLineHeight = ui.dpToPx(8)
+    val duplicateBounds =
+      results.groupBy { it.bounds.toShortString() }
+        .filter { it.value.size > 1 }
+        .keys
+    return results.filter { fragment ->
+      val charsPerLine = maxOf(1, fragment.bounds.width() / maxOf(1, minCharWidth))
+      val linesAvailable = maxOf(1, fragment.bounds.height() / maxOf(1, minLineHeight))
+      val fits = fragment.text.length <= charsPerLine * linesAvailable
+      val uniqueBounds = fragment.bounds.toShortString() !in duplicateBounds
+      fits && uniqueBounds
+    }
   }
 
   private fun collectTextFragmentsRecursive(
