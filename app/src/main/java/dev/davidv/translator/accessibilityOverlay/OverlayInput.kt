@@ -229,6 +229,13 @@ class OverlayInput(
       }
     if (!tapNearFragment) return null
 
+    val anchor =
+      bestFragments.minBy { fragment ->
+        val dx = maxOf(0, maxOf(fragment.bounds.left - x, x - fragment.bounds.right))
+        val dy = maxOf(0, maxOf(fragment.bounds.top - y, y - fragment.bounds.bottom))
+        dx * dx + dy * dy
+      }
+
     val deepestBounds = Rect()
     node.getBoundsInScreen(deepestBounds)
     val initialBlock = buildTextBlock(bestFragments)
@@ -244,6 +251,13 @@ class OverlayInput(
       bestFragments = ancestorFragments
       ancestor = ancestor.parent
     }
+
+    val hMargin = ui.dpToPx(4)
+    bestFragments =
+      bestFragments.filter { fragment ->
+        fragment.bounds.right > anchor.bounds.left - hMargin &&
+          fragment.bounds.left < anchor.bounds.right + hMargin
+      }
 
     return buildTextBlock(bestFragments)
   }
@@ -334,6 +348,10 @@ class OverlayInput(
       results.subList(childStartIndex, results.size).clear()
     }
 
+//    Log.d(
+//      "A11yTree",
+//      "FRAGMENT: '${text.take(40)}' bounds=${bounds.toShortString()} ${bounds.width()}x${bounds.height()} clickable=${node.isClickable} focusable=${node.isFocusable} class=${node.className} id=${node.viewIdResourceName} actions=${node.actionList.map { it.id }} parent=${node.parent?.className}",
+//    )
     results.add(TextFragment(text, Rect(bounds)))
     return true
   }
@@ -474,7 +492,7 @@ class OverlayInput(
   private fun hasVerticalOverlap(
     first: Rect,
     second: Rect,
-  ): Boolean = minOf(first.bottom, second.bottom) - maxOf(first.top, second.top) >= -ui.dpToPx(8)
+  ): Boolean = minOf(first.bottom, second.bottom) - maxOf(first.top, second.top) >= -ui.dpToPx(4)
 
   private class SelectionRectView(
     context: android.content.Context,
