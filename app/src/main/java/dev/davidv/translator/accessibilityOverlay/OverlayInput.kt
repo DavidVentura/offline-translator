@@ -194,6 +194,51 @@ class OverlayInput(
     return sb.toString().ifBlank { null }
   }
 
+  fun collectVisibleTextNodes(root: AccessibilityNodeInfo): List<Pair<String, Rect>> {
+    val screenWidth = service.resources.displayMetrics.widthPixels
+    val screenHeight = service.resources.displayMetrics.heightPixels
+    val screenArea = screenWidth.toLong() * screenHeight.toLong()
+    val results = mutableListOf<Pair<String, Rect>>()
+    collectVisibleTextNodesRecursive(root, screenWidth, screenHeight, screenArea, results)
+    return results
+  }
+
+  private fun collectVisibleTextNodesRecursive(
+    node: AccessibilityNodeInfo,
+    screenWidth: Int,
+    screenHeight: Int,
+    screenArea: Long,
+    results: MutableList<Pair<String, Rect>>,
+  ) {
+    val bounds = Rect()
+    node.getBoundsInScreen(bounds)
+
+    if (bounds.right <= 0 || bounds.bottom <= 0 || bounds.left >= screenWidth || bounds.top >= screenHeight) return
+    if (bounds.width() <= 0 || bounds.height() <= 0) return
+
+    val boundsArea = bounds.width().toLong() * bounds.height().toLong()
+    if (boundsArea > screenArea / 2) {
+      for (i in 0 until node.childCount) {
+        val child = node.getChild(i) ?: continue
+        collectVisibleTextNodesRecursive(child, screenWidth, screenHeight, screenArea, results)
+      }
+      return
+    }
+
+    val sizeBefore = results.size
+    for (i in 0 until node.childCount) {
+      val child = node.getChild(i) ?: continue
+      collectVisibleTextNodesRecursive(child, screenWidth, screenHeight, screenArea, results)
+    }
+
+    if (results.size == sizeBefore) {
+      val text = node.text ?: node.contentDescription
+      if (text != null && text.isNotBlank()) {
+        results.add(Pair(text.toString().trim(), Rect(bounds)))
+      }
+    }
+  }
+
   fun sampleColorsFromScreenshot(
     bitmap: Bitmap,
     bounds: Rect,

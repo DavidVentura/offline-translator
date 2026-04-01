@@ -261,6 +261,10 @@ class OverlayUI(
     val menuPad = dpToPx(8)
     menuContainer.setPadding(menuPad, menuPad, menuPad, menuPad)
 
+    addMenuItem(menuContainer, "Translate visible") {
+      dismissMenu()
+      service.handleTranslateVisible()
+    }
     addMenuItem(menuContainer, "Open App") {
       service.deactivate()
       val intent = Intent(service, MainActivity::class.java)
@@ -461,6 +465,35 @@ class OverlayUI(
 
     windowManager.addView(imageView, params)
     translationOverlays.add(imageView)
+  }
+
+  fun showCenteredLoading() {
+    val container = FrameLayout(service)
+    val bg = GradientDrawable()
+    bg.setColor(Color.parseColor("#CC303030"))
+    bg.cornerRadius = dpToPx(16).toFloat()
+    container.background = bg
+
+    val size = dpToPx(48)
+    val progress = ProgressBar(service)
+    val lp = FrameLayout.LayoutParams(size, size)
+    lp.gravity = Gravity.CENTER
+    val pad = dpToPx(16)
+    container.setPadding(pad, pad, pad, pad)
+    container.addView(progress, lp)
+
+    val params =
+      WindowManager.LayoutParams(
+        WindowManager.LayoutParams.WRAP_CONTENT,
+        WindowManager.LayoutParams.WRAP_CONTENT,
+        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+        PixelFormat.TRANSLUCENT,
+      )
+    params.gravity = Gravity.CENTER
+
+    windowManager.addView(container, params)
+    translationOverlays.add(container)
   }
 
   fun showOverlayMessage(message: String) {

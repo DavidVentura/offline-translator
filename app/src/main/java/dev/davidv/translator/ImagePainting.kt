@@ -119,24 +119,29 @@ fun getForegroundColorByContrast(
 ): Int {
   val bgLuminance = getLuminance(backgroundColor)
   val bestNaiveColor = if (bgLuminance > 0.5) Color.BLACK else Color.WHITE
-  if (textBounds.width() <= 0 || textBounds.height() <= 0) {
+
+  val left = textBounds.left.coerceIn(0, bitmap.width - 1)
+  val top = textBounds.top.coerceIn(0, bitmap.height - 1)
+  val right = textBounds.right.coerceIn(left + 1, bitmap.width)
+  val bottom = textBounds.bottom.coerceIn(top + 1, bitmap.height)
+  val width = right - left
+  val height = bottom - top
+  if (width <= 0 || height <= 0) {
     return bestNaiveColor
   }
 
-  val pixels = IntArray(textBounds.width() * textBounds.height())
+  val pixels = IntArray(width * height)
   bitmap.getPixels(
     pixels,
     0,
-    textBounds.width(),
-    textBounds.left,
-    textBounds.top,
-    textBounds.width(),
-    textBounds.height(),
+    width,
+    left,
+    top,
+    width,
+    height,
   )
-
-  val width = textBounds.width()
   // Sample 1 out of every 5 pixels
-  val step = maxOf(1, minOf(width, textBounds.height()) / 5)
+  val step = maxOf(1, minOf(width, height) / 5)
 
   // quantized color -> (count, sum of contrasts, first original color)
   val colorData = mutableMapOf<Int, Triple<Int, Float, Int>>()

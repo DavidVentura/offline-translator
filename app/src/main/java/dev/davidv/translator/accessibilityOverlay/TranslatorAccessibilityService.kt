@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.Display
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import dev.davidv.translator.BatchTranslationResult
 import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
@@ -31,6 +32,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private data class VisibleTextNode(
+  val text: String,
+  val bounds: Rect,
+  val colors: OverlayColors?,
+)
 
 class TranslatorAccessibilityService : AccessibilityService() {
   private val tag = "TranslatorA11y"
@@ -179,6 +186,101 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.showDotsMenu()
   }
 
+  fun handleTranslateVisible() {
+    val root = rootInActiveWindow
+    if (root == null) {
+      ui.showOverlayMessage("No active window")
+      return
+    }
+
+    val nodes = input.collectVisibleTextNodes(root)
+    if (nodes.isEmpty()) {
+      ui.showOverlayMessage("No visible text found")
+      return
+    }
+
+    withOptionalScreenshotColors(nodes.map { it.second }) { nodeColors ->
+      translateVisibleNodes(nodes, nodeColors)
+    }
+  }
+
+  private fun translateVisibleNodes(
+    nodes: List<Pair<String, Rect>>,
+    colors: List<OverlayColors>?,
+  ) {
+    ui.removeTranslationOverlays()
+    ui.showCenteredLoading()
+
+    serviceScope.launch {
+      val (langs, to) = awaitTranslationSetup()
+      val visibleNodes =
+        nodes.mapIndexed { index, (text, bounds) ->
+          VisibleTextNode(text, bounds, colors?.getOrNull(index))
+        }
+      val nodesByText = linkedMapOf<String, MutableList<VisibleTextNode>>()
+      for (node in visibleNodes) {
+        nodesByText.getOrPut(node.text) { mutableListOf() }.add(node)
+      }
+
+      if (forcedSourceLanguage == to) {
+        showOverlayTranslationMessage("Already in ${to.displayName}")
+        return@launch
+      }
+
+      val textsBySource = linkedMapOf<Language, MutableList<String>>()
+      var detectedSameAsTarget = 0
+      var undetectedTexts = 0
+
+      val forcedSource = forcedSourceLanguage
+      if (forcedSource != null) {
+        textsBySource.getOrPut(forcedSource) { mutableListOf() }.addAll(nodesByText.keys)
+      } else {
+        for (text in nodesByText.keys) {
+          val from = translationCoordinator.detectLanguageRobust(text, null, langs)
+          when {
+            from == null -> undetectedTexts++
+            from == to -> detectedSameAsTarget++
+            else -> textsBySource.getOrPut(from) { mutableListOf() }.add(text)
+          }
+        }
+      }
+
+      if (textsBySource.isEmpty()) {
+        when {
+          detectedSameAsTarget > 0 && undetectedTexts == 0 -> showOverlayTranslationMessage("Already in ${to.displayName}")
+          undetectedTexts > 0 && detectedSameAsTarget == 0 ->
+            showOverlayTranslationMessage(
+              "Could not detect language — set source language manually",
+            )
+          else -> showOverlayTranslationMessage("No translatable visible text found")
+        }
+        return@launch
+      }
+
+      val translatedByText = linkedMapOf<String, String>()
+      for ((from, texts) in textsBySource) {
+        when (val result = translationCoordinator.translateTexts(from, to, texts.toTypedArray())) {
+          is BatchTranslationResult.Success -> {
+            texts.zip(result.result).forEach { (text, translated) ->
+              translatedByText[text] = translated.translated
+            }
+          }
+          is BatchTranslationResult.Error -> {
+            Log.e(tag, "Translation error for ${from.displayName} visible texts: ${result.message}")
+          }
+        }
+      }
+
+      ui.removeTranslationOverlays()
+      for ((text, groupedNodes) in nodesByText) {
+        val translatedText = translatedByText[text] ?: continue
+        for (node in groupedNodes) {
+          ui.showTranslationOverlay(translatedText, node.bounds, node.colors)
+        }
+      }
+    }
+  }
+
   fun handleRegionCapture(region: Rect) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
 
@@ -282,34 +384,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
     node.getBoundsInScreen(bounds)
     Log.d(tag, "Found text: '$text' at $bounds")
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      takeScreenshot(
-        Display.DEFAULT_DISPLAY,
-        mainExecutor,
-        object : TakeScreenshotCallback {
-          override fun onSuccess(screenshot: ScreenshotResult) {
-            val hwBitmap = Bitmap.wrapHardwareBuffer(screenshot.hardwareBuffer, screenshot.colorSpace)
-            screenshot.hardwareBuffer.close()
-            if (hwBitmap != null) {
-              val swBitmap = hwBitmap.copy(Bitmap.Config.ARGB_8888, false)
-              hwBitmap.recycle()
-              val colors = input.sampleColorsFromScreenshot(swBitmap, bounds)
-              swBitmap.recycle()
-              translateAndShow(text, bounds, colors)
-            } else {
-              translateAndShow(text, bounds, null)
-            }
-          }
-
-          override fun onFailure(errorCode: Int) {
-            Log.w(tag, "Screenshot failed: $errorCode")
-            translateAndShow(text, bounds, null)
-          }
-        },
-      )
-    } else {
-      translateAndShow(text, bounds, null)
-    }
+    withOptionalScreenshotColor(bounds) { colors -> translateAndShow(text, bounds, colors) }
   }
 
   private fun translateAndShow(
@@ -321,23 +396,15 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.showLoadingOverlay(bounds, colors)
 
     serviceScope.launch {
-      langStateManager.languageState.first { !it.isChecking }
-      val langs =
-        langStateManager.languageState.value.availableLanguageMap
-          .filterValues { it.translatorFiles }
-          .keys.toList()
-
+      val (langs, to) = awaitTranslationSetup()
       val from = forcedSourceLanguage ?: translationCoordinator.detectLanguageRobust(text, null, langs)
       if (from == null) {
-        ui.removeTranslationOverlays()
-        ui.showOverlayMessage("Could not detect language — set source language manually")
+        showOverlayTranslationMessage("Could not detect language — set source language manually")
         return@launch
       }
 
-      val to = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
       if (from == to) {
-        ui.removeTranslationOverlays()
-        ui.showOverlayMessage("Already in ${to.displayName}")
+        showOverlayTranslationMessage("Already in ${to.displayName}")
         return@launch
       }
 
@@ -352,5 +419,68 @@ class TranslatorAccessibilityService : AccessibilityService() {
         }
       }
     }
+  }
+
+  private fun withOptionalScreenshotColor(
+    bounds: Rect,
+    onResult: (OverlayColors?) -> Unit,
+  ) {
+    withOptionalScreenshotColors(listOf(bounds)) { colors ->
+      onResult(colors?.firstOrNull())
+    }
+  }
+
+  private fun withOptionalScreenshotColors(
+    boundsList: List<Rect>,
+    onResult: (List<OverlayColors>?) -> Unit,
+  ) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+      onResult(null)
+      return
+    }
+
+    takeScreenshot(
+      Display.DEFAULT_DISPLAY,
+      mainExecutor,
+      object : TakeScreenshotCallback {
+        override fun onSuccess(screenshot: ScreenshotResult) {
+          val hwBitmap = Bitmap.wrapHardwareBuffer(screenshot.hardwareBuffer, screenshot.colorSpace)
+          screenshot.hardwareBuffer.close()
+          if (hwBitmap == null) {
+            onResult(null)
+            return
+          }
+
+          val swBitmap = hwBitmap.copy(Bitmap.Config.ARGB_8888, false)
+          hwBitmap.recycle()
+          val colors =
+            boundsList.map { bounds ->
+              input.sampleColorsFromScreenshot(swBitmap, bounds)
+            }
+          swBitmap.recycle()
+          onResult(colors)
+        }
+
+        override fun onFailure(errorCode: Int) {
+          Log.w(tag, "Screenshot failed: $errorCode")
+          onResult(null)
+        }
+      },
+    )
+  }
+
+  private suspend fun awaitTranslationSetup(): Pair<List<Language>, Language> {
+    langStateManager.languageState.first { !it.isChecking }
+    val langs =
+      langStateManager.languageState.value.availableLanguageMap
+        .filterValues { it.translatorFiles }
+        .keys.toList()
+    val to = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
+    return langs to to
+  }
+
+  private fun showOverlayTranslationMessage(message: String) {
+    ui.removeTranslationOverlays()
+    ui.showOverlayMessage(message)
   }
 }
