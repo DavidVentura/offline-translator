@@ -52,7 +52,10 @@ class OverlayInput(
     var hadOverlayOnDown = false
     val canTakeScreenshot = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
-    overlay.setOnTouchListener { v, event ->
+    // performClick() would fire a TYPE_VIEW_CLICKED event that onAccessibilityEvent
+    // catches, immediately removing the translation overlay we just created
+    @android.annotation.SuppressLint("ClickableViewAccessibility")
+    overlay.setOnTouchListener { _, event ->
       when (event.action) {
         MotionEvent.ACTION_DOWN -> {
           startX = event.rawX.toInt()
@@ -75,7 +78,6 @@ class OverlayInput(
           true
         }
         MotionEvent.ACTION_UP -> {
-          if (!dragging) v.performClick()
           if (dragging) {
             val endX = event.rawX.toInt()
             val endY = event.rawY.toInt()
