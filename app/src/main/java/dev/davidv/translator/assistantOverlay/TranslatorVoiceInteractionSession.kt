@@ -18,14 +18,18 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import dev.davidv.translator.BatchAlignedTranslationResult
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.MainActivity
 import dev.davidv.translator.OverlayTextTranslationHelper
-import dev.davidv.translator.OverlayTextTranslationResult
 import dev.davidv.translator.SettingsManager
+import dev.davidv.translator.StyledFragment
+import dev.davidv.translator.TranslatedStyledBlock
 import dev.davidv.translator.TranslationCoordinator
+import dev.davidv.translator.clusterFragmentsIntoBlocks
+import dev.davidv.translator.mapStylesToTranslation
 import dev.davidv.translator.overlayChrome.OverlayChromeFactory
 import dev.davidv.translator.overlayChrome.OverlayMenuHost
 import dev.davidv.translator.overlayChrome.OverlayMenuManager
@@ -55,7 +59,7 @@ class TranslatorVoiceInteractionSession(
   private val tag = "TranslatorAssistant"
   private val assistCollectionTimeoutMs = 1500L
   private val sessionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-  private val parser = AssistStructureParser()
+  private val parser = AssistStructureParser(context.resources.displayMetrics.density)
   private val logger =
     AssistStructureLogger(
       tag,
@@ -87,7 +91,7 @@ class TranslatorVoiceInteractionSession(
 
   private var screenshotBitmap: Bitmap? = null
   private var croppedBitmap: Bitmap? = null
-  private var capturedBlocks = mutableListOf<CapturedTextBlock>()
+  private var capturedFragments = mutableListOf<StyledFragment>()
   private var receivedAssistIndexes = mutableSetOf<Int>()
   private var expectedAssistCount: Int? = null
   private var processing = false
@@ -341,7 +345,7 @@ class TranslatorVoiceInteractionSession(
 
     Log.d(tag, "AssistStructure received index=${state.index}/${state.count} windows=${structure.windowNodeCount}")
     logger.log(state, structure)
-    capturedBlocks += parser.parse(structure)
+    capturedFragments += parser.parse(structure)
     maybeProcessCapture()
   }
 
@@ -371,40 +375,40 @@ class TranslatorVoiceInteractionSession(
     val screenshotExpected = isAssistScreenshotEnabled()
     Log.d(
       tag,
-      "maybeProcessCapture blocks=${capturedBlocks.size} expectedAssistCount=$expectedCount receivedAssist=${receivedAssistIndexes.size} assistReady=$assistReady screenshotReady=$screenshotReady screenshotExpected=$screenshotExpected timedOut=$assistCollectionTimedOut",
+      "maybeProcessCapture blocks=${capturedFragments.size} expectedAssistCount=$expectedCount receivedAssist=${receivedAssistIndexes.size} assistReady=$assistReady screenshotReady=$screenshotReady screenshotExpected=$screenshotExpected timedOut=$assistCollectionTimedOut",
     )
 
-    if (capturedBlocks.isNotEmpty() && screenshotExpected && !screenshotReady && !assistCollectionTimedOut) {
+    if (capturedFragments.isNotEmpty() && screenshotExpected && !screenshotReady && !assistCollectionTimedOut) {
       Log.d(tag, "Waiting for screenshot callback before rendering structured overlays")
       return
     }
 
-    if (capturedBlocks.isEmpty() && assistReady && screenshotExpected && !hasReceivedScreenshotCallback && !assistCollectionTimedOut) {
+    if (capturedFragments.isEmpty() && assistReady && screenshotExpected && !hasReceivedScreenshotCallback && !assistCollectionTimedOut) {
       Log.d(tag, "Waiting for screenshot callback before failing empty assist capture")
       return
     }
 
-    if (capturedBlocks.isNotEmpty() && (screenshotReady || assistReady)) {
+    if (capturedFragments.isNotEmpty() && (screenshotReady || assistReady)) {
       cancelAssistCollectionTimeout()
-      if (screenshotReady && shouldUseOcrFallback(capturedBlocks)) {
+      if (screenshotReady && shouldUseOcrFallback()) {
         processing = true
         Log.d(tag, "Using OCR fallback because parsed AssistStructure is too coarse")
         runOcrFallback(screenshotBitmap ?: return)
         return
       }
       processing = true
-      translateStructuredBlocks(capturedBlocks.toList(), screenshotBitmap)
+      translateStructuredFragments(capturedFragments.toList(), screenshotBitmap)
       return
     }
 
-    if (capturedBlocks.isEmpty() && screenshotReady && assistReady) {
+    if (capturedFragments.isEmpty() && screenshotReady && assistReady) {
       cancelAssistCollectionTimeout()
       processing = true
       runOcrFallback(screenshotBitmap ?: return)
       return
     }
 
-    if (assistReady && capturedBlocks.isEmpty() && !screenshotReady) {
+    if (assistReady && capturedFragments.isEmpty() && !screenshotReady) {
       cancelAssistCollectionTimeout()
       Log.w(tag, "Assist capture completed without usable text or screenshot")
       processing = false
@@ -451,50 +455,62 @@ class TranslatorVoiceInteractionSession(
     assistCollectionTimeoutJob = null
   }
 
-  private fun translateStructuredBlocks(
-    blocks: List<CapturedTextBlock>,
+  private fun translateStructuredFragments(
+    fragments: List<StyledFragment>,
     screenshot: Bitmap?,
   ) {
     translationJob =
       sessionScope.launch {
-        val blocksByText = linkedMapOf<String, MutableList<CapturedTextBlock>>()
-        for (block in blocks) {
-          if (block.text.isBlank()) continue
-          blocksByText.getOrPut(block.text) { mutableListOf() }.add(block)
-        }
-
-        if (blocksByText.isEmpty()) {
+        val blocks = clusterFragmentsIntoBlocks(fragments)
+        if (blocks.isEmpty()) {
           processing = false
           showLoading(false)
           showStatus("No visible structured text found")
           return@launch
         }
 
-        val result =
-          overlayTextTranslationHelper.translateTexts(
-            inputs = blocksByText.keys.toList(),
-            forcedSourceLanguage = forcedSourceLanguage,
-            forcedTargetLanguage = forcedTargetLanguage,
-          )
-
-        ensureActive()
-        when (result) {
-          is OverlayTextTranslationResult.Message -> {
-            processing = false
-            showLoading(false)
-            showStatus(result.value)
-          }
-          is OverlayTextTranslationResult.Success -> {
-            overlayRenderer.renderTranslatedBlocks(
-              overlayContainer,
-              blocksByText,
-              result.results,
-              screenshot,
-              systemBarTop,
+        val targetLanguage = overlayTextTranslationHelper.awaitTargetLanguage(forcedTargetLanguage)
+        val combinedText = blocks.joinToString(" ") { it.text }
+        val sourceLanguage =
+          forcedSourceLanguage
+            ?: translationCoordinator.detectLanguageRobust(
+              combinedText,
+              null,
+              overlayTextTranslationHelper.availableLanguages(true),
             )
+
+        if (sourceLanguage == null) {
+          processing = false
+          showLoading(false)
+          showStatus("Could not detect language — set source language manually")
+          return@launch
+        }
+        if (sourceLanguage == targetLanguage) {
+          processing = false
+          showLoading(false)
+          showStatus("Already in ${targetLanguage.displayName}")
+          return@launch
+        }
+
+        val texts = blocks.map { it.text }.toTypedArray()
+        when (val result = translationCoordinator.translateTextsWithAlignment(sourceLanguage, targetLanguage, texts)) {
+          is BatchAlignedTranslationResult.Success -> {
+            val translatedBlocks =
+              result.results.mapIndexed { idx, translation ->
+                val sourceBlock = blocks[idx]
+                val styleSpans = mapStylesToTranslation(sourceBlock, translation.alignments, translation.target)
+                TranslatedStyledBlock(translation.target, sourceBlock.bounds, styleSpans)
+              }
+            ensureActive()
+            overlayRenderer.renderStyledBlocks(overlayContainer, translatedBlocks, screenshot, systemBarTop)
             processing = false
             showLoading(false)
             hideStatus()
+          }
+          is BatchAlignedTranslationResult.Error -> {
+            processing = false
+            showLoading(false)
+            showStatus("Translation error")
           }
         }
       }
@@ -642,7 +658,7 @@ class TranslatorVoiceInteractionSession(
     if (cr != null && cr !== ss) cr.recycle()
     screenshotBitmap = null
     croppedBitmap = null
-    capturedBlocks.clear()
+    capturedFragments.clear()
     receivedAssistIndexes.clear()
     expectedAssistCount = null
     processing = false
@@ -688,26 +704,27 @@ class TranslatorVoiceInteractionSession(
     return toolbarViews.root
   }
 
-  private fun shouldUseOcrFallback(blocks: List<CapturedTextBlock>): Boolean {
-    if (blocks.isEmpty()) return true
+  private fun shouldUseOcrFallback(): Boolean {
+    val fragments = capturedFragments
+    if (fragments.isEmpty()) return true
 
     val screenWidth = context.resources.displayMetrics.widthPixels
     val screenHeight = context.resources.displayMetrics.heightPixels
     val screenArea = screenWidth.toLong() * screenHeight.toLong()
 
-    val veryLargeBlocks =
-      blocks.count { block ->
-        val area = block.bounds.width().toLong() * block.bounds.height().toLong()
+    val veryLargeFragments =
+      fragments.count { fragment ->
+        val area = fragment.bounds.width().toLong() * fragment.bounds.height().toLong()
         area >= screenArea / 4
       }
-    if (veryLargeBlocks > 0 && blocks.size <= 3) return true
+    if (veryLargeFragments > 0 && fragments.size <= 3) return true
 
-    val averageChars = blocks.sumOf { it.text.length }.toFloat() / blocks.size
-    val veryTallThinBlocks =
-      blocks.count { block ->
-        block.bounds.height() > screenHeight / 3 && block.bounds.width() > screenWidth / 2
+    val averageChars = fragments.sumOf { it.text.length }.toFloat() / fragments.size
+    val veryTallFragments =
+      fragments.count { fragment ->
+        fragment.bounds.height() > screenHeight / 3 && fragment.bounds.width() > screenWidth / 2
       }
-    if (veryTallThinBlocks > 0 && averageChars > 40f) return true
+    if (veryTallFragments > 0 && averageChars > 40f) return true
 
     return false
   }

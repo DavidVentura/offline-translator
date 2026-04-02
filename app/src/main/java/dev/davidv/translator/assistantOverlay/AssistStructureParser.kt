@@ -6,10 +6,14 @@ import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.RectF
 import android.view.View
+import dev.davidv.translator.StyledFragment
+import dev.davidv.translator.TextStyle
 
-class AssistStructureParser {
-  fun parse(structure: AssistStructure): List<CapturedTextBlock> {
-    val fragments = mutableListOf<TextFragment>()
+class AssistStructureParser(
+  private val displayDensity: Float = 1f,
+) {
+  fun parse(structure: AssistStructure): List<StyledFragment> {
+    val fragments = mutableListOf<InternalFragment>()
     for (windowIndex in 0 until structure.windowNodeCount) {
       val window = structure.getWindowNodeAt(windowIndex)
       val viewport =
@@ -30,72 +34,9 @@ class AssistStructureParser {
       )
     }
 
-    val distinct = fragments.distinctBy { "${it.bounds.flattenToString()}|${normalizeText(it.text)}" }
-    val blocks = distinct.map { CapturedTextBlock(it.text, Rect(it.bounds), it.style, it.fromWebView) }
-    return mergeAdjacentSameStyle(blocks)
-  }
-
-  private fun mergeAdjacentSameStyle(blocks: List<CapturedTextBlock>): List<CapturedTextBlock> {
-    if (blocks.size < 2) return blocks
-    val result = mutableListOf<CapturedTextBlock>()
-    var i = 0
-    while (i < blocks.size) {
-      val current = blocks[i]
-      if (!current.fromWebView) {
-        result += current
-        i++
-        continue
-      }
-      val merged = StringBuilder(current.text)
-      val mergedBounds = Rect(current.bounds)
-      var j = i + 1
-      while (j < blocks.size) {
-        val next = blocks[j]
-        if (!next.fromWebView || !sameStyle(current.style, next.style)) break
-        if (!adjacentBounds(mergedBounds, next.bounds)) break
-        if (merged.isNotEmpty() && !merged.endsWith(' ') && !next.text.startsWith(' ')) {
-          merged.append(' ')
-        }
-        merged.append(next.text)
-        mergedBounds.union(next.bounds)
-        j++
-      }
-      result += CapturedTextBlock(merged.toString(), mergedBounds, current.style, current.fromWebView)
-      i = j
-    }
-    return result
-  }
-
-  private fun sameStyle(
-    a: CapturedTextStyle?,
-    b: CapturedTextStyle?,
-  ): Boolean {
-    if (a == null && b == null) return true
-    if (a == null || b == null) return false
-    return a.textColor == b.textColor &&
-      a.textBackgroundColor == b.textBackgroundColor &&
-      a.styleBits == b.styleBits &&
-      a.textSizePx == b.textSizePx
-  }
-
-  private fun adjacentBounds(
-    a: Rect,
-    b: Rect,
-  ): Boolean {
-    val verticalOverlap = a.top < b.bottom && b.top < a.bottom
-    val horizontalGap =
-      if (b.left >= a.right) {
-        b.left - a.right
-      } else if (a.left >= b.right) {
-        a.left - b.right
-      } else {
-        0
-      }
-    if (verticalOverlap && horizontalGap < a.height()) return true
-    val directlyBelow = b.top >= a.top && b.top <= a.bottom + a.height() / 2
-    val horizontalOverlap = a.left < b.right && b.left < a.right
-    if (directlyBelow && horizontalOverlap) return true
-    return false
+    return fragments
+      .distinctBy { "${it.bounds.flattenToString()}|${normalizeText(it.text)}" }
+      .map { StyledFragment(it.text, Rect(it.bounds), it.style) }
   }
 
   private fun collectFragmentsRecursive(
@@ -105,7 +46,7 @@ class AssistStructureParser {
     viewport: Rect,
     insideWebView: Boolean,
     inheritedBg: Int?,
-    results: MutableList<TextFragment>,
+    results: MutableList<InternalFragment>,
   ): Boolean {
     if (node.visibility != View.VISIBLE) return false
     if (node.idEntry == "url_bar") return false
@@ -161,24 +102,28 @@ class AssistStructureParser {
         return true
       }
 
-      // WebViews and other rich containers often expose a coarse summary string on the
-      // parent and the real visible content on descendants. Prefer the descendants.
       if (shouldPreferChildren(node, bounds, viewport, childFragments, normalizedParent)) {
         return true
       }
     }
 
+    val rawSize = node.textSize.takeIf { it > 0f }
+    val textSize = if (nestedInWebView && rawSize != null) rawSize * displayDensity else rawSize
+    val styleBits = node.textStyle
+
     results +=
-      TextFragment(
+      InternalFragment(
         text = text,
         bounds = bounds,
-        fromWebView = nestedInWebView,
         style =
-          CapturedTextStyle(
-            textSizePx = node.textSize.takeIf { it > 0f },
+          TextStyle(
             textColor = node.textColor,
-            textBackgroundColor = effectiveBg,
-            styleBits = node.textStyle,
+            bgColor = effectiveBg,
+            textSize = textSize,
+            bold = styleBits and AssistStructure.ViewNode.TEXT_STYLE_BOLD != 0,
+            italic = styleBits and AssistStructure.ViewNode.TEXT_STYLE_ITALIC != 0,
+            underline = styleBits and AssistStructure.ViewNode.TEXT_STYLE_UNDERLINE != 0,
+            strikethrough = styleBits and AssistStructure.ViewNode.TEXT_STYLE_STRIKE_THRU != 0,
           ),
       )
     return true
@@ -199,7 +144,7 @@ class AssistStructureParser {
     )
   }
 
-  private fun normalizeText(text: String): String =
+  fun normalizeText(text: String): String =
     text
       .replace(Regex("\\s+"), " ")
       .replace(Regex("\\s+([.,;:!?])"), "$1")
@@ -212,7 +157,7 @@ class AssistStructureParser {
     node: AssistStructure.ViewNode,
     bounds: Rect,
     viewport: Rect,
-    childFragments: List<TextFragment>,
+    childFragments: List<InternalFragment>,
     normalizedParentText: String,
   ): Boolean {
     val className = node.className?.toString().orEmpty()
@@ -242,10 +187,9 @@ class AssistStructureParser {
     return false
   }
 
-  private data class TextFragment(
+  private data class InternalFragment(
     val text: String,
     val bounds: Rect,
-    val fromWebView: Boolean,
-    val style: CapturedTextStyle?,
+    val style: TextStyle?,
   )
 }

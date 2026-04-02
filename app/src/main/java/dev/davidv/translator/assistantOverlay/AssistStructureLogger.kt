@@ -26,12 +26,12 @@ class AssistStructureLogger(
       logViewNode(window.rootViewNode, window.left, window.top, depth = 0)
     }
 
-    val parsedBlocks = parser.parse(structure)
-    Log.d(tag, "Parsed text blocks: ${parsedBlocks.size}")
-    parsedBlocks.forEachIndexed { index, block ->
+    val parsedFragments = parser.parse(structure)
+    Log.d(tag, "Parsed fragments: ${parsedFragments.size}")
+    parsedFragments.forEachIndexed { index, fragment ->
       Log.d(
         tag,
-        "Parsed[$index] text=${block.text} bounds=${block.bounds.toShortString()} size=${block.style?.textSizePx} color=${block.style?.textColor} bg=${block.style?.textBackgroundColor} style=${block.style?.styleBits}",
+        "Parsed[$index] text=${fragment.text} bounds=${fragment.bounds.toShortString()} size=${fragment.style?.textSize} color=${fragment.style?.textColor} bg=${fragment.style?.bgColor} bold=${fragment.style?.bold} italic=${fragment.style?.italic}",
       )
     }
   }

@@ -132,6 +132,41 @@ class TranslationCoordinator(
     }
   }
 
+  suspend fun translateTextsWithAlignment(
+    from: Language,
+    to: Language,
+    texts: Array<String>,
+  ): BatchAlignedTranslationResult {
+    if (texts.isEmpty()) return BatchAlignedTranslationResult.Success(emptyList())
+
+    _isTranslating.value = true
+    val result: BatchAlignedTranslationResult
+    try {
+      val elapsed =
+        measureTimeMillis {
+          result = translationService.translateMultipleWithAlignment(from, to, texts)
+        }
+      Log.d("TranslationCoordinator", "Aligned translation of ${texts.size} texts took ${elapsed}ms")
+    } finally {
+      lastTranslatedInput = texts.lastOrNull() ?: ""
+      _isTranslating.value = false
+    }
+    return when (result) {
+      is BatchAlignedTranslationResult.Success -> result
+      is BatchAlignedTranslationResult.Error -> {
+        if (enableToast) {
+          Toast
+            .makeText(
+              context,
+              "Translation error: ${result.message}",
+              Toast.LENGTH_SHORT,
+            ).show()
+        }
+        result
+      }
+    }
+  }
+
   suspend fun detectLanguage(
     text: String,
     hint: Language?,
