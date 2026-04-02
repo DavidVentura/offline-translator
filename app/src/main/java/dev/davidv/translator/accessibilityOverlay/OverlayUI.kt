@@ -17,7 +17,6 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import dev.davidv.translator.Language
@@ -26,6 +25,8 @@ import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.R
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.overlayChrome.OverlayChromeFactory
+import dev.davidv.translator.overlayChrome.OverlayMenuHost
+import dev.davidv.translator.overlayChrome.OverlayMenuManager
 
 class OverlayUI(
   private val service: TranslatorAccessibilityService,
@@ -35,11 +36,60 @@ class OverlayUI(
   private val handler = Handler(Looper.getMainLooper())
   private var floatingButton: View? = null
   private var toolbarView: View? = null
-  private var menuOverlay: View? = null
-  private var menuDismissLayer: View? = null
   private var sourceLabelView: TextView? = null
   private var targetLabelView: TextView? = null
   private val translationOverlays = mutableListOf<View>()
+
+  private val menuManager =
+    OverlayMenuManager(
+      service,
+      ::dpToPx,
+      object : OverlayMenuHost {
+        override fun addDismissLayer(view: View) {
+          val params =
+            WindowManager.LayoutParams(
+              WindowManager.LayoutParams.MATCH_PARENT,
+              WindowManager.LayoutParams.MATCH_PARENT,
+              WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+              WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+              PixelFormat.TRANSLUCENT,
+            )
+          windowManager.addView(view, params)
+        }
+
+        override fun addMenuView(view: View) {
+          val params =
+            WindowManager.LayoutParams(
+              dpToPx(180),
+              WindowManager.LayoutParams.WRAP_CONTENT,
+              WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+              WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+              PixelFormat.TRANSLUCENT,
+            )
+          params.gravity = Gravity.TOP or Gravity.END
+          params.x = dpToPx(8)
+          params.y = dpToPx(48)
+          windowManager.addView(view, params)
+        }
+
+        override fun addPickerView(view: View) {
+          val params =
+            WindowManager.LayoutParams(
+              dpToPx(250),
+              dpToPx(400),
+              WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+              WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+              PixelFormat.TRANSLUCENT,
+            )
+          params.gravity = Gravity.CENTER
+          windowManager.addView(view, params)
+        }
+
+        override fun removeMenuChild(view: View) {
+          windowManager.removeView(view)
+        }
+      },
+    )
 
   var savedButtonX = 0
   var savedButtonY = 0
@@ -188,60 +238,21 @@ class OverlayUI(
   }
 
   fun showDotsMenu() {
-    dismissMenu()
-
-    val dismiss = View(service)
-    dismiss.setBackgroundColor(Color.TRANSPARENT)
-    val dismissParams =
-      WindowManager.LayoutParams(
-        WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-        PixelFormat.TRANSLUCENT,
-      )
-    dismiss.setOnClickListener { dismissMenu() }
-    windowManager.addView(dismiss, dismissParams)
-    menuDismissLayer = dismiss
-
-    val menuContainer = LinearLayout(service)
-    menuContainer.orientation = LinearLayout.VERTICAL
-    val menuBg = GradientDrawable()
-    menuBg.setColor(Color.parseColor("#E0303030"))
-    menuBg.cornerRadius = dpToPx(12).toFloat()
-    menuContainer.background = menuBg
-    val menuPad = dpToPx(8)
-    menuContainer.setPadding(menuPad, menuPad, menuPad, menuPad)
-
-    OverlayChromeFactory.addMenuItem(service, menuContainer, ::dpToPx, "Translate visible") {
-      dismissMenu()
-      service.handleTranslateVisible()
-    }
-    OverlayChromeFactory.addMenuItem(service, menuContainer, ::dpToPx, "Open App") {
-      service.deactivate()
-      val intent = Intent(service, MainActivity::class.java)
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      service.startActivity(intent)
-    }
-    OverlayChromeFactory.addMenuItem(service, menuContainer, ::dpToPx, "Disable Service") {
-      service.deactivate()
-      service.disableSelf()
-    }
-
-    val menuParams =
-      WindowManager.LayoutParams(
-        dpToPx(180),
-        WindowManager.LayoutParams.WRAP_CONTENT,
-        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-        PixelFormat.TRANSLUCENT,
-      )
-    menuParams.gravity = Gravity.TOP or Gravity.END
-    menuParams.x = dpToPx(8)
-    menuParams.y = dpToPx(48)
-
-    windowManager.addView(menuContainer, menuParams)
-    menuOverlay = menuContainer
+    menuManager.showDotsMenu(
+      listOf(
+        "Translate visible" to { service.handleTranslateVisible() },
+        "Open App" to {
+          service.deactivate()
+          val intent = Intent(service, MainActivity::class.java)
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+          service.startActivity(intent)
+        },
+        "Disable Service" to {
+          service.deactivate()
+          service.disableSelf()
+        },
+      ),
+    )
   }
 
   fun showLanguagePicker(
@@ -249,58 +260,13 @@ class OverlayUI(
     availableLangs: List<Language>,
     onPick: (Language?) -> Unit,
   ) {
-    dismissMenu()
-
-    val dismiss = View(service)
-    dismiss.setBackgroundColor(Color.parseColor("#80000000"))
-    val dm = service.resources.displayMetrics
-    val dismissParams =
-      WindowManager.LayoutParams(
-        dm.widthPixels,
-        dm.heightPixels + getStatusBarHeight() + getNavBarHeight(),
-        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-        PixelFormat.TRANSLUCENT,
-      )
-    dismissParams.gravity = Gravity.TOP or Gravity.START
-    dismiss.setOnClickListener { dismissMenu() }
-    windowManager.addView(dismiss, dismissParams)
-    menuDismissLayer = dismiss
-
-    val scroll =
-      OverlayChromeFactory.createLanguagePicker(
-        context = service,
-        dpToPx = ::dpToPx,
-        isSource = isSource,
-        availableLangs = availableLangs,
-      ) { lang ->
-        onPick(lang)
-        dismissMenu()
-      }
-
-    val pickerParams =
-      WindowManager.LayoutParams(
-        dpToPx(250),
-        dpToPx(400),
-        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-        PixelFormat.TRANSLUCENT,
-      )
-    pickerParams.gravity = Gravity.CENTER
-
-    windowManager.addView(scroll, pickerParams)
-    menuOverlay = scroll
+    menuManager.showLanguagePicker(isSource, availableLangs) { lang ->
+      onPick(lang)
+    }
   }
 
   fun dismissMenu() {
-    menuDismissLayer?.let {
-      windowManager.removeView(it)
-      menuDismissLayer = null
-    }
-    menuOverlay?.let {
-      windowManager.removeView(it)
-      menuOverlay = null
-    }
+    menuManager.dismiss()
   }
 
   fun showLoadingOverlay(

@@ -23,11 +23,10 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
-import dev.davidv.translator.BatchTranslationResult
+import dev.davidv.translator.BatchTextTranslationOutput
+import dev.davidv.translator.BatchTextTranslator
 import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
@@ -35,6 +34,7 @@ import dev.davidv.translator.LanguageDetector
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.MainActivity
+import dev.davidv.translator.NothingReason
 import dev.davidv.translator.OCRService
 import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.R
@@ -43,10 +43,14 @@ import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationService
 import dev.davidv.translator.getOverlayColors
 import dev.davidv.translator.overlayChrome.OverlayChromeFactory
+import dev.davidv.translator.overlayChrome.OverlayMenuHost
+import dev.davidv.translator.overlayChrome.OverlayMenuManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,6 +76,7 @@ class TranslatorVoiceInteractionSession(
       settingsManager = settingsManager,
       enableToast = false,
     )
+  private val batchTextTranslator = BatchTextTranslator(translationCoordinator)
   private val langStateManager = LanguageStateManager(sessionScope, filePathManager, null)
 
   private lateinit var rootView: FrameLayout
@@ -82,11 +87,16 @@ class TranslatorVoiceInteractionSession(
   private lateinit var topBarView: View
   private var sourceLabelView: TextView? = null
   private var targetLabelView: TextView? = null
-  private var menuDismissLayer: View? = null
-  private var menuOverlay: View? = null
+  private var menuManager: OverlayMenuManager? = null
+  private var measureTextView: TextView? = null
 
   private val systemBarTop: Int by lazy {
     val id = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+    if (id > 0) context.resources.getDimensionPixelSize(id) else 0
+  }
+
+  private val systemBarBottom: Int by lazy {
+    val id = context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
     if (id > 0) context.resources.getDimensionPixelSize(id) else 0
   }
 
@@ -96,9 +106,12 @@ class TranslatorVoiceInteractionSession(
   private var receivedAssistIndexes = mutableSetOf<Int>()
   private var expectedAssistCount: Int? = null
   private var processing = false
+  private var translationJob: Job? = null
   private var forcedSourceLanguage: Language? = null
   private var forcedTargetLanguage: Language? = null
-  private var assistFallbackToastShown = false
+  private var assistFallbackMessageShown = false
+  private var assistFallbackStatusPendingHide = false
+  private var statusHideJob: Job? = null
 
   override fun onCreate() {
     super.onCreate()
@@ -110,6 +123,50 @@ class TranslatorVoiceInteractionSession(
     rootView = FrameLayout(context)
     rootView.setBackgroundColor(Color.BLACK)
     rootView.setOnApplyWindowInsetsListener { _, insets -> insets }
+    menuManager =
+      OverlayMenuManager(
+        context,
+        ::dpToPx,
+        object : OverlayMenuHost {
+          override fun addDismissLayer(view: View) {
+            rootView.addView(
+              view,
+              FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+              ),
+            )
+          }
+
+          override fun addMenuView(view: View) {
+            rootView.addView(
+              view,
+              FrameLayout.LayoutParams(
+                dpToPx(180),
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+              ).apply {
+                gravity = Gravity.TOP or Gravity.END
+                topMargin = dpToPx(48)
+                marginEnd = dpToPx(8)
+              },
+            )
+          }
+
+          override fun addPickerView(view: View) {
+            rootView.addView(
+              view,
+              FrameLayout.LayoutParams(
+                dpToPx(250),
+                dpToPx(400),
+              ).apply { gravity = Gravity.CENTER },
+            )
+          }
+
+          override fun removeMenuChild(view: View) {
+            rootView.removeView(view)
+          }
+        },
+      )
 
     screenshotView =
       ImageView(context).apply {
@@ -163,7 +220,7 @@ class TranslatorVoiceInteractionSession(
         FrameLayout.LayoutParams.WRAP_CONTENT,
       ).apply {
         gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-        bottomMargin = dpToPx(24)
+        bottomMargin = systemBarBottom + dpToPx(24)
       }
     rootView.addView(statusView, statusParams)
 
@@ -224,9 +281,10 @@ class TranslatorVoiceInteractionSession(
     val structure = state.assistStructure
     if (structure == null) {
       Log.w(tag, "AssistStructure missing for index=${state.index}")
-      if (!assistFallbackToastShown) {
-        assistFallbackToastShown = true
-        Toast.makeText(context, "App does not provide data, falling back to OCR", Toast.LENGTH_SHORT).show()
+      if (!assistFallbackMessageShown) {
+        assistFallbackMessageShown = true
+        assistFallbackStatusPendingHide = true
+        showStatus("App does not provide data, falling back to OCR")
       }
       maybeProcessCapture()
       return
@@ -239,8 +297,10 @@ class TranslatorVoiceInteractionSession(
 
   override fun onHandleScreenshot(screenshot: Bitmap?) {
     super.onHandleScreenshot(screenshot)
-    screenshotBitmap?.recycle()
-    croppedBitmap?.recycle()
+    val oldSs = screenshotBitmap
+    val oldCr = croppedBitmap
+    oldSs?.recycle()
+    if (oldCr != null && oldCr !== oldSs) oldCr.recycle()
     screenshotBitmap = screenshot?.copy(Bitmap.Config.ARGB_8888, false)
     croppedBitmap = screenshotBitmap?.let { cropSystemBars(it) }
     screenshotView.setImageBitmap(croppedBitmap)
@@ -276,100 +336,73 @@ class TranslatorVoiceInteractionSession(
     blocks: List<CapturedTextBlock>,
     screenshot: Bitmap?,
   ) {
-    sessionScope.launch {
-      val (langs, targetLanguage) = awaitTranslationSetup()
-      val blocksByText = linkedMapOf<String, MutableList<CapturedTextBlock>>()
-      for (block in blocks) {
-        if (block.text.isBlank()) continue
-        blocksByText.getOrPut(block.text) { mutableListOf() }.add(block)
-      }
+    translationJob =
+      sessionScope.launch {
+        val (langs, targetLanguage) = awaitTranslationSetup()
+        val blocksByText = linkedMapOf<String, MutableList<CapturedTextBlock>>()
+        for (block in blocks) {
+          if (block.text.isBlank()) continue
+          blocksByText.getOrPut(block.text) { mutableListOf() }.add(block)
+        }
 
-      if (blocksByText.isEmpty()) {
-        processing = false
-        showLoading(false)
-        showStatus("No visible structured text found")
-        return@launch
-      }
+        if (blocksByText.isEmpty()) {
+          processing = false
+          showLoading(false)
+          showStatus("No visible structured text found")
+          return@launch
+        }
 
-      val textsBySource = linkedMapOf<Language, MutableList<String>>()
-      var detectedSameAsTarget = 0
-      var undetectedTexts = 0
-      val forcedSource = forcedSourceLanguage ?: settingsManager.settings.value.defaultSourceLanguage
+        val forcedSource = forcedSourceLanguage ?: settingsManager.settings.value.defaultSourceLanguage
+        val result =
+          batchTextTranslator.translateTexts(
+            inputs = blocksByText.keys.toList(),
+            forcedSourceLanguage = forcedSource,
+            targetLanguage = targetLanguage,
+            availableLanguages = langs,
+          )
 
-      if (forcedSource != null) {
-        textsBySource.getOrPut(forcedSource) { mutableListOf() }.addAll(blocksByText.keys)
-      } else {
-        for (text in blocksByText.keys) {
-          val source = translationCoordinator.detectLanguageRobust(text, null, langs)
-          when {
-            source == null -> undetectedTexts++
-            source == targetLanguage -> detectedSameAsTarget++
-            else -> textsBySource.getOrPut(source) { mutableListOf() }.add(text)
+        when (result) {
+          is BatchTextTranslationOutput.NothingToTranslate -> {
+            processing = false
+            showLoading(false)
+            val message =
+              when (result.reason) {
+                NothingReason.ALREADY_TARGET_LANGUAGE -> "Already in ${targetLanguage.displayName}"
+                NothingReason.COULD_NOT_DETECT -> "Could not detect source language"
+                NothingReason.NO_TRANSLATABLE_TEXT -> "No translatable visible text found"
+              }
+            showStatus(message)
           }
-        }
-      }
-
-      if (textsBySource.isEmpty()) {
-        processing = false
-        showLoading(false)
-        when {
-          detectedSameAsTarget > 0 && undetectedTexts == 0 -> showStatus("Already in ${targetLanguage.displayName}")
-          undetectedTexts > 0 && detectedSameAsTarget == 0 -> showStatus("Could not detect source language")
-          else -> showStatus("No translatable visible text found")
-        }
-        return@launch
-      }
-
-      val translatedByText = linkedMapOf<String, String>()
-      for ((sourceLanguage, texts) in textsBySource) {
-        when (val result = translationCoordinator.translateTexts(sourceLanguage, targetLanguage, texts.toTypedArray())) {
-          is BatchTranslationResult.Success -> {
-            texts.zip(result.result).forEach { (text, translated) ->
-              translatedByText[text] = translated.translated
+          is BatchTextTranslationOutput.Translated -> {
+            overlayContainer.removeAllViews()
+            val screenHeight = context.resources.displayMetrics.heightPixels
+            val items = mutableListOf<OverlayItem>()
+            for ((originalText, groupedBlocks) in blocksByText) {
+              val translatedText = result.results[originalText] ?: continue
+              for (block in groupedBlocks) {
+                val adjustedTop = block.bounds.top - systemBarTop
+                val adjustedBottom = block.bounds.bottom - systemBarTop
+                val visibleHeight = minOf(adjustedBottom, screenHeight) - maxOf(adjustedTop, 0)
+                if (visibleHeight < block.bounds.height() / 2) continue
+                items.add(OverlayItem(translatedText, block, resolveColors(block, screenshot)))
+              }
             }
-          }
-          is BatchTranslationResult.Error -> {
-            Log.e(tag, "Translation error for ${sourceLanguage.displayName}: ${result.message}")
-          }
-        }
-      }
+            val groups = groupOverlapping(items)
+            for (group in groups) {
+              if (group.size == 1) {
+                val item = group.first()
+                addOverlayBlock(item.translatedText, item.block, item.colors)
+              } else {
+                addOverlayGroup(group)
+              }
+            }
 
-      overlayContainer.removeAllViews()
-      val screenHeight = context.resources.displayMetrics.heightPixels
-      val items = mutableListOf<OverlayItem>()
-      for ((originalText, groupedBlocks) in blocksByText) {
-        val translatedText = translatedByText[originalText] ?: continue
-        for (block in groupedBlocks) {
-          val adjustedTop = block.bounds.top - systemBarTop
-          val adjustedBottom = block.bounds.bottom - systemBarTop
-          val visibleHeight = minOf(adjustedBottom, screenHeight) - maxOf(adjustedTop, 0)
-          if (visibleHeight < block.bounds.height() / 2) continue
-          items.add(OverlayItem(translatedText, block, resolveColors(block, screenshot)))
+            processing = false
+            showLoading(false)
+            hideStatus()
+          }
         }
       }
-      Log.d(tag, "Overlay items: ${items.size}, blocksByText keys: ${blocksByText.keys.toList()}")
-      items.forEachIndexed { i, item ->
-        Log.d(tag, "Item[$i] original=${item.block.text} translated=${item.translatedText} bounds=${item.block.bounds.toShortString()}")
-      }
-      val groups = groupOverlapping(items)
-      groups.forEachIndexed { gi, group ->
-        group.forEachIndexed { ii, item ->
-          Log.d(tag, "Group[$gi][$ii] text=${item.translatedText} bounds=${item.block.bounds.toShortString()}")
-        }
-      }
-      for (group in groups) {
-        if (group.size == 1) {
-          val item = group.first()
-          addOverlayBlock(item.translatedText, item.block, item.colors)
-        } else {
-          addOverlayGroup(group)
-        }
-      }
-
-      processing = false
-      showLoading(false)
-      hideStatus()
-    }
   }
 
   private fun runOcrFallback(screenshot: Bitmap) {
@@ -385,24 +418,31 @@ class TranslatorVoiceInteractionSession(
 
     val targetLanguage = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
     val maxImageSize = settingsManager.settings.value.maxImageSize
-    val workingBitmap =
-      imageProcessor.downscaleImage(screenshot.copy(Bitmap.Config.ARGB_8888, false), maxImageSize)
-    sessionScope.launch {
-      val result =
-        withContext(Dispatchers.IO) {
-          translationCoordinator.translateImageWithOverlay(sourceLanguage, targetLanguage, workingBitmap) {}
+    val copy = screenshot.copy(Bitmap.Config.ARGB_8888, false)
+    val workingBitmap = imageProcessor.downscaleImage(copy, maxImageSize)
+    if (workingBitmap !== copy) copy.recycle()
+    translationJob =
+      sessionScope.launch {
+        val result =
+          withContext(Dispatchers.IO) {
+            translationCoordinator.translateImageWithOverlay(sourceLanguage, targetLanguage, workingBitmap) {}
+          }
+        processing = false
+        showLoading(false)
+        if (result == null) {
+          showStatus("OCR fallback failed")
+          return@launch
         }
-      processing = false
-      showLoading(false)
-      if (result == null) {
-        showStatus("OCR fallback failed")
-        return@launch
+        croppedBitmap?.recycle()
+        croppedBitmap = cropSystemBars(result.correctedBitmap)
+        screenshotView.setImageBitmap(croppedBitmap)
+        if (assistFallbackStatusPendingHide) {
+          assistFallbackStatusPendingHide = false
+          showStatus("App does not provide data, falling back to OCR", autoHideAfterMs = 3000)
+        } else {
+          hideStatus()
+        }
       }
-      croppedBitmap?.recycle()
-      croppedBitmap = cropSystemBars(result.correctedBitmap)
-      screenshotView.setImageBitmap(croppedBitmap)
-      hideStatus()
-    }
   }
 
   private fun resolveColors(
@@ -705,14 +745,28 @@ class TranslatorVoiceInteractionSession(
     win.setBackgroundDrawableResource(android.R.color.transparent)
   }
 
-  private fun showStatus(message: String) {
+  private fun showStatus(
+    message: String,
+    autoHideAfterMs: Long? = null,
+  ) {
     if (!::statusView.isInitialized) return
+    statusHideJob?.cancel()
+    statusHideJob = null
     statusView.text = message
     statusView.visibility = View.VISIBLE
+    if (autoHideAfterMs != null) {
+      statusHideJob =
+        sessionScope.launch {
+          delay(autoHideAfterMs)
+          hideStatus()
+        }
+    }
   }
 
   private fun hideStatus() {
     if (!::statusView.isInitialized) return
+    statusHideJob?.cancel()
+    statusHideJob = null
     statusView.visibility = View.GONE
   }
 
@@ -728,15 +782,22 @@ class TranslatorVoiceInteractionSession(
   }
 
   private fun clearCapture() {
-    screenshotBitmap?.recycle()
-    croppedBitmap?.recycle()
+    translationJob?.cancel()
+    translationJob = null
+    val ss = screenshotBitmap
+    val cr = croppedBitmap
+    ss?.recycle()
+    if (cr != null && cr !== ss) cr.recycle()
     screenshotBitmap = null
     croppedBitmap = null
     capturedBlocks.clear()
     receivedAssistIndexes.clear()
     expectedAssistCount = null
     processing = false
-    assistFallbackToastShown = false
+    assistFallbackMessageShown = false
+    assistFallbackStatusPendingHide = false
+    statusHideJob?.cancel()
+    statusHideJob = null
   }
 
   private fun dpToPx(dp: Int): Int = (dp * context.resources.displayMetrics.density).toInt()
@@ -773,26 +834,38 @@ class TranslatorVoiceInteractionSession(
     return minTextSizePx
   }
 
+  private fun getOrCreateMeasureView(): TextView {
+    measureTextView?.let { return it }
+    val tv =
+      TextView(context).apply {
+        layoutParams =
+          FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+          )
+        setPadding(0, 0, 0, 0)
+        gravity = Gravity.START or Gravity.CENTER_VERTICAL
+        maxLines = 10
+        setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE)
+      }
+    measureTextView = tv
+    return tv
+  }
+
   private fun measuredTextHeight(
     translatedText: String,
     width: Int,
     textSizePx: Float,
     styleBits: Int,
   ): Int {
-    val measureView =
-      TextView(context).apply {
-        text = translatedText
-        setPadding(0, 0, 0, 0)
-        gravity = Gravity.START or Gravity.CENTER_VERTICAL
-        maxLines = 10
-        setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE)
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, textSizePx)
-        applyTextStyle(this, styleBits)
-      }
+    val tv = getOrCreateMeasureView()
+    tv.text = translatedText
+    tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSizePx)
+    applyTextStyle(tv, styleBits)
     val exactWidth = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY)
     val unspecifiedHeight = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-    measureView.measure(exactWidth, unspecifiedHeight)
-    return measureView.measuredHeight
+    tv.measure(exactWidth, unspecifiedHeight)
+    return tv.measuredHeight
   }
 
   private fun buildTopBar(): View {
@@ -933,6 +1006,14 @@ class TranslatorVoiceInteractionSession(
     forcedSourceLanguage = oldTarget
     forcedTargetLanguage = oldSource
     updateToolbarLabels()
+    retranslate()
+  }
+
+  private fun retranslate() {
+    translationJob?.cancel()
+    translationJob = null
+    processing = false
+    overlayContainer.removeAllViews()
     maybeProcessCapture()
   }
 
@@ -943,102 +1024,30 @@ class TranslatorVoiceInteractionSession(
   }
 
   private fun showLanguagePicker(isSource: Boolean) {
-    dismissMenu()
-    val dismiss =
-      View(context).apply {
-        setBackgroundColor(Color.parseColor("#80000000"))
-        setOnClickListener { dismissMenu() }
+    menuManager?.showLanguagePicker(
+      isSource = isSource,
+      availableLangs = availableLanguages(isSource),
+    ) { language ->
+      if (isSource) {
+        forcedSourceLanguage = language
+      } else {
+        forcedTargetLanguage = language
       }
-    rootView.addView(
-      dismiss,
-      FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.MATCH_PARENT,
-        FrameLayout.LayoutParams.MATCH_PARENT,
-      ),
-    )
-    menuDismissLayer = dismiss
-
-    val picker =
-      OverlayChromeFactory.createLanguagePicker(
-        context = context,
-        dpToPx = ::dpToPx,
-        isSource = isSource,
-        availableLangs = availableLanguages(isSource),
-      ) { language ->
-        if (isSource) {
-          forcedSourceLanguage = language
-        } else {
-          forcedTargetLanguage = language
-        }
-        updateToolbarLabels()
-        dismissMenu()
-        maybeProcessCapture()
-      }
-
-    rootView.addView(
-      picker,
-      FrameLayout.LayoutParams(
-        dpToPx(250),
-        dpToPx(400),
-      ).apply { gravity = Gravity.CENTER },
-    )
-    menuOverlay = picker
+      updateToolbarLabels()
+      retranslate()
+    }
   }
 
   private fun showDotsMenu() {
-    dismissMenu()
-    val dismiss =
-      View(context).apply {
-        setBackgroundColor(Color.TRANSPARENT)
-        setOnClickListener { dismissMenu() }
-      }
-    rootView.addView(
-      dismiss,
-      FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.MATCH_PARENT,
-        FrameLayout.LayoutParams.MATCH_PARENT,
+    menuManager?.showDotsMenu(
+      listOf(
+        "Open App" to { startAssistantActivity(Intent(context, MainActivity::class.java)) },
       ),
     )
-    menuDismissLayer = dismiss
-
-    val menuContainer = LinearLayout(context)
-    menuContainer.orientation = LinearLayout.VERTICAL
-    menuContainer.background =
-      GradientDrawable().apply {
-        setColor(Color.parseColor("#E0303030"))
-        cornerRadius = dpToPx(12).toFloat()
-      }
-    val pad = dpToPx(8)
-    menuContainer.setPadding(pad, pad, pad, pad)
-
-    OverlayChromeFactory.addMenuItem(context, menuContainer, ::dpToPx, "Open App") {
-      dismissMenu()
-      startAssistantActivity(Intent(context, MainActivity::class.java))
-    }
-
-    rootView.addView(
-      menuContainer,
-      FrameLayout.LayoutParams(
-        dpToPx(180),
-        FrameLayout.LayoutParams.WRAP_CONTENT,
-      ).apply {
-        gravity = Gravity.TOP or Gravity.END
-        topMargin = dpToPx(48)
-        marginEnd = dpToPx(8)
-      },
-    )
-    menuOverlay = menuContainer
   }
 
   private fun dismissMenu() {
-    menuDismissLayer?.let {
-      rootView.removeView(it)
-      menuDismissLayer = null
-    }
-    menuOverlay?.let {
-      rootView.removeView(it)
-      menuOverlay = null
-    }
+    menuManager?.dismiss()
   }
 
   private fun availableLanguages(isSource: Boolean): List<Language> {

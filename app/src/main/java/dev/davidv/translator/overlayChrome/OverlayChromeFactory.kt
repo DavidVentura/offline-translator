@@ -135,6 +135,21 @@ object OverlayChromeFactory {
     return scroll
   }
 
+  fun createMenuContainer(
+    context: Context,
+    dpToPx: (Int) -> Int,
+  ): LinearLayout {
+    val container = LinearLayout(context)
+    container.orientation = LinearLayout.VERTICAL
+    val bg = GradientDrawable()
+    bg.setColor(Color.parseColor("#E0303030"))
+    bg.cornerRadius = dpToPx(12).toFloat()
+    container.background = bg
+    val pad = dpToPx(8)
+    container.setPadding(pad, pad, pad, pad)
+    return container
+  }
+
   fun makePill(
     context: Context,
     dpToPx: (Int) -> Int,

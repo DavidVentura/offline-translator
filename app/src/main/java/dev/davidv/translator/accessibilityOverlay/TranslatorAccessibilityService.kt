@@ -12,13 +12,15 @@ import android.util.Log
 import android.view.Display
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
-import dev.davidv.translator.BatchTranslationResult
+import dev.davidv.translator.BatchTextTranslationOutput
+import dev.davidv.translator.BatchTextTranslator
 import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageDetector
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
+import dev.davidv.translator.NothingReason
 import dev.davidv.translator.OCRService
 import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.SettingsManager
@@ -50,6 +52,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
   private lateinit var settingsManager: SettingsManager
   private lateinit var imageProcessor: ImageProcessor
   private lateinit var translationCoordinator: TranslationCoordinator
+  private lateinit var batchTextTranslator: BatchTextTranslator
   private lateinit var langStateManager: LanguageStateManager
   private lateinit var languageMetadataManager: LanguageMetadataManager
 
@@ -84,6 +87,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
     val languageDetector = LanguageDetector()
     imageProcessor = ImageProcessor(this, OCRService(filePathManager))
     translationCoordinator = TranslationCoordinator(this, translationService, languageDetector, imageProcessor, settingsManager, false)
+    batchTextTranslator = BatchTextTranslator(translationCoordinator)
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
     languageMetadataManager = LanguageMetadataManager(this)
 
@@ -228,55 +232,32 @@ class TranslatorAccessibilityService : AccessibilityService() {
         return@launch
       }
 
-      val textsBySource = linkedMapOf<Language, MutableList<String>>()
-      var detectedSameAsTarget = 0
-      var undetectedTexts = 0
+      val result =
+        batchTextTranslator.translateTexts(
+          inputs = nodesByText.keys.toList(),
+          forcedSourceLanguage = forcedSourceLanguage,
+          targetLanguage = to,
+          availableLanguages = langs,
+        )
 
-      val forcedSource = forcedSourceLanguage
-      if (forcedSource != null) {
-        textsBySource.getOrPut(forcedSource) { mutableListOf() }.addAll(nodesByText.keys)
-      } else {
-        for (text in nodesByText.keys) {
-          val from = translationCoordinator.detectLanguageRobust(text, null, langs)
-          when {
-            from == null -> undetectedTexts++
-            from == to -> detectedSameAsTarget++
-            else -> textsBySource.getOrPut(from) { mutableListOf() }.add(text)
-          }
+      when (result) {
+        is BatchTextTranslationOutput.NothingToTranslate -> {
+          val message =
+            when (result.reason) {
+              NothingReason.ALREADY_TARGET_LANGUAGE -> "Already in ${to.displayName}"
+              NothingReason.COULD_NOT_DETECT -> "Could not detect language — set source language manually"
+              NothingReason.NO_TRANSLATABLE_TEXT -> "No translatable visible text found"
+            }
+          showOverlayTranslationMessage(message)
         }
-      }
-
-      if (textsBySource.isEmpty()) {
-        when {
-          detectedSameAsTarget > 0 && undetectedTexts == 0 -> showOverlayTranslationMessage("Already in ${to.displayName}")
-          undetectedTexts > 0 && detectedSameAsTarget == 0 ->
-            showOverlayTranslationMessage(
-              "Could not detect language — set source language manually",
-            )
-          else -> showOverlayTranslationMessage("No translatable visible text found")
-        }
-        return@launch
-      }
-
-      val translatedByText = linkedMapOf<String, String>()
-      for ((from, texts) in textsBySource) {
-        when (val result = translationCoordinator.translateTexts(from, to, texts.toTypedArray())) {
-          is BatchTranslationResult.Success -> {
-            texts.zip(result.result).forEach { (text, translated) ->
-              translatedByText[text] = translated.translated
+        is BatchTextTranslationOutput.Translated -> {
+          ui.removeTranslationOverlays()
+          for ((text, groupedNodes) in nodesByText) {
+            val translatedText = result.results[text] ?: continue
+            for (node in groupedNodes) {
+              ui.showTranslationOverlay(translatedText, node.bounds, node.colors)
             }
           }
-          is BatchTranslationResult.Error -> {
-            Log.e(tag, "Translation error for ${from.displayName} visible texts: ${result.message}")
-          }
-        }
-      }
-
-      ui.removeTranslationOverlays()
-      for ((text, groupedNodes) in nodesByText) {
-        val translatedText = translatedByText[text] ?: continue
-        for (node in groupedNodes) {
-          ui.showTranslationOverlay(translatedText, node.bounds, node.colors)
         }
       }
     }
