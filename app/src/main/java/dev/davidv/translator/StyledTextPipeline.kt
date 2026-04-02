@@ -56,7 +56,10 @@ fun clusterFragmentsIntoBlocks(fragments: List<StyledFragment>): List<Translatab
       val vGap = fragment.bounds.top - bb.bottom
       val hOverlap = minOf(bb.right, fragment.bounds.right) - maxOf(bb.left, fragment.bounds.left)
 
-      if (vOverlap > 0 || (vGap in 0..blockGapThreshold && hOverlap > 0)) {
+      val hGap = maxOf(bb.left, fragment.bounds.left) - minOf(bb.right, fragment.bounds.right)
+      val hNearby = hGap <= lineHeight
+
+      if ((vOverlap > 0 && hNearby) || (vGap in 0..blockGapThreshold && hOverlap > 0)) {
         blockGroups[i].add(fragment)
         bb.union(fragment.bounds)
         merged = true

@@ -125,7 +125,7 @@ class OverlayRenderer(
         text = ssb
         setPadding(0, 0, 0, 0)
         gravity = Gravity.START or Gravity.CENTER_VERTICAL
-        maxLines = 10
+        maxLines = Int.MAX_VALUE
         setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE)
         setTextSize(
           TypedValue.COMPLEX_UNIT_PX,
@@ -169,20 +169,31 @@ class OverlayRenderer(
         getOverlayColors(it, bounds, settingsManager.settings.value.backgroundMode)
       }
 
-    val styleBg = normalizeStyleColor(firstStyle?.bgColor)
     val styleFg = normalizeStyleColor(firstStyle?.textColor)
-    if (styleBg == null && styleFg != null && sampledColors == null) {
+    val styleBg = realBackgroundColor(firstStyle?.bgColor)
+    if (styleBg != null) {
+      return OverlayColors(styleBg, styleFg ?: sampledColors?.foreground ?: Color.BLACK)
+    }
+    if (sampledColors != null) {
+      return OverlayColors(sampledColors.background, styleFg ?: sampledColors.foreground)
+    }
+    if (styleFg != null) {
       val lum = (Color.red(styleFg) * 299 + Color.green(styleFg) * 587 + Color.blue(styleFg) * 114) / 255000f
       val bg = if (lum > 0.5f) Color.BLACK else Color.WHITE
       return OverlayColors(bg, styleFg)
     }
-    val backgroundColor = styleBg ?: sampledColors?.background ?: Color.WHITE
-    val foregroundColor = styleFg ?: sampledColors?.foreground ?: Color.BLACK
-    return OverlayColors(backgroundColor, foregroundColor)
+    return OverlayColors(Color.WHITE, Color.BLACK)
   }
 
   private fun normalizeStyleColor(color: Int?): Int? {
     if (color == null) return null
+    if (Color.alpha(color) == 0) return null
+    return color
+  }
+
+  private fun realBackgroundColor(color: Int?): Int? {
+    if (color == null) return null
+    if (color == 0 || color == 1 || color == -1) return null
     if (Color.alpha(color) == 0) return null
     return color
   }
@@ -216,7 +227,7 @@ class OverlayRenderer(
           )
         setPadding(0, 0, 0, 0)
         gravity = Gravity.START or Gravity.CENTER_VERTICAL
-        maxLines = 10
+        maxLines = Int.MAX_VALUE
         setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE)
       }
     measureTextView = tv

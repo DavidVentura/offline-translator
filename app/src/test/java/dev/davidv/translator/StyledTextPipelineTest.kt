@@ -159,6 +159,30 @@ class StyledTextPipelineTest {
   }
 
   @Test
+  fun `number column does not merge with content column`() {
+    val fragments =
+      listOf(
+        StyledFragment("1.", Rect(21, 413, 54, 459)),
+        StyledFragment("Google releases Gemma 4 open models", Rect(100, 416, 784, 462)),
+        StyledFragment("686 points by jeffmcjunkin 3 hours ago", Rect(100, 469, 645, 507)),
+        StyledFragment("2.", Rect(21, 521, 54, 567)),
+        StyledFragment("Tailscale's New macOS Home", Rect(100, 524, 611, 570)),
+        StyledFragment("93 points by tosh 1 hour ago", Rect(100, 577, 499, 615)),
+      )
+
+    val blocks = clusterFragmentsIntoBlocks(fragments)
+    val numberBlocks = blocks.filter { it.text.matches(Regex("\\d+\\..*")) }
+    val contentBlocks = blocks.filter { it.text.contains("Google") || it.text.contains("Tailscale") }
+
+    assert(numberBlocks.isNotEmpty() && contentBlocks.isNotEmpty()) {
+      "Expected numbers and content in separate blocks, got ${blocks.map { "'${it.text.take(40)}'" }}"
+    }
+    assert(numberBlocks.none { nb -> contentBlocks.any { cb -> nb.text in cb.text } }) {
+      "Number column should not be merged into content blocks"
+    }
+  }
+
+  @Test
   fun `overlapping multi-line bboxes merge into one block`() {
     val fragments =
       listOf(
