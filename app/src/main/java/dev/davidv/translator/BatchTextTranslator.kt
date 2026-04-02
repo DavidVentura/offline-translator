@@ -29,9 +29,10 @@ class BatchTextTranslator(
     targetLanguage: Language,
     availableLanguages: List<Language>,
   ): BatchTextTranslationOutput {
+    val uniqueInputs = inputs.distinct()
     val passthrough = linkedMapOf<String, String>()
     val translatable = mutableListOf<String>()
-    for (text in inputs) {
+    for (text in uniqueInputs) {
       if (noTranslationPattern.matches(text)) {
         passthrough[text] = text
       } else {
