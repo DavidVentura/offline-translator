@@ -34,7 +34,6 @@ import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.MainActivity
 import dev.davidv.translator.NothingReason
 import dev.davidv.translator.OverlayColors
-import dev.davidv.translator.R
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.getOverlayColors
@@ -127,24 +126,26 @@ class TranslatorVoiceInteractionSession(
           override fun addMenuView(view: View) {
             rootView.addView(
               view,
-              FrameLayout.LayoutParams(
-                dpToPx(180),
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-              ).apply {
-                gravity = Gravity.TOP or Gravity.END
-                topMargin = dpToPx(48)
-                marginEnd = dpToPx(8)
-              },
+              FrameLayout
+                .LayoutParams(
+                  dpToPx(180),
+                  FrameLayout.LayoutParams.WRAP_CONTENT,
+                ).apply {
+                  gravity = Gravity.TOP or Gravity.END
+                  topMargin = dpToPx(48)
+                  marginEnd = dpToPx(8)
+                },
             )
           }
 
           override fun addPickerView(view: View) {
             rootView.addView(
               view,
-              FrameLayout.LayoutParams(
-                dpToPx(250),
-                dpToPx(400),
-              ).apply { gravity = Gravity.CENTER },
+              FrameLayout
+                .LayoutParams(
+                  dpToPx(250),
+                  dpToPx(400),
+                ).apply { gravity = Gravity.CENTER },
             )
           }
 
@@ -179,12 +180,13 @@ class TranslatorVoiceInteractionSession(
     topBarView = buildTopBar()
     rootView.addView(
       topBarView,
-      FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.MATCH_PARENT,
-        FrameLayout.LayoutParams.WRAP_CONTENT,
-      ).apply {
-        gravity = Gravity.TOP or Gravity.START
-      },
+      FrameLayout
+        .LayoutParams(
+          FrameLayout.LayoutParams.MATCH_PARENT,
+          FrameLayout.LayoutParams.WRAP_CONTENT,
+        ).apply {
+          gravity = Gravity.TOP or Gravity.START
+        },
     )
 
     statusView =
@@ -201,22 +203,24 @@ class TranslatorVoiceInteractionSession(
           }
       }
     val statusParams =
-      FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.WRAP_CONTENT,
-        FrameLayout.LayoutParams.WRAP_CONTENT,
-      ).apply {
-        gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-        bottomMargin = systemBarBottom + dpToPx(24)
-      }
+      FrameLayout
+        .LayoutParams(
+          FrameLayout.LayoutParams.WRAP_CONTENT,
+          FrameLayout.LayoutParams.WRAP_CONTENT,
+        ).apply {
+          gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+          bottomMargin = systemBarBottom + dpToPx(24)
+        }
     rootView.addView(statusView, statusParams)
 
     loadingView = buildLoadingView()
     rootView.addView(
       loadingView,
-      FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.WRAP_CONTENT,
-        FrameLayout.LayoutParams.WRAP_CONTENT,
-      ).apply { gravity = Gravity.CENTER },
+      FrameLayout
+        .LayoutParams(
+          FrameLayout.LayoutParams.WRAP_CONTENT,
+          FrameLayout.LayoutParams.WRAP_CONTENT,
+        ).apply { gravity = Gravity.CENTER },
     )
 
     showStatus("Invoke this assistant on top of text to translate it")
@@ -493,7 +497,8 @@ class TranslatorVoiceInteractionSession(
 
         val style = block.style
         val requestedTextSizePx =
-          style?.textSizePx
+          style
+            ?.textSizePx
             ?.takeIf { it > 0f }
             ?.let { normalizeReportedTextSizePx(it, block.fromWebView) }
             ?.times(settingsManager.settings.value.fontFactor)
@@ -526,13 +531,14 @@ class TranslatorVoiceInteractionSession(
     )
 
     val params =
-      FrameLayout.LayoutParams(
-        width,
-        targetHeight,
-      ).apply {
-        leftMargin = left
-        topMargin = top
-      }
+      FrameLayout
+        .LayoutParams(
+          width,
+          targetHeight,
+        ).apply {
+          leftMargin = left
+          topMargin = top
+        }
     overlayContainer.addView(container, params)
   }
 
@@ -601,7 +607,8 @@ class TranslatorVoiceInteractionSession(
 
     val style = representativeStyle
     val initialTextSizePx =
-      style?.textSizePx
+      style
+        ?.textSizePx
         ?.takeIf { it > 0f }
         ?.let { normalizeReportedTextSizePx(it, group.first().block.fromWebView) }
         ?.times(settingsManager.settings.value.fontFactor)
@@ -646,13 +653,14 @@ class TranslatorVoiceInteractionSession(
     )
 
     val params =
-      FrameLayout.LayoutParams(
-        width,
-        targetHeight,
-      ).apply {
-        leftMargin = left
-        topMargin = top
-      }
+      FrameLayout
+        .LayoutParams(
+          width,
+          targetHeight,
+        ).apply {
+          leftMargin = left
+          topMargin = top
+        }
     overlayContainer.addView(container, params)
   }
 
@@ -712,10 +720,11 @@ class TranslatorVoiceInteractionSession(
     val progress = ProgressBar(context)
     container.addView(
       progress,
-      FrameLayout.LayoutParams(
-        dpToPx(48),
-        dpToPx(48),
-      ).apply { gravity = Gravity.CENTER },
+      FrameLayout
+        .LayoutParams(
+          dpToPx(48),
+          dpToPx(48),
+        ).apply { gravity = Gravity.CENTER },
     )
     return container
   }

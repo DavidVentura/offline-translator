@@ -21,20 +21,34 @@ enum class NothingReason {
 class BatchTextTranslator(
   private val translationCoordinator: TranslationCoordinator,
 ) {
+  private val noTranslationPattern = Regex("^[\\d\\s\\p{Punct}·•–—―]+$")
+
   suspend fun translateTexts(
     inputs: List<String>,
     forcedSourceLanguage: Language?,
     targetLanguage: Language,
     availableLanguages: List<Language>,
   ): BatchTextTranslationOutput {
+    val passthrough = linkedMapOf<String, String>()
+    val translatable = mutableListOf<String>()
+    for (text in inputs) {
+      if (noTranslationPattern.matches(text)) {
+        passthrough[text] = text
+      } else {
+        translatable.add(text)
+      }
+    }
+
     val textsBySource = linkedMapOf<Language, MutableList<String>>()
     var detectedSameAsTarget = 0
     var undetectedTexts = 0
 
     if (forcedSourceLanguage != null) {
-      textsBySource.getOrPut(forcedSourceLanguage) { mutableListOf() }.addAll(inputs)
+      if (translatable.isNotEmpty()) {
+        textsBySource.getOrPut(forcedSourceLanguage) { mutableListOf() }.addAll(translatable)
+      }
     } else {
-      for (text in inputs) {
+      for (text in translatable) {
         val source = translationCoordinator.detectLanguageRobust(text, null, availableLanguages)
         when {
           source == null -> undetectedTexts++
@@ -44,7 +58,7 @@ class BatchTextTranslator(
       }
     }
 
-    if (textsBySource.isEmpty()) {
+    if (textsBySource.isEmpty() && passthrough.isEmpty()) {
       val reason =
         when {
           detectedSameAsTarget > 0 && undetectedTexts == 0 -> NothingReason.ALREADY_TARGET_LANGUAGE
@@ -55,6 +69,7 @@ class BatchTextTranslator(
     }
 
     val translatedByText = linkedMapOf<String, String>()
+    translatedByText.putAll(passthrough)
     for ((sourceLanguage, texts) in textsBySource) {
       when (val result = translationCoordinator.translateTexts(sourceLanguage, targetLanguage, texts.toTypedArray())) {
         is BatchTranslationResult.Success -> {

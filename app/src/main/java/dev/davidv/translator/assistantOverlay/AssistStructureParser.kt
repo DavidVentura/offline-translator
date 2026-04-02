@@ -31,8 +31,71 @@ class AssistStructureParser {
     }
 
     val distinct = fragments.distinctBy { "${it.bounds.flattenToString()}|${normalizeText(it.text)}" }
-    return distinct
-      .map { CapturedTextBlock(it.text, Rect(it.bounds), it.style, it.fromWebView) }
+    val blocks = distinct.map { CapturedTextBlock(it.text, Rect(it.bounds), it.style, it.fromWebView) }
+    return mergeAdjacentSameStyle(blocks)
+  }
+
+  private fun mergeAdjacentSameStyle(blocks: List<CapturedTextBlock>): List<CapturedTextBlock> {
+    if (blocks.size < 2) return blocks
+    val result = mutableListOf<CapturedTextBlock>()
+    var i = 0
+    while (i < blocks.size) {
+      val current = blocks[i]
+      if (!current.fromWebView) {
+        result += current
+        i++
+        continue
+      }
+      val merged = StringBuilder(current.text)
+      val mergedBounds = Rect(current.bounds)
+      var j = i + 1
+      while (j < blocks.size) {
+        val next = blocks[j]
+        if (!next.fromWebView || !sameStyle(current.style, next.style)) break
+        if (!adjacentBounds(mergedBounds, next.bounds)) break
+        if (merged.isNotEmpty() && !merged.endsWith(' ') && !next.text.startsWith(' ')) {
+          merged.append(' ')
+        }
+        merged.append(next.text)
+        mergedBounds.union(next.bounds)
+        j++
+      }
+      result += CapturedTextBlock(merged.toString(), mergedBounds, current.style, current.fromWebView)
+      i = j
+    }
+    return result
+  }
+
+  private fun sameStyle(
+    a: CapturedTextStyle?,
+    b: CapturedTextStyle?,
+  ): Boolean {
+    if (a == null && b == null) return true
+    if (a == null || b == null) return false
+    return a.textColor == b.textColor &&
+      a.textBackgroundColor == b.textBackgroundColor &&
+      a.styleBits == b.styleBits &&
+      a.textSizePx == b.textSizePx
+  }
+
+  private fun adjacentBounds(
+    a: Rect,
+    b: Rect,
+  ): Boolean {
+    val verticalOverlap = a.top < b.bottom && b.top < a.bottom
+    val horizontalGap =
+      if (b.left >= a.right) {
+        b.left - a.right
+      } else if (a.left >= b.right) {
+        a.left - b.right
+      } else {
+        0
+      }
+    if (verticalOverlap && horizontalGap < a.height()) return true
+    val directlyBelow = b.top >= a.top && b.top <= a.bottom + a.height() / 2
+    val horizontalOverlap = a.left < b.right && b.left < a.right
+    if (directlyBelow && horizontalOverlap) return true
+    return false
   }
 
   private fun collectFragmentsRecursive(
@@ -47,6 +110,8 @@ class AssistStructureParser {
     if (node.visibility != View.VISIBLE) return false
     if (node.idEntry == "url_bar") return false
     if (node.className == "android.widget.Image") return false
+    if (node.className == "android.widget.Button") return false
+    if (node.className == "android.widget.SeekBar") return false
     val className = node.className?.toString().orEmpty()
     val nestedInWebView = insideWebView || className == "android.webkit.WebView"
 
@@ -73,9 +138,13 @@ class AssistStructureParser {
 
     val text = node.text?.toString()?.trim()
     if (text.isNullOrEmpty()) return results.size > childStartIndex
+    if (node.width <= 2 || node.height <= 2) return results.size > childStartIndex
     if (bounds.width() <= 2 || bounds.height() <= 2) return results.size > childStartIndex
     if (!Rect.intersects(bounds, viewport)) return results.size > childStartIndex
     if (isTransparentText(node.textColor)) return results.size > childStartIndex
+    if (nestedInWebView && className == "android.view.View" && results.size == childStartIndex) {
+      return false
+    }
 
     val childFragments =
       if (results.size > childStartIndex) {
