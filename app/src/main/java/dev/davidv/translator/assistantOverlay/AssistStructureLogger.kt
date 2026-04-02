@@ -31,7 +31,7 @@ class AssistStructureLogger(
     parsedFragments.forEachIndexed { index, fragment ->
       Log.d(
         tag,
-        "Parsed[$index] text=${fragment.text} bounds=${fragment.bounds.toShortString()} size=${fragment.style?.textSize} color=${fragment.style?.textColor} bg=${fragment.style?.bgColor} bold=${fragment.style?.bold} italic=${fragment.style?.italic}",
+        "Parsed[$index] text=${fragment.text} bounds=[${fragment.bounds.left},${fragment.bounds.top},${fragment.bounds.right},${fragment.bounds.bottom}] size=${fragment.style?.textSize} color=${fragment.style?.textColor} bg=${fragment.style?.bgColor} bold=${fragment.style?.bold} italic=${fragment.style?.italic}",
       )
     }
   }

@@ -461,7 +461,13 @@ class TranslatorVoiceInteractionSession(
   ) {
     translationJob =
       sessionScope.launch {
+        for ((idx, f) in fragments.withIndex()) {
+          Log.d(tag, "Fragment[$idx] text='${f.text.take(60)}' bounds=[${f.bounds.left},${f.bounds.top},${f.bounds.right},${f.bounds.bottom}]")
+        }
         val blocks = clusterFragmentsIntoBlocks(fragments)
+        for ((idx, b) in blocks.withIndex()) {
+          Log.d(tag, "Block[$idx] bounds=[${b.bounds.left},${b.bounds.top},${b.bounds.right},${b.bounds.bottom}] ${b.bounds.width()}x${b.bounds.height()} text='${b.text.take(80)}'")
+        }
         if (blocks.isEmpty()) {
           processing = false
           showLoading(false)

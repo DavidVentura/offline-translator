@@ -40,6 +40,8 @@ data class Rect(
 
   fun height(): Int = bottom - top
 
+  fun centerY(): Int = (top + bottom) / 2
+
   fun isEmpty(): Boolean = left >= right || top >= bottom
 
   fun union(other: Rect) {

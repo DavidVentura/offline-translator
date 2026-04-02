@@ -1,6 +1,5 @@
 package dev.davidv.translator
 
-import android.graphics.Rect
 import dev.davidv.bergamot.TokenAlignment
 
 data class TextStyle(
@@ -40,16 +39,15 @@ data class TranslatedStyledBlock(
 fun clusterFragmentsIntoBlocks(fragments: List<StyledFragment>): List<TranslatableBlock> {
   if (fragments.isEmpty()) return emptyList()
 
-  val sorted = fragments.sortedWith(compareBy({ it.bounds.top }, { it.bounds.left }))
-  val medHeight = medianFragmentHeight(sorted)
+  val medHeight = medianFragmentHeight(fragments)
   val blockGapThreshold = (medHeight * 0.5f).toInt()
 
   val groups = mutableListOf<MutableList<StyledFragment>>()
   val groupBounds = mutableListOf<Rect>()
 
-  for (fragment in sorted) {
+  for (fragment in fragments) {
     var merged = false
-    for (i in groups.indices.reversed()) {
+    for (i in groups.indices) {
       val bb = groupBounds[i]
       val vOverlap = minOf(bb.bottom, fragment.bounds.bottom) - maxOf(bb.top, fragment.bounds.top)
       val vGap = fragment.bounds.top - bb.bottom
@@ -112,8 +110,7 @@ private fun buildBlock(
 
   for ((lineIdx, line) in lines.withIndex()) {
     if (lineIdx > 0) sb.append('\n')
-    val sortedLine = line.sortedBy { it.bounds.left }
-    for ((fragIdx, fragment) in sortedLine.withIndex()) {
+    for ((fragIdx, fragment) in line.withIndex()) {
       if (fragIdx > 0 && sb.isNotEmpty() && !sb.last().isWhitespace()) {
         sb.append(' ')
       }
@@ -131,42 +128,37 @@ private fun buildBlock(
 private fun clusterIntoLines(fragments: List<StyledFragment>): List<List<StyledFragment>> {
   if (fragments.isEmpty()) return emptyList()
 
-  val sorted = fragments.sortedWith(compareBy({ it.bounds.top }, { it.bounds.left }))
-  val medHeight = medianFragmentHeight(sorted)
+  val medHeight = medianFragmentHeight(fragments)
   val lineThreshold = (medHeight * 0.35f).toInt().coerceAtLeast(1)
 
   val lines = mutableListOf<MutableList<StyledFragment>>()
-  var currentTop = 0
-  var currentBottom = 0
-  var currentLine = mutableListOf<StyledFragment>()
+  val lineTops = mutableListOf<Int>()
+  val lineBottoms = mutableListOf<Int>()
 
-  for (fragment in sorted) {
-    if (currentLine.isEmpty()) {
-      currentLine.add(fragment)
-      currentTop = fragment.bounds.top
-      currentBottom = fragment.bounds.bottom
-      continue
+  for (fragment in fragments) {
+    var bestLine = -1
+    for (i in lines.indices) {
+      val centerDelta = kotlin.math.abs(fragment.bounds.centerY() - (lineTops[i] + lineBottoms[i]) / 2)
+      val verticalOverlap =
+        minOf(lineBottoms[i], fragment.bounds.bottom) - maxOf(lineTops[i], fragment.bounds.top)
+      if (verticalOverlap > 0 || centerDelta <= lineThreshold) {
+        bestLine = i
+        break
+      }
     }
-
-    val centerDelta = kotlin.math.abs(fragment.bounds.centerY() - (currentTop + currentBottom) / 2)
-    val verticalOverlap =
-      minOf(currentBottom, fragment.bounds.bottom) - maxOf(currentTop, fragment.bounds.top)
-    if (verticalOverlap > 0 || centerDelta <= lineThreshold) {
-      currentLine.add(fragment)
-      currentTop = minOf(currentTop, fragment.bounds.top)
-      currentBottom = maxOf(currentBottom, fragment.bounds.bottom)
+    if (bestLine >= 0) {
+      lines[bestLine].add(fragment)
+      lineTops[bestLine] = minOf(lineTops[bestLine], fragment.bounds.top)
+      lineBottoms[bestLine] = maxOf(lineBottoms[bestLine], fragment.bounds.bottom)
     } else {
-      lines.add(currentLine)
-      currentLine = mutableListOf(fragment)
-      currentTop = fragment.bounds.top
-      currentBottom = fragment.bounds.bottom
+      lines.add(mutableListOf(fragment))
+      lineTops.add(fragment.bounds.top)
+      lineBottoms.add(fragment.bounds.bottom)
     }
   }
-  if (currentLine.isNotEmpty()) {
-    lines.add(currentLine)
-  }
 
-  return lines
+  val lineOrder = lines.indices.sortedBy { lineTops[it] }
+  return lineOrder.map { lines[it] }
 }
 
 private fun medianFragmentHeight(fragments: List<StyledFragment>): Int {

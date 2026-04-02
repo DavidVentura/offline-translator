@@ -8,6 +8,7 @@ import android.graphics.RectF
 import android.view.View
 import dev.davidv.translator.StyledFragment
 import dev.davidv.translator.TextStyle
+import dev.davidv.translator.Rect as TranslatorRect
 
 class AssistStructureParser(
   private val displayDensity: Float = 1f,
@@ -36,7 +37,13 @@ class AssistStructureParser(
 
     return fragments
       .distinctBy { "${it.bounds.flattenToString()}|${normalizeText(it.text)}" }
-      .map { StyledFragment(it.text, Rect(it.bounds), it.style) }
+      .map {
+        StyledFragment(
+          it.text,
+          TranslatorRect(it.bounds.left, it.bounds.top, it.bounds.right, it.bounds.bottom),
+          it.style,
+        )
+      }
   }
 
   private fun collectFragmentsRecursive(

@@ -3,7 +3,6 @@ package dev.davidv.translator.assistantOverlay
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.Spannable
@@ -161,20 +160,13 @@ class OverlayRenderer(
   }
 
   private fun resolveBlockColors(
-    bounds: Rect,
+    bounds: TranslatorRect,
     firstStyle: TextStyle?,
     screenshot: Bitmap?,
   ): OverlayColors {
     val sampledColors =
       screenshot?.let {
-        val translatorRect =
-          TranslatorRect(
-            bounds.left,
-            bounds.top,
-            bounds.right,
-            bounds.bottom,
-          )
-        getOverlayColors(it, translatorRect, settingsManager.settings.value.backgroundMode)
+        getOverlayColors(it, bounds, settingsManager.settings.value.backgroundMode)
       }
 
     val styleBg = normalizeStyleColor(firstStyle?.bgColor)
