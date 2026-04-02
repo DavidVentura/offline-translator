@@ -251,73 +251,6 @@ fun SettingsScreen(
             },
           )
 
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Text(
-              text = "Overlay Translate",
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurface,
-            )
-
-            TextButton(
-              onClick = {
-                context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-              },
-            ) {
-              Text("Manage")
-            }
-          }
-
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Text(
-              text = "Device Assistant Role",
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurface,
-            )
-
-            TextButton(
-              onClick = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                  val roleManager = context.getSystemService(RoleManager::class.java)
-                  val canRequestRole =
-                    roleManager != null &&
-                      roleManager.isRoleAvailable(RoleManager.ROLE_ASSISTANT) &&
-                      !roleManager.isRoleHeld(RoleManager.ROLE_ASSISTANT)
-                  if (canRequestRole) {
-                    assistantRoleLauncher.launch(
-                      roleManager.createRequestRoleIntent(RoleManager.ROLE_ASSISTANT),
-                    )
-                  } else {
-                    context.startActivity(
-                      Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                    )
-                  }
-                } else {
-                  context.startActivity(
-                    Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
-                      .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                  )
-                }
-              },
-            ) {
-              Text(if (assistantRoleHeld) "Manage" else "Request")
-            }
-          }
-
-          Text(
-            text = "Use the assistant role to capture AssistStructure text, text size, style bits, and a screenshot snapshot of the current screen.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-
           Text(
             text = "Font Size",
             style = MaterialTheme.typography.bodyMedium,
@@ -356,6 +289,106 @@ fun SettingsScreen(
               maxLines = 1,
               overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
             )
+          }
+        }
+      }
+
+      Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors =
+          CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+          ),
+      ) {
+        Column(
+          modifier = Modifier.padding(16.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          Text(
+            text = "Screen translation",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+          )
+
+          Text(
+            text = "Translate text directly on top of other apps.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Column(modifier = Modifier.weight(1f)) {
+              Text(
+                text = "Device Assistant",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+              )
+              Text(
+                text = "Requires assistant gesture. Higher quality.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+
+            TextButton(
+              onClick = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                  val roleManager = context.getSystemService(RoleManager::class.java)
+                  val canRequestRole =
+                    roleManager != null &&
+                      roleManager.isRoleAvailable(RoleManager.ROLE_ASSISTANT) &&
+                      !roleManager.isRoleHeld(RoleManager.ROLE_ASSISTANT)
+                  if (canRequestRole) {
+                    assistantRoleLauncher.launch(
+                      roleManager.createRequestRoleIntent(RoleManager.ROLE_ASSISTANT),
+                    )
+                  } else {
+                    context.startActivity(
+                      Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                    )
+                  }
+                } else {
+                  context.startActivity(
+                    Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
+                      .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                  )
+                }
+              },
+            ) {
+              Text(if (assistantRoleHeld) "Manage" else "Request")
+            }
+          }
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Column(modifier = Modifier.weight(1f)) {
+              Text(
+                text = "Floating shortcut",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+              )
+              Text(
+                text = "Quality depends on target app.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+
+            TextButton(
+              onClick = {
+                context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+              },
+            ) {
+              Text("Manage")
+            }
           }
         }
       }
