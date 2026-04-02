@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.Display
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
-import dev.davidv.translator.BatchTextTranslationOutput
 import dev.davidv.translator.BatchTextTranslator
 import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.ImageProcessor
@@ -20,9 +19,10 @@ import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageDetector
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
-import dev.davidv.translator.NothingReason
 import dev.davidv.translator.OCRService
 import dev.davidv.translator.OverlayColors
+import dev.davidv.translator.OverlayTextTranslationHelper
+import dev.davidv.translator.OverlayTextTranslationResult
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationResult
@@ -31,7 +31,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -52,9 +51,8 @@ class TranslatorAccessibilityService : AccessibilityService() {
   private lateinit var settingsManager: SettingsManager
   private lateinit var imageProcessor: ImageProcessor
   private lateinit var translationCoordinator: TranslationCoordinator
-  private lateinit var batchTextTranslator: BatchTextTranslator
+  private lateinit var overlayTextTranslationHelper: OverlayTextTranslationHelper
   private lateinit var langStateManager: LanguageStateManager
-  private lateinit var languageMetadataManager: LanguageMetadataManager
 
   lateinit var ui: OverlayUI
     private set
@@ -87,9 +85,14 @@ class TranslatorAccessibilityService : AccessibilityService() {
     val languageDetector = LanguageDetector()
     imageProcessor = ImageProcessor(this, OCRService(filePathManager))
     translationCoordinator = TranslationCoordinator(this, translationService, languageDetector, imageProcessor, settingsManager, false)
-    batchTextTranslator = BatchTextTranslator(translationCoordinator)
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
-    languageMetadataManager = LanguageMetadataManager(this)
+    overlayTextTranslationHelper =
+      OverlayTextTranslationHelper(
+        settingsManager = settingsManager,
+        batchTextTranslator = BatchTextTranslator(translationCoordinator),
+        langStateManager = langStateManager,
+        languageMetadataManager = LanguageMetadataManager(this),
+      )
 
     ui = OverlayUI(this, windowManager, settingsManager)
     input = OverlayInput(this, windowManager, ui, settingsManager)
@@ -166,17 +169,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
   }
 
   fun showLanguagePicker(isSource: Boolean) {
-    val metadata = languageMetadataManager.metadata.value
-    val availableLangs =
-      langStateManager.languageState.value.availableLanguageMap
-        .filterValues { it.translatorFiles && (!isSource || it.ocrFiles) }
-        .keys
-        .toList()
-        .sortedWith(
-          compareByDescending<Language> { metadata[it]?.favorite ?: false }
-            .thenBy { it.displayName },
-        )
-
+    val availableLangs = overlayTextTranslationHelper.availableLanguages(isSource)
     ui.showLanguagePicker(isSource, availableLangs) { lang ->
       if (isSource) {
         forcedSourceLanguage = lang
@@ -217,7 +210,6 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.showCenteredLoading()
 
     serviceScope.launch {
-      val (langs, to) = awaitTranslationSetup()
       val visibleNodes =
         nodes.mapIndexed { index, (text, bounds) ->
           VisibleTextNode(text, bounds, colors?.getOrNull(index))
@@ -227,30 +219,16 @@ class TranslatorAccessibilityService : AccessibilityService() {
         nodesByText.getOrPut(node.text) { mutableListOf() }.add(node)
       }
 
-      if (forcedSourceLanguage == to) {
-        showOverlayTranslationMessage("Already in ${to.displayName}")
-        return@launch
-      }
-
       val result =
-        batchTextTranslator.translateTexts(
+        overlayTextTranslationHelper.translateTexts(
           inputs = nodesByText.keys.toList(),
           forcedSourceLanguage = forcedSourceLanguage,
-          targetLanguage = to,
-          availableLanguages = langs,
+          forcedTargetLanguage = forcedTargetLanguage,
         )
 
       when (result) {
-        is BatchTextTranslationOutput.NothingToTranslate -> {
-          val message =
-            when (result.reason) {
-              NothingReason.ALREADY_TARGET_LANGUAGE -> "Already in ${to.displayName}"
-              NothingReason.COULD_NOT_DETECT -> "Could not detect language — set source language manually"
-              NothingReason.NO_TRANSLATABLE_TEXT -> "No translatable visible text found"
-            }
-          showOverlayTranslationMessage(message)
-        }
-        is BatchTextTranslationOutput.Translated -> {
+        is OverlayTextTranslationResult.Message -> showOverlayTranslationMessage(result.value)
+        is OverlayTextTranslationResult.Success -> {
           ui.removeTranslationOverlays()
           for ((text, groupedNodes) in nodesByText) {
             val translatedText = result.results[text] ?: continue
@@ -375,19 +353,20 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.showLoadingOverlay(bounds, colors)
 
     serviceScope.launch {
-      val (langs, to) = awaitTranslationSetup()
-      val from = forcedSourceLanguage ?: translationCoordinator.detectLanguageRobust(text, null, langs)
+      val targetLanguage = overlayTextTranslationHelper.awaitTargetLanguage(forcedTargetLanguage)
+      val availableLanguages = overlayTextTranslationHelper.awaitAvailableLanguages(isSource = false)
+      val from = forcedSourceLanguage ?: translationCoordinator.detectLanguageRobust(text, null, availableLanguages)
       if (from == null) {
         showOverlayTranslationMessage("Could not detect language — set source language manually")
         return@launch
       }
 
-      if (from == to) {
-        showOverlayTranslationMessage("Already in ${to.displayName}")
+      if (from == targetLanguage) {
+        showOverlayTranslationMessage("Already in ${targetLanguage.displayName}")
         return@launch
       }
 
-      when (val result = translationCoordinator.translateText(from, to, text)) {
+      when (val result = translationCoordinator.translateText(from, targetLanguage, text)) {
         is TranslationResult.Success -> {
           ui.removeTranslationOverlays()
           ui.showTranslationOverlay(result.result.translated, bounds, colors)
@@ -446,16 +425,6 @@ class TranslatorAccessibilityService : AccessibilityService() {
         }
       },
     )
-  }
-
-  private suspend fun awaitTranslationSetup(): Pair<List<Language>, Language> {
-    langStateManager.languageState.first { !it.isChecking }
-    val langs =
-      langStateManager.languageState.value.availableLanguageMap
-        .filterValues { it.translatorFiles }
-        .keys.toList()
-    val to = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
-    return langs to to
   }
 
   private fun showOverlayTranslationMessage(message: String) {

@@ -10,6 +10,7 @@ import dev.davidv.translator.LanguageDetector
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.OCRService
+import dev.davidv.translator.OverlayTextTranslationHelper
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationService
@@ -26,7 +27,7 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
   private lateinit var languageMetadataManager: LanguageMetadataManager
   private lateinit var imageProcessor: ImageProcessor
   private lateinit var translationCoordinator: TranslationCoordinator
-  private lateinit var batchTextTranslator: BatchTextTranslator
+  private lateinit var overlayTextTranslationHelper: OverlayTextTranslationHelper
   private lateinit var langStateManager: LanguageStateManager
 
   override fun onCreate() {
@@ -44,8 +45,14 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
         settingsManager = settingsManager,
         enableToast = false,
       )
-    batchTextTranslator = BatchTextTranslator(translationCoordinator)
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
+    overlayTextTranslationHelper =
+      OverlayTextTranslationHelper(
+        settingsManager = settingsManager,
+        batchTextTranslator = BatchTextTranslator(translationCoordinator),
+        langStateManager = langStateManager,
+        languageMetadataManager = languageMetadataManager,
+      )
   }
 
   override fun onNewSession(args: Bundle?): VoiceInteractionSession =
@@ -54,9 +61,8 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
       settingsManager = settingsManager,
       imageProcessor = imageProcessor,
       translationCoordinator = translationCoordinator,
-      batchTextTranslator = batchTextTranslator,
+      overlayTextTranslationHelper = overlayTextTranslationHelper,
       langStateManager = langStateManager,
-      languageMetadataManager = languageMetadataManager,
     )
 
   override fun onDestroy() {

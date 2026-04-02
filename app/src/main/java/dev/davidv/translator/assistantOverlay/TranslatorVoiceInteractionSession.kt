@@ -3,6 +3,7 @@ package dev.davidv.translator.assistantOverlay
 import android.app.assist.AssistStructure
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
@@ -25,15 +26,13 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import dev.davidv.translator.BatchTextTranslationOutput
-import dev.davidv.translator.BatchTextTranslator
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
-import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.MainActivity
-import dev.davidv.translator.NothingReason
 import dev.davidv.translator.OverlayColors
+import dev.davidv.translator.OverlayTextTranslationHelper
+import dev.davidv.translator.OverlayTextTranslationResult
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.getOverlayColors
@@ -46,7 +45,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import dev.davidv.translator.Rect as TranslatorRect
@@ -56,13 +54,13 @@ class TranslatorVoiceInteractionSession(
   private val settingsManager: SettingsManager,
   private val imageProcessor: ImageProcessor,
   private val translationCoordinator: TranslationCoordinator,
-  private val batchTextTranslator: BatchTextTranslator,
+  private val overlayTextTranslationHelper: OverlayTextTranslationHelper,
   private val langStateManager: LanguageStateManager,
-  private val languageMetadataManager: LanguageMetadataManager,
 ) : VoiceInteractionSession(context) {
   private val tag = "TranslatorAssistant"
   private val sessionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
   private val parser = AssistStructureParser()
+  private val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
 
   private lateinit var rootView: FrameLayout
   private lateinit var screenshotView: ImageView
@@ -328,7 +326,6 @@ class TranslatorVoiceInteractionSession(
   ) {
     translationJob =
       sessionScope.launch {
-        val (langs, targetLanguage) = awaitTranslationSetup()
         val blocksByText = linkedMapOf<String, MutableList<CapturedTextBlock>>()
         for (block in blocks) {
           if (block.text.isBlank()) continue
@@ -342,28 +339,20 @@ class TranslatorVoiceInteractionSession(
           return@launch
         }
 
-        val forcedSource = forcedSourceLanguage ?: settingsManager.settings.value.defaultSourceLanguage
         val result =
-          batchTextTranslator.translateTexts(
+          overlayTextTranslationHelper.translateTexts(
             inputs = blocksByText.keys.toList(),
-            forcedSourceLanguage = forcedSource,
-            targetLanguage = targetLanguage,
-            availableLanguages = langs,
+            forcedSourceLanguage = forcedSourceLanguage,
+            forcedTargetLanguage = forcedTargetLanguage,
           )
 
         when (result) {
-          is BatchTextTranslationOutput.NothingToTranslate -> {
+          is OverlayTextTranslationResult.Message -> {
             processing = false
             showLoading(false)
-            val message =
-              when (result.reason) {
-                NothingReason.ALREADY_TARGET_LANGUAGE -> "Already in ${targetLanguage.displayName}"
-                NothingReason.COULD_NOT_DETECT -> "Could not detect source language"
-                NothingReason.NO_TRANSLATABLE_TEXT -> "No translatable visible text found"
-              }
-            showStatus(message)
+            showStatus(result.value)
           }
-          is BatchTextTranslationOutput.Translated -> {
+          is OverlayTextTranslationResult.Success -> {
             overlayContainer.removeAllViews()
             val screenHeight = context.resources.displayMetrics.heightPixels
             val items = mutableListOf<OverlayItem>()
@@ -693,17 +682,6 @@ class TranslatorVoiceInteractionSession(
     textView.paintFlags = flags
   }
 
-  private suspend fun awaitTranslationSetup(): Pair<List<Language>, Language> {
-    langStateManager.languageState.first { !it.isChecking }
-    val langs =
-      langStateManager.languageState.value.availableLanguageMap
-        .filterValues { it.translatorFiles }
-        .keys
-        .toList()
-    val targetLanguage = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
-    return langs to targetLanguage
-  }
-
   private fun buildLoadingView(): View {
     val container =
       FrameLayout(context).apply {
@@ -910,6 +888,7 @@ class TranslatorVoiceInteractionSession(
     state: AssistState,
     structure: AssistStructure,
   ) {
+    if (!isDebuggable) return
     Log.d(tag, "AssistStructure index=${state.index}/${state.count} windows=${structure.windowNodeCount}")
     for (windowIndex in 0 until structure.windowNodeCount) {
       val window = structure.getWindowNodeAt(windowIndex)
@@ -1021,7 +1000,7 @@ class TranslatorVoiceInteractionSession(
   private fun showLanguagePicker(isSource: Boolean) {
     menuManager?.showLanguagePicker(
       isSource = isSource,
-      availableLangs = availableLanguages(isSource),
+      availableLangs = overlayTextTranslationHelper.availableLanguages(isSource),
     ) { language ->
       if (isSource) {
         forcedSourceLanguage = language
@@ -1043,17 +1022,5 @@ class TranslatorVoiceInteractionSession(
 
   private fun dismissMenu() {
     menuManager?.dismiss()
-  }
-
-  private fun availableLanguages(isSource: Boolean): List<Language> {
-    val metadata = languageMetadataManager.metadata.value
-    return langStateManager.languageState.value.availableLanguageMap
-      .filterValues { it.translatorFiles && (!isSource || it.ocrFiles) }
-      .keys
-      .toList()
-      .sortedWith(
-        compareByDescending<Language> { metadata[it]?.favorite ?: false }
-          .thenBy { it.displayName },
-      )
   }
 }
