@@ -755,9 +755,14 @@ class TranslatorVoiceInteractionSession(
   private fun showDotsMenu() {
     menuManager?.showDotsMenu(
       listOf(
-        "Open App" to { startAssistantActivity(Intent(context, MainActivity::class.java)) },
+        "Open App" to { openMainApp() },
       ),
     )
+  }
+
+  private fun openMainApp() {
+    startAssistantActivity(Intent(context, MainActivity::class.java))
+    hide()
   }
 
   private fun dismissMenu() {
