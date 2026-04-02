@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.service.voice.VoiceInteractionSession
@@ -13,6 +14,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -75,15 +77,8 @@ class TranslatorVoiceInteractionSession(
   private var menuManager: OverlayMenuManager? = null
   private var borderView: BorderWaveView? = null
 
-  private val systemBarTop: Int by lazy {
-    val id = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-    if (id > 0) context.resources.getDimensionPixelSize(id) else 0
-  }
-
-  private val systemBarBottom: Int by lazy {
-    val id = context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
-    if (id > 0) context.resources.getDimensionPixelSize(id) else 0
-  }
+  private var systemBarTop: Int = fallbackSystemBarTop()
+  private var systemBarBottom: Int = fallbackSystemBarBottom()
 
   private var screenshotBitmap: Bitmap? = null
   private var croppedBitmap: Bitmap? = null
@@ -111,7 +106,10 @@ class TranslatorVoiceInteractionSession(
   override fun onCreateContentView(): View {
     rootView = FrameLayout(context)
     rootView.setBackgroundColor(Color.TRANSPARENT)
-    rootView.setOnApplyWindowInsetsListener { _, insets -> insets }
+    rootView.setOnApplyWindowInsetsListener { _, insets ->
+      updateSystemBarInsets(insets)
+      insets
+    }
     menuManager =
       OverlayMenuManager(
         context,
@@ -239,6 +237,7 @@ class TranslatorVoiceInteractionSession(
     showStatus("Invoke this assistant on top of text to translate it")
     showLoading(false)
     updateBackdrop()
+    rootView.requestApplyInsets()
     return rootView
   }
 
@@ -248,6 +247,7 @@ class TranslatorVoiceInteractionSession(
   ) {
     super.onShow(args, showFlags)
     configureSessionWindow()
+    refreshSystemBarInsets()
     clearCapture()
     overlayContainer.removeAllViews()
     dismissMenu()
@@ -347,6 +347,7 @@ class TranslatorVoiceInteractionSession(
 
   override fun onHandleScreenshot(screenshot: Bitmap?) {
     super.onHandleScreenshot(screenshot)
+    refreshSystemBarInsets()
     hasReceivedScreenshotCallback = true
     Log.d(tag, "Screenshot callback received bitmap=${screenshot?.width}x${screenshot?.height}")
     val oldSs = screenshotBitmap
@@ -587,9 +588,54 @@ class TranslatorVoiceInteractionSession(
     win.decorView.setBackgroundColor(Color.TRANSPARENT)
     win.decorView.setPadding(0, 0, 0, 0)
     win.setWindowAnimations(0)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      win.attributes =
+        win.attributes.apply {
+          layoutInDisplayCutoutMode =
+            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
+    }
     val contentFrame = win.decorView.findViewById<View>(android.R.id.content)
     contentFrame?.setBackgroundColor(Color.TRANSPARENT)
     (contentFrame?.parent as? View)?.setBackgroundColor(Color.TRANSPARENT)
+  }
+
+  private fun refreshSystemBarInsets() {
+    if (!::rootView.isInitialized) return
+    rootView.rootWindowInsets?.let { updateSystemBarInsets(it) }
+  }
+
+  @Suppress("DEPRECATION")
+  private fun updateSystemBarInsets(insets: WindowInsets) {
+    val topInset =
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        insets.getInsets(WindowInsets.Type.statusBars()).top
+      } else {
+        insets.systemWindowInsetTop
+      }
+    val bottomInset =
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        insets.getInsets(WindowInsets.Type.navigationBars()).bottom
+      } else {
+        insets.systemWindowInsetBottom
+      }
+
+    val resolvedTop = topInset.takeIf { it > 0 } ?: fallbackSystemBarTop()
+    val resolvedBottom = bottomInset.takeIf { it > 0 } ?: fallbackSystemBarBottom()
+    if (resolvedTop == systemBarTop && resolvedBottom == systemBarBottom) return
+
+    systemBarTop = resolvedTop
+    systemBarBottom = resolvedBottom
+    updateStatusBottomMargin()
+  }
+
+  private fun updateStatusBottomMargin() {
+    if (!::statusView.isInitialized) return
+    val params = statusView.layoutParams as? FrameLayout.LayoutParams ?: return
+    val targetBottomMargin = systemBarBottom + dpToPx(24)
+    if (params.bottomMargin == targetBottomMargin) return
+    params.bottomMargin = targetBottomMargin
+    statusView.layoutParams = params
   }
 
   private fun showStatus(
@@ -652,6 +698,16 @@ class TranslatorVoiceInteractionSession(
   }
 
   private fun dpToPx(dp: Int): Int = (dp * context.resources.displayMetrics.density).toInt()
+
+  private fun fallbackSystemBarTop(): Int {
+    val id = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+    return if (id > 0) context.resources.getDimensionPixelSize(id) else 0
+  }
+
+  private fun fallbackSystemBarBottom(): Int {
+    val id = context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
+    return if (id > 0) context.resources.getDimensionPixelSize(id) else 0
+  }
 
   private fun updateBackdrop() {
     rootView.setBackgroundColor(Color.TRANSPARENT)

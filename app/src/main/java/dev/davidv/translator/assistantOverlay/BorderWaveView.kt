@@ -7,7 +7,9 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.SweepGradient
+import android.os.Build
 import android.view.View
+import android.view.WindowInsets
 import android.view.animation.LinearInterpolator
 
 class BorderWaveView private constructor(
@@ -59,12 +61,26 @@ class BorderWaveView private constructor(
   private var sweepGradient: SweepGradient? = null
   private var lastWidth = 0
   private var lastHeight = 0
+  private var leftInsetPx = 0f
+  private var topInsetPx = 0f
+  private var rightInsetPx = 0f
+  private var bottomInsetPx = 0f
 
   var phase = 0f
     set(value) {
       field = value
       invalidate()
     }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    requestApplyInsets()
+  }
+
+  override fun onApplyWindowInsets(insets: WindowInsets): WindowInsets {
+    updateSafeInsets(insets)
+    return super.onApplyWindowInsets(insets)
+  }
 
   override fun onDraw(canvas: Canvas) {
     val w = width
@@ -97,15 +113,66 @@ class BorderWaveView private constructor(
 
     val half = strokeWidthPx / 2f
     canvas.drawRoundRect(
-      half,
-      half,
-      w - half,
-      h - half,
+      leftInsetPx + half,
+      topInsetPx + half,
+      w - rightInsetPx - half,
+      h - bottomInsetPx - half,
       strokeWidthPx * 2,
       strokeWidthPx * 2,
       paint,
     )
   }
+
+  private fun updateSafeInsets(insets: WindowInsets) {
+    var left = 0f
+    var right = 0f
+    var bottom = 0f
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      val cutout = insets.displayCutout
+      if (cutout != null) {
+        left = maxOf(left, cutout.safeInsetLeft.toFloat())
+        right = maxOf(right, cutout.safeInsetRight.toFloat())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+          val waterfallInsets = cutout.waterfallInsets
+          left = maxOf(left, waterfallInsets.left.toFloat())
+          right = maxOf(right, waterfallInsets.right.toFloat())
+        }
+      }
+    }
+
+    if (shouldRespectBottomNavigationBar()) {
+      bottom = navigationBarInsetBottom(insets).toFloat()
+    }
+
+    if (
+      left != leftInsetPx ||
+        right != rightInsetPx ||
+        topInsetPx != 0f ||
+        bottom != bottomInsetPx
+    ) {
+      leftInsetPx = left
+      topInsetPx = 0f
+      rightInsetPx = right
+      bottomInsetPx = bottom
+      invalidate()
+    }
+  }
+
+  private fun shouldRespectBottomNavigationBar(): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return true
+    val resourceId = resources.getIdentifier("config_navBarInteractionMode", "integer", "android")
+    if (resourceId == 0) return true
+    return resources.getInteger(resourceId) != 2
+  }
+
+  @Suppress("DEPRECATION")
+  private fun navigationBarInsetBottom(insets: WindowInsets): Int =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      insets.getInsets(WindowInsets.Type.navigationBars()).bottom
+    } else {
+      insets.systemWindowInsetBottom
+    }
 
   private fun withAlpha(alpha: Int): Int = (borderColor and 0x00FFFFFF) or (alpha shl 24)
 }
