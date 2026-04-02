@@ -42,6 +42,7 @@ class AssistStructureParser(
           it.text,
           TranslatorRect(it.bounds.left, it.bounds.top, it.bounds.right, it.bounds.bottom),
           it.style,
+          group = if (it.fromWebView) 0 else 1,
         )
       }
   }
@@ -132,6 +133,7 @@ class AssistStructureParser(
             underline = styleBits and AssistStructure.ViewNode.TEXT_STYLE_UNDERLINE != 0,
             strikethrough = styleBits and AssistStructure.ViewNode.TEXT_STYLE_STRIKE_THRU != 0,
           ),
+        fromWebView = nestedInWebView,
       )
     return true
   }
@@ -198,5 +200,6 @@ class AssistStructureParser(
     val text: String,
     val bounds: Rect,
     val style: TextStyle?,
+    val fromWebView: Boolean,
   )
 }

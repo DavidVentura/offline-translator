@@ -99,6 +99,66 @@ class StyledTextPipelineTest {
   }
 
   @Test
+  fun `separate paragraphs do not merge into one block`() {
+    val fragments =
+      listOf(
+        StyledFragment("We recommend using donation platforms like", Rect(42, 1109, 890, 1158)),
+        StyledFragment("Liberapay", Rect(42, 1172, 223, 1221), blue),
+        StyledFragment("or", Rect(222, 1172, 282, 1221)),
+        StyledFragment("Open Collective", Rect(281, 1172, 573, 1221), blue),
+        StyledFragment(
+          ". These free software, community-driven donation platforms, support low-fee and transparent donations.",
+          Rect(42, 1172, 996, 1347),
+        ),
+        StyledFragment(
+          "You can support F-Droid via monthly recurring donations or with one-time gifts.",
+          Rect(42, 1403, 894, 1515),
+        ),
+        StyledFragment(
+          "Monthly donations keep F-Droid sustainable. By setting up a recurring monthly donation, you create a dependable funding stream.",
+          Rect(42, 1571, 1028, 1872),
+        ),
+        StyledFragment(
+          "The small gift of 5/month, when multiplied by thousands of supporters, results in a reliable funding stream.",
+          Rect(42, 1928, 1023, 2276),
+        ),
+      )
+
+    val blocks = clusterFragmentsIntoBlocks(fragments)
+    assert(blocks.size >= 3) {
+      "Expected separate paragraphs to be separate blocks, got ${blocks.size} block(s): ${blocks.map {
+        "'${it.text.take(
+          40,
+        )}...' ${it.bounds.height()}px"
+      }}"
+    }
+  }
+
+  @Test
+  fun `fragments in different groups do not merge even with vertical overlap`() {
+    val webViewContent =
+      listOf(
+        StyledFragment("Article text here", Rect(42, 1842, 1012, 2088), group = 0),
+        StyledFragment("Quick facts", Rect(73, 2185, 277, 2233), group = 0),
+      )
+    val nativeToolbar =
+      listOf(
+        StyledFragment("Save", Rect(0, 2085, 216, 2274), group = 1),
+        StyledFragment("Language", Rect(216, 2085, 432, 2274), group = 1),
+        StyledFragment("Contents", Rect(864, 2085, 1080, 2274), group = 1),
+      )
+
+    val blocks = clusterFragmentsIntoBlocks(webViewContent + nativeToolbar)
+
+    val webBlocks = blocks.filter { it.text.contains("Article") || it.text.contains("Quick") }
+    val toolbarBlocks = blocks.filter { it.text.contains("Save") || it.text.contains("Language") }
+
+    assert(webBlocks.none { wb -> toolbarBlocks.any { tb -> tb.text in wb.text } }) {
+      "WebView content and native toolbar should be in separate blocks"
+    }
+  }
+
+  @Test
   fun `overlapping multi-line bboxes merge into one block`() {
     val fragments =
       listOf(

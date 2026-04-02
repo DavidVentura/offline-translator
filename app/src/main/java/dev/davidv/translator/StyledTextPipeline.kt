@@ -16,6 +16,7 @@ data class StyledFragment(
   val text: String,
   val bounds: Rect,
   val style: TextStyle? = null,
+  val group: Int = 0,
 )
 
 data class StyleSpan(
@@ -39,34 +40,37 @@ data class TranslatedStyledBlock(
 fun clusterFragmentsIntoBlocks(fragments: List<StyledFragment>): List<TranslatableBlock> {
   if (fragments.isEmpty()) return emptyList()
 
-  val medHeight = medianFragmentHeight(fragments)
-  val blockGapThreshold = (medHeight * 0.5f).toInt()
+  val lineHeight = lowerQuartileHeight(fragments)
+  val blockGapThreshold = (lineHeight * 0.5f).toInt()
 
-  val groups = mutableListOf<MutableList<StyledFragment>>()
-  val groupBounds = mutableListOf<Rect>()
+  val blockGroups = mutableListOf<MutableList<StyledFragment>>()
+  val blockBounds = mutableListOf<Rect>()
+  val blockGroupIds = mutableListOf<Int>()
 
   for (fragment in fragments) {
     var merged = false
-    for (i in groups.indices) {
-      val bb = groupBounds[i]
+    for (i in blockGroups.indices) {
+      if (blockGroupIds[i] != fragment.group) continue
+      val bb = blockBounds[i]
       val vOverlap = minOf(bb.bottom, fragment.bounds.bottom) - maxOf(bb.top, fragment.bounds.top)
       val vGap = fragment.bounds.top - bb.bottom
       val hOverlap = minOf(bb.right, fragment.bounds.right) - maxOf(bb.left, fragment.bounds.left)
 
       if (vOverlap > 0 || (vGap in 0..blockGapThreshold && hOverlap > 0)) {
-        groups[i].add(fragment)
+        blockGroups[i].add(fragment)
         bb.union(fragment.bounds)
         merged = true
         break
       }
     }
     if (!merged) {
-      groups.add(mutableListOf(fragment))
-      groupBounds.add(Rect(fragment.bounds))
+      blockGroups.add(mutableListOf(fragment))
+      blockBounds.add(Rect(fragment.bounds))
+      blockGroupIds.add(fragment.group)
     }
   }
 
-  return groups.mapIndexed { idx, group -> buildBlock(group, groupBounds[idx]) }
+  return blockGroups.mapIndexed { idx, group -> buildBlock(group, blockBounds[idx]) }
 }
 
 fun mapStylesToTranslation(
@@ -164,4 +168,9 @@ private fun clusterIntoLines(fragments: List<StyledFragment>): List<List<StyledF
 private fun medianFragmentHeight(fragments: List<StyledFragment>): Int {
   val heights = fragments.map { it.bounds.height() }.sorted()
   return heights[heights.size / 2].coerceAtLeast(1)
+}
+
+private fun lowerQuartileHeight(fragments: List<StyledFragment>): Int {
+  val heights = fragments.map { it.bounds.height() }.sorted()
+  return heights[heights.size / 4].coerceAtLeast(1)
 }
