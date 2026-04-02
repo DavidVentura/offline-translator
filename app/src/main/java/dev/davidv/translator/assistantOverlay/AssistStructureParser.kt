@@ -53,8 +53,9 @@ class AssistStructureParser {
     val nodeBg = node.textBackgroundColor.takeIf { it != 0 && Color.alpha(it) > 0 }
     val effectiveBg = nodeBg ?: inheritedBg
 
-    val nodeLeft = baseLeft + node.left - node.scrollX
-    val nodeTop = baseTop + node.top - node.scrollY
+    val isWebView = className == "android.webkit.WebView"
+    val nodeLeft = baseLeft + node.left - (if (isWebView) 0 else node.scrollX)
+    val nodeTop = baseTop + node.top - (if (isWebView) 0 else node.scrollY)
     val bounds =
       Rect(
         nodeLeft,

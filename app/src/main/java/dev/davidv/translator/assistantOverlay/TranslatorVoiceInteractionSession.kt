@@ -10,6 +10,12 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.service.voice.VoiceInteractionSession
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
+import android.text.style.StrikethroughSpan
+import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
@@ -312,14 +318,34 @@ class TranslatorVoiceInteractionSession(
       }
 
       overlayContainer.removeAllViews()
+      val screenHeight = context.resources.displayMetrics.heightPixels
+      val items = mutableListOf<OverlayItem>()
       for ((originalText, groupedBlocks) in blocksByText) {
         val translatedText = translatedByText[originalText] ?: continue
         for (block in groupedBlocks) {
-          addOverlayBlock(
-            translatedText = translatedText,
-            block = block,
-            colors = resolveColors(block, screenshot),
-          )
+          val adjustedTop = block.bounds.top - systemBarTop
+          val adjustedBottom = block.bounds.bottom - systemBarTop
+          val visibleHeight = minOf(adjustedBottom, screenHeight) - maxOf(adjustedTop, 0)
+          if (visibleHeight < block.bounds.height() / 2) continue
+          items.add(OverlayItem(translatedText, block, resolveColors(block, screenshot)))
+        }
+      }
+      Log.d(tag, "Overlay items: ${items.size}, blocksByText keys: ${blocksByText.keys.toList()}")
+      items.forEachIndexed { i, item ->
+        Log.d(tag, "Item[$i] original=${item.block.text} translated=${item.translatedText} bounds=${item.block.bounds.toShortString()}")
+      }
+      val groups = groupOverlapping(items)
+      groups.forEachIndexed { gi, group ->
+        group.forEachIndexed { ii, item ->
+          Log.d(tag, "Group[$gi][$ii] text=${item.translatedText} bounds=${item.block.bounds.toShortString()}")
+        }
+      }
+      for (group in groups) {
+        if (group.size == 1) {
+          val item = group.first()
+          addOverlayBlock(item.translatedText, item.block, item.colors)
+        } else {
+          addOverlayGroup(group)
         }
       }
 
@@ -462,6 +488,132 @@ class TranslatorVoiceInteractionSession(
       }
     overlayContainer.addView(container, params)
   }
+
+  private fun groupOverlapping(items: List<OverlayItem>): List<List<OverlayItem>> {
+    val groups = mutableListOf<MutableList<OverlayItem>>()
+    for (item in items) {
+      val itemBg = item.block.style?.textBackgroundColor
+      val overlapping =
+        groups.filter { group ->
+          group.any { existing ->
+            Rect.intersects(existing.block.bounds, item.block.bounds) &&
+              existing.block.style?.textBackgroundColor == itemBg
+          }
+        }
+      if (overlapping.isEmpty()) {
+        groups.add(mutableListOf(item))
+      } else {
+        val merged = mutableListOf<OverlayItem>()
+        for (group in overlapping) {
+          merged.addAll(group)
+          groups.remove(group)
+        }
+        merged.add(item)
+        groups.add(merged)
+      }
+    }
+    return groups
+  }
+
+  private fun addOverlayGroup(group: List<OverlayItem>) {
+    val unionBounds = Rect(group.first().block.bounds)
+    for (item in group.drop(1)) unionBounds.union(item.block.bounds)
+
+    val screenWidth = context.resources.displayMetrics.widthPixels
+    val screenHeight = context.resources.displayMetrics.heightPixels
+    val left = unionBounds.left.coerceIn(0, screenWidth - 1)
+    val top = (unionBounds.top - systemBarTop).coerceIn(0, screenHeight - 1)
+    val width = maxOf(dpToPx(48), minOf(unionBounds.width(), screenWidth - left))
+    val targetHeight = unionBounds.height().coerceAtLeast(1)
+
+    val ssb = SpannableStringBuilder()
+    var representativeStyle: CapturedTextStyle? = null
+    for (item in group) {
+      if (ssb.isNotEmpty() && !ssb.endsWith(' ') && !item.translatedText.startsWith(' ')) {
+        ssb.append(' ')
+      }
+      val start = ssb.length
+      ssb.append(item.translatedText)
+      val end = ssb.length
+      ssb.setSpan(ForegroundColorSpan(item.colors.foreground), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+      val styleBits = item.block.style?.styleBits ?: 0
+      if (styleBits and AssistStructure.ViewNode.TEXT_STYLE_BOLD != 0) {
+        ssb.setSpan(StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+      }
+      if (styleBits and AssistStructure.ViewNode.TEXT_STYLE_ITALIC != 0) {
+        ssb.setSpan(StyleSpan(Typeface.ITALIC), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+      }
+      if (styleBits and AssistStructure.ViewNode.TEXT_STYLE_UNDERLINE != 0) {
+        ssb.setSpan(UnderlineSpan(), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+      }
+      if (styleBits and AssistStructure.ViewNode.TEXT_STYLE_STRIKE_THRU != 0) {
+        ssb.setSpan(StrikethroughSpan(), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+      }
+      if (representativeStyle == null) representativeStyle = item.block.style
+    }
+
+    val style = representativeStyle
+    val initialTextSizePx =
+      style?.textSizePx
+        ?.takeIf { it > 0f }
+        ?.let { normalizeReportedTextSizePx(it, group.first().block.fromWebView) }
+        ?.times(settingsManager.settings.value.fontFactor)
+        ?: minOf(48f * context.resources.displayMetrics.scaledDensity, targetHeight.toFloat())
+          .coerceAtLeast(12f)
+
+    val container =
+      FrameLayout(context).apply {
+        background =
+          GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dpToPx(8).toFloat()
+            setColor(group.first().colors.background)
+          }
+      }
+
+    val textView =
+      TextView(context).apply {
+        text = ssb
+        setPadding(0, 0, 0, 0)
+        gravity = Gravity.START or Gravity.CENTER_VERTICAL
+        maxLines = 20
+        setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE)
+        setTextSize(
+          TypedValue.COMPLEX_UNIT_PX,
+          findFittingTextSizePx(
+            translatedText = ssb.toString(),
+            width = width,
+            targetHeight = targetHeight,
+            initialTextSizePx = initialTextSizePx,
+            styleBits = style?.styleBits ?: 0,
+          ),
+        )
+      }
+
+    container.addView(
+      textView,
+      FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT,
+      ),
+    )
+
+    val params =
+      FrameLayout.LayoutParams(
+        width,
+        targetHeight,
+      ).apply {
+        leftMargin = left
+        topMargin = top
+      }
+    overlayContainer.addView(container, params)
+  }
+
+  private data class OverlayItem(
+    val translatedText: String,
+    val block: CapturedTextBlock,
+    val colors: OverlayColors,
+  )
 
   private fun applyTextStyle(
     textView: TextView,
