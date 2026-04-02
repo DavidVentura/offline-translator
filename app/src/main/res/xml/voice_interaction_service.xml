@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<voice-interaction-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:recognitionService="dev.davidv.translator.assistantOverlay.TranslatorRecognitionService"
+    android:sessionService="dev.davidv.translator.assistantOverlay.TranslatorVoiceInteractionSessionService"
+    android:settingsActivity="dev.davidv.translator.MainActivity"
+    android:supportsAssist="true"
+    android:supportsLaunchVoiceAssistFromKeyguard="false" />
