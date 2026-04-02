@@ -18,6 +18,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import dev.davidv.bergamot.TokenAlignment
 import dev.davidv.translator.BatchAlignedTranslationResult
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
@@ -28,8 +29,9 @@ import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.StyledFragment
 import dev.davidv.translator.TranslatedStyledBlock
 import dev.davidv.translator.TranslationCoordinator
+import dev.davidv.translator.TranslationSegment
 import dev.davidv.translator.clusterFragmentsIntoBlocks
-import dev.davidv.translator.mapStylesToTranslation
+import dev.davidv.translator.mapStylesToSegmentedTranslation
 import dev.davidv.translator.overlayChrome.OverlayChromeFactory
 import dev.davidv.translator.overlayChrome.OverlayMenuHost
 import dev.davidv.translator.overlayChrome.OverlayMenuManager
@@ -498,14 +500,38 @@ class TranslatorVoiceInteractionSession(
           return@launch
         }
 
-        val texts = blocks.map { it.text }.toTypedArray()
-        when (val result = translationCoordinator.translateTextsWithAlignment(sourceLanguage, targetLanguage, texts)) {
+        val allSegmentTexts = mutableListOf<String>()
+
+        data class SegmentRef(val blockIdx: Int, val segment: TranslationSegment)
+        val segmentRefs = mutableListOf<SegmentRef>()
+        for ((blockIdx, block) in blocks.withIndex()) {
+          for (segment in block.segments) {
+            allSegmentTexts.add(block.text.substring(segment.start, segment.end))
+            segmentRefs.add(SegmentRef(blockIdx, segment))
+          }
+        }
+
+        when (val result = translationCoordinator.translateTextsWithAlignment(sourceLanguage, targetLanguage, allSegmentTexts.toTypedArray())) {
           is BatchAlignedTranslationResult.Success -> {
             val translatedBlocks =
-              result.results.mapIndexed { idx, translation ->
-                val sourceBlock = blocks[idx]
-                val styleSpans = mapStylesToTranslation(sourceBlock, translation.alignments, translation.target)
-                TranslatedStyledBlock(translation.target, sourceBlock.bounds, styleSpans)
+              blocks.mapIndexed { blockIdx, sourceBlock ->
+                val blockSegmentResults =
+                  result.results
+                    .zip(segmentRefs)
+                    .filter { it.second.blockIdx == blockIdx }
+
+                val translatedText = StringBuilder()
+                val segmentAlignments = mutableListOf<Pair<TranslationSegment, Array<TokenAlignment>>>()
+                val translatedSegments = mutableListOf<Pair<TranslationSegment, String>>()
+
+                for ((translation, ref) in blockSegmentResults) {
+                  translatedSegments.add(ref.segment to translation.target)
+                  segmentAlignments.add(ref.segment to translation.alignments)
+                  translatedText.append(translation.target)
+                }
+
+                val styleSpans = mapStylesToSegmentedTranslation(sourceBlock, segmentAlignments, translatedSegments)
+                TranslatedStyledBlock(translatedText.toString(), sourceBlock.bounds, styleSpans)
               }
             ensureActive()
             overlayRenderer.renderStyledBlocks(overlayContainer, translatedBlocks, screenshot, systemBarTop)

@@ -23,7 +23,8 @@ data class StyledFragment(
   val text: String,
   val bounds: Rect,
   val style: TextStyle? = null,
-  val group: Int = 0,
+  val layoutGroup: Int = 0,
+  val translationGroup: Int = 0,
 )
 
 data class StyleSpan(
@@ -32,10 +33,17 @@ data class StyleSpan(
   val style: TextStyle?,
 )
 
+data class TranslationSegment(
+  val start: Int,
+  val end: Int,
+  val translationGroup: Int,
+)
+
 data class TranslatableBlock(
   val text: String,
   val bounds: Rect,
   val styleSpans: List<StyleSpan>,
+  val segments: List<TranslationSegment>,
 )
 
 data class TranslatedStyledBlock(
@@ -52,12 +60,12 @@ fun clusterFragmentsIntoBlocks(fragments: List<StyledFragment>): List<Translatab
 
   val blockGroups = mutableListOf<MutableList<StyledFragment>>()
   val blockBounds = mutableListOf<Rect>()
-  val blockGroupIds = mutableListOf<Int>()
+  val blockLayoutGroupIds = mutableListOf<Int>()
 
   for (fragment in fragments) {
     var merged = false
     for (i in blockGroups.indices) {
-      if (blockGroupIds[i] != fragment.group) continue
+      if (blockLayoutGroupIds[i] != fragment.layoutGroup) continue
       val bb = blockBounds[i]
       val vOverlap = minOf(bb.bottom, fragment.bounds.bottom) - maxOf(bb.top, fragment.bounds.top)
       val vGap = fragment.bounds.top - bb.bottom
@@ -76,7 +84,7 @@ fun clusterFragmentsIntoBlocks(fragments: List<StyledFragment>): List<Translatab
     if (!merged) {
       blockGroups.add(mutableListOf(fragment))
       blockBounds.add(Rect(fragment.bounds))
-      blockGroupIds.add(fragment.group)
+      blockLayoutGroupIds.add(fragment.layoutGroup)
     }
   }
 
@@ -114,6 +122,42 @@ fun mapStylesToTranslation(
   return merged
 }
 
+fun mapStylesToSegmentedTranslation(
+  sourceBlock: TranslatableBlock,
+  segmentAlignments: List<Pair<TranslationSegment, Array<TokenAlignment>>>,
+  translatedSegments: List<Pair<TranslationSegment, String>>,
+): List<StyleSpan> {
+  val result = mutableListOf<StyleSpan>()
+  var targetOffset = 0
+
+  for ((segment, translated) in translatedSegments) {
+    val alignments = segmentAlignments.firstOrNull { it.first == segment }?.second ?: emptyArray()
+
+    for (alignment in alignments) {
+      val srcMid = segment.start + (alignment.srcBegin + alignment.srcEnd) / 2
+      val matchingSpan =
+        sourceBlock.styleSpans.firstOrNull { srcMid in it.start until it.end }
+          ?: continue
+      result.add(StyleSpan(targetOffset + alignment.tgtBegin, targetOffset + alignment.tgtEnd, matchingSpan.style))
+    }
+
+    targetOffset += translated.length
+  }
+
+  if (result.isEmpty()) return emptyList()
+  val sorted = result.sortedBy { it.start }
+  val merged = mutableListOf(sorted.first())
+  for (span in sorted.drop(1)) {
+    val last = merged.last()
+    if (span.style == last.style && span.start <= last.end) {
+      merged[merged.lastIndex] = StyleSpan(last.start, maxOf(last.end, span.end), last.style)
+    } else {
+      merged.add(span)
+    }
+  }
+  return merged
+}
+
 private fun buildBlock(
   fragments: List<StyledFragment>,
   bounds: Rect,
@@ -121,10 +165,20 @@ private fun buildBlock(
   val lines = clusterIntoLines(fragments)
   val sb = StringBuilder()
   val spans = mutableListOf<StyleSpan>()
+  val segments = mutableListOf<TranslationSegment>()
+  var currentTransGroup = fragments.firstOrNull()?.translationGroup ?: 0
+  var segmentStart = 0
 
   for ((lineIdx, line) in lines.withIndex()) {
     if (lineIdx > 0) sb.append('\n')
     for ((fragIdx, fragment) in line.withIndex()) {
+      if (fragment.translationGroup != currentTransGroup) {
+        if (sb.length > segmentStart) {
+          segments.add(TranslationSegment(segmentStart, sb.length, currentTransGroup))
+        }
+        currentTransGroup = fragment.translationGroup
+        segmentStart = sb.length
+      }
       if (fragIdx > 0 && sb.isNotEmpty() && !sb.last().isWhitespace()) {
         sb.append(' ')
       }
@@ -136,7 +190,11 @@ private fun buildBlock(
     }
   }
 
-  return TranslatableBlock(sb.toString(), bounds, spans)
+  if (sb.length > segmentStart) {
+    segments.add(TranslationSegment(segmentStart, sb.length, currentTransGroup))
+  }
+
+  return TranslatableBlock(sb.toString(), bounds, spans, segments)
 }
 
 private fun clusterIntoLines(fragments: List<StyledFragment>): List<List<StyledFragment>> {

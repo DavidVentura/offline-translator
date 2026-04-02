@@ -195,7 +195,6 @@ class OverlayRenderer(
     return color
   }
 
-
   private fun findFittingTextSizePx(
     translatedText: String,
     width: Int,

@@ -138,14 +138,14 @@ class StyledTextPipelineTest {
   fun `fragments in different groups do not merge even with vertical overlap`() {
     val webViewContent =
       listOf(
-        StyledFragment("Article text here", Rect(42, 1842, 1012, 2088), group = 0),
-        StyledFragment("Quick facts", Rect(73, 2185, 277, 2233), group = 0),
+        StyledFragment("Article text here", Rect(42, 1842, 1012, 2088), layoutGroup = 0),
+        StyledFragment("Quick facts", Rect(73, 2185, 277, 2233), layoutGroup = 0),
       )
     val nativeToolbar =
       listOf(
-        StyledFragment("Save", Rect(0, 2085, 216, 2274), group = 1),
-        StyledFragment("Language", Rect(216, 2085, 432, 2274), group = 1),
-        StyledFragment("Contents", Rect(864, 2085, 1080, 2274), group = 1),
+        StyledFragment("Save", Rect(0, 2085, 216, 2274), layoutGroup = 1),
+        StyledFragment("Language", Rect(216, 2085, 432, 2274), layoutGroup = 1),
+        StyledFragment("Contents", Rect(864, 2085, 1080, 2274), layoutGroup = 1),
       )
 
     val blocks = clusterFragmentsIntoBlocks(webViewContent + nativeToolbar)
@@ -180,6 +180,41 @@ class StyledTextPipelineTest {
     assert(numberBlocks.none { nb -> contentBlocks.any { cb -> nb.text in cb.text } }) {
       "Number column should not be merged into content blocks"
     }
+  }
+
+  @Test
+  fun `fragments with different translation groups produce separate segments in one block`() {
+    val pill = TextStyle(textColor = 0xFFFFFFFF.toInt(), bgColor = 0xFF336699.toInt())
+    val normal = TextStyle(textColor = 0xFF000000.toInt())
+    val fragments =
+      listOf(
+        StyledFragment("Title of the post", Rect(94, 443, 921, 555), normal, translationGroup = 1),
+        StyledFragment("programming", Rect(588, 513, 755, 547), pill, translationGroup = 2),
+        StyledFragment("benhoyt.com", Rect(94, 567, 331, 617), normal, translationGroup = 3),
+      )
+
+    val blocks = clusterFragmentsIntoBlocks(fragments)
+    assertEquals(1, blocks.size)
+
+    val block = blocks[0]
+    assertEquals(3, block.segments.size)
+    assertEquals("Title of the post", block.text.substring(block.segments[0].start, block.segments[0].end).trim())
+    assertEquals("programming", block.text.substring(block.segments[1].start, block.segments[1].end).trim())
+  }
+
+  @Test
+  fun `same translation group fragments stay in one segment`() {
+    val normal = TextStyle(textColor = 0xFF000000.toInt())
+    val fragments =
+      listOf(
+        StyledFragment("Hello", Rect(10, 100, 60, 130), normal, translationGroup = 1),
+        StyledFragment("world", Rect(65, 100, 120, 130), normal, translationGroup = 1),
+      )
+
+    val blocks = clusterFragmentsIntoBlocks(fragments)
+    assertEquals(1, blocks.size)
+    assertEquals(1, blocks[0].segments.size)
+    assertEquals("Hello world", blocks[0].text)
   }
 
   @Test

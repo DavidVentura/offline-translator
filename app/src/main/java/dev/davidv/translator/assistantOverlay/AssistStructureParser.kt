@@ -35,16 +35,23 @@ class AssistStructureParser(
       )
     }
 
-    return fragments
-      .distinctBy { "${it.bounds.flattenToString()}|${normalizeText(it.text)}" }
-      .map {
-        StyledFragment(
-          it.text,
-          TranslatorRect(it.bounds.left, it.bounds.top, it.bounds.right, it.bounds.bottom),
-          it.style,
-          group = if (!it.fromWebView) 1 else 0,
-        )
+    val distinct = fragments.distinctBy { "${it.bounds.flattenToString()}|${normalizeText(it.text)}" }
+    var currentTransGroup = 0
+    var lastBgColor: Int? = null
+    return distinct.map {
+      val bgColor = it.style?.bgColor
+      if (bgColor != lastBgColor) {
+        currentTransGroup++
+        lastBgColor = bgColor
       }
+      StyledFragment(
+        it.text,
+        TranslatorRect(it.bounds.left, it.bounds.top, it.bounds.right, it.bounds.bottom),
+        it.style,
+        layoutGroup = if (!it.fromWebView) 1 else 0,
+        translationGroup = currentTransGroup,
+      )
+    }
   }
 
   private fun collectFragmentsRecursive(
