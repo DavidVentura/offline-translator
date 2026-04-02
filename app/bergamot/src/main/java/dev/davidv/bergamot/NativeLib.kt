@@ -35,11 +35,22 @@ class NativeLib {
     key: String,
   ): Array<String>
 
+  external fun translateMultipleWithAlignment(
+    inputs: Array<String>,
+    key: String,
+  ): Array<TranslationWithAlignment>
+
   external fun pivotMultiple(
     firstKey: String,
     secondKey: String,
     inputs: Array<String>,
   ): Array<String>
+
+  external fun pivotMultipleWithAlignment(
+    firstKey: String,
+    secondKey: String,
+    inputs: Array<String>,
+  ): Array<TranslationWithAlignment>
 
   private external fun initializeService()
 
@@ -53,6 +64,19 @@ class NativeLib {
     }
   }
 }
+
+data class TokenAlignment(
+  val srcBegin: Int,
+  val srcEnd: Int,
+  val tgtBegin: Int,
+  val tgtEnd: Int,
+)
+
+data class TranslationWithAlignment(
+  val source: String,
+  val target: String,
+  val alignments: Array<TokenAlignment>,
+)
 
 data class DetectionResult(
   val language: String,

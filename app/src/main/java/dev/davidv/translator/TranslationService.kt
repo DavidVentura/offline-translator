@@ -19,6 +19,7 @@ package dev.davidv.translator
 
 import android.util.Log
 import dev.davidv.bergamot.NativeLib
+import dev.davidv.bergamot.TranslationWithAlignment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.system.measureTimeMillis
@@ -181,6 +182,54 @@ class TranslationService(
       }
     }
 
+  suspend fun translateMultipleWithAlignment(
+    from: Language,
+    to: Language,
+    texts: Array<String>,
+  ): BatchAlignedTranslationResult =
+    withContext(Dispatchers.IO) {
+      if (from == to) {
+        return@withContext BatchAlignedTranslationResult.Success(
+          texts.map { TranslationWithAlignment(it, it, emptyArray()) },
+        )
+      }
+      val translationPairs = getTranslationPairs(from, to)
+
+      for (pair in translationPairs) {
+        val lang =
+          if (pair.first == Language.ENGLISH) {
+            pair.second
+          } else {
+            pair.first
+          }
+        val dataFiles =
+          filePathManager
+            .getDataDir()
+            .listFiles()
+            ?.map { it.name }
+            ?.toSet() ?: emptySet()
+        if (missingFilesFrom(dataFiles, lang).second.isNotEmpty()) {
+          return@withContext BatchAlignedTranslationResult.Error(
+            "Language pair ${pair.first} -> ${pair.second} not installed",
+          )
+        }
+      }
+      preloadModel(from, to)
+
+      try {
+        val results: Array<TranslationWithAlignment>
+        val elapsed =
+          measureTimeMillis {
+            results = performTranslationsWithAlignment(translationPairs, texts)
+          }
+        Log.d("TranslationService", "aligned translation took ${elapsed}ms")
+        BatchAlignedTranslationResult.Success(results.toList())
+      } catch (e: Exception) {
+        Log.e("TranslationService", "Aligned translation failed", e)
+        BatchAlignedTranslationResult.Error("Translation failed: ${e.message}")
+      }
+    }
+
   private fun getTranslationPairs(
     from: Language,
     to: Language,
@@ -211,6 +260,26 @@ class TranslationService(
       val toEng = "${pairs[0].first.code}${pairs[0].second.code}"
       val fromEng = "${pairs[1].first.code}${pairs[1].second.code}"
       return nativeLib.pivotMultiple(toEng, fromEng, texts)
+    }
+    return emptyArray()
+  }
+
+  private fun performTranslationsWithAlignment(
+    pairs: List<Pair<Language, Language>>,
+    texts: Array<String>,
+  ): Array<TranslationWithAlignment> {
+    pairs.forEach { pair ->
+      val config = generateConfig(pair.first, pair.second)
+      val languageCode = "${pair.first.code}${pair.second.code}"
+      nativeLib.loadModelIntoCache(config, languageCode)
+    }
+    if (pairs.count() == 1) {
+      val code = "${pairs[0].first.code}${pairs[0].second.code}"
+      return nativeLib.translateMultipleWithAlignment(texts, code)
+    } else if (pairs.count() == 2) {
+      val toEng = "${pairs[0].first.code}${pairs[0].second.code}"
+      val fromEng = "${pairs[1].first.code}${pairs[1].second.code}"
+      return nativeLib.pivotMultipleWithAlignment(toEng, fromEng, texts)
     }
     return emptyArray()
   }
@@ -278,4 +347,14 @@ sealed class BatchTranslationResult {
   data class Error(
     val message: String,
   ) : BatchTranslationResult()
+}
+
+sealed class BatchAlignedTranslationResult {
+  data class Success(
+    val results: List<TranslationWithAlignment>,
+  ) : BatchAlignedTranslationResult()
+
+  data class Error(
+    val message: String,
+  ) : BatchAlignedTranslationResult()
 }

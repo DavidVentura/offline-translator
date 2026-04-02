@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+#include <algorithm>
 #include <android/log.h>
 #include "translator/byte_array_util.h"
 #include "translator/parser.h"
@@ -227,6 +228,238 @@ Java_dev_davidv_bergamot_NativeLib_pivotMultiple(
     env->ReleaseStringUTFChars(firstKey, c_firstKey);
     env->ReleaseStringUTFChars(secondKey, c_secondKey);
 
+    return result;
+}
+
+static size_t byteOffsetToCodepointOffset(const std::string& s, size_t byteOffset) {
+    size_t cp = 0;
+    for (size_t i = 0; i < byteOffset && i < s.size(); ) {
+        unsigned char c = s[i];
+        if (c < 0x80) i += 1;
+        else if ((c & 0xE0) == 0xC0) i += 2;
+        else if ((c & 0xF0) == 0xE0) i += 3;
+        else i += 4;
+        cp++;
+    }
+    return cp;
+}
+
+extern "C" __attribute__((visibility("default"))) JNIEXPORT jobjectArray JNICALL
+Java_dev_davidv_bergamot_NativeLib_translateMultipleWithAlignment(
+        JNIEnv *env,
+        jobject /* this */,
+        jobjectArray inputs,
+        jstring key) {
+
+    const char *c_key = env->GetStringUTFChars(key, nullptr);
+
+    jsize inputCount = env->GetArrayLength(inputs);
+    std::vector<std::string> cpp_inputs;
+    cpp_inputs.reserve(inputCount);
+    for (jsize i = 0; i < inputCount; i++) {
+        auto jstr = (jstring) env->GetObjectArrayElement(inputs, i);
+        const char *c_str = env->GetStringUTFChars(jstr, nullptr);
+        cpp_inputs.emplace_back(c_str);
+        env->ReleaseStringUTFChars(jstr, c_str);
+        env->DeleteLocalRef(jstr);
+    }
+
+    jobjectArray result = nullptr;
+    try {
+        initializeService();
+
+        std::string key_str(c_key);
+        std::shared_ptr<TranslationModel> model = model_cache[key_str];
+
+        std::vector<ResponseOptions> responseOptions;
+        responseOptions.reserve(cpp_inputs.size());
+        for (size_t i = 0; i < cpp_inputs.size(); ++i) {
+            ResponseOptions opts;
+            opts.HTML = false;
+            opts.qualityScores = false;
+            opts.alignment = true;
+            opts.sentenceMappings = false;
+            responseOptions.emplace_back(opts);
+        }
+
+        std::vector<Response> responses;
+        {
+            std::lock_guard<std::mutex> translation_lock(translation_mutex);
+            responses = global_service->translateMultiple(model, std::move(cpp_inputs), responseOptions);
+        }
+
+        jclass alignClass = env->FindClass("dev/davidv/bergamot/TokenAlignment");
+        jmethodID alignCtor = env->GetMethodID(alignClass, "<init>", "(IIII)V");
+
+        jclass resultClass = env->FindClass("dev/davidv/bergamot/TranslationWithAlignment");
+        jmethodID resultCtor = env->GetMethodID(resultClass, "<init>",
+            "(Ljava/lang/String;Ljava/lang/String;[Ldev/davidv/bergamot/TokenAlignment;)V");
+
+        result = env->NewObjectArray((jsize) responses.size(), resultClass, nullptr);
+
+        for (size_t i = 0; i < responses.size(); ++i) {
+            const auto& resp = responses[i];
+
+            std::vector<std::tuple<int, int, int, int>> aligns;
+            for (size_t s = 0; s < resp.source.numSentences(); ++s) {
+                size_t numTarget = resp.target.numWords(s);
+                size_t numSource = resp.source.numWords(s);
+                if (numSource == 0) continue;
+
+                for (size_t t = 0; t < numTarget; ++t) {
+                    ByteRange tgtRange = resp.target.wordAsByteRange(s, t);
+                    if (tgtRange.begin == tgtRange.end) continue;
+
+                    const auto& row = resp.alignments[s][t];
+                    size_t bestSrc = std::max_element(row.begin(), row.begin() + numSource) - row.begin();
+                    ByteRange srcRange = resp.source.wordAsByteRange(s, bestSrc);
+
+                    aligns.emplace_back(
+                        (int) byteOffsetToCodepointOffset(resp.source.text, srcRange.begin),
+                        (int) byteOffsetToCodepointOffset(resp.source.text, srcRange.end),
+                        (int) byteOffsetToCodepointOffset(resp.target.text, tgtRange.begin),
+                        (int) byteOffsetToCodepointOffset(resp.target.text, tgtRange.end)
+                    );
+                }
+            }
+
+            jobjectArray alignArray = env->NewObjectArray((jsize) aligns.size(), alignClass, nullptr);
+            for (size_t j = 0; j < aligns.size(); ++j) {
+                auto [sb, se, tb, te] = aligns[j];
+                jobject alignObj = env->NewObject(alignClass, alignCtor, sb, se, tb, te);
+                env->SetObjectArrayElement(alignArray, (jsize) j, alignObj);
+                env->DeleteLocalRef(alignObj);
+            }
+
+            jstring jSource = env->NewStringUTF(resp.source.text.c_str());
+            jstring jTarget = env->NewStringUTF(resp.target.text.c_str());
+
+            jobject resultObj = env->NewObject(resultClass, resultCtor, jSource, jTarget, alignArray);
+            env->SetObjectArrayElement(result, (jsize) i, resultObj);
+
+            env->DeleteLocalRef(jSource);
+            env->DeleteLocalRef(jTarget);
+            env->DeleteLocalRef(alignArray);
+            env->DeleteLocalRef(resultObj);
+        }
+    } catch (const std::exception &e) {
+        jclass exceptionClass = env->FindClass("java/lang/RuntimeException");
+        env->ThrowNew(exceptionClass, e.what());
+    }
+
+    env->ReleaseStringUTFChars(key, c_key);
+    return result;
+}
+
+extern "C" __attribute__((visibility("default"))) JNIEXPORT jobjectArray JNICALL
+Java_dev_davidv_bergamot_NativeLib_pivotMultipleWithAlignment(
+        JNIEnv *env,
+        jobject /* this */,
+        jstring firstKey,
+        jstring secondKey,
+        jobjectArray inputs) {
+
+    const char *c_firstKey = env->GetStringUTFChars(firstKey, nullptr);
+    const char *c_secondKey = env->GetStringUTFChars(secondKey, nullptr);
+
+    jsize inputCount = env->GetArrayLength(inputs);
+    std::vector<std::string> cpp_inputs;
+    cpp_inputs.reserve(inputCount);
+    for (jsize i = 0; i < inputCount; i++) {
+        auto jstr = (jstring) env->GetObjectArrayElement(inputs, i);
+        const char *c_str = env->GetStringUTFChars(jstr, nullptr);
+        cpp_inputs.emplace_back(c_str);
+        env->ReleaseStringUTFChars(jstr, c_str);
+        env->DeleteLocalRef(jstr);
+    }
+
+    jobjectArray result = nullptr;
+    try {
+        initializeService();
+
+        std::string first_key_str(c_firstKey);
+        std::string second_key_str(c_secondKey);
+        std::shared_ptr<TranslationModel> firstModel = model_cache[first_key_str];
+        std::shared_ptr<TranslationModel> secondModel = model_cache[second_key_str];
+
+        std::vector<ResponseOptions> responseOptions;
+        responseOptions.reserve(cpp_inputs.size());
+        for (size_t i = 0; i < cpp_inputs.size(); ++i) {
+            ResponseOptions opts;
+            opts.HTML = false;
+            opts.qualityScores = false;
+            opts.alignment = true;
+            opts.sentenceMappings = false;
+            responseOptions.emplace_back(opts);
+        }
+
+        std::vector<Response> responses;
+        {
+            std::lock_guard<std::mutex> translation_lock(translation_mutex);
+            responses = global_service->pivotMultiple(firstModel, secondModel, std::move(cpp_inputs), responseOptions);
+        }
+
+        jclass alignClass = env->FindClass("dev/davidv/bergamot/TokenAlignment");
+        jmethodID alignCtor = env->GetMethodID(alignClass, "<init>", "(IIII)V");
+
+        jclass resultClass = env->FindClass("dev/davidv/bergamot/TranslationWithAlignment");
+        jmethodID resultCtor = env->GetMethodID(resultClass, "<init>",
+            "(Ljava/lang/String;Ljava/lang/String;[Ldev/davidv/bergamot/TokenAlignment;)V");
+
+        result = env->NewObjectArray((jsize) responses.size(), resultClass, nullptr);
+
+        for (size_t i = 0; i < responses.size(); ++i) {
+            const auto& resp = responses[i];
+
+            std::vector<std::tuple<int, int, int, int>> aligns;
+            for (size_t s = 0; s < resp.source.numSentences(); ++s) {
+                size_t numTarget = resp.target.numWords(s);
+                size_t numSource = resp.source.numWords(s);
+                if (numSource == 0) continue;
+
+                for (size_t t = 0; t < numTarget; ++t) {
+                    ByteRange tgtRange = resp.target.wordAsByteRange(s, t);
+                    if (tgtRange.begin == tgtRange.end) continue;
+
+                    const auto& row = resp.alignments[s][t];
+                    size_t bestSrc = std::max_element(row.begin(), row.begin() + numSource) - row.begin();
+                    ByteRange srcRange = resp.source.wordAsByteRange(s, bestSrc);
+
+                    aligns.emplace_back(
+                        (int) byteOffsetToCodepointOffset(resp.source.text, srcRange.begin),
+                        (int) byteOffsetToCodepointOffset(resp.source.text, srcRange.end),
+                        (int) byteOffsetToCodepointOffset(resp.target.text, tgtRange.begin),
+                        (int) byteOffsetToCodepointOffset(resp.target.text, tgtRange.end)
+                    );
+                }
+            }
+
+            jobjectArray alignArray = env->NewObjectArray((jsize) aligns.size(), alignClass, nullptr);
+            for (size_t j = 0; j < aligns.size(); ++j) {
+                auto [sb, se, tb, te] = aligns[j];
+                jobject alignObj = env->NewObject(alignClass, alignCtor, sb, se, tb, te);
+                env->SetObjectArrayElement(alignArray, (jsize) j, alignObj);
+                env->DeleteLocalRef(alignObj);
+            }
+
+            jstring jSource = env->NewStringUTF(resp.source.text.c_str());
+            jstring jTarget = env->NewStringUTF(resp.target.text.c_str());
+
+            jobject resultObj = env->NewObject(resultClass, resultCtor, jSource, jTarget, alignArray);
+            env->SetObjectArrayElement(result, (jsize) i, resultObj);
+
+            env->DeleteLocalRef(jSource);
+            env->DeleteLocalRef(jTarget);
+            env->DeleteLocalRef(alignArray);
+            env->DeleteLocalRef(resultObj);
+        }
+    } catch (const std::exception &e) {
+        jclass exceptionClass = env->FindClass("java/lang/RuntimeException");
+        env->ThrowNew(exceptionClass, e.what());
+    }
+
+    env->ReleaseStringUTFChars(firstKey, c_firstKey);
+    env->ReleaseStringUTFChars(secondKey, c_secondKey);
     return result;
 }
 
