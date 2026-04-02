@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.provider.Settings
 import android.service.voice.VoiceInteractionSession
 import android.util.Log
 import android.util.TypedValue
@@ -46,6 +47,11 @@ class TranslatorVoiceInteractionSession(
   private val overlayTextTranslationHelper: OverlayTextTranslationHelper,
   private val langStateManager: LanguageStateManager,
 ) : VoiceInteractionSession(context) {
+  companion object {
+    private const val ASSIST_STRUCTURE_ENABLED_SETTING = "assist_structure_enabled"
+    private const val ASSIST_SCREENSHOT_ENABLED_SETTING = "assist_screenshot_enabled"
+  }
+
   private val tag = "TranslatorAssistant"
   private val assistCollectionTimeoutMs = 1500L
   private val sessionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -93,6 +99,8 @@ class TranslatorVoiceInteractionSession(
   private var assistCollectionTimedOut = false
   private var assistCollectionTimeoutJob: Job? = null
   private var statusHideJob: Job? = null
+  private var hasReceivedAssistCallback = false
+  private var hasReceivedScreenshotCallback = false
 
   override fun onCreate() {
     super.onCreate()
@@ -244,6 +252,33 @@ class TranslatorVoiceInteractionSession(
     dismissMenu()
     showStatus("Collecting screen context...")
     showLoading(true)
+    startBorderPulse()
+
+    val assistStructureEnabled = isAssistStructureEnabled()
+    val assistScreenshotEnabled = isAssistScreenshotEnabled()
+    if (!assistStructureEnabled && !assistScreenshotEnabled) {
+      Log.w(tag, "AssistStructure and screenshot capture are both disabled in system settings")
+      showLoading(false)
+      stopBorderPulse()
+      showStatus("Screen access is disabled for this assistant. Enable 'Use text from screen' or use the floating shortcut.")
+      return
+    }
+
+    if (!assistStructureEnabled) {
+      val sourceLanguage = forcedSourceLanguage ?: settingsManager.settings.value.defaultSourceLanguage
+      if (!assistScreenshotEnabled || sourceLanguage == null) {
+        Log.w(
+          tag,
+          "AssistStructure is disabled and OCR fallback is unavailable (screenshot=$assistScreenshotEnabled source=${sourceLanguage != null})",
+        )
+        showLoading(false)
+        stopBorderPulse()
+        showStatus("Text from screen is disabled. Enable it or set a default source language for OCR fallback.")
+        return
+      }
+      showStatus("Text from screen is disabled, waiting for screenshot OCR fallback...")
+    }
+
     scheduleAssistCollectionTimeout()
   }
 
@@ -271,6 +306,7 @@ class TranslatorVoiceInteractionSession(
 
   override fun onHandleAssist(state: AssistState) {
     super.onHandleAssist(state)
+    hasReceivedAssistCallback = true
     expectedAssistCount = maxOf(expectedAssistCount ?: 0, state.count)
     if (state.index >= 0) {
       receivedAssistIndexes += state.index
@@ -279,6 +315,14 @@ class TranslatorVoiceInteractionSession(
     val structure = state.assistStructure
     if (structure == null) {
       Log.w(tag, "AssistStructure missing for index=${state.index}")
+      if (!isAssistScreenshotEnabled()) {
+        cancelAssistCollectionTimeout()
+        processing = false
+        showLoading(false)
+        stopBorderPulse()
+        showStatus("This app did not provide screen text, and screenshot fallback is disabled.")
+        return
+      }
       if (!assistFallbackMessageShown) {
         assistFallbackMessageShown = true
         assistFallbackStatusPendingHide = true
@@ -295,6 +339,7 @@ class TranslatorVoiceInteractionSession(
 
   override fun onHandleScreenshot(screenshot: Bitmap?) {
     super.onHandleScreenshot(screenshot)
+    hasReceivedScreenshotCallback = true
     val oldSs = screenshotBitmap
     val oldCr = croppedBitmap
     oldSs?.recycle()
@@ -312,6 +357,7 @@ class TranslatorVoiceInteractionSession(
     val haveAllAssistStates = expectedCount != null && receivedAssistIndexes.size >= expectedCount
     val assistReady = haveAllAssistStates || assistCollectionTimedOut
     val screenshotReady = screenshotBitmap != null
+    val noCaptureCallbacksArrived = !hasReceivedAssistCallback && !hasReceivedScreenshotCallback
 
     if (capturedBlocks.isNotEmpty() && (screenshotReady || assistReady)) {
       cancelAssistCollectionTimeout()
@@ -330,6 +376,26 @@ class TranslatorVoiceInteractionSession(
       cancelAssistCollectionTimeout()
       processing = true
       runOcrFallback(screenshotBitmap ?: return)
+      return
+    }
+
+    if (assistReady && capturedBlocks.isEmpty() && !screenshotReady) {
+      cancelAssistCollectionTimeout()
+      Log.w(tag, "Assist capture completed without usable text or screenshot")
+      processing = false
+      showLoading(false)
+      stopBorderPulse()
+      showStatus("No usable screen data received. Enable screenshots for the assistant or use the floating shortcut.")
+      return
+    }
+
+    if (assistCollectionTimedOut && noCaptureCallbacksArrived) {
+      cancelAssistCollectionTimeout()
+      Log.w(tag, "No AssistStructure or screenshot callback arrived before timeout")
+      processing = false
+      showLoading(false)
+      showStatus("No screen data received. Enable 'Use text from screen' for this assistant or use the floating shortcut.")
+      stopBorderPulse()
     }
   }
 
@@ -340,8 +406,16 @@ class TranslatorVoiceInteractionSession(
       sessionScope.launch {
         delay(assistCollectionTimeoutMs)
         assistCollectionTimedOut = true
-        if (!processing && screenshotBitmap != null) {
-          Log.w(tag, "Timed out waiting for complete assist data; continuing with available capture")
+        if (!processing) {
+          when {
+            screenshotBitmap != null -> {
+              Log.w(tag, "Timed out waiting for complete assist data; continuing with available capture")
+            }
+
+            !hasReceivedAssistCallback && !hasReceivedScreenshotCallback -> {
+              Log.w(tag, "Timed out waiting for any assist capture callback")
+            }
+          }
         }
         maybeProcessCapture()
       }
@@ -479,6 +553,7 @@ class TranslatorVoiceInteractionSession(
     return container
   }
 
+  @Suppress("DEPRECATION")
   private fun configureSessionWindow() {
     val dialog = window ?: return
     val win = dialog.window ?: return
@@ -548,12 +623,20 @@ class TranslatorVoiceInteractionSession(
     assistFallbackMessageShown = false
     assistFallbackStatusPendingHide = false
     assistCollectionTimedOut = false
+    hasReceivedAssistCallback = false
+    hasReceivedScreenshotCallback = false
     cancelAssistCollectionTimeout()
     statusHideJob?.cancel()
     statusHideJob = null
   }
 
   private fun dpToPx(dp: Int): Int = (dp * context.resources.displayMetrics.density).toInt()
+
+  private fun isAssistStructureEnabled(): Boolean =
+    Settings.Secure.getInt(context.contentResolver, ASSIST_STRUCTURE_ENABLED_SETTING, 1) != 0
+
+  private fun isAssistScreenshotEnabled(): Boolean =
+    Settings.Secure.getInt(context.contentResolver, ASSIST_SCREENSHOT_ENABLED_SETTING, 1) != 0
 
   private fun buildTopBar(): View {
     val toolbarViews =
