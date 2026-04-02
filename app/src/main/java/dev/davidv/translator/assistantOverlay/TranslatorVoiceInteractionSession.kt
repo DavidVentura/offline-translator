@@ -110,7 +110,7 @@ class TranslatorVoiceInteractionSession(
 
   override fun onCreateContentView(): View {
     rootView = FrameLayout(context)
-    rootView.setBackgroundColor(Color.BLACK)
+    rootView.setBackgroundColor(Color.TRANSPARENT)
     rootView.setOnApplyWindowInsetsListener { _, insets -> insets }
     menuManager =
       OverlayMenuManager(
@@ -162,7 +162,7 @@ class TranslatorVoiceInteractionSession(
     screenshotView =
       ImageView(context).apply {
         scaleType = ImageView.ScaleType.FIT_XY
-        setBackgroundColor(Color.BLACK)
+        setBackgroundColor(Color.TRANSPARENT)
       }
     rootView.addView(
       screenshotView,
@@ -238,6 +238,7 @@ class TranslatorVoiceInteractionSession(
 
     showStatus("Invoke this assistant on top of text to translate it")
     showLoading(false)
+    updateBackdrop()
     return rootView
   }
 
@@ -250,12 +251,17 @@ class TranslatorVoiceInteractionSession(
     clearCapture()
     overlayContainer.removeAllViews()
     dismissMenu()
+    updateBackdrop()
     showStatus("Collecting screen context...")
     showLoading(true)
     startBorderPulse()
 
     val assistStructureEnabled = isAssistStructureEnabled()
     val assistScreenshotEnabled = isAssistScreenshotEnabled()
+    Log.d(
+      tag,
+      "Showing assistant session flags=$showFlags assistStructureEnabled=$assistStructureEnabled assistScreenshotEnabled=$assistScreenshotEnabled forcedSource=${forcedSourceLanguage?.code} forcedTarget=${forcedTargetLanguage?.code} defaultSource=${settingsManager.settings.value.defaultSourceLanguage?.code} defaultTarget=${settingsManager.settings.value.defaultTargetLanguage.code}",
+    )
     if (!assistStructureEnabled && !assistScreenshotEnabled) {
       Log.w(tag, "AssistStructure and screenshot capture are both disabled in system settings")
       showLoading(false)
@@ -294,6 +300,7 @@ class TranslatorVoiceInteractionSession(
     overlayContainer.removeAllViews()
     dismissMenu()
     screenshotView.setImageDrawable(null)
+    updateBackdrop()
     showLoading(false)
   }
 
@@ -332,6 +339,7 @@ class TranslatorVoiceInteractionSession(
       return
     }
 
+    Log.d(tag, "AssistStructure received index=${state.index}/${state.count} windows=${structure.windowNodeCount}")
     logger.log(state, structure)
     capturedBlocks += parser.parse(structure)
     maybeProcessCapture()
@@ -340,6 +348,7 @@ class TranslatorVoiceInteractionSession(
   override fun onHandleScreenshot(screenshot: Bitmap?) {
     super.onHandleScreenshot(screenshot)
     hasReceivedScreenshotCallback = true
+    Log.d(tag, "Screenshot callback received bitmap=${screenshot?.width}x${screenshot?.height}")
     val oldSs = screenshotBitmap
     val oldCr = croppedBitmap
     oldSs?.recycle()
@@ -347,6 +356,7 @@ class TranslatorVoiceInteractionSession(
     screenshotBitmap = screenshot?.copy(Bitmap.Config.ARGB_8888, false)
     croppedBitmap = screenshotBitmap?.let { cropSystemBars(it) }
     screenshotView.setImageBitmap(croppedBitmap)
+    updateBackdrop()
     maybeProcessCapture()
   }
 
@@ -358,6 +368,16 @@ class TranslatorVoiceInteractionSession(
     val assistReady = haveAllAssistStates || assistCollectionTimedOut
     val screenshotReady = screenshotBitmap != null
     val noCaptureCallbacksArrived = !hasReceivedAssistCallback && !hasReceivedScreenshotCallback
+    val screenshotExpected = isAssistScreenshotEnabled()
+    Log.d(
+      tag,
+      "maybeProcessCapture blocks=${capturedBlocks.size} expectedAssistCount=$expectedCount receivedAssist=${receivedAssistIndexes.size} assistReady=$assistReady screenshotReady=$screenshotReady screenshotExpected=$screenshotExpected timedOut=$assistCollectionTimedOut",
+    )
+
+    if (capturedBlocks.isNotEmpty() && screenshotExpected && !screenshotReady && !assistCollectionTimedOut) {
+      Log.d(tag, "Waiting for screenshot callback before rendering structured overlays")
+      return
+    }
 
     if (capturedBlocks.isNotEmpty() && (screenshotReady || assistReady)) {
       cancelAssistCollectionTimeout()
@@ -511,6 +531,7 @@ class TranslatorVoiceInteractionSession(
         }
         croppedBitmap = cropSystemBars(result.correctedBitmap)
         screenshotView.setImageBitmap(croppedBitmap)
+        updateBackdrop()
         if (assistFallbackStatusPendingHide) {
           assistFallbackStatusPendingHide = false
           showStatus("App does not provide data, falling back to OCR", autoHideAfterMs = 3000)
@@ -631,6 +652,11 @@ class TranslatorVoiceInteractionSession(
   }
 
   private fun dpToPx(dp: Int): Int = (dp * context.resources.displayMetrics.density).toInt()
+
+  private fun updateBackdrop() {
+    rootView.setBackgroundColor(Color.TRANSPARENT)
+    screenshotView.setBackgroundColor(Color.TRANSPARENT)
+  }
 
   private fun isAssistStructureEnabled(): Boolean =
     Settings.Secure.getInt(context.contentResolver, ASSIST_STRUCTURE_ENABLED_SETTING, 1) != 0

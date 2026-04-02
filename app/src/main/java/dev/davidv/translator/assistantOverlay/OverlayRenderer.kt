@@ -13,6 +13,7 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -28,6 +29,8 @@ class OverlayRenderer(
   private val dpToPx: (Int) -> Int,
   private val settingsManager: SettingsManager,
 ) {
+  private val tag = "TranslatorAssistant"
+  private val debugLoggingEnabled = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
   private var measureTextView: TextView? = null
 
   fun renderTranslatedBlocks(
@@ -37,6 +40,12 @@ class OverlayRenderer(
     screenshot: Bitmap?,
     systemBarTop: Int,
   ) {
+    if (debugLoggingEnabled) {
+      Log.d(
+        tag,
+        "Rendering ${blocksByText.size} translated text groups with screenshot=${screenshot != null} backgroundMode=${settingsManager.settings.value.backgroundMode}",
+      )
+    }
     container.removeAllViews()
     val screenHeight = context.resources.displayMetrics.heightPixels
     val items = mutableListOf<OverlayItem>()
@@ -75,12 +84,12 @@ class OverlayRenderer(
     val style = block.style
     val styleBg = normalizeStyleColor(style?.textBackgroundColor)
     val styleFg = normalizeStyleColor(style?.textColor)
-    if (styleBg == null && styleFg != null) {
+    if (styleBg == null && styleFg != null && sampledColors == null) {
       val lum = (Color.red(styleFg) * 299 + Color.green(styleFg) * 587 + Color.blue(styleFg) * 114) / 255000f
-      val bg = if (lum > 0.5f) Color.parseColor("#AA000000") else Color.parseColor("#AAF0F0F0")
+      val bg = if (lum > 0.5f) Color.BLACK else Color.WHITE
       return OverlayColors(bg, styleFg)
     }
-    val backgroundColor = styleBg ?: sampledColors?.background ?: Color.parseColor("#F0FFFFFF")
+    val backgroundColor = styleBg ?: sampledColors?.background ?: Color.WHITE
     val foregroundColor = styleFg ?: sampledColors?.foreground ?: Color.BLACK
     return OverlayColors(backgroundColor, foregroundColor)
   }
