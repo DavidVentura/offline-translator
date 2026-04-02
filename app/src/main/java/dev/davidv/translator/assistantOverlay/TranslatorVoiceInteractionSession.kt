@@ -58,6 +58,7 @@ class TranslatorVoiceInteractionSession(
   private val langStateManager: LanguageStateManager,
 ) : VoiceInteractionSession(context) {
   private val tag = "TranslatorAssistant"
+  private val assistCollectionTimeoutMs = 1500L
   private val sessionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
   private val parser = AssistStructureParser()
   private val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
@@ -94,6 +95,8 @@ class TranslatorVoiceInteractionSession(
   private var forcedTargetLanguage: Language? = null
   private var assistFallbackMessageShown = false
   private var assistFallbackStatusPendingHide = false
+  private var assistCollectionTimedOut = false
+  private var assistCollectionTimeoutJob: Job? = null
   private var statusHideJob: Job? = null
 
   override fun onCreate() {
@@ -237,6 +240,7 @@ class TranslatorVoiceInteractionSession(
     dismissMenu()
     showStatus("Collecting screen context...")
     showLoading(true)
+    scheduleAssistCollectionTimeout()
   }
 
   override fun onComputeInsets(outInsets: Insets) {
@@ -300,9 +304,11 @@ class TranslatorVoiceInteractionSession(
 
     val expectedCount = expectedAssistCount
     val haveAllAssistStates = expectedCount != null && receivedAssistIndexes.size >= expectedCount
+    val assistReady = haveAllAssistStates || assistCollectionTimedOut
     val screenshotReady = screenshotBitmap != null
 
-    if (capturedBlocks.isNotEmpty() && (screenshotReady || haveAllAssistStates)) {
+    if (capturedBlocks.isNotEmpty() && (screenshotReady || assistReady)) {
+      cancelAssistCollectionTimeout()
       if (screenshotReady && shouldUseOcrFallback(capturedBlocks)) {
         processing = true
         Log.d(tag, "Using OCR fallback because parsed AssistStructure is too coarse")
@@ -314,10 +320,30 @@ class TranslatorVoiceInteractionSession(
       return
     }
 
-    if (capturedBlocks.isEmpty() && screenshotReady && haveAllAssistStates) {
+    if (capturedBlocks.isEmpty() && screenshotReady && assistReady) {
+      cancelAssistCollectionTimeout()
       processing = true
       runOcrFallback(screenshotBitmap ?: return)
     }
+  }
+
+  private fun scheduleAssistCollectionTimeout() {
+    cancelAssistCollectionTimeout()
+    assistCollectionTimedOut = false
+    assistCollectionTimeoutJob =
+      sessionScope.launch {
+        delay(assistCollectionTimeoutMs)
+        assistCollectionTimedOut = true
+        if (!processing && screenshotBitmap != null) {
+          Log.w(tag, "Timed out waiting for complete assist data; continuing with available capture")
+        }
+        maybeProcessCapture()
+      }
+  }
+
+  private fun cancelAssistCollectionTimeout() {
+    assistCollectionTimeoutJob?.cancel()
+    assistCollectionTimeoutJob = null
   }
 
   private fun translateStructuredBlocks(
@@ -769,6 +795,8 @@ class TranslatorVoiceInteractionSession(
     processing = false
     assistFallbackMessageShown = false
     assistFallbackStatusPendingHide = false
+    assistCollectionTimedOut = false
+    cancelAssistCollectionTimeout()
     statusHideJob?.cancel()
     statusHideJob = null
   }
