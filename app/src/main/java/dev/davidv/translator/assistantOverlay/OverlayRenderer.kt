@@ -7,6 +7,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
@@ -85,6 +86,9 @@ class OverlayRenderer(
       val fg = normalizeStyleColor(style.textColor)
       if (fg != null) {
         ssb.setSpan(ForegroundColorSpan(fg), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+      }
+      if (style.hasRealBackground()) {
+        ssb.setSpan(BackgroundColorSpan(style.bgColor!!), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
       }
       if (style.bold) {
         ssb.setSpan(StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -170,7 +174,7 @@ class OverlayRenderer(
       }
 
     val styleFg = normalizeStyleColor(firstStyle?.textColor)
-    val styleBg = realBackgroundColor(firstStyle?.bgColor)
+    val styleBg = if (firstStyle?.hasRealBackground() == true) firstStyle.bgColor else null
     if (styleBg != null) {
       return OverlayColors(styleBg, styleFg ?: sampledColors?.foreground ?: Color.BLACK)
     }
@@ -191,12 +195,6 @@ class OverlayRenderer(
     return color
   }
 
-  private fun realBackgroundColor(color: Int?): Int? {
-    if (color == null) return null
-    if (color == 0 || color == 1 || color == -1) return null
-    if (Color.alpha(color) == 0) return null
-    return color
-  }
 
   private fun findFittingTextSizePx(
     translatedText: String,

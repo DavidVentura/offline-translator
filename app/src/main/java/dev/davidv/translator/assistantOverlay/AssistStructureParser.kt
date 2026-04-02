@@ -42,7 +42,7 @@ class AssistStructureParser(
           it.text,
           TranslatorRect(it.bounds.left, it.bounds.top, it.bounds.right, it.bounds.bottom),
           it.style,
-          group = if (it.fromWebView) 0 else 1,
+          group = if (!it.fromWebView) 1 else 0,
         )
       }
   }

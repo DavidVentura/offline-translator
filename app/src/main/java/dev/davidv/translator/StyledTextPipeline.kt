@@ -10,7 +10,14 @@ data class TextStyle(
   val italic: Boolean = false,
   val underline: Boolean = false,
   val strikethrough: Boolean = false,
-)
+) {
+  fun hasRealBackground(): Boolean {
+    val c = bgColor ?: return false
+    if (c == 0 || c == 1 || c == -1) return false
+    if (c ushr 24 == 0) return false
+    return true
+  }
+}
 
 data class StyledFragment(
   val text: String,
