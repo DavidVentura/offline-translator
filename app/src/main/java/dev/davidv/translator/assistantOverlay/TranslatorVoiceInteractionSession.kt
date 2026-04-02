@@ -27,20 +27,16 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import dev.davidv.translator.BatchTextTranslationOutput
 import dev.davidv.translator.BatchTextTranslator
-import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
-import dev.davidv.translator.LanguageDetector
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.MainActivity
 import dev.davidv.translator.NothingReason
-import dev.davidv.translator.OCRService
 import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.R
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.TranslationCoordinator
-import dev.davidv.translator.TranslationService
 import dev.davidv.translator.getOverlayColors
 import dev.davidv.translator.overlayChrome.OverlayChromeFactory
 import dev.davidv.translator.overlayChrome.OverlayMenuHost
@@ -58,26 +54,16 @@ import dev.davidv.translator.Rect as TranslatorRect
 
 class TranslatorVoiceInteractionSession(
   context: Context,
+  private val settingsManager: SettingsManager,
+  private val imageProcessor: ImageProcessor,
+  private val translationCoordinator: TranslationCoordinator,
+  private val batchTextTranslator: BatchTextTranslator,
+  private val langStateManager: LanguageStateManager,
+  private val languageMetadataManager: LanguageMetadataManager,
 ) : VoiceInteractionSession(context) {
   private val tag = "TranslatorAssistant"
   private val sessionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
   private val parser = AssistStructureParser()
-
-  private val settingsManager = SettingsManager(context)
-  private val filePathManager = FilePathManager(context, settingsManager.settings)
-  private val languageMetadataManager = LanguageMetadataManager(context)
-  private val imageProcessor = ImageProcessor(context, OCRService(filePathManager))
-  private val translationCoordinator =
-    TranslationCoordinator(
-      context = context,
-      translationService = TranslationService(settingsManager, filePathManager),
-      languageDetector = LanguageDetector(),
-      imageProcessor = imageProcessor,
-      settingsManager = settingsManager,
-      enableToast = false,
-    )
-  private val batchTextTranslator = BatchTextTranslator(translationCoordinator)
-  private val langStateManager = LanguageStateManager(sessionScope, filePathManager, null)
 
   private lateinit var rootView: FrameLayout
   private lateinit var screenshotView: ImageView
