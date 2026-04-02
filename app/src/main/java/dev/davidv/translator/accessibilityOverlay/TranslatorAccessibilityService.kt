@@ -48,6 +48,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
   private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
   private lateinit var settingsManager: SettingsManager
+  private lateinit var imageProcessor: ImageProcessor
   private lateinit var translationCoordinator: TranslationCoordinator
   private lateinit var langStateManager: LanguageStateManager
   private lateinit var languageMetadataManager: LanguageMetadataManager
@@ -81,7 +82,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
     val filePathManager = FilePathManager(this, settingsManager.settings)
     val translationService = TranslationService(settingsManager, filePathManager)
     val languageDetector = LanguageDetector()
-    val imageProcessor = ImageProcessor(this, OCRService(filePathManager))
+    imageProcessor = ImageProcessor(this, OCRService(filePathManager))
     translationCoordinator = TranslationCoordinator(this, translationService, languageDetector, imageProcessor, settingsManager, false)
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
     languageMetadataManager = LanguageMetadataManager(this)
@@ -344,10 +345,12 @@ class TranslatorAccessibilityService : AccessibilityService() {
   ) {
     val sourceLang = forcedSourceLanguage ?: return
     val targetLang = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
+    val maxImageSize = settingsManager.settings.value.maxImageSize
+    val downscaled = imageProcessor.downscaleImage(bitmap, maxImageSize)
 
     val result =
       withContext(Dispatchers.IO) {
-        translationCoordinator.translateImageWithOverlay(sourceLang, targetLang, bitmap) {}
+        translationCoordinator.translateImageWithOverlay(sourceLang, targetLang, downscaled) {}
       }
 
     if (result != null) {

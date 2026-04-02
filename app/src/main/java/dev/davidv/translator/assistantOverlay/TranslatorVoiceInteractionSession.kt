@@ -22,16 +22,17 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import dev.davidv.translator.BatchTranslationResult
 import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageDetector
+import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.MainActivity
 import dev.davidv.translator.OCRService
@@ -41,6 +42,7 @@ import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationService
 import dev.davidv.translator.getOverlayColors
+import dev.davidv.translator.overlayChrome.OverlayChromeFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -59,12 +61,14 @@ class TranslatorVoiceInteractionSession(
 
   private val settingsManager = SettingsManager(context)
   private val filePathManager = FilePathManager(context, settingsManager.settings)
+  private val languageMetadataManager = LanguageMetadataManager(context)
+  private val imageProcessor = ImageProcessor(context, OCRService(filePathManager))
   private val translationCoordinator =
     TranslationCoordinator(
       context = context,
       translationService = TranslationService(settingsManager, filePathManager),
       languageDetector = LanguageDetector(),
-      imageProcessor = ImageProcessor(context, OCRService(filePathManager)),
+      imageProcessor = imageProcessor,
       settingsManager = settingsManager,
       enableToast = false,
     )
@@ -76,6 +80,10 @@ class TranslatorVoiceInteractionSession(
   private lateinit var statusView: TextView
   private lateinit var loadingView: View
   private lateinit var topBarView: View
+  private var sourceLabelView: TextView? = null
+  private var targetLabelView: TextView? = null
+  private var menuDismissLayer: View? = null
+  private var menuOverlay: View? = null
 
   private val systemBarTop: Int by lazy {
     val id = context.resources.getIdentifier("status_bar_height", "dimen", "android")
@@ -88,6 +96,9 @@ class TranslatorVoiceInteractionSession(
   private var receivedAssistIndexes = mutableSetOf<Int>()
   private var expectedAssistCount: Int? = null
   private var processing = false
+  private var forcedSourceLanguage: Language? = null
+  private var forcedTargetLanguage: Language? = null
+  private var assistFallbackToastShown = false
 
   override fun onCreate() {
     super.onCreate()
@@ -178,6 +189,7 @@ class TranslatorVoiceInteractionSession(
     configureSessionWindow()
     clearCapture()
     overlayContainer.removeAllViews()
+    dismissMenu()
     showStatus("Collecting screen context...")
     showLoading(true)
   }
@@ -191,6 +203,7 @@ class TranslatorVoiceInteractionSession(
     super.onHide()
     clearCapture()
     overlayContainer.removeAllViews()
+    dismissMenu()
     screenshotView.setImageDrawable(null)
     showLoading(false)
   }
@@ -211,6 +224,10 @@ class TranslatorVoiceInteractionSession(
     val structure = state.assistStructure
     if (structure == null) {
       Log.w(tag, "AssistStructure missing for index=${state.index}")
+      if (!assistFallbackToastShown) {
+        assistFallbackToastShown = true
+        Toast.makeText(context, "App does not provide data, falling back to OCR", Toast.LENGTH_SHORT).show()
+      }
       maybeProcessCapture()
       return
     }
@@ -277,7 +294,7 @@ class TranslatorVoiceInteractionSession(
       val textsBySource = linkedMapOf<Language, MutableList<String>>()
       var detectedSameAsTarget = 0
       var undetectedTexts = 0
-      val forcedSource = settingsManager.settings.value.defaultSourceLanguage
+      val forcedSource = forcedSourceLanguage ?: settingsManager.settings.value.defaultSourceLanguage
 
       if (forcedSource != null) {
         textsBySource.getOrPut(forcedSource) { mutableListOf() }.addAll(blocksByText.keys)
@@ -356,7 +373,9 @@ class TranslatorVoiceInteractionSession(
   }
 
   private fun runOcrFallback(screenshot: Bitmap) {
-    val sourceLanguage = settingsManager.settings.value.defaultSourceLanguage
+    val sourceLanguage =
+      forcedSourceLanguage
+        ?: settingsManager.settings.value.defaultSourceLanguage
     if (sourceLanguage == null) {
       processing = false
       showLoading(false)
@@ -364,8 +383,10 @@ class TranslatorVoiceInteractionSession(
       return
     }
 
-    val targetLanguage = settingsManager.settings.value.defaultTargetLanguage
-    val workingBitmap = screenshot.copy(Bitmap.Config.ARGB_8888, false)
+    val targetLanguage = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
+    val maxImageSize = settingsManager.settings.value.maxImageSize
+    val workingBitmap =
+      imageProcessor.downscaleImage(screenshot.copy(Bitmap.Config.ARGB_8888, false), maxImageSize)
     sessionScope.launch {
       val result =
         withContext(Dispatchers.IO) {
@@ -645,7 +666,7 @@ class TranslatorVoiceInteractionSession(
         .filterValues { it.translatorFiles }
         .keys
         .toList()
-    val targetLanguage = settingsManager.settings.value.defaultTargetLanguage
+    val targetLanguage = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
     return langs to targetLanguage
   }
 
@@ -715,6 +736,7 @@ class TranslatorVoiceInteractionSession(
     receivedAssistIndexes.clear()
     expectedAssistCount = null
     processing = false
+    assistFallbackToastShown = false
   }
 
   private fun dpToPx(dp: Int): Int = (dp * context.resources.displayMetrics.density).toInt()
@@ -774,58 +796,22 @@ class TranslatorVoiceInteractionSession(
   }
 
   private fun buildTopBar(): View {
-    val row =
-      LinearLayout(context).apply {
-        orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.CENTER_VERTICAL
-        setPadding(dpToPx(12), dpToPx(16), dpToPx(12), dpToPx(12))
-      }
-
-    val closeButton =
-      ImageButton(context).apply {
-        setImageResource(R.drawable.cancel)
-        background =
-          GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(Color.parseColor("#CC202020"))
-          }
-        setColorFilter(Color.WHITE)
-        setOnClickListener { hide() }
-      }
-    row.addView(
-      closeButton,
-      LinearLayout.LayoutParams(dpToPx(40), dpToPx(40)),
-    )
-
-    val spacer = View(context)
-    row.addView(
-      spacer,
-      LinearLayout.LayoutParams(
-        0,
-        0,
-        1f,
-      ),
-    )
-
-    val appButton =
-      ImageButton(context).apply {
-        setImageResource(R.drawable.settings_dot)
-        background =
-          GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(Color.parseColor("#CC202020"))
-          }
-        setColorFilter(Color.WHITE)
-        setOnClickListener {
-          startAssistantActivity(Intent(context, MainActivity::class.java))
-        }
-      }
-    row.addView(
-      appButton,
-      LinearLayout.LayoutParams(dpToPx(40), dpToPx(40)),
-    )
-
-    return row
+    val toolbarViews =
+      OverlayChromeFactory.createLanguageToolbar(
+        context = context,
+        dpToPx = ::dpToPx,
+        forcedSourceLanguage = forcedSourceLanguage,
+        forcedTargetLanguage = forcedTargetLanguage,
+        defaultTargetLanguage = settingsManager.settings.value.defaultTargetLanguage,
+        onClose = { hide() },
+        onSourceClick = { showLanguagePicker(true) },
+        onSwap = { swapLanguages() },
+        onTargetClick = { showLanguagePicker(false) },
+        onMenuClick = { showDotsMenu() },
+      )
+    sourceLabelView = toolbarViews.sourceLabel
+    targetLabelView = toolbarViews.targetLabel
+    return toolbarViews.root
   }
 
   private fun shouldUseOcrFallback(blocks: List<CapturedTextBlock>): Boolean {
@@ -940,4 +926,130 @@ class TranslatorVoiceInteractionSession(
       View.GONE -> "GONE"
       else -> value.toString()
     }
+
+  private fun swapLanguages() {
+    val oldSource = forcedSourceLanguage
+    val oldTarget = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
+    forcedSourceLanguage = oldTarget
+    forcedTargetLanguage = oldSource
+    updateToolbarLabels()
+    maybeProcessCapture()
+  }
+
+  private fun updateToolbarLabels() {
+    sourceLabelView?.text = forcedSourceLanguage?.shortDisplayName ?: "Auto"
+    val currentTarget = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
+    targetLabelView?.text = currentTarget.shortDisplayName
+  }
+
+  private fun showLanguagePicker(isSource: Boolean) {
+    dismissMenu()
+    val dismiss =
+      View(context).apply {
+        setBackgroundColor(Color.parseColor("#80000000"))
+        setOnClickListener { dismissMenu() }
+      }
+    rootView.addView(
+      dismiss,
+      FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT,
+      ),
+    )
+    menuDismissLayer = dismiss
+
+    val picker =
+      OverlayChromeFactory.createLanguagePicker(
+        context = context,
+        dpToPx = ::dpToPx,
+        isSource = isSource,
+        availableLangs = availableLanguages(isSource),
+      ) { language ->
+        if (isSource) {
+          forcedSourceLanguage = language
+        } else {
+          forcedTargetLanguage = language
+        }
+        updateToolbarLabels()
+        dismissMenu()
+        maybeProcessCapture()
+      }
+
+    rootView.addView(
+      picker,
+      FrameLayout.LayoutParams(
+        dpToPx(250),
+        dpToPx(400),
+      ).apply { gravity = Gravity.CENTER },
+    )
+    menuOverlay = picker
+  }
+
+  private fun showDotsMenu() {
+    dismissMenu()
+    val dismiss =
+      View(context).apply {
+        setBackgroundColor(Color.TRANSPARENT)
+        setOnClickListener { dismissMenu() }
+      }
+    rootView.addView(
+      dismiss,
+      FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT,
+      ),
+    )
+    menuDismissLayer = dismiss
+
+    val menuContainer = LinearLayout(context)
+    menuContainer.orientation = LinearLayout.VERTICAL
+    menuContainer.background =
+      GradientDrawable().apply {
+        setColor(Color.parseColor("#E0303030"))
+        cornerRadius = dpToPx(12).toFloat()
+      }
+    val pad = dpToPx(8)
+    menuContainer.setPadding(pad, pad, pad, pad)
+
+    OverlayChromeFactory.addMenuItem(context, menuContainer, ::dpToPx, "Open App") {
+      dismissMenu()
+      startAssistantActivity(Intent(context, MainActivity::class.java))
+    }
+
+    rootView.addView(
+      menuContainer,
+      FrameLayout.LayoutParams(
+        dpToPx(180),
+        FrameLayout.LayoutParams.WRAP_CONTENT,
+      ).apply {
+        gravity = Gravity.TOP or Gravity.END
+        topMargin = dpToPx(48)
+        marginEnd = dpToPx(8)
+      },
+    )
+    menuOverlay = menuContainer
+  }
+
+  private fun dismissMenu() {
+    menuDismissLayer?.let {
+      rootView.removeView(it)
+      menuDismissLayer = null
+    }
+    menuOverlay?.let {
+      rootView.removeView(it)
+      menuOverlay = null
+    }
+  }
+
+  private fun availableLanguages(isSource: Boolean): List<Language> {
+    val metadata = languageMetadataManager.metadata.value
+    return langStateManager.languageState.value.availableLanguageMap
+      .filterValues { it.translatorFiles && (!isSource || it.ocrFiles) }
+      .keys
+      .toList()
+      .sortedWith(
+        compareByDescending<Language> { metadata[it]?.favorite ?: false }
+          .thenBy { it.displayName },
+      )
+  }
 }

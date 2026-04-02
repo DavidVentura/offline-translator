@@ -19,13 +19,13 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.ScrollView
 import android.widget.TextView
 import dev.davidv.translator.Language
 import dev.davidv.translator.MainActivity
 import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.R
 import dev.davidv.translator.SettingsManager
+import dev.davidv.translator.overlayChrome.OverlayChromeFactory
 
 class OverlayUI(
   private val service: TranslatorAccessibilityService,
@@ -136,71 +136,22 @@ class OverlayUI(
   ) {
     if (toolbarView != null) return
 
-    val toolbar = LinearLayout(service)
-    toolbar.orientation = LinearLayout.HORIZONTAL
-    toolbar.gravity = Gravity.CENTER_VERTICAL
-    val pad = dpToPx(6)
-    toolbar.setPadding(pad, pad, pad, pad)
-
-    val btnSize = dpToPx(32)
-    val iconPad = dpToPx(6)
-    val closeBtn = ImageView(service)
-    closeBtn.setImageResource(R.drawable.cancel)
-    closeBtn.setPadding(iconPad, iconPad, iconPad, iconPad)
-    closeBtn.setOnClickListener { service.deactivate() }
-    val closePill = makePill(closeBtn)
-    toolbar.addView(closePill, LinearLayout.LayoutParams(btnSize, btnSize))
-
-    val spacerLeft = View(service)
-    toolbar.addView(spacerLeft, LinearLayout.LayoutParams(0, 1, 1f))
-
-    val langRow = LinearLayout(service)
-    langRow.orientation = LinearLayout.HORIZONTAL
-    langRow.gravity = Gravity.CENTER_VERTICAL
-    langRow.setPadding(dpToPx(12), dpToPx(8), dpToPx(12), dpToPx(8))
-
-    val sourceLabel = TextView(service)
-    sourceLabel.text = forcedSourceLanguage?.shortDisplayName ?: "Auto"
-    sourceLabel.setTextColor(Color.WHITE)
-    sourceLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-    sourceLabel.gravity = Gravity.CENTER
-    sourceLabel.maxLines = 1
-    sourceLabel.ellipsize = android.text.TextUtils.TruncateAt.END
-    sourceLabel.setOnClickListener { service.showLanguagePicker(true) }
-    langRow.addView(sourceLabel, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f))
-    sourceLabelView = sourceLabel
-
-    val swapBtn = ImageView(service)
-    swapBtn.setImageResource(R.drawable.compare)
-    swapBtn.setColorFilter(Color.WHITE)
-    val swapSize = dpToPx(20)
-    val swapPad = dpToPx(6)
-    swapBtn.setPadding(swapPad, 0, swapPad, 0)
-    swapBtn.setOnClickListener { service.swapLanguages() }
-    langRow.addView(swapBtn, LinearLayout.LayoutParams(swapSize + swapPad * 2, swapSize))
-
-    val currentTarget = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
-    val targetLabel = TextView(service)
-    targetLabel.text = currentTarget.shortDisplayName
-    targetLabel.setTextColor(Color.WHITE)
-    targetLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-    targetLabel.gravity = Gravity.CENTER
-    targetLabel.maxLines = 1
-    targetLabel.setOnClickListener { service.showLanguagePicker(false) }
-    langRow.addView(targetLabel, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f))
-    targetLabelView = targetLabel
-
-    toolbar.addView(makePill(langRow), LinearLayout.LayoutParams(dpToPx(200), LinearLayout.LayoutParams.WRAP_CONTENT))
-
-    val spacerRight = View(service)
-    toolbar.addView(spacerRight, LinearLayout.LayoutParams(0, 1, 1f))
-
-    val menuBtn = ImageView(service)
-    menuBtn.setImageResource(R.drawable.more_vert)
-    menuBtn.setPadding(iconPad, iconPad, iconPad, iconPad)
-    menuBtn.setOnClickListener { service.showDotsMenu() }
-    val menuPill = makePill(menuBtn)
-    toolbar.addView(menuPill, LinearLayout.LayoutParams(btnSize, btnSize))
+    val toolbarViews =
+      OverlayChromeFactory.createLanguageToolbar(
+        context = service,
+        dpToPx = ::dpToPx,
+        forcedSourceLanguage = forcedSourceLanguage,
+        forcedTargetLanguage = forcedTargetLanguage,
+        defaultTargetLanguage = settingsManager.settings.value.defaultTargetLanguage,
+        onClose = { service.deactivate() },
+        onSourceClick = { service.showLanguagePicker(true) },
+        onSwap = { service.swapLanguages() },
+        onTargetClick = { service.showLanguagePicker(false) },
+        onMenuClick = { service.showDotsMenu() },
+      )
+    val toolbar = toolbarViews.root
+    sourceLabelView = toolbarViews.sourceLabel
+    targetLabelView = toolbarViews.targetLabel
 
     val params =
       WindowManager.LayoutParams(
@@ -262,17 +213,17 @@ class OverlayUI(
     val menuPad = dpToPx(8)
     menuContainer.setPadding(menuPad, menuPad, menuPad, menuPad)
 
-    addMenuItem(menuContainer, "Translate visible") {
+    OverlayChromeFactory.addMenuItem(service, menuContainer, ::dpToPx, "Translate visible") {
       dismissMenu()
       service.handleTranslateVisible()
     }
-    addMenuItem(menuContainer, "Open App") {
+    OverlayChromeFactory.addMenuItem(service, menuContainer, ::dpToPx, "Open App") {
       service.deactivate()
       val intent = Intent(service, MainActivity::class.java)
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
       service.startActivity(intent)
     }
-    addMenuItem(menuContainer, "Disable Service") {
+    OverlayChromeFactory.addMenuItem(service, menuContainer, ::dpToPx, "Disable Service") {
       service.deactivate()
       service.disableSelf()
     }
@@ -316,31 +267,16 @@ class OverlayUI(
     windowManager.addView(dismiss, dismissParams)
     menuDismissLayer = dismiss
 
-    val scroll = ScrollView(service)
-    val list = LinearLayout(service)
-    list.orientation = LinearLayout.VERTICAL
-    val bg = GradientDrawable()
-    bg.setColor(Color.parseColor("#E0303030"))
-    bg.cornerRadius = dpToPx(12).toFloat()
-    list.background = bg
-    val listPad = dpToPx(8)
-    list.setPadding(listPad, listPad, listPad, listPad)
-
-    if (isSource) {
-      addMenuItem(list, "\u2728  Auto-detect") {
-        onPick(null)
-        dismissMenu()
-      }
-    }
-
-    for (lang in availableLangs) {
-      addMenuItem(list, lang.displayName) {
+    val scroll =
+      OverlayChromeFactory.createLanguagePicker(
+        context = service,
+        dpToPx = ::dpToPx,
+        isSource = isSource,
+        availableLangs = availableLangs,
+      ) { lang ->
         onPick(lang)
         dismissMenu()
       }
-    }
-
-    scroll.addView(list)
 
     val pickerParams =
       WindowManager.LayoutParams(
@@ -618,32 +554,6 @@ class OverlayUI(
   fun getNavBarHeight(): Int {
     val resourceId = service.resources.getIdentifier("navigation_bar_height", "dimen", "android")
     return if (resourceId > 0) service.resources.getDimensionPixelSize(resourceId) else 0
-  }
-
-  private fun makePill(view: View): FrameLayout {
-    val pill = FrameLayout(service)
-    val bg = GradientDrawable()
-    bg.setColor(Color.parseColor("#CC303030"))
-    bg.cornerRadius = dpToPx(20).toFloat()
-    pill.background = bg
-    pill.addView(view)
-    return pill
-  }
-
-  private fun addMenuItem(
-    parent: LinearLayout,
-    label: String,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-  ) {
-    val item = TextView(service)
-    item.text = label
-    item.setTextColor(if (enabled) Color.WHITE else Color.parseColor("#60FFFFFF"))
-    item.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
-    val pad = dpToPx(12)
-    item.setPadding(pad, pad, pad, pad)
-    item.setOnClickListener { onClick() }
-    parent.addView(item)
   }
 
   fun cleanup() {
