@@ -35,7 +35,8 @@ class AssistStructureParser(
       )
     }
 
-    val distinct = fragments.distinctBy { "${it.bounds.flattenToString()}|${normalizeText(it.text)}" }
+    val deduped = fragments.distinctBy { "${it.bounds.flattenToString()}|${normalizeText(it.text)}" }
+    val distinct = deduped.groupBy { it.bounds.flattenToString() }.values.map { it.first() }
     var currentTransGroup = 0
     var lastBgColor: Int? = null
     return distinct.map {
