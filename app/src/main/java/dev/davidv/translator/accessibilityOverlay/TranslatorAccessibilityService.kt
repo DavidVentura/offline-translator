@@ -147,11 +147,13 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.removeTranslationOverlays()
     input.showInteractionOverlay()
     ui.showToolbar(forcedSourceLanguage, forcedTargetLanguage)
+    ui.showBorderWave()
   }
 
   fun deactivate() {
     active = false
     serviceInfo = serviceInfo.apply { eventTypes = 0 }
+    ui.removeBorderWave()
     ui.removeToolbar()
     input.removeTouchInterceptOverlay()
     ui.removeTranslationOverlays()

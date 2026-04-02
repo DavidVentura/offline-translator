@@ -67,6 +67,7 @@ class TranslatorVoiceInteractionSession(
   private var sourceLabelView: TextView? = null
   private var targetLabelView: TextView? = null
   private var menuManager: OverlayMenuManager? = null
+  private var borderView: BorderWaveView? = null
 
   private val systemBarTop: Int by lazy {
     val id = context.resources.getIdentifier("status_bar_height", "dimen", "android")
@@ -172,6 +173,15 @@ class TranslatorVoiceInteractionSession(
       ),
     )
 
+    borderView = BorderWaveView.create(context)
+    rootView.addView(
+      borderView,
+      FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT,
+      ),
+    )
+
     topBarView = buildTopBar()
     rootView.addView(
       topBarView,
@@ -244,6 +254,7 @@ class TranslatorVoiceInteractionSession(
 
   override fun onHide() {
     super.onHide()
+    stopBorderPulse()
     clearCapture()
     overlayContainer.removeAllViews()
     dismissMenu()
@@ -252,6 +263,7 @@ class TranslatorVoiceInteractionSession(
   }
 
   override fun onDestroy() {
+    stopBorderPulse()
     sessionScope.cancel()
     clearCapture()
     super.onDestroy()
@@ -375,7 +387,11 @@ class TranslatorVoiceInteractionSession(
           }
           is OverlayTextTranslationResult.Success -> {
             overlayRenderer.renderTranslatedBlocks(
-              overlayContainer, blocksByText, result.results, screenshot, systemBarTop,
+              overlayContainer,
+              blocksByText,
+              result.results,
+              screenshot,
+              systemBarTop,
             )
             processing = false
             showLoading(false)
@@ -430,6 +446,14 @@ class TranslatorVoiceInteractionSession(
       }
   }
 
+  private fun startBorderPulse() {
+    borderView?.startAnimation()
+  }
+
+  private fun stopBorderPulse() {
+    borderView?.stopAnimation()
+  }
+
   private fun buildLoadingView(): View {
     val container =
       FrameLayout(context).apply {
@@ -463,7 +487,13 @@ class TranslatorVoiceInteractionSession(
       WindowManager.LayoutParams.MATCH_PARENT,
     )
     win.setGravity(Gravity.TOP or Gravity.START)
-    win.setBackgroundDrawableResource(android.R.color.transparent)
+    win.setBackgroundDrawable(null)
+    win.decorView.setBackgroundColor(Color.TRANSPARENT)
+    win.decorView.setPadding(0, 0, 0, 0)
+    win.setWindowAnimations(0)
+    val contentFrame = win.decorView.findViewById<View>(android.R.id.content)
+    contentFrame?.setBackgroundColor(Color.TRANSPARENT)
+    (contentFrame?.parent as? View)?.setBackgroundColor(Color.TRANSPARENT)
   }
 
   private fun showStatus(

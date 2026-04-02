@@ -24,6 +24,7 @@ import dev.davidv.translator.MainActivity
 import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.R
 import dev.davidv.translator.SettingsManager
+import dev.davidv.translator.assistantOverlay.BorderWaveView
 import dev.davidv.translator.overlayChrome.OverlayChromeFactory
 import dev.davidv.translator.overlayChrome.OverlayMenuHost
 import dev.davidv.translator.overlayChrome.OverlayMenuManager
@@ -39,6 +40,7 @@ class OverlayUI(
   private var sourceLabelView: TextView? = null
   private var targetLabelView: TextView? = null
   private val translationOverlays = mutableListOf<View>()
+  private var borderView: BorderWaveView? = null
 
   private val menuManager =
     OverlayMenuManager(
@@ -520,6 +522,35 @@ class OverlayUI(
   fun getNavBarHeight(): Int {
     val resourceId = service.resources.getIdentifier("navigation_bar_height", "dimen", "android")
     return if (resourceId > 0) service.resources.getDimensionPixelSize(resourceId) else 0
+  }
+
+  fun showBorderWave() {
+    if (borderView != null) return
+    val view = BorderWaveView.create(service)
+    val params =
+      WindowManager.LayoutParams(
+        WindowManager.LayoutParams.MATCH_PARENT,
+        WindowManager.LayoutParams.MATCH_PARENT,
+        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+          WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+          WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+        PixelFormat.TRANSLUCENT,
+      )
+    windowManager.addView(view, params)
+    borderView = view
+    view.startAnimation()
+  }
+
+  fun removeBorderWave() {
+    borderView?.stopAnimation()
+    borderView?.let {
+      try {
+        windowManager.removeView(it)
+      } catch (_: Exception) {
+      }
+    }
+    borderView = null
   }
 
   fun cleanup() {
