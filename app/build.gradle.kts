@@ -25,7 +25,7 @@ android {
   }
   defaultConfig {
     applicationId = "dev.davidv.translator"
-    minSdk = 28 // iconv functions need 28?
+    minSdk = 21
     targetSdk = 34
     versionCode = 10
     versionName = "0.2.5"

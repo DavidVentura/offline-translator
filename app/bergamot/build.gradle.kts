@@ -11,7 +11,7 @@ android {
 
   defaultConfig {
 
-    minSdk = 28 // iconv requirements from pathie-cpp
+    minSdk = 21
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
     externalNativeBuild {
