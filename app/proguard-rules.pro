@@ -22,9 +22,10 @@
 -dontobfuscate
 
 
+# bergamot
 -keep class dev.davidv.bergamot.DetectionResult { *; }
-#-keep class dev.davidv.bergamot.LangDetect { *; }
-#-keep class dev.davidv.bergamot.NativeLib { *; }
+-keep class dev.davidv.bergamot.TokenAlignment { *; }
+-keep class dev.davidv.bergamot.TranslationWithAlignment { *; }
 
 # Keep Tarkka native library integration
 -keep class dev.davidv.translator.TarkkaBinding { *; }
