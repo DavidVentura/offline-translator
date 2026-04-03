@@ -200,14 +200,28 @@ tasks.register("buildBindingsArmeabiV7a") {
   }
 }
 
+val abiToBindingsTask = mapOf(
+  "arm64-v8a" to "buildBindingsAarch64",
+  "armeabi-v7a" to "buildBindingsArmeabiV7a",
+  "x86_64" to "buildBindingsX86_64",
+  "x86" to "buildBindingsX86",
+)
+
 tasks.register("buildBindingsAll") {
   group = "build"
   description = "Build Rust bindings library for all architectures"
-  dependsOn("buildBindingsX86_64", "buildBindingsAarch64", "buildBindingsX86", "buildBindingsArmeabiV7a")
+  dependsOn(abiToBindingsTask.values.toList())
+}
+
+val targetAbi = project.findProperty("targetAbi")?.toString()
+val bindingsTasks = if (targetAbi != null) {
+  listOfNotNull(abiToBindingsTask[targetAbi])
+} else {
+  abiToBindingsTask.values.toList()
 }
 
 tasks.named("preBuild") {
-  dependsOn("buildBindingsAll")
+  dependsOn(bindingsTasks)
 }
 
 dependencies {
