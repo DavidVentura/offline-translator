@@ -3,16 +3,25 @@ name = "bindings"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = ["android", "dictionary", "mucab", "tesseract"]
+android = ["dep:jni"]
+dictionary = ["dep:tarkka"]
+mucab = ["dep:mucab"]
+tesseract = ["dep:tesseract"]
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 name = "bindings"
 path = "src/lib.rs"
 
 [dependencies]
-jni = "0.21.1"
-tarkka = { git = "https://github.com/DavidVentura/tarkka" }
-tesseract = { git = "https://github.com/DavidVentura/tesseract-rs" }
-mucab = { git = "https://github.com/DavidVentura/mucab" }
+jni = { version = "0.21.1", optional = true }
+tarkka = { git = "https://github.com/DavidVentura/tarkka", optional = true }
+tesseract = { git = "https://github.com/DavidVentura/tesseract-rs", optional = true }
+mucab = { git = "https://github.com/DavidVentura/mucab", optional = true }
+icu_experimental = { version = "0.4", features = ["compiled_data"] }
+icu = { version = "2.1" }
 
 [patch.crates-io]
 leptonica-sys = { git = "https://github.com/DavidVentura/leptonica-sys" }

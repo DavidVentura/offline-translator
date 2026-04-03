@@ -17,64 +17,32 @@
 
 package dev.davidv.translator
 
-import android.icu.text.Transliterator
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 
 object TransliterationService {
-  private val transliterators = mutableMapOf<String, Transliterator?>()
-
-  private val scriptComponents =
-    mapOf(
-      "Arabic" to listOf("Arabic"),
-      "Cyrillic" to listOf("Cyrillic"),
-      "Greek" to listOf("Greek"),
-      "Han" to listOf("Han"),
-      "Japanese" to listOf("Hiragana", "Katakana", "Han"),
-      "Hangul" to listOf("Hangul"),
-      "Devanagari" to listOf("Devanagari"),
-      "Hebrew" to listOf("Hebrew"),
-      "Bengali" to listOf("Bengali"),
-      "Gujarati" to listOf("Gujarati"),
-      "Kannada" to listOf("Kannada"),
-      "Malayalam" to listOf("Malayalam"),
-      "Tamil" to listOf("Tamil"),
-      "Telugu" to listOf("Telugu"),
-    )
+  private val binding = TransliterateBinding()
 
   private fun shouldTransliterate(
     language: Language,
-    targetScript: String = "Latin",
-  ): Boolean = language.script != targetScript && scriptComponents.containsKey(language.script)
-
-  private fun getTransliterationRule(
-    fromScript: String,
-    toScript: String = "Latin",
-  ): String? {
-    val components = scriptComponents[fromScript] ?: return null
-    return components.joinToString("; ") { "$it-$toScript" }
-  }
+    targetScript: String = "Latn",
+  ): Boolean = language.script != targetScript
 
   fun transliterate(
     text: String,
     language: Language,
-    targetScript: String = "Latin",
+    targetScript: String = "Latn",
     mucabBinding: MucabBinding? = null,
     japaneseSpaced: Boolean,
   ): String? {
-    if (!shouldTransliterate(language, targetScript) || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+    if (!shouldTransliterate(language, targetScript)) {
       return null
     }
 
-    val rule = getTransliterationRule(language.script, targetScript) ?: return null
-    Log.d("Transliteration", "Using rule $rule")
-    val transliterator = getTransliterator(rule) ?: return null
     return try {
       if (language == Language.JAPANESE) {
-        transliterateJapanese(text, transliterator, mucabBinding, japaneseSpaced)
+        transliterateJapanese(text, mucabBinding, japaneseSpaced)
       } else {
-        transliterator.transliterate(text)
+        binding.transliterate(text, language.script)
       }
     } catch (e: Exception) {
       Log.w("TransliterationService", "Failed to transliterate text for $language", e)
@@ -82,63 +50,18 @@ object TransliterationService {
     }
   }
 
-  @RequiresApi(Build.VERSION_CODES.Q)
   private fun transliterateJapanese(
     text: String,
-    transliterator: Transliterator,
     mucabBinding: MucabBinding?,
     spaced: Boolean,
-  ): String {
-    var toTranslate = text
+  ): String? {
+    var toTransliterate = text
     if (mucabBinding != null && mucabBinding.isOpen()) {
       val res = mucabBinding.transliterateJP(text, spaced)
       if (res != null) {
-        toTranslate = res
+        toTransliterate = res
       }
     }
-    val result = StringBuilder()
-    var i = 0
-
-    while (i < toTranslate.length) {
-      val char = toTranslate[i]
-
-      if (isKanji(char)) {
-        result.append(char)
-        i++
-      } else {
-        val segmentStart = i
-        while (i < toTranslate.length && !isKanji(toTranslate[i])) {
-          i++
-        }
-        val segment = toTranslate.substring(segmentStart, i)
-        val transliterated = transliterator.transliterate(segment)
-        result.append(transliterated)
-      }
-    }
-
-    return result.toString()
+    return binding.transliterate(toTransliterate, "Jpan")
   }
-
-  private fun isKanji(char: Char): Boolean {
-    val codePoint = char.code
-    return (codePoint in 0x4E00..0x9FAF) ||
-      (codePoint in 0x3400..0x4DBF) ||
-      (codePoint in 0x20000..0x2A6DF) ||
-      (codePoint in 0x2A700..0x2B73F) ||
-      (codePoint in 0x2B740..0x2B81F) ||
-      (codePoint in 0x2B820..0x2CEAF) ||
-      (codePoint in 0xF900..0xFAFF) ||
-      (codePoint in 0x2F800..0x2FA1F)
-  }
-
-  @RequiresApi(Build.VERSION_CODES.Q)
-  private fun getTransliterator(rule: String): Transliterator? =
-    transliterators.getOrPut(rule) {
-      try {
-        Transliterator.getInstance(rule)
-      } catch (e: Exception) {
-        Log.w("TransliterationService", "Failed to create transliterator for rule: $rule", e)
-        null
-      }
-    }
 }
