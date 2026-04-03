@@ -74,6 +74,12 @@ android {
         }
         dimension = "architecture"
       }
+      create("armeabi-v7a") {
+        ndk {
+          abiFilters += listOf("armeabi-v7a")
+        }
+        dimension = "architecture"
+      }
     }
   }
   compileOptions {
@@ -170,10 +176,36 @@ tasks.register("buildBindingsX86") {
   }
 }
 
+tasks.register("buildBindingsArmeabiV7a") {
+  group = "build"
+  description = "Build Rust bindings library for armeabi-v7a"
+
+  doLast {
+    exec {
+      workingDir = file(bindingsRootDir)
+      environment("ANDROID_NDK_ROOT", ndk)
+      environment("ANDROID_NDK_HOME", ndk)
+      commandLine(
+        "cargo",
+        "ndk",
+        "build",
+        "--target",
+        "armeabi-v7a",
+        "--release",
+        "--platform",
+        "28",
+        "--link-libcxx-shared",
+        "--output-dir",
+        "../jniLibs",
+      )
+    }
+  }
+}
+
 tasks.register("buildBindingsAll") {
   group = "build"
   description = "Build Rust bindings library for all architectures"
-  dependsOn("buildBindingsX86_64", "buildBindingsAarch64", "buildBindingsX86")
+  dependsOn("buildBindingsX86_64", "buildBindingsAarch64", "buildBindingsX86", "buildBindingsArmeabiV7a")
 }
 
 tasks.whenTaskAdded {
@@ -185,6 +217,9 @@ tasks.whenTaskAdded {
   }
   if (name.contains("preX86") && name.contains("Build") && !name.contains("preX86_64")) {
     dependsOn("buildBindingsX86")
+  }
+  if (name.contains("preArmeabi-v7a") && name.contains("Build")) {
+    dependsOn("buildBindingsArmeabiV7a")
   }
 }
 
