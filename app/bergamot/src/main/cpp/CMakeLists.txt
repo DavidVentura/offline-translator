@@ -54,6 +54,10 @@ message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 if(ANDROID_ABI STREQUAL "arm64-v8a")
 	set(BUILD_ARCH "armv8-a" CACHE STRING "Build architecture" FORCE)
 endif()
+if (ANDROID_ABI STREQUAL "armeabi-v7a")
+  set(BUILD_ARCH "armv7-a" CACHE STRING "Build architecture" FORCE)
+endif ()
+
 # marian-dev builds some other targets
 set(COMPILE_LIBRARY_ONLY ON CACHE BOOL "" FORCE)
 set(COMPILE_UNIT_TESTS OFF CACHE BOOL "" FORCE)
