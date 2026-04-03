@@ -34,7 +34,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [aarch64, armeabi-v7a]
+        include:
+          - abi: arm64-v8a
+            label: arm64
+          - abi: armeabi-v7a
+            label: armv7
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -54,17 +58,17 @@ jobs:
         tags: translator-app:latest
         cache-from: type=gha
 
-    - name: Build ${{ matrix.arch }}
+    - name: Build ${{ matrix.label }}
       run: |
         docker run --rm \
           -v ${{ github.workspace }}:/home/vagrant/build/dev.davidv.translator/ \
           --user $(id -u):$(id -g) \
           translator-app:latest \
-          ./gradlew assemble${{ matrix.arch == 'aarch64' && 'Aarch64' || 'Armeabi-v7a' }}Release
+          ./gradlew assembleRelease -PtargetAbi=${{ matrix.abi }}
 
     - name: Upload APK artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: apk-${{ matrix.arch }}
+        name: apk-${{ matrix.label }}
         path: app/build/outputs/apk/**/*.apk
         retention-days: 30

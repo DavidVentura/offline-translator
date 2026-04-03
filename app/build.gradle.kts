@@ -7,6 +7,8 @@ plugins {
   alias(libs.plugins.detekt)
 }
 
+val abiCodes = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2, "x86" to 3, "x86_64" to 4)
+
 android {
   namespace = "dev.davidv.translator"
   compileSdk = 34
@@ -33,6 +35,20 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
+  splits {
+    abi {
+      isEnable = true
+      reset()
+      val targetAbi = project.findProperty("targetAbi")?.toString()
+      if (targetAbi != null) {
+        include(targetAbi)
+      } else {
+        include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+      }
+      isUniversalApk = false
+    }
+  }
+
   buildTypes {
     release {
       isMinifyEnabled = true
@@ -53,34 +69,6 @@ android {
         "proguard-rules.pro",
       )
     }
-
-    flavorDimensions += listOf("architecture")
-    productFlavors {
-      create("x86_64") {
-        ndk {
-          abiFilters += listOf("x86_64") // armeabi-v7a arm64-v8a
-        }
-        dimension = "architecture"
-      }
-      create("x86") {
-        ndk {
-          abiFilters += listOf("x86")
-        }
-        dimension = "architecture"
-      }
-      create("aarch64") {
-        ndk {
-          abiFilters += listOf("arm64-v8a")
-        }
-        dimension = "architecture"
-      }
-      create("armeabi-v7a") {
-        ndk {
-          abiFilters += listOf("armeabi-v7a")
-        }
-        dimension = "architecture"
-      }
-    }
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -92,6 +80,16 @@ android {
   buildFeatures {
     aidl = true
     compose = true
+  }
+
+  applicationVariants.all {
+    outputs.all {
+      val output = this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
+      val abi = output.getFilter(com.android.build.OutputFile.ABI)
+      if (abi != null) {
+        output.versionCodeOverride = defaultConfig.versionCode!! * 10 + (abiCodes[abi] ?: 0)
+      }
+    }
   }
 }
 
@@ -208,19 +206,8 @@ tasks.register("buildBindingsAll") {
   dependsOn("buildBindingsX86_64", "buildBindingsAarch64", "buildBindingsX86", "buildBindingsArmeabiV7a")
 }
 
-tasks.whenTaskAdded {
-  if (name.contains("preAarch64") && name.contains("Build")) {
-    dependsOn("buildBindingsAarch64")
-  }
-  if (name.contains("preX86_64") && name.contains("Build")) {
-    dependsOn("buildBindingsX86_64")
-  }
-  if (name.contains("preX86") && name.contains("Build") && !name.contains("preX86_64")) {
-    dependsOn("buildBindingsX86")
-  }
-  if (name.contains("preArmeabi-v7a") && name.contains("Build")) {
-    dependsOn("buildBindingsArmeabiV7a")
-  }
+tasks.named("preBuild") {
+  dependsOn("buildBindingsAll")
 }
 
 dependencies {

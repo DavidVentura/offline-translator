@@ -18,7 +18,7 @@ STORE_PASSWORD="$2"
 KEY_PASSWORD="$3"
 KEY_ALIAS="$4"
 
-ARCHS=("aarch64:arm64" "armeabi-v7a:armv7")
+ARCHS=("arm64-v8a:arm64" "armeabi-v7a:armv7")
 
 if [ -n "${SIGN_DEBUG:-}" ]; then
   pattern="*-debug.apk"
@@ -32,12 +32,12 @@ mkdir -p signed
 signed_count=0
 
 for entry in "${ARCHS[@]}"; do
-  flavor="${entry%%:*}"
+  abi="${entry%%:*}"
   label="${entry##*:}"
 
-  unsigned_apk=$(find "app/build/outputs/apk/$flavor" -name "$pattern" 2>/dev/null | head -1)
+  unsigned_apk=$(find app/build/outputs/apk -name "*${abi}*" -name "$pattern" 2>/dev/null | head -1)
   if [ -z "$unsigned_apk" ]; then
-    echo "No APK found for $flavor, skipping"
+    echo "No APK found for $abi, skipping"
     continue
   fi
 

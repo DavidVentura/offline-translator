@@ -68,17 +68,21 @@ will trigger a build in a docker container, matching the CI environment.
 
 - Bump `app/build.gradle.kts` versionName and versionCode
 - Create a changelog in `fastlane/metadata/android/en-US/changelogs` as `${versionCode}.txt`
+- Build: `bash build.sh`
+- Sign: `bash sign-apk.sh keystore.jks keystorepass pass alias`
 - Create a tag that is `v${versionName}` (eg: `v0.1.0`)
 - Create a Github release named `v${versionName}` (eg: `v0.1.0`)
-  - Upload the _signed_ APK to the release
-  - `gh release create v0.2.4 -F fastlane/metadata/android/en-US/changelogs/9.txt signed/translator-0.2.4.apk`
+  - Upload both signed APKs to the release
+  - `gh release create v0.2.7 -F fastlane/metadata/android/en-US/changelogs/12.txt signed/translator-arm64-0.2.7.apk signed/translator-armv7-0.2.7.apk`
+
+Each ABI gets a unique versionCode: `versionCode * 10 + abiOffset` (armv7=1, arm64=2, x86=3, x86_64=4).
 
 ## Signing APK
 ```sh
 bash sign-apk.sh keystore.jks keystorepass pass alias
 ```
 
-will sign the file built by `build.sh` (`app/build/outputs/apk/aarch64/release/app-aarch64-release-unsigned.apk`) and place the signed copy, with version number, in `signed/`
+will sign the APKs built by `build.sh` and place the signed copies in `signed/translator-{arm64,armv7}-${version}.apk`
 
 ### Verification info
 

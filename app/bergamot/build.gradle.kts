@@ -14,38 +14,13 @@ android {
     minSdk = 21
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
+    ndk {
+      abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+    }
     externalNativeBuild {
       cmake {
         cppFlags("-std=c++17")
       }
-    }
-  }
-
-  flavorDimensions += listOf("architecture")
-  productFlavors {
-    create("x86_64") {
-      ndk {
-        abiFilters += listOf("x86_64")
-      }
-      dimension = "architecture"
-    }
-    create("x86") {
-      ndk {
-        abiFilters += listOf("x86")
-      }
-      dimension = "architecture"
-    }
-    create("aarch64") {
-      ndk {
-        abiFilters += listOf("arm64-v8a")
-      }
-      dimension = "architecture"
-    }
-    create("armeabi-v7a") {
-      ndk {
-        abiFilters += listOf("armeabi-v7a")
-      }
-      dimension = "architecture"
     }
   }
 
