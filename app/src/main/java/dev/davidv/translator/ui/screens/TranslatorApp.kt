@@ -83,6 +83,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
 
 fun toggleFirstLetterCase(word: String): String {
   if (word.isEmpty()) return word
@@ -132,14 +134,18 @@ suspend fun saveImage(
       )
     var uri: Uri? = null
     try {
-      imagesFolder.mkdirs()
-      val file = File(imagesFolder, "shared_image.png")
+        imagesFolder.mkdirs()
+        val date = Date()
+        val sdf = SimpleDateFormat("yyyyMMdd-hhmmss")
+        val dateString = sdf.format(date)
+        val file = File(imagesFolder, "shared_image-"+dateString+".png")
 
-      val stream = FileOutputStream(file)
-      image.compress(Bitmap.CompressFormat.PNG, 90, stream)
-      stream.flush()
-      stream.close()
-      uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+        val stream = FileOutputStream(file)
+        image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        stream.flush()
+        stream.close()
+        uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+
     } catch (e: IOException) {
       Log.e("Share", "IOException while trying to write file for sharing: " + e.message)
     }
