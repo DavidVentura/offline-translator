@@ -12,13 +12,14 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Preserve file names and line numbers for readable stack traces
+-keepattributes SourceFile,LineNumberTable
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Replace source file paths with just "SourceFile" to avoid leaking build paths
+-renamesourcefileattribute SourceFile
+
+# Disable obfuscation entirely
+-dontobfuscate
 
 
 -keep class dev.davidv.bergamot.DetectionResult { *; }

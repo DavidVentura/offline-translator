@@ -17,11 +17,13 @@
 
 package dev.davidv.translator.ui.components
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -172,7 +174,12 @@ fun ImageCaptureHandler(
           Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
             putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri)
           }
-        takePictureIntent.launch(cameraIntent)
+        try {
+          takePictureIntent.launch(cameraIntent)
+        } catch (e: ActivityNotFoundException) {
+          Log.e("Camera", "No camera app found to handle IMAGE_CAPTURE intent", e)
+          Toast.makeText(context, "No camera app found", Toast.LENGTH_SHORT).show()
+        }
       },
       onMediaPickerClick = {
         onDismissImageSourceSheet()
