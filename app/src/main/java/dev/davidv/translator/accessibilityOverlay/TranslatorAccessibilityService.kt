@@ -81,7 +81,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
     val translationService = TranslationService(settingsManager, filePathManager)
     val languageDetector = LanguageDetector()
     imageProcessor = ImageProcessor(this, OCRService(filePathManager))
-    translationCoordinator = TranslationCoordinator(this, translationService, languageDetector, imageProcessor, settingsManager, false)
+    translationCoordinator = TranslationCoordinator(translationService, languageDetector, imageProcessor, settingsManager)
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
     overlayTextTranslationHelper =
       OverlayTextTranslationHelper(

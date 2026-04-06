@@ -27,20 +27,19 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
+import dev.davidv.translator.ui.TranslatorViewModel
+import dev.davidv.translator.ui.TranslatorViewModelFactory
 import dev.davidv.translator.ui.screens.TranslatorApp
 import dev.davidv.translator.ui.theme.TranslatorTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class ProcessTextActivity : ComponentActivity() {
   private var textToTranslate: String = ""
   private var launchMode: LaunchMode = LaunchMode.Normal
-  private lateinit var ocrService: OCRService
-  private lateinit var translationCoordinator: TranslationCoordinator
+  private lateinit var viewModel: TranslatorViewModel
   private var downloadService: DownloadService? = null
   private lateinit var serviceConnection: ServiceConnection
   private val _downloadServiceState = MutableStateFlow<DownloadService?>(null)
@@ -51,35 +50,28 @@ class ProcessTextActivity : ComponentActivity() {
     enableEdgeToEdge()
     handleIntent(intent)
 
-    val settingsManager = SettingsManager(this)
-    val languageMetadataManager = LanguageMetadataManager(this)
-    val filePathManager = FilePathManager(this, settingsManager.settings)
-    ocrService = OCRService(filePathManager)
-    val imageProcessor = ImageProcessor(this, ocrService)
-    val ctx = this
+    val app = application as TranslatorApplication
 
-    // Initialize translation components immediately
-    lifecycleScope.launch {
-      Log.d("ProcessTextActivity", "Initializing translation service")
-      val translationService = TranslationService(settingsManager, filePathManager)
-      val languageDetector = LanguageDetector()
-      translationCoordinator = TranslationCoordinator(ctx, translationService, languageDetector, imageProcessor, settingsManager)
+    viewModel =
+      ViewModelProvider(
+        this,
+        TranslatorViewModelFactory(
+          translationCoordinator = app.translationCoordinator,
+          settingsManager = app.settingsManager,
+          filePathManager = app.filePathManager,
+          languageMetadataManager = app.languageMetadataManager,
+          initialText = textToTranslate,
+          initialLaunchMode = launchMode,
+        ),
+      )[TranslatorViewModel::class.java]
 
-      // Initialize UI immediately
-      setContent {
-        TranslatorTheme {
-          TranslatorApp(
-            initialText = textToTranslate,
-            sharedImageUri = mutableStateOf(null),
-            translationCoordinator = translationCoordinator,
-            settingsManager = settingsManager,
-            languageMetadataManager = languageMetadataManager,
-            filePathManager = filePathManager,
-            downloadServiceState = downloadServiceState,
-            initialLaunchMode = launchMode,
-            onClose = { finish() },
-          )
-        }
+    setContent {
+      TranslatorTheme {
+        TranslatorApp(
+          viewModel = viewModel,
+          downloadServiceState = downloadServiceState,
+          onClose = { finish() },
+        )
       }
     }
 
@@ -100,14 +92,12 @@ class ProcessTextActivity : ComponentActivity() {
         }
       }
 
-    val intent = Intent(this, DownloadService::class.java)
-    bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    val serviceIntent = Intent(this, DownloadService::class.java)
+    bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
   }
 
   override fun onDestroy() {
     super.onDestroy()
-    ocrService.cleanup()
-    TranslationService.cleanup()
     if (::serviceConnection.isInitialized) {
       unbindService(serviceConnection)
     }

@@ -29,7 +29,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModelProvider
+import dev.davidv.translator.ui.TranslatorViewModel
+import dev.davidv.translator.ui.TranslatorViewModelFactory
 import dev.davidv.translator.ui.screens.TranslatorApp
 import dev.davidv.translator.ui.theme.TranslatorTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,9 +41,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class MainActivity : ComponentActivity() {
   private var textToTranslate: String = ""
   private var launchMode: LaunchMode = LaunchMode.Normal
-  private var sharedImageUri = mutableStateOf<Uri?>(null)
-  private lateinit var ocrService: OCRService
-  private lateinit var translationCoordinator: TranslationCoordinator
+  private var sharedImageUri: Uri? = null
+  private lateinit var viewModel: TranslatorViewModel
   private var downloadService: DownloadService? = null
   private lateinit var serviceConnection: ServiceConnection
   private val _downloadServiceState = MutableStateFlow<DownloadService?>(null)
@@ -52,34 +53,33 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     handleIntent(intent)
 
-    val settingsManager = SettingsManager(this) // 8ms
-    val languageMetadataManager = LanguageMetadataManager(this)
-    val filePathManager = FilePathManager(this, settingsManager.settings)
-    ocrService = OCRService(filePathManager)
-    val imageProcessor = ImageProcessor(this, ocrService)
-    val ctx = this
+    val app = application as TranslatorApplication
 
-    Log.d("MainActivity", "Initializing translation service")
-    val translationService = TranslationService(settingsManager, filePathManager) // 40ms
-    val languageDetector = LanguageDetector()
-    translationCoordinator = TranslationCoordinator(ctx, translationService, languageDetector, imageProcessor, settingsManager)
+    viewModel =
+      ViewModelProvider(
+        this,
+        TranslatorViewModelFactory(
+          translationCoordinator = app.translationCoordinator,
+          settingsManager = app.settingsManager,
+          filePathManager = app.filePathManager,
+          languageMetadataManager = app.languageMetadataManager,
+          initialText = textToTranslate,
+          initialLaunchMode = launchMode,
+        ),
+      )[TranslatorViewModel::class.java]
+
+    // Set shared image if present
+    sharedImageUri?.let { viewModel.setSharedImageUri(it) }
 
     setContent {
       TranslatorTheme {
         TranslatorApp(
-          initialText = textToTranslate,
-          sharedImageUri = sharedImageUri,
-          translationCoordinator = translationCoordinator,
-          settingsManager = settingsManager,
-          languageMetadataManager = languageMetadataManager,
-          filePathManager = filePathManager,
+          viewModel = viewModel,
           downloadServiceState = downloadServiceState,
-          initialLaunchMode = launchMode,
         )
       }
     }
 
-    // Create service connection for download service
     serviceConnection =
       object : ServiceConnection {
         override fun onServiceConnected(
@@ -98,15 +98,12 @@ class MainActivity : ComponentActivity() {
         }
       }
 
-    // Bind to download service
-    val intent = Intent(this, DownloadService::class.java)
-    bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    val serviceIntent = Intent(this, DownloadService::class.java)
+    bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
   }
 
   override fun onDestroy() {
     super.onDestroy()
-    ocrService.cleanup()
-    TranslationService.cleanup()
     if (::serviceConnection.isInitialized) {
       unbindService(serviceConnection)
     }
@@ -122,7 +119,6 @@ class MainActivity : ComponentActivity() {
     Log.d("MainActivity", "Got intent $intent")
     when (intent?.action) {
       Intent.ACTION_SEND -> {
-        // Check if it's text or image
         val text = intent.getStringExtra(Intent.EXTRA_TEXT)
         val imageUri =
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -135,8 +131,8 @@ class MainActivity : ComponentActivity() {
         if (text != null) {
           textToTranslate = text
         } else if (imageUri != null) {
-          sharedImageUri.value = imageUri
-          textToTranslate = "" // Clear any existing text
+          sharedImageUri = imageUri
+          textToTranslate = ""
         }
       }
     }

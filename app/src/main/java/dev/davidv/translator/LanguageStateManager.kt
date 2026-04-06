@@ -94,6 +94,7 @@ class LanguageStateManager(
 
             is DownloadEvent.NewDictionaryAvailable -> {
               addDictionaryLanguage(event.language)
+              _fileEvents.emit(FileEvent.DictionaryAvailable(event.language))
             }
 
             is DownloadEvent.DictionaryIndexDownloaded -> {
@@ -104,6 +105,7 @@ class LanguageStateManager(
 
             is DownloadEvent.DownloadError -> {
               Log.w("LanguageStateManager", "Download error: ${event.message}")
+              _fileEvents.emit(FileEvent.Error(event.message))
             }
           }
         }

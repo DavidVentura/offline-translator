@@ -38,12 +38,10 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
     imageProcessor = ImageProcessor(this, OCRService(filePathManager))
     translationCoordinator =
       TranslationCoordinator(
-        context = this,
         translationService = TranslationService(settingsManager, filePathManager),
         languageDetector = LanguageDetector(),
         imageProcessor = imageProcessor,
         settingsManager = settingsManager,
-        enableToast = false,
       )
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
     overlayTextTranslationHelper =

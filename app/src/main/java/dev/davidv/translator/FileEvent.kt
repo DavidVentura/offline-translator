@@ -33,4 +33,12 @@ sealed class FileEvent {
   data class DictionaryDeleted(
     val language: Language,
   ) : FileEvent()
+
+  data class DictionaryAvailable(
+    val language: Language,
+  ) : FileEvent()
+
+  data class Error(
+    val message: String,
+  ) : FileEvent()
 }
