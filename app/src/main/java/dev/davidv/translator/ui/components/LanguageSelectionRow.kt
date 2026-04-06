@@ -29,17 +29,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.davidv.translator.LangAvailability
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageMetadata
 import dev.davidv.translator.R
 import dev.davidv.translator.TranslatorMessage
+import dev.davidv.translator.canSwapLanguages
 import dev.davidv.translator.ui.theme.TranslatorTheme
 
 @Composable
 fun LanguageSelectionRow(
   from: Language,
   to: Language,
-  availableLanguages: Map<Language, Boolean>,
+  availableLanguages: Map<Language, LangAvailability>,
   languageMetadata: Map<Language, LanguageMetadata>,
   onMessage: (TranslatorMessage) -> Unit,
   onSettings: (() -> Unit)?,
@@ -50,8 +52,14 @@ fun LanguageSelectionRow(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    val fromLanguages = Language.entries.filter { x -> x != to && x != from && availableLanguages[x] == true }
-    val toLanguages = Language.entries.filter { x -> x != from && x != to && availableLanguages[x] == true }
+    val fromLanguages =
+      Language.entries.filter { x ->
+        x != to && x != from && (availableLanguages[x]?.hasToEnglish == true || x == Language.ENGLISH)
+      }
+    val toLanguages =
+      Language.entries.filter { x ->
+        x != from && x != to && (availableLanguages[x]?.hasFromEnglish == true || x == Language.ENGLISH)
+      }
 
     LanguageSelector(
       selectedLanguage = from,
@@ -63,9 +71,11 @@ fun LanguageSelectionRow(
       modifier = Modifier.weight(1f),
     )
 
-    IconButton(onClick = {
-      onMessage(TranslatorMessage.SwapLanguages)
-    }) {
+    val canSwap = canSwapLanguages(from, to, availableLanguages)
+    IconButton(
+      onClick = { onMessage(TranslatorMessage.SwapLanguages) },
+      enabled = canSwap,
+    ) {
       Icon(
         painterResource(id = R.drawable.compare),
         contentDescription = "Reverse translation direction",
@@ -100,13 +110,7 @@ fun LanguageSelectionRowPreview() {
     LanguageSelectionRow(
       from = Language.ENGLISH,
       to = Language.SPANISH,
-      availableLanguages =
-        mapOf(
-          Language.ENGLISH to true,
-          Language.SPANISH to true,
-          Language.FRENCH to true,
-          Language.GERMAN to true,
-        ),
+      availableLanguages = previewAvailability(),
       languageMetadata = mapOf(Language.SPANISH to LanguageMetadata(favorite = true)),
       onMessage = {},
       onSettings = {},
@@ -114,6 +118,14 @@ fun LanguageSelectionRowPreview() {
     )
   }
 }
+
+private fun previewAvailability() =
+  mapOf(
+    Language.ENGLISH to LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
+    Language.SPANISH to LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
+    Language.FRENCH to LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
+    Language.GERMAN to LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
+  )
 
 @Preview(
   showBackground = true,
@@ -125,13 +137,7 @@ fun LanguageSelectionRowDarkPreview() {
     LanguageSelectionRow(
       from = Language.FRENCH,
       to = Language.GERMAN,
-      availableLanguages =
-        mapOf(
-          Language.ENGLISH to true,
-          Language.SPANISH to true,
-          Language.FRENCH to true,
-          Language.GERMAN to true,
-        ),
+      availableLanguages = previewAvailability(),
       languageMetadata = mapOf(Language.FRENCH to LanguageMetadata(favorite = true)),
       onMessage = {},
       onSettings = {},

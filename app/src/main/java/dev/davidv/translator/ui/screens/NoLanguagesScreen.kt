@@ -48,7 +48,7 @@ import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.R
-import dev.davidv.translator.fromEnglishFiles
+import dev.davidv.translator.downloadableLanguages
 import dev.davidv.translator.ui.theme.TranslatorTheme
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -112,10 +112,9 @@ fun NoLanguagesScreen(
       val availLangs = state.availableLanguageMap.filterValues { it.translatorFiles }.keys
       val installedLanguages = availLangs.filter { it != Language.ENGLISH }.sortedBy { it.displayName }
       val availableLanguages =
-        Language.entries
-          .filter { lang ->
-            fromEnglishFiles[lang] != null && !availLangs.contains(lang) && lang != Language.ENGLISH
-          }.sortedBy { it.displayName }
+        downloadableLanguages
+          .filter { lang -> !availLangs.contains(lang) }
+          .sortedBy { it.displayName }
 
       val dictionaryDownloadStates by downloadService.dictionaryDownloadStates.collectAsState()
       val dictionaryIndex by languageStateManager.dictionaryIndex.collectAsState()

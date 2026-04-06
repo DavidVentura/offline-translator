@@ -28,6 +28,7 @@ import dev.davidv.translator.TranslatedStyledBlock
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationSegment
 import dev.davidv.translator.TranslationService
+import dev.davidv.translator.canSwapLanguages
 import dev.davidv.translator.clusterFragmentsIntoBlocks
 import dev.davidv.translator.mapStylesToSegmentedTranslation
 import kotlinx.coroutines.CoroutineScope
@@ -167,10 +168,11 @@ class TranslatorAccessibilityService : AccessibilityService() {
   }
 
   fun swapLanguages() {
-    val oldSource = forcedSourceLanguage
+    val oldSource = forcedSourceLanguage ?: return
     val oldTarget = forcedTargetLanguage ?: settingsManager.settings.value.defaultTargetLanguage
+    if (!canSwapLanguages(oldSource, oldTarget)) return
     forcedSourceLanguage = oldTarget
-    forcedTargetLanguage = if (oldSource != null) oldSource else null
+    forcedTargetLanguage = oldSource
     ui.updateToolbarLabels(forcedSourceLanguage, forcedTargetLanguage)
     if (active) {
       retranslate()

@@ -63,10 +63,10 @@ fun DetectedLanguageSectionPreview() {
       from = Language.ENGLISH,
       availableLanguages =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
-          Language.SPANISH to LangAvailability(true, true, true),
-          Language.FRENCH to LangAvailability(true, true, true),
-          Language.GERMAN to LangAvailability(false, true, true),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
+          Language.SPANISH to LangAvailability(true, true, true, true),
+          Language.FRENCH to LangAvailability(true, true, true, true),
+          Language.GERMAN to LangAvailability(false, false, true, true),
         ),
       onMessage = {},
       downloadStates = emptyMap(),
@@ -84,9 +84,9 @@ fun DetectedLanguageSectionNoDetectionPreview() {
       from = Language.ENGLISH,
       availableLanguages =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
-          Language.SPANISH to LangAvailability(true, true, true),
-          Language.FRENCH to LangAvailability(true, true, true),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
+          Language.SPANISH to LangAvailability(true, true, true, true),
+          Language.FRENCH to LangAvailability(true, true, true, true),
         ),
       onMessage = {},
       downloadStates = emptyMap(),
@@ -107,9 +107,9 @@ fun DetectedLanguageSectionDarkPreview() {
       from = Language.SPANISH,
       availableLanguages =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
-          Language.SPANISH to LangAvailability(true, true, true),
-          Language.GERMAN to LangAvailability(true, true, true),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
+          Language.SPANISH to LangAvailability(true, true, true, true),
+          Language.GERMAN to LangAvailability(true, true, true, true),
         ),
       onMessage = {},
       downloadStates = emptyMap(),

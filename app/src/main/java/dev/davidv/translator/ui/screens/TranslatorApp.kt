@@ -62,7 +62,7 @@ import dev.davidv.translator.Language
 import dev.davidv.translator.LaunchMode
 import dev.davidv.translator.TarkkaBinding
 import dev.davidv.translator.TranslatorMessage
-import dev.davidv.translator.fromEnglishFiles
+import dev.davidv.translator.downloadableLanguages
 import dev.davidv.translator.ui.TranslatorViewModel
 import dev.davidv.translator.ui.UiEvent
 import kotlinx.coroutines.Dispatchers
@@ -362,10 +362,9 @@ fun TranslatorApp(
               val availLangs = languageState.availableLanguageMap.filterValues { it.translatorFiles }.keys
               val installedLanguages = availLangs.filter { it != Language.ENGLISH }.sortedBy { it.displayName }
               val availableLanguages =
-                Language.entries
-                  .filter { lang ->
-                    fromEnglishFiles[lang] != null && !availLangs.contains(lang) && lang != Language.ENGLISH
-                  }.sortedBy { it.displayName }
+                downloadableLanguages
+                  .filter { lang -> !availLangs.contains(lang) }
+                  .sortedBy { it.displayName }
               val dictionaryDownloadStates by curDownloadService.dictionaryDownloadStates.collectAsState()
               val dictionaryIndex by viewModel.languageStateManager.dictionaryIndex.collectAsState()
               Scaffold(

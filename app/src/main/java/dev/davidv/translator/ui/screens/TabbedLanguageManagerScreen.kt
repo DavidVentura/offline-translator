@@ -64,7 +64,7 @@ import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.createPreviewStates
 import dev.davidv.translator.dictionaryCode
-import dev.davidv.translator.fromEnglishFiles
+import dev.davidv.translator.downloadableLanguages
 import dev.davidv.translator.infoFor
 import dev.davidv.translator.ui.components.LanguageEvent
 import dev.davidv.translator.ui.theme.TranslatorTheme
@@ -300,20 +300,19 @@ fun TabbedLanguageManagerPreview() {
     LanguageAvailabilityState(
       availableLanguageMap =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
-          Language.FRENCH to LangAvailability(true, true, true),
-          Language.SPANISH to LangAvailability(true, true, false),
-          Language.GERMAN to LangAvailability(true, true, false),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
+          Language.FRENCH to LangAvailability(true, true, true, true),
+          Language.SPANISH to LangAvailability(true, true, true, false),
+          Language.GERMAN to LangAvailability(true, true, true, false),
         ),
     )
 
   val availLangs = mockLanguageState.availableLanguageMap.filterValues { it.translatorFiles }.keys
   val installedLanguages = availLangs.filter { it != Language.ENGLISH }.sortedBy { it.displayName }
   val availableLanguages =
-    Language.entries
-      .filter { lang ->
-        fromEnglishFiles[lang] != null && !availLangs.contains(lang) && lang != Language.ENGLISH
-      }.sortedBy { it.displayName }
+    downloadableLanguages
+      .filter { lang -> !availLangs.contains(lang) }
+      .sortedBy { it.displayName }
 
   val context = LocalContext.current
   TranslatorTheme {
@@ -357,17 +356,16 @@ fun TabbedLanguageManagerDictionaryTabPreview() {
     LanguageAvailabilityState(
       availableLanguageMap =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
         ),
     )
 
   val availLangs = mockLanguageState.availableLanguageMap.filterValues { it.translatorFiles }.keys
   val installedLanguages = availLangs.filter { it != Language.ENGLISH }.sortedBy { it.displayName }
   val availableLanguages =
-    Language.entries
-      .filter { lang ->
-        fromEnglishFiles[lang] != null && !availLangs.contains(lang) && lang != Language.ENGLISH
-      }.sortedBy { it.displayName }
+    downloadableLanguages
+      .filter { lang -> !availLangs.contains(lang) }
+      .sortedBy { it.displayName }
 
   val context = LocalContext.current
   TranslatorTheme {

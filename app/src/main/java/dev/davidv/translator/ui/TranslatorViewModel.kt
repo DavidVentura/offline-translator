@@ -38,6 +38,7 @@ import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationResult
 import dev.davidv.translator.TranslatorMessage
 import dev.davidv.translator.WordWithTaggedEntries
+import dev.davidv.translator.canSwapLanguages
 import dev.davidv.translator.ui.screens.openDictionary
 import dev.davidv.translator.ui.screens.toggleFirstLetterCase
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -302,6 +303,7 @@ class TranslatorViewModel(
       TranslatorMessage.SwapLanguages -> {
         val oldFrom = _from.value ?: return
         val oldTo = _to.value ?: return
+        if (!canSwapLanguages(oldFrom, oldTo)) return
         _from.value = oldTo
         _to.value = oldFrom
         _output.value = null

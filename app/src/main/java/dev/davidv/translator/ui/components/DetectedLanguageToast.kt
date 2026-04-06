@@ -114,7 +114,7 @@ fun DetectedLanguageToastPreview() {
   TranslatorTheme {
     DetectedLanguageToast(
       detectedLanguage = Language.SPANISH,
-      availableLanguages = mapOf(Language.SPANISH to LangAvailability(true, true, true)),
+      availableLanguages = mapOf(Language.SPANISH to LangAvailability(true, true, true, true)),
       onSwitchClick = {},
       onEvent = {},
       downloadStates = emptyMap(),
@@ -131,7 +131,7 @@ fun DetectedLanguageToastDarkPreview() {
   TranslatorTheme {
     DetectedLanguageToast(
       detectedLanguage = Language.FRENCH,
-      availableLanguages = mapOf(Language.FRENCH to LangAvailability(true, true, true)),
+      availableLanguages = mapOf(Language.FRENCH to LangAvailability(true, true, true, true)),
       onSwitchClick = {},
       onEvent = {},
       downloadStates = emptyMap(),
@@ -148,7 +148,7 @@ fun MissingLanguage() {
   TranslatorTheme {
     DetectedLanguageToast(
       detectedLanguage = Language.SPANISH,
-      availableLanguages = mapOf(Language.FRENCH to LangAvailability(false, true, true)),
+      availableLanguages = mapOf(Language.FRENCH to LangAvailability(false, false, true, true)),
       onSwitchClick = {},
       onEvent = {},
       downloadStates = emptyMap(),

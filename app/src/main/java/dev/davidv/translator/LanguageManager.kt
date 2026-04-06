@@ -162,7 +162,7 @@ fun LanguageManagerScreen(
 
           items(availableLanguages) { lang ->
             LanguageItem(
-              state = languageAvailabilityState.availableLanguageMap[lang] ?: LangAvailability(false, false, false),
+              state = languageAvailabilityState.availableLanguageMap[lang] ?: LangAvailability(false, false, false, false),
               lang = lang,
               downloadState = downloadStates[lang],
               isFavorite = languageMetadata[lang]?.favorite ?: false,
@@ -312,7 +312,7 @@ fun missingFilesFrom(
   dataFiles: Set<String>,
   lang: Language,
 ): Pair<Int, List<ModelFile>> {
-  val languageFiles = fromEnglishFiles[lang]!!
+  val languageFiles = fromEnglishFiles[lang] ?: return Pair(0, emptyList())
   val allModelFiles = listOf(languageFiles.model, languageFiles.srcVocab, languageFiles.tgtVocab, languageFiles.lex).distinctBy { it.name }
   val missing = allModelFiles.filter { it.name !in dataFiles }
   val totalSize = missing.sumOf { it.size }
@@ -323,7 +323,7 @@ fun missingFilesTo(
   dataFiles: Set<String>,
   lang: Language,
 ): Pair<Int, List<ModelFile>> {
-  val languageFiles = toEnglishFiles[lang]!!
+  val languageFiles = toEnglishFiles[lang] ?: return Pair(0, emptyList())
   val allModelFiles = listOf(languageFiles.model, languageFiles.srcVocab, languageFiles.tgtVocab, languageFiles.lex).distinctBy { it.name }
   val missing = allModelFiles.filter { it.name !in dataFiles }
   val totalSize = missing.sumOf { it.size }
@@ -344,9 +344,9 @@ fun createPreviewStates(): PreviewStates =
         LanguageAvailabilityState(
           availableLanguageMap =
             mapOf(
-              Language.ENGLISH to LangAvailability(true, true, true),
-              Language.FRENCH to LangAvailability(true, true, false),
-              Language.SPANISH to LangAvailability(true, true, true),
+              Language.ENGLISH to LangAvailability(true, true, true, true),
+              Language.FRENCH to LangAvailability(true, true, true, false),
+              Language.SPANISH to LangAvailability(true, true, true, true),
             ),
         ),
       ),
@@ -368,10 +368,9 @@ fun LanguageManagerPreviewDark() {
   val availLangs = languageAvailabilityState.availableLanguageMap.filterValues { it.translatorFiles }.keys
   val installedLanguages = availLangs.filter { it != Language.ENGLISH }.sortedBy { it.displayName }
   val availableLanguages =
-    Language.entries
-      .filter { lang ->
-        fromEnglishFiles[lang] != null && !availLangs.contains(lang) && lang != Language.ENGLISH
-      }.sortedBy { it.displayName }
+    downloadableLanguages
+      .filter { lang -> !availLangs.contains(lang) }
+      .sortedBy { it.displayName }
       .take(4)
 
   TranslatorTheme(darkTheme = true) {
@@ -400,10 +399,9 @@ fun LanguageManagerPreview() {
   val availLangs = languageAvailabilityState.availableLanguageMap.filterValues { it.translatorFiles }.keys
   val installedLanguages = availLangs.filter { it != Language.ENGLISH }.sortedBy { it.displayName }
   val availableLanguages =
-    Language.entries
-      .filter { lang ->
-        fromEnglishFiles[lang] != null && !availLangs.contains(lang) && lang != Language.ENGLISH
-      }.sortedBy { it.displayName }
+    downloadableLanguages
+      .filter { lang -> !availLangs.contains(lang) }
+      .sortedBy { it.displayName }
       .take(4)
 
   TranslatorTheme {
@@ -427,10 +425,7 @@ fun LanguageManagerPreview() {
 @Preview
 fun LanguageManagerPreviewEmbedded() {
   val availableLanguages =
-    Language.entries
-      .filter { lang ->
-        fromEnglishFiles[lang] != null && lang != Language.ENGLISH
-      }.sortedBy { it.displayName }
+    downloadableLanguages.sortedBy { it.displayName }
   TranslatorTheme {
     LanguageManagerScreen(
       embedded = true,
@@ -458,10 +453,9 @@ fun LanguageManagerDialogPreview() {
   val availLangs = languageAvailabilityState.availableLanguageMap.filterValues { it.translatorFiles }.keys
   val installedLanguages = availLangs.filter { it != Language.ENGLISH }.sortedBy { it.displayName }
   val availableLanguages =
-    Language.entries
-      .filter { lang ->
-        fromEnglishFiles[lang] != null && !availLangs.contains(lang) && lang != Language.ENGLISH
-      }.sortedBy { it.displayName }
+    downloadableLanguages
+      .filter { lang -> !availLangs.contains(lang) }
+      .sortedBy { it.displayName }
 
   TranslatorTheme {
     LanguageManagerScreen(

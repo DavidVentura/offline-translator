@@ -186,7 +186,7 @@ fun MainScreen(
         LanguageSelectionRow(
           from = from,
           to = to,
-          availableLanguages = availableLanguages.mapValues { it.value.translatorFiles },
+          availableLanguages = availableLanguages,
           languageMetadata = languageMetadata,
           onMessage = onMessage,
           drawable =
@@ -518,9 +518,9 @@ fun PopupMode() {
       onMessage = {},
       availableLanguages =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
-          Language.SPANISH to LangAvailability(true, true, true),
-          Language.FRENCH to LangAvailability(true, true, true),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
+          Language.SPANISH to LangAvailability(true, true, true, true),
+          Language.FRENCH to LangAvailability(true, true, true, true),
         ),
       languageMetadata = mapOf(Language.SPANISH to LanguageMetadata(favorite = true)),
       downloadStates = emptyMap(),
@@ -554,9 +554,9 @@ fun MainScreenPreview() {
       onMessage = {},
       availableLanguages =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
-          Language.SPANISH to LangAvailability(true, true, true),
-          Language.FRENCH to LangAvailability(true, true, true),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
+          Language.SPANISH to LangAvailability(true, true, true, true),
+          Language.FRENCH to LangAvailability(true, true, true, true),
         ),
       languageMetadata = mapOf(Language.SPANISH to LanguageMetadata(favorite = true)),
       downloadStates = emptyMap(),
@@ -594,9 +594,9 @@ fun PreviewTranslitText() {
       onMessage = {},
       availableLanguages =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
-          Language.SPANISH to LangAvailability(true, true, true),
-          Language.FRENCH to LangAvailability(true, true, true),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
+          Language.SPANISH to LangAvailability(true, true, true, true),
+          Language.FRENCH to LangAvailability(true, true, true, true),
         ),
       downloadStates = emptyMap(),
       settings = AppSettings(showTransliterationOnInput = true),
@@ -635,9 +635,9 @@ fun PreviewVeryLongText() {
       onMessage = {},
       availableLanguages =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
-          Language.SPANISH to LangAvailability(true, true, true),
-          Language.FRENCH to LangAvailability(true, true, true),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
+          Language.SPANISH to LangAvailability(true, true, true, true),
+          Language.FRENCH to LangAvailability(true, true, true, true),
         ),
       downloadStates = emptyMap(),
       settings = AppSettings(showTransliterationOnInput = true),
@@ -680,9 +680,9 @@ fun PreviewVeryLongTextImage() {
       onMessage = {},
       availableLanguages =
         mapOf(
-          Language.ENGLISH to LangAvailability(true, true, true),
-          Language.SPANISH to LangAvailability(true, true, true),
-          Language.FRENCH to LangAvailability(true, true, true),
+          Language.ENGLISH to LangAvailability(true, true, true, true),
+          Language.SPANISH to LangAvailability(true, true, true, true),
+          Language.FRENCH to LangAvailability(true, true, true, true),
         ),
       downloadStates = emptyMap(),
       settings = AppSettings(),

@@ -30,16 +30,38 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 data class LangAvailability(
-  val translatorFiles: Boolean,
+  val hasFromEnglish: Boolean,
+  val hasToEnglish: Boolean,
   val ocrFiles: Boolean,
   val dictionaryFiles: Boolean,
-)
+) {
+  val translatorFiles: Boolean get() = hasFromEnglish || hasToEnglish
+}
 
 data class LanguageAvailabilityState(
   val hasLanguages: Boolean = false,
   val availableLanguageMap: Map<Language, LangAvailability> = emptyMap(),
   val isChecking: Boolean = true,
 )
+
+fun canSwapLanguages(
+  from: Language,
+  to: Language,
+): Boolean {
+  val toCanBeSource = to == Language.ENGLISH || toEnglishFiles.containsKey(to)
+  val fromCanBeTarget = from == Language.ENGLISH || fromEnglishFiles.containsKey(from)
+  return toCanBeSource && fromCanBeTarget
+}
+
+fun canSwapLanguages(
+  from: Language,
+  to: Language,
+  availableLanguages: Map<Language, LangAvailability>,
+): Boolean {
+  val toCanBeSource = to == Language.ENGLISH || availableLanguages[to]?.hasToEnglish == true
+  val fromCanBeTarget = from == Language.ENGLISH || availableLanguages[from]?.hasFromEnglish == true
+  return toCanBeSource && fromCanBeTarget
+}
 
 fun isDictionaryAvailable(
   filePathManager: FilePathManager,
@@ -144,23 +166,25 @@ class LanguageStateManager(
             put(
               Language.ENGLISH,
               LangAvailability(
-                translatorFiles = true,
+                hasFromEnglish = true,
+                hasToEnglish = true,
                 ocrFiles = true,
                 dictionaryFiles = isDictionaryAvailable(dictFiles, Language.ENGLISH),
               ),
             )
 
-            Language.entries.forEach { fromLang ->
-              val toLang = Language.ENGLISH
-              if (fromLang != toLang) {
-                val isTranslatorAvailable = missingFiles(dataFiles, fromLang).second.isEmpty()
-                val isOcrAvailable = "${fromLang.tessName}.traineddata" in tessFiles
+            Language.entries.forEach { lang ->
+              if (lang != Language.ENGLISH) {
+                val fromAvailable = missingFilesFrom(dataFiles, lang).second.isEmpty() && fromEnglishFiles.containsKey(lang)
+                val toAvailable = missingFilesTo(dataFiles, lang).second.isEmpty() && toEnglishFiles.containsKey(lang)
+                val isOcrAvailable = "${lang.tessName}.traineddata" in tessFiles
                 put(
-                  fromLang,
+                  lang,
                   LangAvailability(
-                    translatorFiles = isTranslatorAvailable,
+                    hasFromEnglish = fromAvailable,
+                    hasToEnglish = toAvailable,
                     ocrFiles = isOcrAvailable,
-                    dictionaryFiles = isDictionaryAvailable(dictFiles, fromLang),
+                    dictionaryFiles = isDictionaryAvailable(dictFiles, lang),
                   ),
                 )
               }
@@ -184,7 +208,13 @@ class LanguageStateManager(
     val currentState = _languageState.value
     val updatedLanguageMap = currentState.availableLanguageMap.toMutableMap()
     val isDictAvail = isDictionaryAvailable(filePathManager, language)
-    updatedLanguageMap[language] = LangAvailability(true, true, isDictAvail)
+    updatedLanguageMap[language] =
+      LangAvailability(
+        hasFromEnglish = fromEnglishFiles.containsKey(language),
+        hasToEnglish = toEnglishFiles.containsKey(language),
+        ocrFiles = true,
+        dictionaryFiles = isDictAvail,
+      )
 
     // Only english doesn't count, so if it's non-english
     // or we already had languages, then we still have them
@@ -237,7 +267,7 @@ class LanguageStateManager(
   fun deleteLanguage(language: Language) {
     val currentState = _languageState.value
     val updatedLanguageMap = currentState.availableLanguageMap.toMutableMap()
-    updatedLanguageMap[language] = LangAvailability(translatorFiles = false, ocrFiles = false, dictionaryFiles = false)
+    updatedLanguageMap[language] = LangAvailability(hasFromEnglish = false, hasToEnglish = false, ocrFiles = false, dictionaryFiles = false)
 
     val hasLanguages = updatedLanguageMap.any { it.key != Language.ENGLISH && it.value.translatorFiles }
 
@@ -314,7 +344,8 @@ class LanguageStateManager(
         val existingAvailability = languageMap[sharedLanguage]
         languageMap[sharedLanguage] =
           LangAvailability(
-            translatorFiles = existingAvailability?.translatorFiles ?: false,
+            hasFromEnglish = existingAvailability?.hasFromEnglish ?: false,
+            hasToEnglish = existingAvailability?.hasToEnglish ?: false,
             ocrFiles = existingAvailability?.ocrFiles ?: false,
             dictionaryFiles = available,
           )

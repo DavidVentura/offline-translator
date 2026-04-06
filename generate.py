@@ -365,10 +365,7 @@ def build_language_data(pair_files: dict[tuple[str, str], dict]) -> tuple[dict, 
         else:
             to_english[src] = entry
 
-    bidirectional = set(from_english.keys()) & set(to_english.keys())
-    from_english = {lang: from_english[lang] for lang in bidirectional}
-    to_english = {lang: to_english[lang] for lang in bidirectional}
-    all_languages = bidirectional | {"en"}
+    all_languages = set(from_english.keys()) | set(to_english.keys()) | {"en"}
 
     return from_english, to_english, all_languages
 
@@ -426,8 +423,6 @@ def generate_kotlin(
     language_entries = []
     for lang_code in sorted(all_languages):
         if lang_code not in LANGUAGE_NAMES:
-            continue
-        if lang_code != "en" and lang_code not in from_english:
             continue
 
         lang_name = LANGUAGE_NAMES[lang_code]
@@ -527,7 +522,9 @@ val toEnglishFiles = mapOf(
 
 val extraFiles = mapOf(
 {extra_files_lines}
-)"""
+)
+
+val downloadableLanguages: List<Language> = Language.entries.filter {{ it != Language.ENGLISH && (fromEnglishFiles.containsKey(it) || toEnglishFiles.containsKey(it)) }}"""
 
 
 async def main():
