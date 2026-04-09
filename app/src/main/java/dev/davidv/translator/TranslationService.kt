@@ -360,7 +360,19 @@ alignment: soft
           "Speech synthesis failed for ${language.displayName}",
         )
 
-      val chunkRequests = buildSpeechChunkRequests(text, phonemeChunks)
+      val chunkRequests =
+        buildSpeechChunkRequests(
+          text = text,
+          phonemeChunks = phonemeChunks,
+          phonemizeText = { chunkText ->
+            speechBinding.phonemizeChunks(
+              modelPath = voiceFiles.model.absolutePath,
+              configPath = voiceFiles.config.absolutePath,
+              espeakDataPath = espeakDataPath,
+              text = chunkText,
+            )
+          },
+        )
 
       SpeechSynthesisResult.Success(
         flow {
@@ -387,20 +399,24 @@ alignment: soft
   private fun buildSpeechChunkRequests(
     text: String,
     phonemeChunks: List<String>,
+    phonemizeText: (String) -> List<String>?,
   ): List<SpeechChunkRequest> {
     val firstChunk = phonemeChunks.firstOrNull()
     if (firstChunk != null && firstChunk.length > 100) {
       val splitText = splitAtFirstPause(text)
       if (splitText != null) {
+        val remainingPhonemeChunks = phonemizeText(splitText.second)?.filter { it.isNotBlank() }.orEmpty()
         Log.d(
           "TranslationService",
-          "Forcing fast first speech chunk at first pause for long utterance (${firstChunk.length} phoneme chars)",
+          "Forcing fast first speech chunk at first pause for long utterance (${firstChunk.length} phoneme chars); remainder re-chunked into ${remainingPhonemeChunks.size} chunk(s)",
         )
 
-        return listOf(
-          SpeechChunkRequest(content = splitText.first, isPhonemes = false),
-          SpeechChunkRequest(content = splitText.second, isPhonemes = false),
-        )
+        if (remainingPhonemeChunks.isNotEmpty()) {
+          return buildList {
+            add(SpeechChunkRequest(content = splitText.first, isPhonemes = false))
+            addAll(remainingPhonemeChunks.map { SpeechChunkRequest(content = it, isPhonemes = true) })
+          }
+        }
       }
     }
 
@@ -467,7 +483,7 @@ sealed class SpeechSynthesisResult {
   ) : SpeechSynthesisResult()
 }
 
-private data class SpeechChunkRequest(
+internal data class SpeechChunkRequest(
   val content: String,
   val isPhonemes: Boolean,
 )
