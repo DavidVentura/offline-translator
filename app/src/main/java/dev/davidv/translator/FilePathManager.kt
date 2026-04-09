@@ -44,9 +44,7 @@ class FilePathManager(
 
   fun getDictionaryFile(language: Language): File = File(getDictionariesDir(), "${language.dictionaryCode}.dict")
 
-  fun getDictionaryIndexFile(): File = File(baseDir, "dictionaries/index.json")
-
-  fun getLanguageIndexFile(): File = File(baseDir, "language_index.json")
+  fun getCatalogIndexFile(): File = File(baseDir, "index_v2.json")
 
   fun getMucabFile(): File = File(getDataDir(), "mucab.bin")
 
@@ -119,29 +117,7 @@ class FilePathManager(
 
   fun loadDictionaryIndex(): DictionaryIndex? {
     return try {
-      val jsonString = loadWithAssetFallback(getDictionaryIndexFile(), "dictionary_index.json") ?: return null
-      val jsonObject = org.json.JSONObject(jsonString)
-
-      val dictionariesJson = jsonObject.getJSONObject("dictionaries")
-      val dictionaries = mutableMapOf<String, DictionaryInfo>()
-
-      for (key in dictionariesJson.keys()) {
-        val dictJson = dictionariesJson.getJSONObject(key)
-        dictionaries[key] =
-          DictionaryInfo(
-            date = dictJson.getLong("date"),
-            filename = dictJson.getString("filename"),
-            size = dictJson.getLong("size"),
-            type = dictJson.getString("type"),
-            wordCount = dictJson.getLong("word_count"),
-          )
-      }
-
-      DictionaryIndex(
-        dictionaries = dictionaries,
-        updatedAt = jsonObject.getLong("updated_at"),
-        version = jsonObject.getInt("version"),
-      )
+      loadLanguageCatalogV2()?.toDictionaryIndex()
     } catch (e: Exception) {
       Log.e("FilePathManager", "Error parsing dictionary index", e)
       null
@@ -150,10 +126,19 @@ class FilePathManager(
 
   fun loadLanguageIndex(): LanguageIndex? {
     return try {
-      val jsonString = loadWithAssetFallback(getLanguageIndexFile(), "language_index.json") ?: return null
-      parseLanguageIndex(jsonString)
+      loadLanguageCatalogV2()?.toLanguageIndex()
     } catch (e: Exception) {
       Log.e("FilePathManager", "Error parsing language index", e)
+      null
+    }
+  }
+
+  fun loadLanguageCatalogV2(): LanguageCatalogV2? {
+    return try {
+      val jsonString = loadWithAssetFallback(getCatalogIndexFile(), "index_v2.json") ?: return null
+      parseLanguageCatalogV2(jsonString)
+    } catch (e: Exception) {
+      Log.e("FilePathManager", "Error parsing v2 catalog index", e)
       null
     }
   }

@@ -173,7 +173,7 @@ class DownloadService : Service() {
     fun fetchDictionaryIndex(context: Context) {
       val intent =
         Intent(context, DownloadService::class.java).apply {
-          action = "FETCH_DICTIONARY_INDEX"
+          action = "FETCH_CATALOG_INDEX"
         }
       context.startService(intent)
     }
@@ -181,7 +181,7 @@ class DownloadService : Service() {
     fun fetchLanguageIndex(context: Context) {
       val intent =
         Intent(context, DownloadService::class.java).apply {
-          action = "FETCH_LANGUAGE_INDEX"
+          action = "FETCH_CATALOG_INDEX"
         }
       context.startService(intent)
     }
@@ -223,12 +223,8 @@ class DownloadService : Service() {
         cancelDictionaryDownload(language)
       }
 
-      "FETCH_DICTIONARY_INDEX" -> {
-        fetchDictionaryIndex()
-      }
-
-      "FETCH_LANGUAGE_INDEX" -> {
-        fetchLanguageIndex()
+      "FETCH_DICTIONARY_INDEX", "FETCH_LANGUAGE_INDEX", "FETCH_CATALOG_INDEX" -> {
+        fetchCatalogIndex()
       }
     }
     return START_STICKY
@@ -654,11 +650,11 @@ class DownloadService : Service() {
     }
   }
 
-  private fun fetchDictionaryIndex() {
+  private fun fetchCatalogIndex() {
     serviceScope.launch {
       try {
-        val indexFile = filePathManager.getDictionaryIndexFile()
-        val url = "${Constants.DEFAULT_DICTIONARY_BASE_URL}/${Constants.DICT_VERSION}/index.json"
+        val indexFile = filePathManager.getCatalogIndexFile()
+        val url = "${Constants.DEFAULT_CATALOG_INDEX_BASE_URL}/${Constants.CATALOG_INDEX_VERSION}/index_v2.json"
 
         indexFile.parentFile?.mkdirs()
         val tempFile = File(indexFile.parentFile, "${indexFile.name}.tmp")
@@ -675,59 +671,24 @@ class DownloadService : Service() {
         }
 
         if (tempFile.renameTo(indexFile)) {
-          Log.i("DownloadService", "Downloaded dictionary index from $url to $indexFile")
-          val index = filePathManager.loadDictionaryIndex()
-          if (index != null) {
-            _downloadEvents.emit(DownloadEvent.DictionaryIndexDownloaded(index))
+          Log.i("DownloadService", "Downloaded v2 catalog index from $url to $indexFile")
+          val languageIndex = filePathManager.loadLanguageIndex()
+          val dictionaryIndex = filePathManager.loadDictionaryIndex()
+          if (languageIndex != null) {
+            cachedLanguageIndex = languageIndex
+            _downloadEvents.emit(DownloadEvent.LanguageIndexDownloaded(languageIndex))
+          }
+          if (dictionaryIndex != null) {
+            _downloadEvents.emit(DownloadEvent.DictionaryIndexDownloaded(dictionaryIndex))
           }
         } else {
           Log.e("DownloadService", "Failed to move temp index file $tempFile to final location $indexFile")
           tempFile.delete()
-          _downloadEvents.emit(DownloadEvent.DownloadError("Failed to save dictionary index"))
+          _downloadEvents.emit(DownloadEvent.DownloadError("Failed to save catalog index"))
         }
       } catch (e: Exception) {
-        Log.e("DownloadService", "Error downloading dictionary index", e)
-        val errorMessage = "Failed to download dictionary index: ${e.message ?: "Unknown error"}"
-        _downloadEvents.emit(DownloadEvent.DownloadError(errorMessage))
-      }
-    }
-  }
-
-  private fun fetchLanguageIndex() {
-    serviceScope.launch {
-      try {
-        val indexFile = filePathManager.getLanguageIndexFile()
-        val url = "${Constants.DEFAULT_LANGUAGE_INDEX_BASE_URL}/${Constants.LANGUAGE_INDEX_VERSION}/index.json"
-
-        indexFile.parentFile?.mkdirs()
-        val tempFile = File(indexFile.parentFile, "${indexFile.name}.tmp")
-
-        val conn = URL(url).openConnection()
-        conn.getInputStream().use { inputStream ->
-          tempFile.outputStream().use { output ->
-            val buffer = ByteArray(16384)
-            var bytesRead: Int
-            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-              output.write(buffer, 0, bytesRead)
-            }
-          }
-        }
-
-        if (tempFile.renameTo(indexFile)) {
-          Log.i("DownloadService", "Downloaded language index from $url to $indexFile")
-          val index = filePathManager.loadLanguageIndex()
-          if (index != null) {
-            cachedLanguageIndex = index
-            _downloadEvents.emit(DownloadEvent.LanguageIndexDownloaded(index))
-          }
-        } else {
-          Log.e("DownloadService", "Failed to move temp index file $tempFile to final location $indexFile")
-          tempFile.delete()
-          _downloadEvents.emit(DownloadEvent.DownloadError("Failed to save language index"))
-        }
-      } catch (e: Exception) {
-        Log.e("DownloadService", "Error downloading language index", e)
-        val errorMessage = "Failed to download language index: ${e.message ?: "Unknown error"}"
+        Log.e("DownloadService", "Error downloading catalog index", e)
+        val errorMessage = "Failed to download catalog index: ${e.message ?: "Unknown error"}"
         _downloadEvents.emit(DownloadEvent.DownloadError(errorMessage))
       }
     }
