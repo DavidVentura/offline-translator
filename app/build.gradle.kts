@@ -128,22 +128,19 @@ val abiToCargoTarget =
     "x86" to "x86",
   )
 
-val prepareOnnxRuntimeSubmodule =
-  tasks.register("prepareOnnxRuntimeSubmodule", Exec::class) {
-    group = "build"
-    description = "Initialize ONNX Runtime submodules"
-    workingDir = rootProject.projectDir
-    commandLine(
-      "git",
-      "-C",
-      onnxRuntimeRootDir.absolutePath,
-      "submodule",
-      "update",
-      "--init",
-      "--recursive",
-      "--depth",
-      "1",
-    )
+val verifyOnnxRuntimeSources =
+  tasks.register("verifyOnnxRuntimeSources") {
+    group = "verification"
+    description = "Verify the ONNX Runtime source tree is already present"
+    doLast {
+      val buildScript = onnxRuntimeRootDir.resolve("tools/ci_build/build.py")
+      if (!buildScript.isFile) {
+        error(
+          "ONNX Runtime sources are missing at ${onnxRuntimeRootDir.absolutePath}. " +
+            "Initialize submodules before running Gradle.",
+        )
+      }
+    }
   }
 
 val abiToOnnxRuntimeTask =
@@ -153,7 +150,7 @@ val abiToOnnxRuntimeTask =
       tasks.register("buildOnnxRuntime$taskSuffix", Exec::class) {
         group = "build"
         description = "Build ONNX Runtime for $abi"
-        dependsOn(prepareOnnxRuntimeSubmodule)
+        dependsOn(verifyOnnxRuntimeSources)
         workingDir = onnxRuntimeRootDir
         // The ONNX Runtime checkout includes test fixtures with non-portable Unicode paths.
         // Gradle 8.9 fingerprints Exec task inputs eagerly and fails on CI before the build

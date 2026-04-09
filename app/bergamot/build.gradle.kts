@@ -3,6 +3,9 @@ plugins {
   alias(libs.plugins.kotlin.android)
 }
 
+val defaultAbis = listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+val targetAbi = project.findProperty("targetAbi")?.toString()
+
 android {
   namespace = "dev.davidv.bergamot"
   compileSdk = 34
@@ -15,7 +18,7 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
     ndk {
-      abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+      abiFilters += if (targetAbi != null) listOf(targetAbi) else defaultAbis
     }
     externalNativeBuild {
       cmake {
