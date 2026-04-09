@@ -536,7 +536,7 @@ private fun LanguageAssetCard(
         modifier =
           Modifier
             .fillMaxWidth()
-            .padding(start = 26.dp, end = 4.dp, bottom = 1.dp),
+            .padding(start = 28.dp, end = 0.dp, bottom = 1.dp),
       ) {
         featureRows.forEach { featureRow ->
           FeatureRow(featureRow)
@@ -566,7 +566,8 @@ private fun buildFeatureRows(
   if (row.translationVisible) {
     featureRows +=
       LanguageFeatureRow(
-        label = "Translation, ${formatSize(row.language.sizeBytes)}",
+        label = "Translation",
+        secondaryLabel = formatSize(row.language.sizeBytes),
         installed = row.translationInstalled,
         downloadState = translationDownloadState,
         onDownload = onDownloadTranslation,
@@ -578,11 +579,11 @@ private fun buildFeatureRows(
   if (row.dictionaryVisible) {
     featureRows +=
       LanguageFeatureRow(
-        label = "Dictionary, ${formatSize(row.dictionaryInfo?.size ?: 0L)}",
+        label = "Dictionary",
         secondaryLabel =
           buildDictionarySecondaryLabel(
+            sizeBytes = row.dictionaryInfo?.size ?: 0L,
             type = row.dictionaryInfo?.type,
-            wordCount = row.dictionaryInfo?.wordCount ?: 0L,
           ),
         installed = row.dictionaryInstalled,
         downloadState = dictionaryDownloadState,
@@ -595,7 +596,8 @@ private fun buildFeatureRows(
   if (row.ttsVisible) {
     featureRows +=
       LanguageFeatureRow(
-        label = "Text-to-speech, ${formatSize(row.ttsSizeBytes)}",
+        label = "Text-to-speech",
+        secondaryLabel = formatSize(row.ttsSizeBytes),
         installed = row.ttsInstalled,
         downloadState = ttsDownloadState,
         onDownload = onDownloadTts,
@@ -616,9 +618,10 @@ private fun FeatureRow(featureRow: LanguageFeatureRow) {
         .padding(vertical = 0.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Column(
+    Row(
       modifier = Modifier.weight(1f),
-      verticalArrangement = Arrangement.spacedBy(0.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
       Text(
         text = featureRow.label,
@@ -628,7 +631,7 @@ private fun FeatureRow(featureRow: LanguageFeatureRow) {
         Text(
           text = secondaryLabel,
           style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
         )
       }
     }
@@ -831,14 +834,11 @@ private fun formatSize(sizeBytes: Long): String {
 }
 
 private fun buildDictionarySecondaryLabel(
+  sizeBytes: Long,
   type: String?,
-  wordCount: Long,
 ): String? {
-  val parts = mutableListOf<String>()
+  val parts = mutableListOf(formatSize(sizeBytes))
   dictionaryTypeLabel(type)?.let(parts::add)
-  if (wordCount > 0L) {
-    parts += "${humanCount(wordCount)} entries"
-  }
   return parts.takeIf { it.isNotEmpty() }?.joinToString(", ")
 }
 
@@ -848,18 +848,4 @@ private fun dictionaryTypeLabel(type: String?): String? =
     "english" -> "English"
     "bilingual" -> "Bilingual"
     else -> type.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-  }
-
-private fun humanCount(v: Long): String =
-  when {
-    v < 1000 -> v.toString()
-    v < 1_000_000 -> "${(v / 1000.0).roundToInt()}k"
-    else -> {
-      val millions = v / 1_000_000.0
-      if (millions >= 10) {
-        "${millions.roundToInt()}m"
-      } else {
-        "%.2fm".format(millions)
-      }
-    }
   }
