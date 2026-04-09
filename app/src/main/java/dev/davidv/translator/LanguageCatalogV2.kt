@@ -2,6 +2,7 @@ package dev.davidv.translator
 
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.LinkedHashSet
 
 data class CatalogSourcesV2(
   val languageIndexVersion: Int,
@@ -102,6 +103,76 @@ data class LanguageCatalogV2(
       version = sources.dictionaryIndexVersion,
     )
   }
+
+  fun languageEntry(code: String): LanguageEntryV2? = languages[code]
+
+  fun pack(packId: String): AssetPackV2? = packs[packId]
+
+  fun translationPackId(
+    from: String,
+    to: String,
+  ): String? =
+    packs.values.firstOrNull {
+      it.feature == "translation" &&
+        it.from == from &&
+        it.to == to
+    }?.id
+
+  fun isFeatureDirectlyDownloadable(
+    languageCode: String,
+    feature: String,
+  ): Boolean =
+    when {
+      languageCode == "en" && feature == "translation" -> false
+      else -> true
+    }
+
+  fun corePackIdsForLanguage(languageCode: String): Set<String> {
+    val assets = languages[languageCode]?.assets ?: return emptySet()
+    return buildSet {
+      if (isFeatureDirectlyDownloadable(languageCode, "translation")) {
+        addAll(assets.translate)
+      }
+      addAll(assets.ocr.values)
+      addAll(assets.support)
+    }
+  }
+
+  fun dictionaryPackIdForLanguage(languageCode: String): String? = languages[languageCode]?.assets?.dictionary
+
+  fun dependencyClosure(rootPackIds: Iterable<String>): Set<String> {
+    val resolved = LinkedHashSet<String>()
+
+    fun visit(packId: String) {
+      if (!resolved.add(packId)) return
+      val pack = packs[packId] ?: return
+      pack.dependsOn.forEach(::visit)
+    }
+
+    rootPackIds.forEach(::visit)
+    return resolved
+  }
+
+  fun packDownloadUrl(
+    pack: AssetPackV2,
+    file: AssetFileV2,
+    settings: AppSettings,
+  ): String {
+    val sourcePath = file.sourcePath ?: return file.url
+    val base =
+      when (pack.feature) {
+        "translation" -> settings.translationModelsBaseUrl ?: translationModelsBaseUrl
+        "ocr" -> settings.tesseractModelsBaseUrl ?: tesseractModelsBaseUrl
+        "dictionary", "support" -> settings.dictionaryBaseUrl
+        else -> return file.url
+      }.trimEnd('/')
+    return "$base/$sourcePath"
+  }
+
+  fun shouldDecompress(
+    pack: AssetPackV2,
+    file: AssetFileV2,
+  ): Boolean = pack.feature == "translation" && ((file.sourcePath ?: file.url).endsWith(".gz"))
 
   private fun LanguageEntryV2.toLanguage(code: String): Language? {
     val tesseractPack = assets.ocr["tesseract"]?.let(packs::get)

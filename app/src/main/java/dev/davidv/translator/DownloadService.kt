@@ -41,8 +41,6 @@ import java.io.File
 import java.io.InputStream
 import java.net.URL
 import java.util.zip.GZIPInputStream
-import kotlin.io.path.Path
-import kotlin.io.path.createDirectories
 import kotlin.math.max
 
 class TrackingInputStream(
@@ -97,7 +95,15 @@ class DownloadService : Service() {
   private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
   private val settingsManager by lazy { SettingsManager(this) }
   private val filePathManager by lazy { FilePathManager(this, settingsManager.settings) }
+  private var cachedCatalog: LanguageCatalogV2? = null
   private var cachedLanguageIndex: LanguageIndex? = null
+
+  private fun getCatalog(): LanguageCatalogV2? {
+    cachedCatalog?.let { return it }
+    val catalog = filePathManager.loadLanguageCatalogV2()
+    cachedCatalog = catalog
+    return catalog
+  }
 
   private fun getLanguageIndex(): LanguageIndex? {
     cachedLanguageIndex?.let { return it }
@@ -247,51 +253,16 @@ class DownloadService : Service() {
     val job =
       serviceScope.launch {
         try {
-          val dataFiles =
-            filePathManager
-              .getDataDir()
-              .listFiles()
-              ?.map { it.name }
-              ?.toSet() ?: emptySet()
-
+          val catalog = getCatalog() ?: return@launch
+          val resolver = PackResolver(catalog, filePathManager)
+          val rootPackIds = catalog.corePackIdsForLanguage(language.code)
+          val missingFiles = resolver.missingFiles(rootPackIds)
           val downloadTasks = mutableListOf<suspend () -> Boolean>()
-          val dataDir = filePathManager.getDataDir()
-          val tessDir = filePathManager.getTesseractDataDir()
-          Path(tessDir.absolutePath).createDirectories()
-          val (fromSize, missingFrom) = missingFilesFrom(dataFiles, language)
-          val (toSize, missingTo) = missingFilesTo(dataFiles, language)
-          val tessFile = File(tessDir, language.tessFilename)
-          val english = index.english
-          val engTessFile = File(tessDir, english.tessFilename)
-          var toDownload = fromSize + toSize
-          if (missingTo.isNotEmpty()) {
-            val tasks = downloadLanguageFiles(index, dataDir, missingTo, language)
-            downloadTasks.addAll(tasks)
-          }
+          val toDownload = missingFiles.sumOf { it.file.sizeBytes }
 
-          if (missingFrom.isNotEmpty()) {
-            val tasks = downloadLanguageFiles(index, dataDir, missingFrom, language)
-            downloadTasks.addAll(tasks)
-          }
-
-          if (!tessFile.exists()) {
-            val task = downloadTessData(index, language)
-            toDownload += language.tessdataSizeBytes
-            downloadTasks.add(task)
-          }
-
-          if (!engTessFile.exists()) {
-            val task = downloadTessData(index, english)
-            toDownload += english.tessdataSizeBytes
-            downloadTasks.add(task)
-          }
-
-          language.extraFiles.forEach { extraFileName ->
-            val extraFile = File(dataDir, extraFileName)
-            if (!extraFile.exists()) {
-              downloadTasks.add {
-                downloadExtraFile(index, language, extraFileName, extraFile)
-              }
+          missingFiles.forEach { missing ->
+            downloadTasks.add {
+              downloadPackFile(catalog, missing.pack, missing.file, language)
             }
           }
 
@@ -350,14 +321,16 @@ class DownloadService : Service() {
     }
     val job =
       serviceScope.launch {
+        val catalog = getCatalog() ?: return@launch
+        val resolver = PackResolver(catalog, filePathManager)
+        val dictPackId = catalog.dictionaryPackIdForLanguage(language.code) ?: return@launch
+        val missingFiles = resolver.missingFiles(setOf(dictPackId))
         val downloadTasks = mutableListOf<suspend () -> Boolean>()
-        val dictionaryFile = filePathManager.getDictionaryFile(language)
-        var toDownload = 0L
+        val toDownload = if (missingFiles.isNotEmpty()) missingFiles.sumOf { it.file.sizeBytes } else dictionarySize
 
-        if (!dictionaryFile.exists()) {
-          toDownload += dictionarySize
+        missingFiles.forEach { missing ->
           downloadTasks.add {
-            downloadDictionaryFile(index, language, dictionaryFile)
+            downloadPackFile(catalog, missing.pack, missing.file, language, incrementDictionary = true)
           }
         }
 
@@ -518,6 +491,36 @@ class DownloadService : Service() {
     return downloadJobs
   }
 
+  private suspend fun downloadPackFile(
+    catalog: LanguageCatalogV2,
+    pack: AssetPackV2,
+    file: AssetFileV2,
+    targetLanguage: Language,
+    incrementDictionary: Boolean = false,
+  ): Boolean {
+    val outputFile = filePathManager.resolveInstallPath(file.installPath)
+    val url = catalog.packDownloadUrl(pack, file, settingsManager.settings.value)
+    return try {
+      val success =
+        download(
+          url,
+          outputFile,
+          decompress = catalog.shouldDecompress(pack, file),
+        ) { incrementalProgress ->
+          if (incrementDictionary) {
+            incrementDictionaryDownloadBytes(targetLanguage, incrementalProgress)
+          } else {
+            incrementDownloadBytes(targetLanguage, incrementalProgress)
+          }
+        }
+      Log.i("DownloadService", "Downloaded ${pack.id}:${file.installPath} from $url = $success")
+      success
+    } catch (e: Exception) {
+      Log.e("DownloadService", "Failed to download ${pack.id}:${file.installPath} from $url", e)
+      false
+    }
+  }
+
   private fun downloadTessData(
     index: LanguageIndex,
     language: Language,
@@ -672,6 +675,7 @@ class DownloadService : Service() {
 
         if (tempFile.renameTo(indexFile)) {
           Log.i("DownloadService", "Downloaded v2 catalog index from $url to $indexFile")
+          cachedCatalog = filePathManager.loadLanguageCatalogV2()
           val languageIndex = filePathManager.loadLanguageIndex()
           val dictionaryIndex = filePathManager.loadDictionaryIndex()
           if (languageIndex != null) {

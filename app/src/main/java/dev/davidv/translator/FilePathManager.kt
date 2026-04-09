@@ -42,6 +42,8 @@ class FilePathManager(
 
   fun getDictionariesDir(): File = File(baseDir, "dictionaries")
 
+  fun resolveInstallPath(relativePath: String): File = File(baseDir, relativePath)
+
   fun getDictionaryFile(language: Language): File = File(getDictionariesDir(), "${language.dictionaryCode}.dict")
 
   fun getCatalogIndexFile(): File = File(baseDir, "index_v2.json")
@@ -111,6 +113,21 @@ class FilePathManager(
       val dictionaryFile = getDictionaryFile(language)
       if (dictionaryFile.exists() && dictionaryFile.delete()) {
         Log.i("FilePathManager", "Deleted: ${dictionaryFile.name}")
+      }
+    }
+  }
+
+  fun deletePackFiles(
+    catalog: LanguageCatalogV2,
+    packIds: Set<String>,
+  ) {
+    packIds.forEach { packId ->
+      val pack = catalog.pack(packId) ?: return@forEach
+      pack.files.forEach { assetFile ->
+        val file = resolveInstallPath(assetFile.installPath)
+        if (file.exists() && file.delete()) {
+          Log.i("FilePathManager", "Deleted ${assetFile.installPath} from $packId")
+        }
       }
     }
   }
