@@ -223,6 +223,11 @@ class TranslationCoordinator(
     text: String,
     from: Language,
   ): String? = translationService.transliterate(text, from)
+
+  suspend fun synthesizeSpeech(
+    language: Language,
+    text: String,
+  ): SpeechSynthesisResult = translationService.synthesizeSpeech(language, text)
 }
 
 data class ProcessedImageResult(

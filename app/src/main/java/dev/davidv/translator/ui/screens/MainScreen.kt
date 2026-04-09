@@ -110,8 +110,11 @@ fun MainScreen(
   dictionaryWord: WordWithTaggedEntries?,
   dictionaryStack: List<WordWithTaggedEntries>,
   dictionaryLookupLanguage: Language?,
+  isAudioPlaying: Boolean = false,
+  isAudioLoading: Boolean = false,
   // Action requests
   onMessage: (TranslatorMessage) -> Unit,
+  onStopAudio: () -> Unit = {},
   // System integration
   availableLanguages: Map<Language, LangAvailability>,
   languageMetadata: Map<Language, LanguageMetadata>,
@@ -367,6 +370,17 @@ fun MainScreen(
                   ),
                 onDictionaryLookup = {
                   onMessage(TranslatorMessage.DictionaryLookup(it, to))
+                },
+                isAudioPlaying = isAudioPlaying,
+                isAudioLoading = isAudioLoading,
+                onSpeak = {
+                  if (isAudioPlaying || isAudioLoading) {
+                    onStopAudio()
+                  } else {
+                    output?.translated?.takeIf { it.isNotBlank() }?.let { translatedText ->
+                      onMessage(TranslatorMessage.SpeakTranslatedText(translatedText, to))
+                    }
+                  }
                 },
               )
             }

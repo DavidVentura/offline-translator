@@ -7,6 +7,11 @@ import android.util.Log
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File
 
+data class PiperVoiceFiles(
+  val model: File,
+  val config: File,
+)
+
 class FilePathManager(
   private val context: Context,
   private val settingsFlow: StateFlow<AppSettings>,
@@ -44,6 +49,30 @@ class FilePathManager(
   fun getLanguageIndexFile(): File = File(baseDir, "language_index.json")
 
   fun getMucabFile(): File = File(getDataDir(), "mucab.bin")
+
+  fun getPiperVoiceFiles(language: Language): PiperVoiceFiles? {
+    val configName =
+      language.extraFiles.firstOrNull { it.endsWith(".onnx.json") }
+        ?: "${language.code}.onnx.json"
+    val modelName =
+      language.extraFiles.firstOrNull { it.endsWith(".onnx") && !it.endsWith(".onnx.json") }
+        ?: configName.removeSuffix(".json")
+
+    val modelFile = File(getDataDir(), modelName)
+    val configFile = File(getDataDir(), configName)
+
+    return if (modelFile.exists() && configFile.exists()) {
+      PiperVoiceFiles(model = modelFile, config = configFile)
+    } else {
+      null
+    }
+  }
+
+  fun getPiperEspeakDataRoot(): File? {
+    val dataDir = getDataDir()
+    val espeakDataDir = File(dataDir, "espeak-ng-data")
+    return dataDir.takeIf { espeakDataDir.exists() }
+  }
 
   fun deleteLanguageFiles(
     language: Language,

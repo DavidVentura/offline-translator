@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +58,9 @@ fun TranslationField(
   text: TranslatedText?,
   textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
   onDictionaryLookup: (String) -> Unit = {},
+  isAudioPlaying: Boolean = false,
+  isAudioLoading: Boolean = false,
+  onSpeak: () -> Unit = {},
 ) {
   val context = LocalContext.current
 
@@ -83,8 +87,8 @@ fun TranslationField(
         Modifier
           .fillMaxWidth()
           .verticalScroll(rememberScrollState())
-          // Leave space for copy button
-          .padding(end = 22.dp),
+          // Leave space for trailing action buttons.
+          .padding(end = 32.dp),
     ) {
       AndroidView(
         modifier =
@@ -131,23 +135,48 @@ fun TranslationField(
     }
 
     if (text?.translated?.isNotEmpty() == true) {
-      IconButton(
-        onClick = {
-          val clipboard =
-            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-          val clip = ClipData.newPlainText("Translation", text?.translated)
-          clipboard.setPrimaryClip(clip)
-        },
+      Column(
         modifier =
           Modifier
-            .align(Alignment.TopEnd)
-            .size(24.dp),
+            .align(Alignment.TopEnd),
       ) {
-        Icon(
-          painterResource(id = R.drawable.copy),
-          contentDescription = "Copy translation",
-          tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-        )
+        IconButton(
+          onClick = {
+            val clipboard =
+              context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Translation", text.translated)
+            clipboard.setPrimaryClip(clip)
+          },
+          modifier = Modifier.size(24.dp),
+        ) {
+          Icon(
+            painterResource(id = R.drawable.copy),
+            contentDescription = "Copy translation",
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+          )
+        }
+
+        IconButton(
+          onClick = onSpeak,
+          modifier =
+            Modifier
+              .padding(top = 6.dp)
+              .size(24.dp),
+        ) {
+          if (isAudioLoading && !isAudioPlaying) {
+            CircularProgressIndicator(
+              modifier = Modifier.size(18.dp),
+              strokeWidth = 2.dp,
+              color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            )
+          } else {
+            Icon(
+              painter = painterResource(id = if (isAudioPlaying) R.drawable.stop else R.drawable.volume_up),
+              contentDescription = if (isAudioPlaying) "Stop audio" else "Speak translation",
+              tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            )
+          }
+        }
       }
     }
   }

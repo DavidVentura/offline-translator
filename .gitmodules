@@ -4,3 +4,7 @@
 [submodule "app/bergamot/src/main/cpp/bergamot-translator"]
 	path = app/bergamot/src/main/cpp/bergamot-translator
 	url = https://github.com/DavidVentura/bergamot-translator.git
+[submodule "third_party/onnxruntime"]
+	path = third_party/onnxruntime
+	url = https://github.com/microsoft/onnxruntime.git
+	shallow = true

@@ -31,7 +31,9 @@ import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.LaunchMode
+import dev.davidv.translator.PcmAudio
 import dev.davidv.translator.SettingsManager
+import dev.davidv.translator.SpeechSynthesisResult
 import dev.davidv.translator.TarkkaBinding
 import dev.davidv.translator.TranslatedText
 import dev.davidv.translator.TranslationCoordinator
@@ -41,6 +43,7 @@ import dev.davidv.translator.WordWithTaggedEntries
 import dev.davidv.translator.canSwapLanguages
 import dev.davidv.translator.ui.screens.openDictionary
 import dev.davidv.translator.ui.screens.toggleFirstLetterCase
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -337,6 +340,19 @@ class TranslatorViewModel(
         handleDictionaryLookup(message.str, message.language)
       }
 
+      is TranslatorMessage.SpeakTranslatedText -> {
+        viewModelScope.launch {
+          _uiEvents.emit(UiEvent.AudioLoadingStarted)
+          when (val result = translationCoordinator.synthesizeSpeech(message.language, message.text)) {
+            is SpeechSynthesisResult.Success -> _uiEvents.emit(UiEvent.PlayAudio(result.audioChunks))
+            is SpeechSynthesisResult.Error -> {
+              _uiEvents.emit(UiEvent.AudioLoadingStopped)
+              _uiEvents.emit(UiEvent.ShowToast(result.message))
+            }
+          }
+        }
+      }
+
       is TranslatorMessage.PopDictionary -> {
         if (_dictionaryStack.value.size > 1) {
           _dictionaryStack.value = _dictionaryStack.value.dropLast(1)
@@ -598,6 +614,12 @@ sealed class UiEvent {
   data class ShowToast(val message: String) : UiEvent()
 
   data class ShareImage(val bitmap: Bitmap) : UiEvent()
+
+  data object AudioLoadingStarted : UiEvent()
+
+  data object AudioLoadingStopped : UiEvent()
+
+  data class PlayAudio(val audioChunks: Flow<PcmAudio>) : UiEvent()
 }
 
 class TranslatorViewModelFactory(

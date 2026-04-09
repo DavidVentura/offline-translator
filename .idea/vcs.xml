@@ -24,5 +24,9 @@
     <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/ssplit-cpp" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/bergamot-translator-tests" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/third_party/cld2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/third_party/onnxruntime" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/third_party/onnxruntime/cmake/external/emsdk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/third_party/onnxruntime/cmake/external/libprotobuf-mutator" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/third_party/onnxruntime/cmake/external/onnx" vcs="Git" />
   </component>
 </project>

@@ -21,6 +21,10 @@ import android.util.Log
 import dev.davidv.bergamot.NativeLib
 import dev.davidv.bergamot.TranslationWithAlignment
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlin.system.measureTimeMillis
 
@@ -50,6 +54,7 @@ class TranslationService(
   }
 
   private val nativeLib = getNativeLib()
+  private val speechBinding = SpeechBinding()
 
   private var mucabBinding: MucabBinding? = null
 
@@ -328,6 +333,97 @@ alignment: soft
       mucabBinding = mucabBinding,
       japaneseSpaced = settingsManager.settings.value.addSpacesForJapaneseTransliteration,
     )
+
+  suspend fun synthesizeSpeech(
+    language: Language,
+    text: String,
+  ): SpeechSynthesisResult =
+    withContext(Dispatchers.IO) {
+      if (text.isBlank()) {
+        return@withContext SpeechSynthesisResult.Error("Nothing to speak")
+      }
+
+      val voiceFiles =
+        filePathManager.getPiperVoiceFiles(language)
+          ?: return@withContext SpeechSynthesisResult.Error(
+            "No Piper voice installed for ${language.displayName}",
+          )
+
+      val espeakDataPath = filePathManager.getPiperEspeakDataRoot()?.absolutePath
+      val phonemeChunks =
+        speechBinding.phonemizeChunks(
+          modelPath = voiceFiles.model.absolutePath,
+          configPath = voiceFiles.config.absolutePath,
+          espeakDataPath = espeakDataPath,
+          text = text,
+        ) ?: return@withContext SpeechSynthesisResult.Error(
+          "Speech synthesis failed for ${language.displayName}",
+        )
+
+      val chunkRequests = buildSpeechChunkRequests(text, phonemeChunks)
+
+      SpeechSynthesisResult.Success(
+        flow {
+          for (chunkRequest in chunkRequests) {
+            currentCoroutineContext().ensureActive()
+            val pcmAudio =
+              speechBinding.synthesizePcm(
+                modelPath = voiceFiles.model.absolutePath,
+                configPath = voiceFiles.config.absolutePath,
+                espeakDataPath = espeakDataPath,
+                text = chunkRequest.content,
+                isPhonemes = chunkRequest.isPhonemes,
+              ) ?: throw IllegalStateException(
+                "Speech synthesis failed for ${language.displayName}",
+              )
+            currentCoroutineContext().ensureActive()
+            emit(pcmAudio)
+          }
+        },
+      )
+    }
+
+  private fun buildSpeechChunkRequests(
+    text: String,
+    phonemeChunks: List<String>,
+  ): List<SpeechChunkRequest> {
+    val firstChunk = phonemeChunks.firstOrNull()
+    if (firstChunk != null && firstChunk.length > 100) {
+      val splitText = splitAtFirstPause(text)
+      if (splitText != null) {
+        Log.d(
+          "TranslationService",
+          "Forcing fast first speech chunk at first pause for long utterance (${firstChunk.length} phoneme chars)",
+        )
+
+        return listOf(
+          SpeechChunkRequest(content = splitText.first, isPhonemes = false),
+          SpeechChunkRequest(content = splitText.second, isPhonemes = false),
+        )
+      }
+    }
+
+    if (phonemeChunks.size > 1) {
+      return phonemeChunks.map { SpeechChunkRequest(content = it, isPhonemes = true) }
+    }
+
+    return listOf(SpeechChunkRequest(content = text, isPhonemes = false))
+  }
+
+  private fun splitAtFirstPause(text: String): Pair<String, String>? {
+    val splitIndex = text.indexOfFirst { it == ',' || it == ';' || it == ':' }
+    if (splitIndex <= 0 || splitIndex >= text.lastIndex) {
+      return null
+    }
+
+    val firstChunk = text.substring(0, splitIndex + 1).trim()
+    val secondChunk = text.substring(splitIndex + 1).trim()
+    if (firstChunk.isBlank() || secondChunk.isBlank()) {
+      return null
+    }
+
+    return firstChunk to secondChunk
+  }
 }
 
 sealed class TranslationResult {
@@ -359,3 +455,18 @@ sealed class BatchAlignedTranslationResult {
     val message: String,
   ) : BatchAlignedTranslationResult()
 }
+
+sealed class SpeechSynthesisResult {
+  data class Success(
+    val audioChunks: Flow<PcmAudio>,
+  ) : SpeechSynthesisResult()
+
+  data class Error(
+    val message: String,
+  ) : SpeechSynthesisResult()
+}
+
+private data class SpeechChunkRequest(
+  val content: String,
+  val isPhonemes: Boolean,
+)

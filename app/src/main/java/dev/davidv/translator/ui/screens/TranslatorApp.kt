@@ -42,10 +42,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +64,7 @@ import dev.davidv.translator.DownloadState
 import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.Language
 import dev.davidv.translator.LaunchMode
+import dev.davidv.translator.PcmAudioPlayer
 import dev.davidv.translator.TarkkaBinding
 import dev.davidv.translator.TranslatorMessage
 import dev.davidv.translator.ui.TranslatorViewModel
@@ -144,6 +148,19 @@ fun TranslatorApp(
 ) {
   val navController = rememberNavController()
   val context = LocalContext.current
+  var isAudioPlaying by remember { mutableStateOf(false) }
+  var isAudioLoading by remember { mutableStateOf(false) }
+  val pcmAudioPlayer =
+    remember {
+      PcmAudioPlayer { playing ->
+        isAudioPlaying = playing
+        if (playing) {
+          isAudioLoading = false
+        } else if (!playing) {
+          isAudioLoading = false
+        }
+      }
+    }
 
   // Collect ViewModel state
   val input by viewModel.input.collectAsState()
@@ -182,13 +199,31 @@ fun TranslatorApp(
         is UiEvent.ShowToast -> {
           Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
         }
+        UiEvent.AudioLoadingStarted -> {
+          isAudioLoading = true
+        }
+        UiEvent.AudioLoadingStopped -> {
+          isAudioLoading = false
+        }
         is UiEvent.ShareImage -> {
           val imageUri = saveImage(event.bitmap, context)
           if (imageUri != null) {
             shareImageUri(imageUri, context)
           }
         }
+        is UiEvent.PlayAudio -> {
+          pcmAudioPlayer.play(event.audioChunks) { message ->
+            isAudioLoading = false
+            Toast.makeText(context, "Audio playback failed: $message", Toast.LENGTH_SHORT).show()
+          }
+        }
       }
+    }
+  }
+
+  DisposableEffect(pcmAudioPlayer) {
+    onDispose {
+      pcmAudioPlayer.release()
     }
   }
 
@@ -346,7 +381,13 @@ fun TranslatorApp(
                 dictionaryWord = dictionaryWord,
                 dictionaryStack = dictionaryStack,
                 dictionaryLookupLanguage = dictionaryLookupLanguage,
+                isAudioPlaying = isAudioPlaying,
+                isAudioLoading = isAudioLoading,
                 onMessage = viewModel::handleMessage,
+                onStopAudio = {
+                  isAudioLoading = false
+                  pcmAudioPlayer.stop()
+                },
                 availableLanguages = languageState.availableLanguageMap,
                 languageMetadata = languageMetadata,
                 downloadStates = downloadStates,
