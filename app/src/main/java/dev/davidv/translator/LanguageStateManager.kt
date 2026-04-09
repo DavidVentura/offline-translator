@@ -269,7 +269,8 @@ class LanguageStateManager(
       (_languageIndex.value?.languages ?: emptyList())
         .filter { it.code != language.code }
         .mapNotNull { other ->
-          catalog.dictionaryPackIdForLanguage(other.code)?.takeIf { resolver.isInstalled(it) }
+          catalog.dictionaryPackIdForLanguage(other.code)
+            ?.takeIf { it != targetPack && resolver.isInstalled(it) }
         }
         .toSet()
     val packsToDelete = catalog.dependencyClosure(setOf(targetPack)) - catalog.dependencyClosure(keepRootPacks)

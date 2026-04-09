@@ -254,7 +254,7 @@ fun TranslatorApp(
         TranslatorViewModel.NavigationState.NO_LANGUAGES -> "no_languages"
         TranslatorViewModel.NavigationState.READY -> "main"
       }
-    if (targetRoute != null && currentRoute != targetRoute && (currentRoute == "loading" || currentRoute == "no_languages")) {
+    if (targetRoute != null && currentRoute != targetRoute && currentRoute == "loading") {
       navController.navigate(targetRoute) {
         popUpTo(currentRoute!!) { inclusive = true }
       }
@@ -400,12 +400,6 @@ fun TranslatorApp(
             val curDownloadService = downloadService
             val langIndex = viewModel.languageStateManager.languageIndex.collectAsState().value
             if (curDownloadService != null && langIndex != null) {
-              val availLangs = languageState.availableLanguageMap.filterValues { it.translatorFiles }.keys
-              val installedLanguages = availLangs.filter { !it.isEnglish }.sortedBy { it.displayName }
-              val availableLanguages =
-                langIndex.downloadable
-                  .filter { lang -> !availLangs.contains(lang) }
-                  .sortedBy { it.displayName }
               val dictionaryDownloadStates by curDownloadService.dictionaryDownloadStates.collectAsState()
               val dictionaryIndex by viewModel.languageStateManager.dictionaryIndex.collectAsState()
               Scaffold(
@@ -416,12 +410,11 @@ fun TranslatorApp(
                     .imePadding(),
               ) { padding ->
                 Box(modifier = Modifier.padding(padding)) {
-                  TabbedLanguageManagerScreen(
+                  LanguageAssetManagerScreen(
                     context = context,
                     languageStateManager = viewModel.languageStateManager,
                     languageMetadataManager = viewModel.languageMetadataManager,
-                    installedLanguages = installedLanguages,
-                    availableLanguages = availableLanguages,
+                    languageIndex = langIndex,
                     languageAvailabilityState = languageState,
                     downloadStates = downloadStates,
                     dictionaryDownloadStates = dictionaryDownloadStates,
