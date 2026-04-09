@@ -133,24 +133,33 @@ class FilePathManager(
   }
 
   fun loadCatalog(): LanguageCatalog? {
+    val diskFile = getCatalogFile()
+
+    if (diskFile.exists()) {
+      try {
+        return parseAndValidateCatalog(diskFile.readText())
+      } catch (e: Exception) {
+        Log.w("FilePathManager", "Deleting invalid cached catalog: ${diskFile.absolutePath}", e)
+        if (!diskFile.delete()) {
+          Log.w("FilePathManager", "Failed to delete invalid cached catalog: ${diskFile.absolutePath}")
+        }
+      }
+    }
+
     return try {
-      val jsonString = loadWithAssetFallback(getCatalogFile(), "index.json") ?: return null
-      parseLanguageCatalog(jsonString)
+      val jsonString = context.assets.open("index.json").bufferedReader().readText()
+      parseAndValidateCatalog(jsonString)
     } catch (e: Exception) {
-      Log.e("FilePathManager", "Error parsing catalog index", e)
+      Log.e("FilePathManager", "Error parsing bundled catalog index", e)
       null
     }
   }
 
-  private fun loadWithAssetFallback(
-    diskFile: File,
-    assetName: String,
-  ): String? {
-    if (diskFile.exists()) return diskFile.readText()
-    return try {
-      context.assets.open(assetName).bufferedReader().readText()
-    } catch (_: Exception) {
-      null
+  private fun parseAndValidateCatalog(jsonString: String): LanguageCatalog {
+    val catalog = parseLanguageCatalog(jsonString)
+    require(catalog.formatVersion == 2) {
+      "Unsupported catalog formatVersion=${catalog.formatVersion}"
     }
+    return catalog
   }
 }
