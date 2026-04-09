@@ -17,8 +17,6 @@
 
 package dev.davidv.translator
 
-import org.json.JSONObject
-
 data class ModelFile(
   val name: String,
   val sizeBytes: Long,
@@ -58,70 +56,3 @@ data class Language(
 
   override fun toString(): String = "Language($code)"
 }
-
-data class LanguageIndex(
-  val languages: List<Language>,
-  val updatedAt: Long,
-  val version: Int,
-  val translationModelsBaseUrl: String,
-  val tesseractModelsBaseUrl: String,
-  val dictionaryBaseUrl: String,
-  val dictionaryVersion: Int,
-) {
-  private val byCode: Map<String, Language> = languages.associateBy { it.code }
-  val english: Language get() = byCode.getValue("en")
-  val downloadable: List<Language> get() = languages.filter { !it.isEnglish }
-
-  fun languageByCode(code: String): Language? = byCode[code]
-}
-
-fun parseLanguageIndex(json: String): LanguageIndex {
-  val root = JSONObject(json)
-  val languagesArray = root.getJSONArray("languages")
-  val languages =
-    (0 until languagesArray.length()).map { i ->
-      val lang = languagesArray.getJSONObject(i)
-      Language(
-        code = lang.getString("code"),
-        displayName = lang.getString("name"),
-        shortDisplayName = lang.getString("shortName"),
-        tessName = lang.getString("tessName"),
-        script = lang.getString("script"),
-        dictionaryCode = lang.getString("dictionaryCode"),
-        tessdataSizeBytes = lang.getLong("tessdataSizeBytes"),
-        toEnglish = if (lang.isNull("toEnglish")) null else parseDirection(lang.getJSONObject("toEnglish")),
-        fromEnglish = if (lang.isNull("fromEnglish")) null else parseDirection(lang.getJSONObject("fromEnglish")),
-        extraFiles =
-          buildList {
-            val arr = lang.optJSONArray("extraFiles")
-            if (arr != null) {
-              for (j in 0 until arr.length()) add(arr.getString(j))
-            }
-          },
-      )
-    }
-  return LanguageIndex(
-    languages = languages,
-    updatedAt = root.getLong("updatedAt"),
-    version = root.getInt("version"),
-    translationModelsBaseUrl = root.getString("translationModelsBaseUrl"),
-    tesseractModelsBaseUrl = root.getString("tesseractModelsBaseUrl"),
-    dictionaryBaseUrl = root.getString("dictionaryBaseUrl"),
-    dictionaryVersion = root.getInt("dictionaryVersion"),
-  )
-}
-
-private fun parseDirection(obj: JSONObject): LanguageDirection =
-  LanguageDirection(
-    model = parseModelFile(obj.getJSONObject("model")),
-    srcVocab = parseModelFile(obj.getJSONObject("srcVocab")),
-    tgtVocab = parseModelFile(obj.getJSONObject("tgtVocab")),
-    lex = parseModelFile(obj.getJSONObject("lex")),
-  )
-
-private fun parseModelFile(obj: JSONObject): ModelFile =
-  ModelFile(
-    name = obj.getString("name"),
-    sizeBytes = obj.getLong("sizeBytes"),
-    path = obj.getString("path"),
-  )

@@ -254,7 +254,7 @@ fun TranslatorApp(
         TranslatorViewModel.NavigationState.NO_LANGUAGES -> "no_languages"
         TranslatorViewModel.NavigationState.READY -> "main"
       }
-    if (targetRoute != null && currentRoute != targetRoute && (currentRoute == "loading" || currentRoute == "no_languages")) {
+    if (targetRoute != null && currentRoute != targetRoute && currentRoute == "loading") {
       navController.navigate(targetRoute) {
         popUpTo(currentRoute!!) { inclusive = true }
       }
@@ -398,16 +398,9 @@ fun TranslatorApp(
           }
           composable("language_manager") {
             val curDownloadService = downloadService
-            val langIndex = viewModel.languageStateManager.languageIndex.collectAsState().value
-            if (curDownloadService != null && langIndex != null) {
-              val availLangs = languageState.availableLanguageMap.filterValues { it.translatorFiles }.keys
-              val installedLanguages = availLangs.filter { !it.isEnglish }.sortedBy { it.displayName }
-              val availableLanguages =
-                langIndex.downloadable
-                  .filter { lang -> !availLangs.contains(lang) }
-                  .sortedBy { it.displayName }
+            val catalog = viewModel.languageStateManager.catalog.collectAsState().value
+            if (curDownloadService != null && catalog != null) {
               val dictionaryDownloadStates by curDownloadService.dictionaryDownloadStates.collectAsState()
-              val dictionaryIndex by viewModel.languageStateManager.dictionaryIndex.collectAsState()
               Scaffold(
                 modifier =
                   Modifier
@@ -416,24 +409,22 @@ fun TranslatorApp(
                     .imePadding(),
               ) { padding ->
                 Box(modifier = Modifier.padding(padding)) {
-                  TabbedLanguageManagerScreen(
+                  LanguageAssetManagerScreen(
                     context = context,
                     languageStateManager = viewModel.languageStateManager,
                     languageMetadataManager = viewModel.languageMetadataManager,
-                    installedLanguages = installedLanguages,
-                    availableLanguages = availableLanguages,
+                    catalog = catalog,
                     languageAvailabilityState = languageState,
                     downloadStates = downloadStates,
                     dictionaryDownloadStates = dictionaryDownloadStates,
-                    dictionaryIndex = dictionaryIndex,
                   )
                 }
               }
             }
           }
           composable("settings") {
-            val langIndex = viewModel.languageStateManager.languageIndex.collectAsState().value
-            val englishLang = langIndex?.english
+            val catalog = viewModel.languageStateManager.catalog.collectAsState().value
+            val englishLang = catalog?.english
             val availableWithEnglish =
               if (englishLang != null) {
                 (languageState.availableLanguageMap.filterValues { it.translatorFiles }.keys + englishLang).toList()
@@ -444,11 +435,11 @@ fun TranslatorApp(
               settings = settings,
               languageMetadataManager = viewModel.languageMetadataManager,
               availableLanguages = availableWithEnglish,
-              languageIndex = langIndex,
+              catalog = catalog,
               onSettingsChange = { newSettings ->
                 viewModel.settingsManager.updateSettings(newSettings)
                 if (newSettings.defaultTargetLanguageCode != settings.defaultTargetLanguageCode) {
-                  val targetLang = langIndex?.languageByCode(newSettings.defaultTargetLanguageCode)
+                  val targetLang = catalog?.languageByCode(newSettings.defaultTargetLanguageCode)
                   if (targetLang != null) {
                     viewModel.handleMessage(dev.davidv.translator.TranslatorMessage.ToLang(targetLang))
                   }

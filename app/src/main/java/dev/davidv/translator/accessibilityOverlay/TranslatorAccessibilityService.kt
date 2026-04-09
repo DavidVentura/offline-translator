@@ -87,11 +87,11 @@ class TranslatorAccessibilityService : AccessibilityService() {
     imageProcessor = ImageProcessor(this, OCRService(filePathManager))
 
     serviceScope.launch {
-      langStateManager.languageIndex.collect { index ->
-        if (index == null) return@collect
-        val translationService = TranslationService(settingsManager, filePathManager, index.english)
+      langStateManager.catalog.collect { catalog ->
+        if (catalog == null) return@collect
+        val translationService = TranslationService(settingsManager, filePathManager, catalog.english)
         translationCoordinator = TranslationCoordinator(translationService, languageDetector, imageProcessor, settingsManager)
-        val languagesFlow = kotlinx.coroutines.flow.MutableStateFlow(index.languages)
+        val languagesFlow = kotlinx.coroutines.flow.MutableStateFlow(catalog.languageList)
         overlayTextTranslationHelper =
           OverlayTextTranslationHelper(
             settingsManager = settingsManager,

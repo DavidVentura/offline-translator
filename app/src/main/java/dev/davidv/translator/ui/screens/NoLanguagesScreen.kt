@@ -108,27 +108,17 @@ fun NoLanguagesScreen(
       )
 
       val downloadStates by downloadService.downloadStates.collectAsState()
-      val langIndex by languageStateManager.languageIndex.collectAsState()
-      val availLangs = state.availableLanguageMap.filterValues { it.translatorFiles }.keys
-      val installedLanguages = availLangs.filter { !it.isEnglish }.sortedBy { it.displayName }
-      val availableLanguages =
-        (langIndex?.downloadable ?: emptyList())
-          .filter { lang -> !availLangs.contains(lang) }
-          .sortedBy { it.displayName }
-
+      val catalog by languageStateManager.catalog.collectAsState()
       val dictionaryDownloadStates by downloadService.dictionaryDownloadStates.collectAsState()
-      val dictionaryIndex by languageStateManager.dictionaryIndex.collectAsState()
 
-      TabbedLanguageManagerScreen(
+      LanguageAssetManagerScreen(
         context = context,
         languageStateManager = languageStateManager,
         languageMetadataManager = languageMetadataManager,
-        installedLanguages = installedLanguages,
-        availableLanguages = availableLanguages,
+        catalog = catalog,
         languageAvailabilityState = state,
         downloadStates = downloadStates,
         dictionaryDownloadStates = dictionaryDownloadStates,
-        dictionaryIndex = dictionaryIndex,
       )
     }
   }

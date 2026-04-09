@@ -42,11 +42,11 @@ class FilePathManager(
 
   fun getDictionariesDir(): File = File(baseDir, "dictionaries")
 
+  fun resolveInstallPath(relativePath: String): File = File(baseDir, relativePath)
+
   fun getDictionaryFile(language: Language): File = File(getDictionariesDir(), "${language.dictionaryCode}.dict")
 
-  fun getDictionaryIndexFile(): File = File(baseDir, "dictionaries/index.json")
-
-  fun getLanguageIndexFile(): File = File(baseDir, "language_index.json")
+  fun getCatalogFile(): File = File(baseDir, "index.json")
 
   fun getMucabFile(): File = File(getDataDir(), "mucab.bin")
 
@@ -117,56 +117,49 @@ class FilePathManager(
     }
   }
 
-  fun loadDictionaryIndex(): DictionaryIndex? {
-    return try {
-      val jsonString = loadWithAssetFallback(getDictionaryIndexFile(), "dictionary_index.json") ?: return null
-      val jsonObject = org.json.JSONObject(jsonString)
-
-      val dictionariesJson = jsonObject.getJSONObject("dictionaries")
-      val dictionaries = mutableMapOf<String, DictionaryInfo>()
-
-      for (key in dictionariesJson.keys()) {
-        val dictJson = dictionariesJson.getJSONObject(key)
-        dictionaries[key] =
-          DictionaryInfo(
-            date = dictJson.getLong("date"),
-            filename = dictJson.getString("filename"),
-            size = dictJson.getLong("size"),
-            type = dictJson.getString("type"),
-            wordCount = dictJson.getLong("word_count"),
-          )
+  fun deletePackFiles(
+    catalog: LanguageCatalog,
+    packIds: Set<String>,
+  ) {
+    packIds.forEach { packId ->
+      val pack = catalog.pack(packId) ?: return@forEach
+      pack.files.forEach { assetFile ->
+        val file = resolveInstallPath(assetFile.installPath)
+        if (file.exists() && file.delete()) {
+          Log.i("FilePathManager", "Deleted ${assetFile.installPath} from $packId")
+        }
       }
+    }
+  }
 
-      DictionaryIndex(
-        dictionaries = dictionaries,
-        updatedAt = jsonObject.getLong("updated_at"),
-        version = jsonObject.getInt("version"),
-      )
+  fun loadCatalog(): LanguageCatalog? {
+    val diskFile = getCatalogFile()
+
+    if (diskFile.exists()) {
+      try {
+        return parseAndValidateCatalog(diskFile.readText())
+      } catch (e: Exception) {
+        Log.w("FilePathManager", "Deleting invalid cached catalog: ${diskFile.absolutePath}", e)
+        if (!diskFile.delete()) {
+          Log.w("FilePathManager", "Failed to delete invalid cached catalog: ${diskFile.absolutePath}")
+        }
+      }
+    }
+
+    return try {
+      val jsonString = context.assets.open("index.json").bufferedReader().readText()
+      parseAndValidateCatalog(jsonString)
     } catch (e: Exception) {
-      Log.e("FilePathManager", "Error parsing dictionary index", e)
+      Log.e("FilePathManager", "Error parsing bundled catalog index", e)
       null
     }
   }
 
-  fun loadLanguageIndex(): LanguageIndex? {
-    return try {
-      val jsonString = loadWithAssetFallback(getLanguageIndexFile(), "language_index.json") ?: return null
-      parseLanguageIndex(jsonString)
-    } catch (e: Exception) {
-      Log.e("FilePathManager", "Error parsing language index", e)
-      null
+  private fun parseAndValidateCatalog(jsonString: String): LanguageCatalog {
+    val catalog = parseLanguageCatalog(jsonString)
+    require(catalog.formatVersion == 2) {
+      "Unsupported catalog formatVersion=${catalog.formatVersion}"
     }
-  }
-
-  private fun loadWithAssetFallback(
-    diskFile: File,
-    assetName: String,
-  ): String? {
-    if (diskFile.exists()) return diskFile.readText()
-    return try {
-      context.assets.open(assetName).bufferedReader().readText()
-    } catch (_: Exception) {
-      null
-    }
+    return catalog
   }
 }

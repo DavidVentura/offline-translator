@@ -18,10 +18,6 @@
 package dev.davidv.translator
 
 sealed class FileEvent {
-  data class DictionaryIndexLoaded(
-    val index: DictionaryIndex,
-  ) : FileEvent()
-
   data class MucabFileLoaded(
     val mucabBinding: MucabBinding,
   ) : FileEvent()

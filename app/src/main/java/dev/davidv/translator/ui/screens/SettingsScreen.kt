@@ -65,7 +65,7 @@ import androidx.compose.ui.unit.dp
 import dev.davidv.translator.AppSettings
 import dev.davidv.translator.BackgroundMode
 import dev.davidv.translator.Language
-import dev.davidv.translator.LanguageIndex
+import dev.davidv.translator.LanguageCatalog
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.PermissionHelper
 import dev.davidv.translator.R
@@ -128,7 +128,7 @@ fun SettingsScreen(
   settings: AppSettings,
   languageMetadataManager: dev.davidv.translator.LanguageMetadataManager,
   availableLanguages: List<Language>,
-  languageIndex: LanguageIndex?,
+  catalog: LanguageCatalog?,
   onSettingsChange: (AppSettings) -> Unit,
   onManageLanguages: () -> Unit,
 ) {
@@ -237,7 +237,7 @@ fun SettingsScreen(
 
           LanguageDropdown(
             label = "Default 'from' language",
-            selectedLanguage = settings.defaultSourceLanguageCode?.let { languageIndex?.languageByCode(it) },
+            selectedLanguage = settings.defaultSourceLanguageCode?.let { catalog?.languageByCode(it) },
             availableLanguages = availableLanguages,
             fallbackLanguage = availableLanguages.firstOrNull { it.code != settings.defaultTargetLanguageCode },
             onLanguageSelected = { language ->
@@ -247,7 +247,7 @@ fun SettingsScreen(
 
           LanguageDropdown(
             label = "Default 'to' language",
-            selectedLanguage = languageIndex?.languageByCode(settings.defaultTargetLanguageCode),
+            selectedLanguage = catalog?.languageByCode(settings.defaultTargetLanguageCode),
             availableLanguages = availableLanguages,
             fallbackLanguage = null,
             onLanguageSelected = { language ->
@@ -537,7 +537,7 @@ fun SettingsScreen(
               onValueChange = {
                 onSettingsChange(settings.copy(translationModelsBaseUrl = it.ifBlank { null }))
               },
-              placeholder = { Text(languageIndex?.translationModelsBaseUrl ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+              placeholder = { Text(catalog?.translationModelsBaseUrl ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis) },
               modifier = Modifier.fillMaxWidth(),
               singleLine = true,
             )
@@ -553,7 +553,7 @@ fun SettingsScreen(
               onValueChange = {
                 onSettingsChange(settings.copy(tesseractModelsBaseUrl = it.ifBlank { null }))
               },
-              placeholder = { Text(languageIndex?.tesseractModelsBaseUrl ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+              placeholder = { Text(catalog?.tesseractModelsBaseUrl ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis) },
               modifier = Modifier.fillMaxWidth(),
               singleLine = true,
             )
@@ -865,7 +865,7 @@ fun SettingsScreenPreview() {
       settings = AppSettings(),
       languageMetadataManager = LanguageMetadataManager(context, kotlinx.coroutines.flow.MutableStateFlow(emptyList())),
       availableLanguages = previewLangs,
-      languageIndex = null,
+      catalog = null,
       onSettingsChange = {},
       onManageLanguages = {},
     )
@@ -890,7 +890,7 @@ fun SettingsScreenDarkPreview() {
       settings = AppSettings(fontFactor = 3.0f),
       languageMetadataManager = LanguageMetadataManager(context, kotlinx.coroutines.flow.MutableStateFlow(emptyList())),
       availableLanguages = previewLangs,
-      languageIndex = null,
+      catalog = null,
       onSettingsChange = {},
       onManageLanguages = {},
     )

@@ -35,11 +35,11 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
     settingsManager = SettingsManager(this)
     filePathManager = FilePathManager(this, settingsManager.settings)
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
-    val index = filePathManager.loadLanguageIndex()
-    val languagesFlow = kotlinx.coroutines.flow.MutableStateFlow(index?.languages ?: emptyList())
+    val catalog = filePathManager.loadCatalog()
+    val languagesFlow = kotlinx.coroutines.flow.MutableStateFlow(catalog?.languageList ?: emptyList())
     languageMetadataManager = LanguageMetadataManager(this, languagesFlow)
     imageProcessor = ImageProcessor(this, OCRService(filePathManager))
-    val english = index?.english ?: dev.davidv.translator.Language(code = "en", displayName = "English", shortDisplayName = "EN", tessName = "eng", script = "Latn", dictionaryCode = "en", tessdataSizeBytes = 0, toEnglish = null, fromEnglish = null, extraFiles = emptyList())
+    val english = catalog?.english ?: dev.davidv.translator.Language(code = "en", displayName = "English", shortDisplayName = "EN", tessName = "eng", script = "Latn", dictionaryCode = "en", tessdataSizeBytes = 0, toEnglish = null, fromEnglish = null, extraFiles = emptyList())
     translationCoordinator =
       TranslationCoordinator(
         translationService = TranslationService(settingsManager, filePathManager, english),

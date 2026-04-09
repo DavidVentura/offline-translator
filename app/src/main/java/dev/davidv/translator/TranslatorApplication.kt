@@ -30,7 +30,7 @@ class TranslatorApplication : Application() {
   lateinit var languageDetector: LanguageDetector
   lateinit var translationCoordinator: TranslationCoordinator
   val languagesFlow = kotlinx.coroutines.flow.MutableStateFlow<List<Language>>(emptyList())
-  var languageIndex: LanguageIndex? = null
+  var languageCatalog: LanguageCatalog? = null
     private set
 
   override fun onCreate() {
@@ -39,14 +39,14 @@ class TranslatorApplication : Application() {
 
     settingsManager = SettingsManager(this)
     filePathManager = FilePathManager(this, settingsManager.settings)
-    languageIndex = filePathManager.loadLanguageIndex()
-    languagesFlow.value = languageIndex?.languages ?: emptyList()
+    languageCatalog = filePathManager.loadCatalog()
+    languagesFlow.value = languageCatalog?.languageList ?: emptyList()
     languageMetadataManager = LanguageMetadataManager(this, languagesFlow)
     ocrService = OCRService(filePathManager)
     imageProcessor = ImageProcessor(this, ocrService)
-    val english = languageIndex?.english ?: Language(code = "en", displayName = "English", shortDisplayName = "EN", tessName = "eng", script = "Latn", dictionaryCode = "en", tessdataSizeBytes = 0, toEnglish = null, fromEnglish = null, extraFiles = emptyList())
+    val english = languageCatalog?.english ?: Language(code = "en", displayName = "English", shortDisplayName = "EN", tessName = "eng", script = "Latn", dictionaryCode = "en", tessdataSizeBytes = 0, toEnglish = null, fromEnglish = null, extraFiles = emptyList())
     translationService = TranslationService(settingsManager, filePathManager, english)
-    languageDetector = LanguageDetector { code -> languageIndex?.languageByCode(code) }
+    languageDetector = LanguageDetector { code -> languageCatalog?.languageByCode(code) }
     translationCoordinator =
       TranslationCoordinator(translationService, languageDetector, imageProcessor, settingsManager)
   }
