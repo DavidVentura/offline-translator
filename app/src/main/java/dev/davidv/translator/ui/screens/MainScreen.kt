@@ -371,6 +371,7 @@ fun MainScreen(
                 onDictionaryLookup = {
                   onMessage(TranslatorMessage.DictionaryLookup(it, to))
                 },
+                canSpeak = availableLanguages[to]?.ttsFiles == true,
                 isAudioPlaying = isAudioPlaying,
                 isAudioLoading = isAudioLoading,
                 onSpeak = {

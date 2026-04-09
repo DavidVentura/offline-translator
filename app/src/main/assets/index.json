@@ -1,6 +1,6 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1775740011,
+  "generatedAt": 1775755406,
   "translationModelsBaseUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
   "tesseractModelsBaseUrl": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main",
   "dictionaryBaseUrl": "https://translator.davidv.dev/dictionaries",
@@ -28,6 +28,18 @@
           "tesseract": "ocr-tesseract-ar"
         },
         "dictionary": "dict-ar"
+      },
+      "tts": {
+        "defaultRegion": "JO",
+        "regions": {
+          "JO": {
+            "displayName": "Jordan",
+            "voices": [
+              "tts-piper-ar-jo-kareem-medium",
+              "tts-piper-ar-jo-kareem-low"
+            ]
+          }
+        }
       }
     },
     "az": {
@@ -81,6 +93,17 @@
           "tesseract": "ocr-tesseract-bg"
         },
         "dictionary": "dict-bg"
+      },
+      "tts": {
+        "defaultRegion": "BG",
+        "regions": {
+          "BG": {
+            "displayName": "Bulgaria",
+            "voices": [
+              "tts-piper-bg-bg-dimitar-medium"
+            ]
+          }
+        }
       }
     },
     "bn": {
@@ -135,6 +158,19 @@
           "tesseract": "ocr-tesseract-ca"
         },
         "dictionary": "dict-ca"
+      },
+      "tts": {
+        "defaultRegion": "ES",
+        "regions": {
+          "ES": {
+            "displayName": "Spain",
+            "voices": [
+              "tts-piper-ca-es-upc-ona-medium",
+              "tts-piper-ca-es-upc-ona-x-low",
+              "tts-piper-ca-es-upc-pau-x-low"
+            ]
+          }
+        }
       }
     },
     "cs": {
@@ -153,6 +189,18 @@
           "tesseract": "ocr-tesseract-cs"
         },
         "dictionary": "dict-cs"
+      },
+      "tts": {
+        "defaultRegion": "CZ",
+        "regions": {
+          "CZ": {
+            "displayName": "Czech Republic",
+            "voices": [
+              "tts-piper-cs-cz-jirka-medium",
+              "tts-piper-cs-cz-jirka-low"
+            ]
+          }
+        }
       }
     },
     "da": {
@@ -171,6 +219,17 @@
           "tesseract": "ocr-tesseract-da"
         },
         "dictionary": "dict-da"
+      },
+      "tts": {
+        "defaultRegion": "DK",
+        "regions": {
+          "DK": {
+            "displayName": "Denmark",
+            "voices": [
+              "tts-piper-da-dk-talesyntese-medium"
+            ]
+          }
+        }
       }
     },
     "de": {
@@ -189,6 +248,20 @@
           "tesseract": "ocr-tesseract-de"
         },
         "dictionary": "dict-de"
+      },
+      "tts": {
+        "defaultRegion": "DE",
+        "regions": {
+          "DE": {
+            "displayName": "Germany",
+            "voices": [
+              "tts-piper-de-de-thorsten-medium",
+              "tts-piper-de-de-thorsten-emotional-medium",
+              "tts-piper-de-de-mls-medium",
+              "tts-piper-de-de-karlsson-low"
+            ]
+          }
+        }
       }
     },
     "el": {
@@ -207,6 +280,18 @@
           "tesseract": "ocr-tesseract-el"
         },
         "dictionary": "dict-el"
+      },
+      "tts": {
+        "defaultRegion": "GR",
+        "regions": {
+          "GR": {
+            "displayName": "Greece",
+            "voices": [
+              "tts-piper-el-gr-rapunzelina-medium",
+              "tts-piper-el-gr-rapunzelina-low"
+            ]
+          }
+        }
       }
     },
     "en": {
@@ -325,6 +410,29 @@
           "tesseract": "ocr-tesseract-en"
         },
         "dictionary": "dict-en"
+      },
+      "tts": {
+        "defaultRegion": "US",
+        "regions": {
+          "GB": {
+            "displayName": "Great Britain",
+            "voices": [
+              "tts-piper-en-gb-alan-medium",
+              "tts-piper-en-gb-alba-medium",
+              "tts-piper-en-gb-jenny-dioco-medium",
+              "tts-piper-en-gb-northern-english-male-medium"
+            ]
+          },
+          "US": {
+            "displayName": "United States",
+            "voices": [
+              "tts-piper-en-us-sam-medium",
+              "tts-piper-en-us-amy-medium",
+              "tts-piper-en-us-hfc-female-medium",
+              "tts-piper-en-us-hfc-male-medium"
+            ]
+          }
+        }
       }
     },
     "es": {
@@ -343,6 +451,33 @@
           "tesseract": "ocr-tesseract-es"
         },
         "dictionary": "dict-es"
+      },
+      "tts": {
+        "defaultRegion": "ES",
+        "regions": {
+          "AR": {
+            "displayName": "Argentina",
+            "voices": [
+              "tts-piper-es-ar-daniela-high"
+            ]
+          },
+          "ES": {
+            "displayName": "Spain",
+            "voices": [
+              "tts-piper-es-es-davefx-medium",
+              "tts-piper-es-es-sharvard-medium",
+              "tts-piper-es-es-mls-10246-low",
+              "tts-piper-es-es-mls-9972-low"
+            ]
+          },
+          "MX": {
+            "displayName": "Mexico",
+            "voices": [
+              "tts-piper-es-mx-ald-medium",
+              "tts-piper-es-mx-claude-high"
+            ]
+          }
+        }
       }
     },
     "et": {
@@ -379,6 +514,20 @@
           "tesseract": "ocr-tesseract-fa"
         },
         "dictionary": "dict-fa"
+      },
+      "tts": {
+        "defaultRegion": "IR",
+        "regions": {
+          "IR": {
+            "displayName": "Iran",
+            "voices": [
+              "tts-piper-fa-ir-gyro-medium",
+              "tts-piper-fa-ir-reza-ibrahim-medium",
+              "tts-piper-fa-ir-ganji-medium",
+              "tts-piper-fa-ir-ganji-adabi-medium"
+            ]
+          }
+        }
       }
     },
     "fi": {
@@ -397,6 +546,18 @@
           "tesseract": "ocr-tesseract-fi"
         },
         "dictionary": "dict-fi"
+      },
+      "tts": {
+        "defaultRegion": "FI",
+        "regions": {
+          "FI": {
+            "displayName": "Finland",
+            "voices": [
+              "tts-piper-fi-fi-harri-medium",
+              "tts-piper-fi-fi-harri-low"
+            ]
+          }
+        }
       }
     },
     "fr": {
@@ -415,6 +576,20 @@
           "tesseract": "ocr-tesseract-fr"
         },
         "dictionary": "dict-fr"
+      },
+      "tts": {
+        "defaultRegion": "FR",
+        "regions": {
+          "FR": {
+            "displayName": "France",
+            "voices": [
+              "tts-piper-fr-fr-siwis-medium",
+              "tts-piper-fr-fr-tom-medium",
+              "tts-piper-fr-fr-upmc-medium",
+              "tts-piper-fr-fr-mls-medium"
+            ]
+          }
+        }
       }
     },
     "gu": {
@@ -469,6 +644,19 @@
           "tesseract": "ocr-tesseract-hi"
         },
         "dictionary": "dict-hi"
+      },
+      "tts": {
+        "defaultRegion": "IN",
+        "regions": {
+          "IN": {
+            "displayName": "India",
+            "voices": [
+              "tts-piper-hi-in-rohan-medium",
+              "tts-piper-hi-in-pratham-medium",
+              "tts-piper-hi-in-priyamvada-medium"
+            ]
+          }
+        }
       }
     },
     "hr": {
@@ -505,6 +693,19 @@
           "tesseract": "ocr-tesseract-hu"
         },
         "dictionary": "dict-hu"
+      },
+      "tts": {
+        "defaultRegion": "HU",
+        "regions": {
+          "HU": {
+            "displayName": "Hungary",
+            "voices": [
+              "tts-piper-hu-hu-anna-medium",
+              "tts-piper-hu-hu-berta-medium",
+              "tts-piper-hu-hu-imre-medium"
+            ]
+          }
+        }
       }
     },
     "id": {
@@ -523,6 +724,17 @@
           "tesseract": "ocr-tesseract-id"
         },
         "dictionary": "dict-id"
+      },
+      "tts": {
+        "defaultRegion": "ID",
+        "regions": {
+          "ID": {
+            "displayName": "Indonesia",
+            "voices": [
+              "tts-piper-id-id-news-tts-medium"
+            ]
+          }
+        }
       }
     },
     "is": {
@@ -541,6 +753,20 @@
           "tesseract": "ocr-tesseract-is"
         },
         "dictionary": "dict-is"
+      },
+      "tts": {
+        "defaultRegion": "IS",
+        "regions": {
+          "IS": {
+            "displayName": "Iceland",
+            "voices": [
+              "tts-piper-is-is-bui-medium",
+              "tts-piper-is-is-salka-medium",
+              "tts-piper-is-is-steinn-medium",
+              "tts-piper-is-is-ugla-medium"
+            ]
+          }
+        }
       }
     },
     "it": {
@@ -559,6 +785,18 @@
           "tesseract": "ocr-tesseract-it"
         },
         "dictionary": "dict-it"
+      },
+      "tts": {
+        "defaultRegion": "IT",
+        "regions": {
+          "IT": {
+            "displayName": "Italy",
+            "voices": [
+              "tts-piper-it-it-paola-medium",
+              "tts-piper-it-it-riccardo-x-low"
+            ]
+          }
+        }
       }
     },
     "ja": {
@@ -652,6 +890,17 @@
           "tesseract": "ocr-tesseract-lv"
         },
         "dictionary": "dict-lv"
+      },
+      "tts": {
+        "defaultRegion": "LV",
+        "regions": {
+          "LV": {
+            "displayName": "Latvia",
+            "voices": [
+              "tts-piper-lv-lv-aivars-medium"
+            ]
+          }
+        }
       }
     },
     "ml": {
@@ -670,6 +919,18 @@
           "tesseract": "ocr-tesseract-ml"
         },
         "dictionary": "dict-ml"
+      },
+      "tts": {
+        "defaultRegion": "IN",
+        "regions": {
+          "IN": {
+            "displayName": "India",
+            "voices": [
+              "tts-piper-ml-in-arjun-medium",
+              "tts-piper-ml-in-meera-medium"
+            ]
+          }
+        }
       }
     },
     "ms": {
@@ -693,8 +954,8 @@
     "nb": {
       "meta": {
         "code": "nb",
-        "name": "Norwegian Bokm\u00e5l",
-        "shortName": "Bokm\u00e5l",
+        "name": "Norwegian Bokmål",
+        "shortName": "Bokmål",
         "script": "Latn"
       },
       "assets": {
@@ -724,6 +985,29 @@
           "tesseract": "ocr-tesseract-nl"
         },
         "dictionary": "dict-nl"
+      },
+      "tts": {
+        "defaultRegion": "NL",
+        "regions": {
+          "BE": {
+            "displayName": "Belgium",
+            "voices": [
+              "tts-piper-nl-be-rdh-medium",
+              "tts-piper-nl-be-nathalie-medium",
+              "tts-piper-nl-be-nathalie-x-low",
+              "tts-piper-nl-be-rdh-x-low"
+            ]
+          },
+          "NL": {
+            "displayName": "Netherlands",
+            "voices": [
+              "tts-piper-nl-nl-ronnie-medium",
+              "tts-piper-nl-nl-pim-medium",
+              "tts-piper-nl-nl-alex-medium",
+              "tts-piper-nl-nl-mls-medium"
+            ]
+          }
+        }
       }
     },
     "nn": {
@@ -759,6 +1043,18 @@
           "tesseract": "ocr-tesseract-no"
         },
         "dictionary": "dict-no"
+      },
+      "tts": {
+        "defaultRegion": "NO",
+        "regions": {
+          "NO": {
+            "displayName": "Norway",
+            "voices": [
+              "tts-piper-no-no-talesyntese-medium",
+              "tts-piper-no-no-nvcc-medium"
+            ]
+          }
+        }
       }
     },
     "pl": {
@@ -777,6 +1073,20 @@
           "tesseract": "ocr-tesseract-pl"
         },
         "dictionary": "dict-pl"
+      },
+      "tts": {
+        "defaultRegion": "PL",
+        "regions": {
+          "PL": {
+            "displayName": "Poland",
+            "voices": [
+              "tts-piper-pl-pl-darkman-medium",
+              "tts-piper-pl-pl-gosia-medium",
+              "tts-piper-pl-pl-mc-speech-medium",
+              "tts-piper-pl-pl-mls-6892-low"
+            ]
+          }
+        }
       }
     },
     "pt": {
@@ -795,6 +1105,26 @@
           "tesseract": "ocr-tesseract-pt"
         },
         "dictionary": "dict-pt"
+      },
+      "tts": {
+        "defaultRegion": "BR",
+        "regions": {
+          "BR": {
+            "displayName": "Brazil",
+            "voices": [
+              "tts-piper-pt-br-cadu-medium",
+              "tts-piper-pt-br-jeff-medium",
+              "tts-piper-pt-br-faber-medium",
+              "tts-piper-pt-br-edresson-low"
+            ]
+          },
+          "PT": {
+            "displayName": "Portugal",
+            "voices": [
+              "tts-piper-pt-pt-tugão-medium"
+            ]
+          }
+        }
       }
     },
     "ro": {
@@ -813,6 +1143,17 @@
           "tesseract": "ocr-tesseract-ro"
         },
         "dictionary": "dict-ro"
+      },
+      "tts": {
+        "defaultRegion": "RO",
+        "regions": {
+          "RO": {
+            "displayName": "Romania",
+            "voices": [
+              "tts-piper-ro-ro-mihai-medium"
+            ]
+          }
+        }
       }
     },
     "ru": {
@@ -831,6 +1172,20 @@
           "tesseract": "ocr-tesseract-ru"
         },
         "dictionary": "dict-ru"
+      },
+      "tts": {
+        "defaultRegion": "RU",
+        "regions": {
+          "RU": {
+            "displayName": "Russia",
+            "voices": [
+              "tts-piper-ru-ru-denis-medium",
+              "tts-piper-ru-ru-dmitri-medium",
+              "tts-piper-ru-ru-irina-medium",
+              "tts-piper-ru-ru-ruslan-medium"
+            ]
+          }
+        }
       }
     },
     "sk": {
@@ -849,6 +1204,17 @@
           "tesseract": "ocr-tesseract-sk"
         },
         "dictionary": "dict-sk"
+      },
+      "tts": {
+        "defaultRegion": "SK",
+        "regions": {
+          "SK": {
+            "displayName": "Slovakia",
+            "voices": [
+              "tts-piper-sk-sk-lili-medium"
+            ]
+          }
+        }
       }
     },
     "sl": {
@@ -867,6 +1233,17 @@
           "tesseract": "ocr-tesseract-sl"
         },
         "dictionary": "dict-sl"
+      },
+      "tts": {
+        "defaultRegion": "SI",
+        "regions": {
+          "SI": {
+            "displayName": "Slovenia",
+            "voices": [
+              "tts-piper-sl-si-artur-medium"
+            ]
+          }
+        }
       }
     },
     "sq": {
@@ -885,6 +1262,17 @@
           "tesseract": "ocr-tesseract-sq"
         },
         "dictionary": "dict-sq"
+      },
+      "tts": {
+        "defaultRegion": "AL",
+        "regions": {
+          "AL": {
+            "displayName": "Albania",
+            "voices": [
+              "tts-piper-sq-al-edon-medium"
+            ]
+          }
+        }
       }
     },
     "sr": {
@@ -903,6 +1291,17 @@
           "tesseract": "ocr-tesseract-sr"
         },
         "dictionary": "dict-hr"
+      },
+      "tts": {
+        "defaultRegion": "RS",
+        "regions": {
+          "RS": {
+            "displayName": "Serbia",
+            "voices": [
+              "tts-piper-sr-rs-serbski-institut-medium"
+            ]
+          }
+        }
       }
     },
     "sv": {
@@ -921,6 +1320,19 @@
           "tesseract": "ocr-tesseract-sv"
         },
         "dictionary": "dict-sv"
+      },
+      "tts": {
+        "defaultRegion": "SE",
+        "regions": {
+          "SE": {
+            "displayName": "Sweden",
+            "voices": [
+              "tts-piper-sv-se-nst-medium",
+              "tts-piper-sv-se-alma-medium",
+              "tts-piper-sv-se-lisa-medium"
+            ]
+          }
+        }
       }
     },
     "ta": {
@@ -957,6 +1369,19 @@
           "tesseract": "ocr-tesseract-te"
         },
         "dictionary": "dict-te"
+      },
+      "tts": {
+        "defaultRegion": "IN",
+        "regions": {
+          "IN": {
+            "displayName": "India",
+            "voices": [
+              "tts-piper-te-in-maya-medium",
+              "tts-piper-te-in-padmavathi-medium",
+              "tts-piper-te-in-venkatesh-medium"
+            ]
+          }
+        }
       }
     },
     "th": {
@@ -993,6 +1418,17 @@
           "tesseract": "ocr-tesseract-tr"
         },
         "dictionary": "dict-tr"
+      },
+      "tts": {
+        "defaultRegion": "TR",
+        "regions": {
+          "TR": {
+            "displayName": "Turkey",
+            "voices": [
+              "tts-piper-tr-tr-dfki-medium"
+            ]
+          }
+        }
       }
     },
     "uk": {
@@ -1011,6 +1447,18 @@
           "tesseract": "ocr-tesseract-uk"
         },
         "dictionary": "dict-uk"
+      },
+      "tts": {
+        "defaultRegion": "UA",
+        "regions": {
+          "UA": {
+            "displayName": "Ukraine",
+            "voices": [
+              "tts-piper-uk-ua-ukrainian-tts-medium",
+              "tts-piper-uk-ua-lada-x-low"
+            ]
+          }
+        }
       }
     },
     "vi": {
@@ -1029,13 +1477,26 @@
           "tesseract": "ocr-tesseract-vi"
         },
         "dictionary": "dict-vi"
+      },
+      "tts": {
+        "defaultRegion": "VN",
+        "regions": {
+          "VN": {
+            "displayName": "Vietnam",
+            "voices": [
+              "tts-piper-vi-vn-vais1000-medium",
+              "tts-piper-vi-vn-25hours-single-low",
+              "tts-piper-vi-vn-vivos-x-low"
+            ]
+          }
+        }
       }
     },
     "zh": {
       "meta": {
         "code": "zh",
-        "name": "Chinese (\u7b80\u4f53)",
-        "shortName": "\u7b80\u4f53",
+        "name": "Chinese (简体)",
+        "shortName": "简体",
         "script": "Hans"
       },
       "assets": {
@@ -1047,13 +1508,27 @@
           "tesseract": "ocr-tesseract-zh"
         },
         "dictionary": "dict-zh"
+      },
+      "tts": {
+        "defaultRegion": "CN",
+        "regions": {
+          "CN": {
+            "displayName": "China",
+            "voices": [
+              "tts-piper-zh-cn-huayan-medium",
+              "tts-piper-zh-cn-chaowen-medium",
+              "tts-piper-zh-cn-xiao-ya-medium",
+              "tts-piper-zh-cn-huayan-x-low"
+            ]
+          }
+        }
       }
     },
     "zh_hant": {
       "meta": {
         "code": "zh_hant",
-        "name": "Chinese (\u7e41\u9ad4)",
-        "shortName": "\u7e41\u9ad4",
+        "name": "Chinese (繁體)",
+        "shortName": "繁體",
         "script": "Hant"
       },
       "assets": {
@@ -6078,6 +6553,3407 @@
         }
       ],
       "dependsOn": []
+    },
+    "tts-espeak-core-v1": {
+      "feature": "support",
+      "kind": "tts-espeak-core",
+      "files": [
+        {
+          "name": "espeak-ng-data.zip",
+          "sizeBytes": 425969,
+          "installPath": "bin/espeak-ng-data.zip",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data.zip",
+          "archiveFormat": "zip",
+          "extractTo": "bin",
+          "deleteAfterExtract": true,
+          "installMarkerPath": "bin/espeak-ng-data/.install-info.json",
+          "installMarkerVersion": 1
+        }
+      ],
+      "dependsOn": []
+    },
+    "tts-espeak-dict-ar": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "ar_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/ar_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/ar_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-bg": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "bg_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/bg_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/bg_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-ca": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "ca_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/ca_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/ca_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-cmn": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "cmn_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/cmn_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/cmn_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-cs": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "cs_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/cs_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/cs_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-da": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "da_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/da_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/da_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-de": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "de_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/de_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/de_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-el": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "el_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/el_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/el_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-en": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "en_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/en_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/en_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-es": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "es_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/es_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/es_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-fa": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "fa_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/fa_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/fa_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-fi": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "fi_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/fi_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/fi_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-fr": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "fr_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/fr_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/fr_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-hi": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "hi_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/hi_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/hi_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-hu": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "hu_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/hu_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/hu_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-id": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "id_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/id_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/id_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-is": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "is_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/is_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/is_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-it": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "it_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/it_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/it_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-lv": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "lv_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/lv_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/lv_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-ml": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "ml_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/ml_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/ml_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-nl": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "nl_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/nl_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/nl_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-no": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "no_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/no_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/no_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-pl": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "pl_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/pl_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/pl_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-pt": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "pt_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/pt_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/pt_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-ro": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "ro_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/ro_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/ro_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-ru": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "ru_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/ru_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/ru_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-sk": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "sk_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/sk_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/sk_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-sl": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "sl_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/sl_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/sl_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-sq": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "sq_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/sq_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/sq_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-sr": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "sr_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/sr_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/sr_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-sv": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "sv_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/sv_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/sv_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-te": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "te_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/te_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/te_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-tr": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "tr_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/tr_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/tr_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-uk": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "uk_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/uk_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/uk_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-espeak-dict-vi": {
+      "feature": "support",
+      "kind": "tts-espeak-dict",
+      "files": [
+        {
+          "name": "vi_dict",
+          "sizeBytes": 0,
+          "installPath": "bin/espeak-ng-data/vi_dict",
+          "url": "https://translator.davidv.dev/tts/1/espeak-ng-data/vi_dict"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-core-v1"
+      ]
+    },
+    "tts-piper-ar-jo-kareem-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ar",
+      "locale": "ar_JO",
+      "region": "JO",
+      "voice": "kareem",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ar_JO-kareem-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/ar/ar_JO/kareem/medium/ar_JO-kareem-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ar/ar_JO/kareem/medium/ar_JO-kareem-medium.onnx"
+        },
+        {
+          "name": "ar_JO-kareem-medium.onnx.json",
+          "sizeBytes": 5024,
+          "installPath": "bin/piper/ar/ar_JO/kareem/medium/ar_JO-kareem-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ar/ar_JO/kareem/medium/ar_JO-kareem-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ar"
+      ]
+    },
+    "tts-piper-ar-jo-kareem-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ar",
+      "locale": "ar_JO",
+      "region": "JO",
+      "voice": "kareem",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ar_JO-kareem-low.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/ar/ar_JO/kareem/low/ar_JO-kareem-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ar/ar_JO/kareem/low/ar_JO-kareem-low.onnx"
+        },
+        {
+          "name": "ar_JO-kareem-low.onnx.json",
+          "sizeBytes": 5022,
+          "installPath": "bin/piper/ar/ar_JO/kareem/low/ar_JO-kareem-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ar/ar_JO/kareem/low/ar_JO-kareem-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ar"
+      ]
+    },
+    "tts-piper-bg-bg-dimitar-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "bg",
+      "locale": "bg_BG",
+      "region": "BG",
+      "voice": "dimitar",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "bg_BG-dimitar-medium.onnx",
+          "sizeBytes": 63221984,
+          "installPath": "bin/piper/bg/bg_BG/dimitar/medium/bg_BG-dimitar-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/bg/bg_BG/dimitar/medium/bg_BG-dimitar-medium.onnx"
+        },
+        {
+          "name": "bg_BG-dimitar-medium.onnx.json",
+          "sizeBytes": 5123,
+          "installPath": "bin/piper/bg/bg_BG/dimitar/medium/bg_BG-dimitar-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/bg/bg_BG/dimitar/medium/bg_BG-dimitar-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-bg"
+      ]
+    },
+    "tts-piper-ca-es-upc-ona-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ca",
+      "locale": "ca_ES",
+      "region": "ES",
+      "voice": "upc_ona",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ca_ES-upc_ona-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/ca/ca_ES/upc_ona/medium/ca_ES-upc_ona-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ca/ca_ES/upc_ona/medium/ca_ES-upc_ona-medium.onnx"
+        },
+        {
+          "name": "ca_ES-upc_ona-medium.onnx.json",
+          "sizeBytes": 4875,
+          "installPath": "bin/piper/ca/ca_ES/upc_ona/medium/ca_ES-upc_ona-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ca/ca_ES/upc_ona/medium/ca_ES-upc_ona-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ca"
+      ]
+    },
+    "tts-piper-ca-es-upc-ona-x-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ca",
+      "locale": "ca_ES",
+      "region": "ES",
+      "voice": "upc_ona",
+      "quality": "x_low",
+      "numSpeakers": 1,
+      "aliases": [
+        "ca-upc_ona-x-low"
+      ],
+      "files": [
+        {
+          "name": "ca_ES-upc_ona-x_low.onnx",
+          "sizeBytes": 20628813,
+          "installPath": "bin/piper/ca/ca_ES/upc_ona/x_low/ca_ES-upc_ona-x_low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ca/ca_ES/upc_ona/x_low/ca_ES-upc_ona-x_low.onnx"
+        },
+        {
+          "name": "ca_ES-upc_ona-x_low.onnx.json",
+          "sizeBytes": 4159,
+          "installPath": "bin/piper/ca/ca_ES/upc_ona/x_low/ca_ES-upc_ona-x_low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ca/ca_ES/upc_ona/x_low/ca_ES-upc_ona-x_low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ca"
+      ]
+    },
+    "tts-piper-ca-es-upc-pau-x-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ca",
+      "locale": "ca_ES",
+      "region": "ES",
+      "voice": "upc_pau",
+      "quality": "x_low",
+      "numSpeakers": 1,
+      "aliases": [
+        "ca-upc_pau-x-low"
+      ],
+      "files": [
+        {
+          "name": "ca_ES-upc_pau-x_low.onnx",
+          "sizeBytes": 28130791,
+          "installPath": "bin/piper/ca/ca_ES/upc_pau/x_low/ca_ES-upc_pau-x_low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ca/ca_ES/upc_pau/x_low/ca_ES-upc_pau-x_low.onnx"
+        },
+        {
+          "name": "ca_ES-upc_pau-x_low.onnx.json",
+          "sizeBytes": 4159,
+          "installPath": "bin/piper/ca/ca_ES/upc_pau/x_low/ca_ES-upc_pau-x_low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ca/ca_ES/upc_pau/x_low/ca_ES-upc_pau-x_low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ca"
+      ]
+    },
+    "tts-piper-cs-cz-jirka-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "cs",
+      "locale": "cs_CZ",
+      "region": "CZ",
+      "voice": "jirka",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "cs_CZ-jirka-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/cs/cs_CZ/jirka/medium/cs_CZ-jirka-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/cs/cs_CZ/jirka/medium/cs_CZ-jirka-medium.onnx"
+        },
+        {
+          "name": "cs_CZ-jirka-medium.onnx.json",
+          "sizeBytes": 5025,
+          "installPath": "bin/piper/cs/cs_CZ/jirka/medium/cs_CZ-jirka-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/cs/cs_CZ/jirka/medium/cs_CZ-jirka-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-cs"
+      ]
+    },
+    "tts-piper-cs-cz-jirka-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "cs",
+      "locale": "cs_CZ",
+      "region": "CZ",
+      "voice": "jirka",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "cs_CZ-jirka-low.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/cs/cs_CZ/jirka/low/cs_CZ-jirka-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/cs/cs_CZ/jirka/low/cs_CZ-jirka-low.onnx"
+        },
+        {
+          "name": "cs_CZ-jirka-low.onnx.json",
+          "sizeBytes": 5022,
+          "installPath": "bin/piper/cs/cs_CZ/jirka/low/cs_CZ-jirka-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/cs/cs_CZ/jirka/low/cs_CZ-jirka-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-cs"
+      ]
+    },
+    "tts-piper-da-dk-talesyntese-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "da",
+      "locale": "da_DK",
+      "region": "DK",
+      "voice": "talesyntese",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [
+        "da-nst_talesyntese-medium"
+      ],
+      "files": [
+        {
+          "name": "da_DK-talesyntese-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/da/da_DK/talesyntese/medium/da_DK-talesyntese-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/da/da_DK/talesyntese/medium/da_DK-talesyntese-medium.onnx"
+        },
+        {
+          "name": "da_DK-talesyntese-medium.onnx.json",
+          "sizeBytes": 4878,
+          "installPath": "bin/piper/da/da_DK/talesyntese/medium/da_DK-talesyntese-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/da/da_DK/talesyntese/medium/da_DK-talesyntese-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-da"
+      ]
+    },
+    "tts-piper-de-de-thorsten-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "de",
+      "locale": "de_DE",
+      "region": "DE",
+      "voice": "thorsten",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "de_DE-thorsten-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx"
+        },
+        {
+          "name": "de_DE-thorsten-medium.onnx.json",
+          "sizeBytes": 4819,
+          "installPath": "bin/piper/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-de"
+      ]
+    },
+    "tts-piper-de-de-thorsten-emotional-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "de",
+      "locale": "de_DE",
+      "region": "DE",
+      "voice": "thorsten_emotional",
+      "quality": "medium",
+      "numSpeakers": 8,
+      "defaultSpeakerId": 0,
+      "aliases": [],
+      "files": [
+        {
+          "name": "de_DE-thorsten_emotional-medium.onnx",
+          "sizeBytes": 76745905,
+          "installPath": "bin/piper/de/de_DE/thorsten_emotional/medium/de_DE-thorsten_emotional-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten_emotional/medium/de_DE-thorsten_emotional-medium.onnx"
+        },
+        {
+          "name": "de_DE-thorsten_emotional-medium.onnx.json",
+          "sizeBytes": 5031,
+          "installPath": "bin/piper/de/de_DE/thorsten_emotional/medium/de_DE-thorsten_emotional-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten_emotional/medium/de_DE-thorsten_emotional-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-de"
+      ]
+    },
+    "tts-piper-de-de-mls-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "de",
+      "locale": "de_DE",
+      "region": "DE",
+      "voice": "mls",
+      "quality": "medium",
+      "numSpeakers": 236,
+      "defaultSpeakerId": 0,
+      "aliases": [],
+      "files": [
+        {
+          "name": "de_DE-mls-medium.onnx",
+          "sizeBytes": 76961079,
+          "installPath": "bin/piper/de/de_DE/mls/medium/de_DE-mls-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/mls/medium/de_DE-mls-medium.onnx"
+        },
+        {
+          "name": "de_DE-mls-medium.onnx.json",
+          "sizeBytes": 8948,
+          "installPath": "bin/piper/de/de_DE/mls/medium/de_DE-mls-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/mls/medium/de_DE-mls-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-de"
+      ]
+    },
+    "tts-piper-de-de-karlsson-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "de",
+      "locale": "de_DE",
+      "region": "DE",
+      "voice": "karlsson",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [
+        "de-karlsson-low"
+      ],
+      "files": [
+        {
+          "name": "de_DE-karlsson-low.onnx",
+          "sizeBytes": 63104526,
+          "installPath": "bin/piper/de/de_DE/karlsson/low/de_DE-karlsson-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/karlsson/low/de_DE-karlsson-low.onnx"
+        },
+        {
+          "name": "de_DE-karlsson-low.onnx.json",
+          "sizeBytes": 4159,
+          "installPath": "bin/piper/de/de_DE/karlsson/low/de_DE-karlsson-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/karlsson/low/de_DE-karlsson-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-de"
+      ]
+    },
+    "tts-piper-el-gr-rapunzelina-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "el",
+      "locale": "el_GR",
+      "region": "GR",
+      "voice": "rapunzelina",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "el_GR-rapunzelina-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/el/el_GR/rapunzelina/medium/el_GR-rapunzelina-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/el/el_GR/rapunzelina/medium/el_GR-rapunzelina-medium.onnx"
+        },
+        {
+          "name": "el_GR-rapunzelina-medium.onnx.json",
+          "sizeBytes": 4973,
+          "installPath": "bin/piper/el/el_GR/rapunzelina/medium/el_GR-rapunzelina-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/el/el_GR/rapunzelina/medium/el_GR-rapunzelina-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-el"
+      ]
+    },
+    "tts-piper-el-gr-rapunzelina-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "el",
+      "locale": "el_GR",
+      "region": "GR",
+      "voice": "rapunzelina",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "el_GR-rapunzelina-low.onnx",
+          "sizeBytes": 63104526,
+          "installPath": "bin/piper/el/el_GR/rapunzelina/low/el_GR-rapunzelina-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/el/el_GR/rapunzelina/low/el_GR-rapunzelina-low.onnx"
+        },
+        {
+          "name": "el_GR-rapunzelina-low.onnx.json",
+          "sizeBytes": 4198,
+          "installPath": "bin/piper/el/el_GR/rapunzelina/low/el_GR-rapunzelina-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/el/el_GR/rapunzelina/low/el_GR-rapunzelina-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-el"
+      ]
+    },
+    "tts-piper-en-gb-alan-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "en",
+      "locale": "en_GB",
+      "region": "GB",
+      "voice": "alan",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "en_GB-alan-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/en/en_GB/alan/medium/en_GB-alan-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/alan/medium/en_GB-alan-medium.onnx"
+        },
+        {
+          "name": "en_GB-alan-medium.onnx.json",
+          "sizeBytes": 4888,
+          "installPath": "bin/piper/en/en_GB/alan/medium/en_GB-alan-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/alan/medium/en_GB-alan-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-en"
+      ]
+    },
+    "tts-piper-en-gb-alba-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "en",
+      "locale": "en_GB",
+      "region": "GB",
+      "voice": "alba",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "en_GB-alba-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/en/en_GB/alba/medium/en_GB-alba-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/alba/medium/en_GB-alba-medium.onnx"
+        },
+        {
+          "name": "en_GB-alba-medium.onnx.json",
+          "sizeBytes": 4888,
+          "installPath": "bin/piper/en/en_GB/alba/medium/en_GB-alba-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/alba/medium/en_GB-alba-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-en"
+      ]
+    },
+    "tts-piper-en-gb-jenny-dioco-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "en",
+      "locale": "en_GB",
+      "region": "GB",
+      "voice": "jenny_dioco",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "en_GB-jenny_dioco-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/en/en_GB/jenny_dioco/medium/en_GB-jenny_dioco-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/jenny_dioco/medium/en_GB-jenny_dioco-medium.onnx"
+        },
+        {
+          "name": "en_GB-jenny_dioco-medium.onnx.json",
+          "sizeBytes": 4895,
+          "installPath": "bin/piper/en/en_GB/jenny_dioco/medium/en_GB-jenny_dioco-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/jenny_dioco/medium/en_GB-jenny_dioco-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-en"
+      ]
+    },
+    "tts-piper-en-gb-northern-english-male-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "en",
+      "locale": "en_GB",
+      "region": "GB",
+      "voice": "northern_english_male",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "en_GB-northern_english_male-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/en/en_GB/northern_english_male/medium/en_GB-northern_english_male-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/northern_english_male/medium/en_GB-northern_english_male-medium.onnx"
+        },
+        {
+          "name": "en_GB-northern_english_male-medium.onnx.json",
+          "sizeBytes": 4847,
+          "installPath": "bin/piper/en/en_GB/northern_english_male/medium/en_GB-northern_english_male-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/northern_english_male/medium/en_GB-northern_english_male-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-en"
+      ]
+    },
+    "tts-piper-en-us-sam-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "en",
+      "locale": "en_US",
+      "region": "US",
+      "voice": "sam",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "en_US-sam-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/en/en_US/sam/medium/en_US-sam-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/sam/medium/en_US-sam-medium.onnx"
+        },
+        {
+          "name": "en_US-sam-medium.onnx.json",
+          "sizeBytes": 5040,
+          "installPath": "bin/piper/en/en_US/sam/medium/en_US-sam-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/sam/medium/en_US-sam-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-en"
+      ]
+    },
+    "tts-piper-en-us-amy-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "en",
+      "locale": "en_US",
+      "region": "US",
+      "voice": "amy",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "en_US-amy-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/en/en_US/amy/medium/en_US-amy-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/amy/medium/en_US-amy-medium.onnx"
+        },
+        {
+          "name": "en_US-amy-medium.onnx.json",
+          "sizeBytes": 4882,
+          "installPath": "bin/piper/en/en_US/amy/medium/en_US-amy-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/amy/medium/en_US-amy-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-en"
+      ]
+    },
+    "tts-piper-en-us-hfc-female-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "en",
+      "locale": "en_US",
+      "region": "US",
+      "voice": "hfc_female",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "en_US-hfc_female-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/en/en_US/hfc_female/medium/en_US-hfc_female-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc_female/medium/en_US-hfc_female-medium.onnx"
+        },
+        {
+          "name": "en_US-hfc_female-medium.onnx.json",
+          "sizeBytes": 5033,
+          "installPath": "bin/piper/en/en_US/hfc_female/medium/en_US-hfc_female-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc_female/medium/en_US-hfc_female-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-en"
+      ]
+    },
+    "tts-piper-en-us-hfc-male-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "en",
+      "locale": "en_US",
+      "region": "US",
+      "voice": "hfc_male",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "en_US-hfc_male-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx"
+        },
+        {
+          "name": "en_US-hfc_male-medium.onnx.json",
+          "sizeBytes": 5033,
+          "installPath": "bin/piper/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-en"
+      ]
+    },
+    "tts-piper-es-ar-daniela-high": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "es",
+      "locale": "es_AR",
+      "region": "AR",
+      "voice": "daniela",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "es_AR-daniela-high.onnx",
+          "sizeBytes": 114199011,
+          "installPath": "bin/piper/es/es_AR/daniela/high/es_AR-daniela-high.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_AR/daniela/high/es_AR-daniela-high.onnx"
+        },
+        {
+          "name": "es_AR-daniela-high.onnx.json",
+          "sizeBytes": 7248,
+          "installPath": "bin/piper/es/es_AR/daniela/high/es_AR-daniela-high.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_AR/daniela/high/es_AR-daniela-high.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-es"
+      ]
+    },
+    "tts-piper-es-es-davefx-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "es",
+      "locale": "es_ES",
+      "region": "ES",
+      "voice": "davefx",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "es_ES-davefx-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx"
+        },
+        {
+          "name": "es_ES-davefx-medium.onnx.json",
+          "sizeBytes": 4817,
+          "installPath": "bin/piper/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-es"
+      ]
+    },
+    "tts-piper-es-es-sharvard-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "es",
+      "locale": "es_ES",
+      "region": "ES",
+      "voice": "sharvard",
+      "quality": "medium",
+      "numSpeakers": 2,
+      "defaultSpeakerId": 0,
+      "aliases": [],
+      "files": [
+        {
+          "name": "es_ES-sharvard-medium.onnx",
+          "sizeBytes": 76733615,
+          "installPath": "bin/piper/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx"
+        },
+        {
+          "name": "es_ES-sharvard-medium.onnx.json",
+          "sizeBytes": 4903,
+          "installPath": "bin/piper/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-es"
+      ]
+    },
+    "tts-piper-es-es-mls-10246-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "es",
+      "locale": "es_ES",
+      "region": "ES",
+      "voice": "mls_10246",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [
+        "es-mls_10246-low"
+      ],
+      "files": [
+        {
+          "name": "es_ES-mls_10246-low.onnx",
+          "sizeBytes": 63104526,
+          "installPath": "bin/piper/es/es_ES/mls_10246/low/es_ES-mls_10246-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/mls_10246/low/es_ES-mls_10246-low.onnx"
+        },
+        {
+          "name": "es_ES-mls_10246-low.onnx.json",
+          "sizeBytes": 4160,
+          "installPath": "bin/piper/es/es_ES/mls_10246/low/es_ES-mls_10246-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/mls_10246/low/es_ES-mls_10246-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-es"
+      ]
+    },
+    "tts-piper-es-es-mls-9972-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "es",
+      "locale": "es_ES",
+      "region": "ES",
+      "voice": "mls_9972",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [
+        "es-mls_9972-low"
+      ],
+      "files": [
+        {
+          "name": "es_ES-mls_9972-low.onnx",
+          "sizeBytes": 63104526,
+          "installPath": "bin/piper/es/es_ES/mls_9972/low/es_ES-mls_9972-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/mls_9972/low/es_ES-mls_9972-low.onnx"
+        },
+        {
+          "name": "es_ES-mls_9972-low.onnx.json",
+          "sizeBytes": 4159,
+          "installPath": "bin/piper/es/es_ES/mls_9972/low/es_ES-mls_9972-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/mls_9972/low/es_ES-mls_9972-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-es"
+      ]
+    },
+    "tts-piper-es-mx-ald-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "es",
+      "locale": "es_MX",
+      "region": "MX",
+      "voice": "ald",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "es_MX-ald-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/es/es_MX/ald/medium/es_MX-ald-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_MX/ald/medium/es_MX-ald-medium.onnx"
+        },
+        {
+          "name": "es_MX-ald-medium.onnx.json",
+          "sizeBytes": 4878,
+          "installPath": "bin/piper/es/es_MX/ald/medium/es_MX-ald-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_MX/ald/medium/es_MX-ald-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-es"
+      ]
+    },
+    "tts-piper-es-mx-claude-high": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "es",
+      "locale": "es_MX",
+      "region": "MX",
+      "voice": "claude",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "es_MX-claude-high.onnx",
+          "sizeBytes": 63122309,
+          "installPath": "bin/piper/es/es_MX/claude/high/es_MX-claude-high.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_MX/claude/high/es_MX-claude-high.onnx"
+        },
+        {
+          "name": "es_MX-claude-high.onnx.json",
+          "sizeBytes": 4963,
+          "installPath": "bin/piper/es/es_MX/claude/high/es_MX-claude-high.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_MX/claude/high/es_MX-claude-high.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-es"
+      ]
+    },
+    "tts-piper-fa-ir-gyro-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fa",
+      "locale": "fa_IR",
+      "region": "IR",
+      "voice": "gyro",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "fa_IR-gyro-medium.onnx",
+          "sizeBytes": 63122309,
+          "installPath": "bin/piper/fa/fa_IR/gyro/medium/fa_IR-gyro-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fa/fa_IR/gyro/medium/fa_IR-gyro-medium.onnx"
+        },
+        {
+          "name": "fa_IR-gyro-medium.onnx.json",
+          "sizeBytes": 7210,
+          "installPath": "bin/piper/fa/fa_IR/gyro/medium/fa_IR-gyro-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fa/fa_IR/gyro/medium/fa_IR-gyro-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fa"
+      ]
+    },
+    "tts-piper-fa-ir-reza-ibrahim-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fa",
+      "locale": "fa_IR",
+      "region": "IR",
+      "voice": "reza_ibrahim",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "fa_IR-reza_ibrahim-medium.onnx",
+          "sizeBytes": 63511038,
+          "installPath": "bin/piper/fa/fa_IR/reza_ibrahim/medium/fa_IR-reza_ibrahim-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fa/fa_IR/reza_ibrahim/medium/fa_IR-reza_ibrahim-medium.onnx"
+        },
+        {
+          "name": "fa_IR-reza_ibrahim-medium.onnx.json",
+          "sizeBytes": 4967,
+          "installPath": "bin/piper/fa/fa_IR/reza_ibrahim/medium/fa_IR-reza_ibrahim-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fa/fa_IR/reza_ibrahim/medium/fa_IR-reza_ibrahim-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fa"
+      ]
+    },
+    "tts-piper-fa-ir-ganji-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fa",
+      "locale": "fa_IR",
+      "region": "IR",
+      "voice": "ganji",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "fa_IR-ganji-medium.onnx",
+          "sizeBytes": 63516050,
+          "installPath": "bin/piper/fa/fa_IR/ganji/medium/fa_IR-ganji-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fa/fa_IR/ganji/medium/fa_IR-ganji-medium.onnx"
+        },
+        {
+          "name": "fa_IR-ganji-medium.onnx.json",
+          "sizeBytes": 4958,
+          "installPath": "bin/piper/fa/fa_IR/ganji/medium/fa_IR-ganji-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fa/fa_IR/ganji/medium/fa_IR-ganji-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fa"
+      ]
+    },
+    "tts-piper-fa-ir-ganji-adabi-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fa",
+      "locale": "fa_IR",
+      "region": "IR",
+      "voice": "ganji_adabi",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "fa_IR-ganji_adabi-medium.onnx",
+          "sizeBytes": 63516050,
+          "installPath": "bin/piper/fa/fa_IR/ganji_adabi/medium/fa_IR-ganji_adabi-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fa/fa_IR/ganji_adabi/medium/fa_IR-ganji_adabi-medium.onnx"
+        },
+        {
+          "name": "fa_IR-ganji_adabi-medium.onnx.json",
+          "sizeBytes": 4964,
+          "installPath": "bin/piper/fa/fa_IR/ganji_adabi/medium/fa_IR-ganji_adabi-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fa/fa_IR/ganji_adabi/medium/fa_IR-ganji_adabi-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fa"
+      ]
+    },
+    "tts-piper-fi-fi-harri-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fi",
+      "locale": "fi_FI",
+      "region": "FI",
+      "voice": "harri",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "fi_FI-harri-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/fi/fi_FI/harri/medium/fi_FI-harri-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fi/fi_FI/harri/medium/fi_FI-harri-medium.onnx"
+        },
+        {
+          "name": "fi_FI-harri-medium.onnx.json",
+          "sizeBytes": 4873,
+          "installPath": "bin/piper/fi/fi_FI/harri/medium/fi_FI-harri-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fi/fi_FI/harri/medium/fi_FI-harri-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fi"
+      ]
+    },
+    "tts-piper-fi-fi-harri-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fi",
+      "locale": "fi_FI",
+      "region": "FI",
+      "voice": "harri",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [
+        "fi-harri-low"
+      ],
+      "files": [
+        {
+          "name": "fi_FI-harri-low.onnx",
+          "sizeBytes": 69795191,
+          "installPath": "bin/piper/fi/fi_FI/harri/low/fi_FI-harri-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fi/fi_FI/harri/low/fi_FI-harri-low.onnx"
+        },
+        {
+          "name": "fi_FI-harri-low.onnx.json",
+          "sizeBytes": 4155,
+          "installPath": "bin/piper/fi/fi_FI/harri/low/fi_FI-harri-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fi/fi_FI/harri/low/fi_FI-harri-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fi"
+      ]
+    },
+    "tts-piper-fr-fr-siwis-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fr",
+      "locale": "fr_FR",
+      "region": "FR",
+      "voice": "siwis",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [
+        "fr-siwis-medium"
+      ],
+      "files": [
+        {
+          "name": "fr_FR-siwis-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/fr/fr_FR/siwis/medium/fr_FR-siwis-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/siwis/medium/fr_FR-siwis-medium.onnx"
+        },
+        {
+          "name": "fr_FR-siwis-medium.onnx.json",
+          "sizeBytes": 4875,
+          "installPath": "bin/piper/fr/fr_FR/siwis/medium/fr_FR-siwis-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/siwis/medium/fr_FR-siwis-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fr"
+      ]
+    },
+    "tts-piper-fr-fr-tom-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fr",
+      "locale": "fr_FR",
+      "region": "FR",
+      "voice": "tom",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "fr_FR-tom-medium.onnx",
+          "sizeBytes": 63511038,
+          "installPath": "bin/piper/fr/fr_FR/tom/medium/fr_FR-tom-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/tom/medium/fr_FR-tom-medium.onnx"
+        },
+        {
+          "name": "fr_FR-tom-medium.onnx.json",
+          "sizeBytes": 4959,
+          "installPath": "bin/piper/fr/fr_FR/tom/medium/fr_FR-tom-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/tom/medium/fr_FR-tom-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fr"
+      ]
+    },
+    "tts-piper-fr-fr-upmc-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fr",
+      "locale": "fr_FR",
+      "region": "FR",
+      "voice": "upmc",
+      "quality": "medium",
+      "numSpeakers": 2,
+      "defaultSpeakerId": 0,
+      "aliases": [],
+      "files": [
+        {
+          "name": "fr_FR-upmc-medium.onnx",
+          "sizeBytes": 76733615,
+          "installPath": "bin/piper/fr/fr_FR/upmc/medium/fr_FR-upmc-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/upmc/medium/fr_FR-upmc-medium.onnx"
+        },
+        {
+          "name": "fr_FR-upmc-medium.onnx.json",
+          "sizeBytes": 4996,
+          "installPath": "bin/piper/fr/fr_FR/upmc/medium/fr_FR-upmc-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/upmc/medium/fr_FR-upmc-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fr"
+      ]
+    },
+    "tts-piper-fr-fr-mls-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "fr",
+      "locale": "fr_FR",
+      "region": "FR",
+      "voice": "mls",
+      "quality": "medium",
+      "numSpeakers": 125,
+      "defaultSpeakerId": 0,
+      "aliases": [],
+      "files": [
+        {
+          "name": "fr_FR-mls-medium.onnx",
+          "sizeBytes": 76733750,
+          "installPath": "bin/piper/fr/fr_FR/mls/medium/fr_FR-mls-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/mls/medium/fr_FR-mls-medium.onnx"
+        },
+        {
+          "name": "fr_FR-mls-medium.onnx.json",
+          "sizeBytes": 7036,
+          "installPath": "bin/piper/fr/fr_FR/mls/medium/fr_FR-mls-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/mls/medium/fr_FR-mls-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-fr"
+      ]
+    },
+    "tts-piper-hi-in-rohan-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "hi",
+      "locale": "hi_IN",
+      "region": "IN",
+      "voice": "rohan",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "hi_IN-rohan-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/hi/hi_IN/rohan/medium/hi_IN-rohan-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/rohan/medium/hi_IN-rohan-medium.onnx"
+        },
+        {
+          "name": "hi_IN-rohan-medium.onnx.json",
+          "sizeBytes": 5041,
+          "installPath": "bin/piper/hi/hi_IN/rohan/medium/hi_IN-rohan-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/rohan/medium/hi_IN-rohan-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-hi"
+      ]
+    },
+    "tts-piper-hi-in-pratham-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "hi",
+      "locale": "hi_IN",
+      "region": "IN",
+      "voice": "pratham",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "hi_IN-pratham-medium.onnx",
+          "sizeBytes": 63516050,
+          "installPath": "bin/piper/hi/hi_IN/pratham/medium/hi_IN-pratham-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/pratham/medium/hi_IN-pratham-medium.onnx"
+        },
+        {
+          "name": "hi_IN-pratham-medium.onnx.json",
+          "sizeBytes": 4970,
+          "installPath": "bin/piper/hi/hi_IN/pratham/medium/hi_IN-pratham-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/pratham/medium/hi_IN-pratham-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-hi"
+      ]
+    },
+    "tts-piper-hi-in-priyamvada-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "hi",
+      "locale": "hi_IN",
+      "region": "IN",
+      "voice": "priyamvada",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "hi_IN-priyamvada-medium.onnx",
+          "sizeBytes": 63516050,
+          "installPath": "bin/piper/hi/hi_IN/priyamvada/medium/hi_IN-priyamvada-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/priyamvada/medium/hi_IN-priyamvada-medium.onnx"
+        },
+        {
+          "name": "hi_IN-priyamvada-medium.onnx.json",
+          "sizeBytes": 4973,
+          "installPath": "bin/piper/hi/hi_IN/priyamvada/medium/hi_IN-priyamvada-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/priyamvada/medium/hi_IN-priyamvada-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-hi"
+      ]
+    },
+    "tts-piper-hu-hu-anna-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "hu",
+      "locale": "hu_HU",
+      "region": "HU",
+      "voice": "anna",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "hu_HU-anna-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/hu/hu_HU/anna/medium/hu_HU-anna-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hu/hu_HU/anna/medium/hu_HU-anna-medium.onnx"
+        },
+        {
+          "name": "hu_HU-anna-medium.onnx.json",
+          "sizeBytes": 5018,
+          "installPath": "bin/piper/hu/hu_HU/anna/medium/hu_HU-anna-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hu/hu_HU/anna/medium/hu_HU-anna-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-hu"
+      ]
+    },
+    "tts-piper-hu-hu-berta-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "hu",
+      "locale": "hu_HU",
+      "region": "HU",
+      "voice": "berta",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "hu_HU-berta-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/hu/hu_HU/berta/medium/hu_HU-berta-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hu/hu_HU/berta/medium/hu_HU-berta-medium.onnx"
+        },
+        {
+          "name": "hu_HU-berta-medium.onnx.json",
+          "sizeBytes": 4961,
+          "installPath": "bin/piper/hu/hu_HU/berta/medium/hu_HU-berta-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hu/hu_HU/berta/medium/hu_HU-berta-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-hu"
+      ]
+    },
+    "tts-piper-hu-hu-imre-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "hu",
+      "locale": "hu_HU",
+      "region": "HU",
+      "voice": "imre",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "hu_HU-imre-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/hu/hu_HU/imre/medium/hu_HU-imre-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hu/hu_HU/imre/medium/hu_HU-imre-medium.onnx"
+        },
+        {
+          "name": "hu_HU-imre-medium.onnx.json",
+          "sizeBytes": 5019,
+          "installPath": "bin/piper/hu/hu_HU/imre/medium/hu_HU-imre-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/hu/hu_HU/imre/medium/hu_HU-imre-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-hu"
+      ]
+    },
+    "tts-piper-id-id-news-tts-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "id",
+      "locale": "id_ID",
+      "region": "ID",
+      "voice": "news_tts",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "id_ID-news_tts-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/id/id_ID/news_tts/medium/id_ID-news_tts-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/id/id_ID/news_tts/medium/id_ID-news_tts-medium.onnx"
+        },
+        {
+          "name": "id_ID-news_tts-medium.onnx.json",
+          "sizeBytes": 5050,
+          "installPath": "bin/piper/id/id_ID/news_tts/medium/id_ID-news_tts-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/id/id_ID/news_tts/medium/id_ID-news_tts-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-id"
+      ]
+    },
+    "tts-piper-is-is-bui-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "is",
+      "locale": "is_IS",
+      "region": "IS",
+      "voice": "bui",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [
+        "is-bui-medium"
+      ],
+      "files": [
+        {
+          "name": "is_IS-bui-medium.onnx",
+          "sizeBytes": 76495465,
+          "installPath": "bin/piper/is/is_IS/bui/medium/is_IS-bui-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/is/is_IS/bui/medium/is_IS-bui-medium.onnx"
+        },
+        {
+          "name": "is_IS-bui-medium.onnx.json",
+          "sizeBytes": 4162,
+          "installPath": "bin/piper/is/is_IS/bui/medium/is_IS-bui-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/is/is_IS/bui/medium/is_IS-bui-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-is"
+      ]
+    },
+    "tts-piper-is-is-salka-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "is",
+      "locale": "is_IS",
+      "region": "IS",
+      "voice": "salka",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [
+        "is-salka-medium"
+      ],
+      "files": [
+        {
+          "name": "is_IS-salka-medium.onnx",
+          "sizeBytes": 76495465,
+          "installPath": "bin/piper/is/is_IS/salka/medium/is_IS-salka-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/is/is_IS/salka/medium/is_IS-salka-medium.onnx"
+        },
+        {
+          "name": "is_IS-salka-medium.onnx.json",
+          "sizeBytes": 4164,
+          "installPath": "bin/piper/is/is_IS/salka/medium/is_IS-salka-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/is/is_IS/salka/medium/is_IS-salka-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-is"
+      ]
+    },
+    "tts-piper-is-is-steinn-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "is",
+      "locale": "is_IS",
+      "region": "IS",
+      "voice": "steinn",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [
+        "is-steinn-medium"
+      ],
+      "files": [
+        {
+          "name": "is_IS-steinn-medium.onnx",
+          "sizeBytes": 76495465,
+          "installPath": "bin/piper/is/is_IS/steinn/medium/is_IS-steinn-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/is/is_IS/steinn/medium/is_IS-steinn-medium.onnx"
+        },
+        {
+          "name": "is_IS-steinn-medium.onnx.json",
+          "sizeBytes": 4165,
+          "installPath": "bin/piper/is/is_IS/steinn/medium/is_IS-steinn-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/is/is_IS/steinn/medium/is_IS-steinn-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-is"
+      ]
+    },
+    "tts-piper-is-is-ugla-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "is",
+      "locale": "is_IS",
+      "region": "IS",
+      "voice": "ugla",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [
+        "is-ugla-medium"
+      ],
+      "files": [
+        {
+          "name": "is_IS-ugla-medium.onnx",
+          "sizeBytes": 76495465,
+          "installPath": "bin/piper/is/is_IS/ugla/medium/is_IS-ugla-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/is/is_IS/ugla/medium/is_IS-ugla-medium.onnx"
+        },
+        {
+          "name": "is_IS-ugla-medium.onnx.json",
+          "sizeBytes": 4163,
+          "installPath": "bin/piper/is/is_IS/ugla/medium/is_IS-ugla-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/is/is_IS/ugla/medium/is_IS-ugla-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-is"
+      ]
+    },
+    "tts-piper-it-it-paola-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "it",
+      "locale": "it_IT",
+      "region": "IT",
+      "voice": "paola",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "it_IT-paola-medium.onnx",
+          "sizeBytes": 63511038,
+          "installPath": "bin/piper/it/it_IT/paola/medium/it_IT-paola-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx"
+        },
+        {
+          "name": "it_IT-paola-medium.onnx.json",
+          "sizeBytes": 7099,
+          "installPath": "bin/piper/it/it_IT/paola/medium/it_IT-paola-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-it"
+      ]
+    },
+    "tts-piper-it-it-riccardo-x-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "it",
+      "locale": "it_IT",
+      "region": "IT",
+      "voice": "riccardo",
+      "quality": "x_low",
+      "numSpeakers": 1,
+      "aliases": [
+        "it-riccardo_fasol-x-low"
+      ],
+      "files": [
+        {
+          "name": "it_IT-riccardo-x_low.onnx",
+          "sizeBytes": 28130791,
+          "installPath": "bin/piper/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx"
+        },
+        {
+          "name": "it_IT-riccardo-x_low.onnx.json",
+          "sizeBytes": 4161,
+          "installPath": "bin/piper/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/riccardo/x_low/it_IT-riccardo-x_low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-it"
+      ]
+    },
+    "tts-piper-lv-lv-aivars-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "lv",
+      "locale": "lv_LV",
+      "region": "LV",
+      "voice": "aivars",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "lv_LV-aivars-medium.onnx",
+          "sizeBytes": 63511038,
+          "installPath": "bin/piper/lv/lv_LV/aivars/medium/lv_LV-aivars-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/lv/lv_LV/aivars/medium/lv_LV-aivars-medium.onnx"
+        },
+        {
+          "name": "lv_LV-aivars-medium.onnx.json",
+          "sizeBytes": 7242,
+          "installPath": "bin/piper/lv/lv_LV/aivars/medium/lv_LV-aivars-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/lv/lv_LV/aivars/medium/lv_LV-aivars-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-lv"
+      ]
+    },
+    "tts-piper-ml-in-arjun-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ml",
+      "locale": "ml_IN",
+      "region": "IN",
+      "voice": "arjun",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ml_IN-arjun-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/ml/ml_IN/arjun/medium/ml_IN-arjun-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ml/ml_IN/arjun/medium/ml_IN-arjun-medium.onnx"
+        },
+        {
+          "name": "ml_IN-arjun-medium.onnx.json",
+          "sizeBytes": 5044,
+          "installPath": "bin/piper/ml/ml_IN/arjun/medium/ml_IN-arjun-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ml/ml_IN/arjun/medium/ml_IN-arjun-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ml"
+      ]
+    },
+    "tts-piper-ml-in-meera-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ml",
+      "locale": "ml_IN",
+      "region": "IN",
+      "voice": "meera",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ml_IN-meera-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/ml/ml_IN/meera/medium/ml_IN-meera-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ml/ml_IN/meera/medium/ml_IN-meera-medium.onnx"
+        },
+        {
+          "name": "ml_IN-meera-medium.onnx.json",
+          "sizeBytes": 5045,
+          "installPath": "bin/piper/ml/ml_IN/meera/medium/ml_IN-meera-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ml/ml_IN/meera/medium/ml_IN-meera-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ml"
+      ]
+    },
+    "tts-piper-nl-be-rdh-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "nl",
+      "locale": "nl_BE",
+      "region": "BE",
+      "voice": "rdh",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [
+        "nl-rdh-medium"
+      ],
+      "files": [
+        {
+          "name": "nl_BE-rdh-medium.onnx",
+          "sizeBytes": 63104526,
+          "installPath": "bin/piper/nl/nl_BE/rdh/medium/nl_BE-rdh-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_BE/rdh/medium/nl_BE-rdh-medium.onnx"
+        },
+        {
+          "name": "nl_BE-rdh-medium.onnx.json",
+          "sizeBytes": 4159,
+          "installPath": "bin/piper/nl/nl_BE/rdh/medium/nl_BE-rdh-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_BE/rdh/medium/nl_BE-rdh-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-nl"
+      ]
+    },
+    "tts-piper-nl-be-nathalie-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "nl",
+      "locale": "nl_BE",
+      "region": "BE",
+      "voice": "nathalie",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "nl_BE-nathalie-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/nl/nl_BE/nathalie/medium/nl_BE-nathalie-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_BE/nathalie/medium/nl_BE-nathalie-medium.onnx"
+        },
+        {
+          "name": "nl_BE-nathalie-medium.onnx.json",
+          "sizeBytes": 4879,
+          "installPath": "bin/piper/nl/nl_BE/nathalie/medium/nl_BE-nathalie-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_BE/nathalie/medium/nl_BE-nathalie-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-nl"
+      ]
+    },
+    "tts-piper-nl-be-nathalie-x-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "nl",
+      "locale": "nl_BE",
+      "region": "BE",
+      "voice": "nathalie",
+      "quality": "x_low",
+      "numSpeakers": 1,
+      "aliases": [
+        "nl-nathalie-x-low"
+      ],
+      "files": [
+        {
+          "name": "nl_BE-nathalie-x_low.onnx",
+          "sizeBytes": 20628813,
+          "installPath": "bin/piper/nl/nl_BE/nathalie/x_low/nl_BE-nathalie-x_low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_BE/nathalie/x_low/nl_BE-nathalie-x_low.onnx"
+        },
+        {
+          "name": "nl_BE-nathalie-x_low.onnx.json",
+          "sizeBytes": 4163,
+          "installPath": "bin/piper/nl/nl_BE/nathalie/x_low/nl_BE-nathalie-x_low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_BE/nathalie/x_low/nl_BE-nathalie-x_low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-nl"
+      ]
+    },
+    "tts-piper-nl-be-rdh-x-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "nl",
+      "locale": "nl_BE",
+      "region": "BE",
+      "voice": "rdh",
+      "quality": "x_low",
+      "numSpeakers": 1,
+      "aliases": [
+        "nl-rdh-x-low"
+      ],
+      "files": [
+        {
+          "name": "nl_BE-rdh-x_low.onnx",
+          "sizeBytes": 20628813,
+          "installPath": "bin/piper/nl/nl_BE/rdh/x_low/nl_BE-rdh-x_low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_BE/rdh/x_low/nl_BE-rdh-x_low.onnx"
+        },
+        {
+          "name": "nl_BE-rdh-x_low.onnx.json",
+          "sizeBytes": 4158,
+          "installPath": "bin/piper/nl/nl_BE/rdh/x_low/nl_BE-rdh-x_low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_BE/rdh/x_low/nl_BE-rdh-x_low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-nl"
+      ]
+    },
+    "tts-piper-nl-nl-ronnie-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "nl",
+      "locale": "nl_NL",
+      "region": "NL",
+      "voice": "ronnie",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "nl_NL-ronnie-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/nl/nl_NL/ronnie/medium/nl_NL-ronnie-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_NL/ronnie/medium/nl_NL-ronnie-medium.onnx"
+        },
+        {
+          "name": "nl_NL-ronnie-medium.onnx.json",
+          "sizeBytes": 5040,
+          "installPath": "bin/piper/nl/nl_NL/ronnie/medium/nl_NL-ronnie-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_NL/ronnie/medium/nl_NL-ronnie-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-nl"
+      ]
+    },
+    "tts-piper-nl-nl-pim-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "nl",
+      "locale": "nl_NL",
+      "region": "NL",
+      "voice": "pim",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "nl_NL-pim-medium.onnx",
+          "sizeBytes": 63516050,
+          "installPath": "bin/piper/nl/nl_NL/pim/medium/nl_NL-pim-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_NL/pim/medium/nl_NL-pim-medium.onnx"
+        },
+        {
+          "name": "nl_NL-pim-medium.onnx.json",
+          "sizeBytes": 5037,
+          "installPath": "bin/piper/nl/nl_NL/pim/medium/nl_NL-pim-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_NL/pim/medium/nl_NL-pim-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-nl"
+      ]
+    },
+    "tts-piper-nl-nl-alex-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "nl",
+      "locale": "nl_NL",
+      "region": "NL",
+      "voice": "alex",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "nl_NL-alex-medium.onnx",
+          "sizeBytes": 63531476,
+          "installPath": "bin/piper/nl/nl_NL/alex/medium/nl_NL-alex-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_NL/alex/medium/nl_NL-alex-medium.onnx"
+        },
+        {
+          "name": "nl_NL-alex-medium.onnx.json",
+          "sizeBytes": 4965,
+          "installPath": "bin/piper/nl/nl_NL/alex/medium/nl_NL-alex-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_NL/alex/medium/nl_NL-alex-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-nl"
+      ]
+    },
+    "tts-piper-nl-nl-mls-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "nl",
+      "locale": "nl_NL",
+      "region": "NL",
+      "voice": "mls",
+      "quality": "medium",
+      "numSpeakers": 52,
+      "defaultSpeakerId": 0,
+      "aliases": [],
+      "files": [
+        {
+          "name": "nl_NL-mls-medium.onnx",
+          "sizeBytes": 76584246,
+          "installPath": "bin/piper/nl/nl_NL/mls/medium/nl_NL-mls-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_NL/mls/medium/nl_NL-mls-medium.onnx"
+        },
+        {
+          "name": "nl_NL-mls-medium.onnx.json",
+          "sizeBytes": 5856,
+          "installPath": "bin/piper/nl/nl_NL/mls/medium/nl_NL-mls-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/nl/nl_NL/mls/medium/nl_NL-mls-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-nl"
+      ]
+    },
+    "tts-piper-no-no-talesyntese-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "no",
+      "locale": "no_NO",
+      "region": "NO",
+      "voice": "talesyntese",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [
+        "no-talesyntese-medium"
+      ],
+      "files": [
+        {
+          "name": "no_NO-talesyntese-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/no/no_NO/talesyntese/medium/no_NO-talesyntese-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/no/no_NO/talesyntese/medium/no_NO-talesyntese-medium.onnx"
+        },
+        {
+          "name": "no_NO-talesyntese-medium.onnx.json",
+          "sizeBytes": 4880,
+          "installPath": "bin/piper/no/no_NO/talesyntese/medium/no_NO-talesyntese-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/no/no_NO/talesyntese/medium/no_NO-talesyntese-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-no"
+      ]
+    },
+    "tts-piper-no-no-nvcc-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "no",
+      "locale": "no_NO",
+      "region": "NO",
+      "voice": "nvcc",
+      "quality": "medium",
+      "numSpeakers": 10,
+      "defaultSpeakerId": 0,
+      "aliases": [],
+      "files": [
+        {
+          "name": "no_NO-nvcc-medium.onnx",
+          "sizeBytes": 76770227,
+          "installPath": "bin/piper/no/no_NO/nvcc/medium/no_NO-nvcc-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/no/no_NO/nvcc/medium/no_NO-nvcc-medium.onnx"
+        },
+        {
+          "name": "no_NO-nvcc-medium.onnx.json",
+          "sizeBytes": 5367,
+          "installPath": "bin/piper/no/no_NO/nvcc/medium/no_NO-nvcc-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/no/no_NO/nvcc/medium/no_NO-nvcc-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-no"
+      ]
+    },
+    "tts-piper-pl-pl-darkman-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "pl",
+      "locale": "pl_PL",
+      "region": "PL",
+      "voice": "darkman",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "pl_PL-darkman-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/pl/pl_PL/darkman/medium/pl_PL-darkman-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/darkman/medium/pl_PL-darkman-medium.onnx"
+        },
+        {
+          "name": "pl_PL-darkman-medium.onnx.json",
+          "sizeBytes": 4816,
+          "installPath": "bin/piper/pl/pl_PL/darkman/medium/pl_PL-darkman-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/darkman/medium/pl_PL-darkman-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-pl"
+      ]
+    },
+    "tts-piper-pl-pl-gosia-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "pl",
+      "locale": "pl_PL",
+      "region": "PL",
+      "voice": "gosia",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "pl_PL-gosia-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/pl/pl_PL/gosia/medium/pl_PL-gosia-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/gosia/medium/pl_PL-gosia-medium.onnx"
+        },
+        {
+          "name": "pl_PL-gosia-medium.onnx.json",
+          "sizeBytes": 4814,
+          "installPath": "bin/piper/pl/pl_PL/gosia/medium/pl_PL-gosia-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/gosia/medium/pl_PL-gosia-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-pl"
+      ]
+    },
+    "tts-piper-pl-pl-mc-speech-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "pl",
+      "locale": "pl_PL",
+      "region": "PL",
+      "voice": "mc_speech",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "pl_PL-mc_speech-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/pl/pl_PL/mc_speech/medium/pl_PL-mc_speech-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/mc_speech/medium/pl_PL-mc_speech-medium.onnx"
+        },
+        {
+          "name": "pl_PL-mc_speech-medium.onnx.json",
+          "sizeBytes": 4961,
+          "installPath": "bin/piper/pl/pl_PL/mc_speech/medium/pl_PL-mc_speech-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/mc_speech/medium/pl_PL-mc_speech-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-pl"
+      ]
+    },
+    "tts-piper-pl-pl-mls-6892-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "pl",
+      "locale": "pl_PL",
+      "region": "PL",
+      "voice": "mls_6892",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [
+        "pl-mls_6892-low"
+      ],
+      "files": [
+        {
+          "name": "pl_PL-mls_6892-low.onnx",
+          "sizeBytes": 63104526,
+          "installPath": "bin/piper/pl/pl_PL/mls_6892/low/pl_PL-mls_6892-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/mls_6892/low/pl_PL-mls_6892-low.onnx"
+        },
+        {
+          "name": "pl_PL-mls_6892-low.onnx.json",
+          "sizeBytes": 4157,
+          "installPath": "bin/piper/pl/pl_PL/mls_6892/low/pl_PL-mls_6892-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/mls_6892/low/pl_PL-mls_6892-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-pl"
+      ]
+    },
+    "tts-piper-pt-br-cadu-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "pt",
+      "locale": "pt_BR",
+      "region": "BR",
+      "voice": "cadu",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "pt_BR-cadu-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx"
+        },
+        {
+          "name": "pt_BR-cadu-medium.onnx.json",
+          "sizeBytes": 5040,
+          "installPath": "bin/piper/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-pt"
+      ]
+    },
+    "tts-piper-pt-br-jeff-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "pt",
+      "locale": "pt_BR",
+      "region": "BR",
+      "voice": "jeff",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "pt_BR-jeff-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/pt/pt_BR/jeff/medium/pt_BR-jeff-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/jeff/medium/pt_BR-jeff-medium.onnx"
+        },
+        {
+          "name": "pt_BR-jeff-medium.onnx.json",
+          "sizeBytes": 5041,
+          "installPath": "bin/piper/pt/pt_BR/jeff/medium/pt_BR-jeff-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/jeff/medium/pt_BR-jeff-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-pt"
+      ]
+    },
+    "tts-piper-pt-br-faber-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "pt",
+      "locale": "pt_BR",
+      "region": "BR",
+      "voice": "faber",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "pt_BR-faber-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx"
+        },
+        {
+          "name": "pt_BR-faber-medium.onnx.json",
+          "sizeBytes": 4855,
+          "installPath": "bin/piper/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-pt"
+      ]
+    },
+    "tts-piper-pt-br-edresson-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "pt",
+      "locale": "pt_BR",
+      "region": "BR",
+      "voice": "edresson",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [
+        "pt-br-edresson-low"
+      ],
+      "files": [
+        {
+          "name": "pt_BR-edresson-low.onnx",
+          "sizeBytes": 63104526,
+          "installPath": "bin/piper/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx"
+        },
+        {
+          "name": "pt_BR-edresson-low.onnx.json",
+          "sizeBytes": 4168,
+          "installPath": "bin/piper/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/edresson/low/pt_BR-edresson-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-pt"
+      ]
+    },
+    "tts-piper-pt-pt-tugão-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "pt",
+      "locale": "pt_PT",
+      "region": "PT",
+      "voice": "tugão",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "pt_PT-tugão-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/pt/pt_PT/tugão/medium/pt_PT-tugão-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_PT/tugão/medium/pt_PT-tugão-medium.onnx"
+        },
+        {
+          "name": "pt_PT-tugão-medium.onnx.json",
+          "sizeBytes": 5026,
+          "installPath": "bin/piper/pt/pt_PT/tugão/medium/pt_PT-tugão-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_PT/tugão/medium/pt_PT-tugão-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-pt"
+      ]
+    },
+    "tts-piper-ro-ro-mihai-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ro",
+      "locale": "ro_RO",
+      "region": "RO",
+      "voice": "mihai",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ro_RO-mihai-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/ro/ro_RO/mihai/medium/ro_RO-mihai-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ro/ro_RO/mihai/medium/ro_RO-mihai-medium.onnx"
+        },
+        {
+          "name": "ro_RO-mihai-medium.onnx.json",
+          "sizeBytes": 4877,
+          "installPath": "bin/piper/ro/ro_RO/mihai/medium/ro_RO-mihai-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ro/ro_RO/mihai/medium/ro_RO-mihai-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ro"
+      ]
+    },
+    "tts-piper-ru-ru-denis-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ru",
+      "locale": "ru_RU",
+      "region": "RU",
+      "voice": "denis",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ru_RU-denis-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/ru/ru_RU/denis/medium/ru_RU-denis-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/denis/medium/ru_RU-denis-medium.onnx"
+        },
+        {
+          "name": "ru_RU-denis-medium.onnx.json",
+          "sizeBytes": 4823,
+          "installPath": "bin/piper/ru/ru_RU/denis/medium/ru_RU-denis-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/denis/medium/ru_RU-denis-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ru"
+      ]
+    },
+    "tts-piper-ru-ru-dmitri-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ru",
+      "locale": "ru_RU",
+      "region": "RU",
+      "voice": "dmitri",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ru_RU-dmitri-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/ru/ru_RU/dmitri/medium/ru_RU-dmitri-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/dmitri/medium/ru_RU-dmitri-medium.onnx"
+        },
+        {
+          "name": "ru_RU-dmitri-medium.onnx.json",
+          "sizeBytes": 4824,
+          "installPath": "bin/piper/ru/ru_RU/dmitri/medium/ru_RU-dmitri-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/dmitri/medium/ru_RU-dmitri-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ru"
+      ]
+    },
+    "tts-piper-ru-ru-irina-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ru",
+      "locale": "ru_RU",
+      "region": "RU",
+      "voice": "irina",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [
+        "ru-irinia-medium"
+      ],
+      "files": [
+        {
+          "name": "ru_RU-irina-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx"
+        },
+        {
+          "name": "ru_RU-irina-medium.onnx.json",
+          "sizeBytes": 4765,
+          "installPath": "bin/piper/ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ru"
+      ]
+    },
+    "tts-piper-ru-ru-ruslan-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "ru",
+      "locale": "ru_RU",
+      "region": "RU",
+      "voice": "ruslan",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ru_RU-ruslan-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/ru/ru_RU/ruslan/medium/ru_RU-ruslan-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/ruslan/medium/ru_RU-ruslan-medium.onnx"
+        },
+        {
+          "name": "ru_RU-ruslan-medium.onnx.json",
+          "sizeBytes": 4882,
+          "installPath": "bin/piper/ru/ru_RU/ruslan/medium/ru_RU-ruslan-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/ruslan/medium/ru_RU-ruslan-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ru"
+      ]
+    },
+    "tts-piper-sk-sk-lili-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "sk",
+      "locale": "sk_SK",
+      "region": "SK",
+      "voice": "lili",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "sk_SK-lili-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/sk/sk_SK/lili/medium/sk_SK-lili-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sk/sk_SK/lili/medium/sk_SK-lili-medium.onnx"
+        },
+        {
+          "name": "sk_SK-lili-medium.onnx.json",
+          "sizeBytes": 4963,
+          "installPath": "bin/piper/sk/sk_SK/lili/medium/sk_SK-lili-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sk/sk_SK/lili/medium/sk_SK-lili-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-sk"
+      ]
+    },
+    "tts-piper-sl-si-artur-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "sl",
+      "locale": "sl_SI",
+      "region": "SI",
+      "voice": "artur",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "sl_SI-artur-medium.onnx",
+          "sizeBytes": 63200492,
+          "installPath": "bin/piper/sl/sl_SI/artur/medium/sl_SI-artur-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sl/sl_SI/artur/medium/sl_SI-artur-medium.onnx"
+        },
+        {
+          "name": "sl_SI-artur-medium.onnx.json",
+          "sizeBytes": 4970,
+          "installPath": "bin/piper/sl/sl_SI/artur/medium/sl_SI-artur-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sl/sl_SI/artur/medium/sl_SI-artur-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-sl"
+      ]
+    },
+    "tts-piper-sq-al-edon-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "sq",
+      "locale": "sq_AL",
+      "region": "AL",
+      "voice": "edon",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "sq_AL-edon-medium.onnx",
+          "sizeBytes": 63511038,
+          "installPath": "bin/piper/sq/sq_AL/edon/medium/sq_AL-edon-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sq/sq_AL/edon/medium/sq_AL-edon-medium.onnx"
+        },
+        {
+          "name": "sq_AL-edon-medium.onnx.json",
+          "sizeBytes": 4961,
+          "installPath": "bin/piper/sq/sq_AL/edon/medium/sq_AL-edon-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sq/sq_AL/edon/medium/sq_AL-edon-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-sq"
+      ]
+    },
+    "tts-piper-sr-rs-serbski-institut-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "sr",
+      "locale": "sr_RS",
+      "region": "RS",
+      "voice": "serbski_institut",
+      "quality": "medium",
+      "numSpeakers": 2,
+      "defaultSpeakerId": 0,
+      "aliases": [],
+      "files": [
+        {
+          "name": "sr_RS-serbski_institut-medium.onnx",
+          "sizeBytes": 76733615,
+          "installPath": "bin/piper/sr/sr_RS/serbski_institut/medium/sr_RS-serbski_institut-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sr/sr_RS/serbski_institut/medium/sr_RS-serbski_institut-medium.onnx"
+        },
+        {
+          "name": "sr_RS-serbski_institut-medium.onnx.json",
+          "sizeBytes": 4999,
+          "installPath": "bin/piper/sr/sr_RS/serbski_institut/medium/sr_RS-serbski_institut-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sr/sr_RS/serbski_institut/medium/sr_RS-serbski_institut-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-sr"
+      ]
+    },
+    "tts-piper-sv-se-nst-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "sv",
+      "locale": "sv_SE",
+      "region": "SE",
+      "voice": "nst",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "sv_SE-nst-medium.onnx",
+          "sizeBytes": 63104526,
+          "installPath": "bin/piper/sv/sv_SE/nst/medium/sv_SE-nst-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sv/sv_SE/nst/medium/sv_SE-nst-medium.onnx"
+        },
+        {
+          "name": "sv_SE-nst-medium.onnx.json",
+          "sizeBytes": 4157,
+          "installPath": "bin/piper/sv/sv_SE/nst/medium/sv_SE-nst-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sv/sv_SE/nst/medium/sv_SE-nst-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-sv"
+      ]
+    },
+    "tts-piper-sv-se-alma-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "sv",
+      "locale": "sv_SE",
+      "region": "SE",
+      "voice": "alma",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "sv_SE-alma-medium.onnx",
+          "sizeBytes": 63434611,
+          "installPath": "bin/piper/sv/sv_SE/alma/medium/sv_SE-alma-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sv/sv_SE/alma/medium/sv_SE-alma-medium.onnx"
+        },
+        {
+          "name": "sv_SE-alma-medium.onnx.json",
+          "sizeBytes": 6059,
+          "installPath": "bin/piper/sv/sv_SE/alma/medium/sv_SE-alma-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sv/sv_SE/alma/medium/sv_SE-alma-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-sv"
+      ]
+    },
+    "tts-piper-sv-se-lisa-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "sv",
+      "locale": "sv_SE",
+      "region": "SE",
+      "voice": "lisa",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "sv_SE-lisa-medium.onnx",
+          "sizeBytes": 63511038,
+          "installPath": "bin/piper/sv/sv_SE/lisa/medium/sv_SE-lisa-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sv/sv_SE/lisa/medium/sv_SE-lisa-medium.onnx"
+        },
+        {
+          "name": "sv_SE-lisa-medium.onnx.json",
+          "sizeBytes": 7239,
+          "installPath": "bin/piper/sv/sv_SE/lisa/medium/sv_SE-lisa-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/sv/sv_SE/lisa/medium/sv_SE-lisa-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-sv"
+      ]
+    },
+    "tts-piper-te-in-maya-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "te",
+      "locale": "te_IN",
+      "region": "IN",
+      "voice": "maya",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "te_IN-maya-medium.onnx",
+          "sizeBytes": 62950044,
+          "installPath": "bin/piper/te/te_IN/maya/medium/te_IN-maya-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/te/te_IN/maya/medium/te_IN-maya-medium.onnx"
+        },
+        {
+          "name": "te_IN-maya-medium.onnx.json",
+          "sizeBytes": 5040,
+          "installPath": "bin/piper/te/te_IN/maya/medium/te_IN-maya-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/te/te_IN/maya/medium/te_IN-maya-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-te"
+      ]
+    },
+    "tts-piper-te-in-padmavathi-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "te",
+      "locale": "te_IN",
+      "region": "IN",
+      "voice": "padmavathi",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "te_IN-padmavathi-medium.onnx",
+          "sizeBytes": 63516050,
+          "installPath": "bin/piper/te/te_IN/padmavathi/medium/te_IN-padmavathi-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/te/te_IN/padmavathi/medium/te_IN-padmavathi-medium.onnx"
+        },
+        {
+          "name": "te_IN-padmavathi-medium.onnx.json",
+          "sizeBytes": 4974,
+          "installPath": "bin/piper/te/te_IN/padmavathi/medium/te_IN-padmavathi-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/te/te_IN/padmavathi/medium/te_IN-padmavathi-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-te"
+      ]
+    },
+    "tts-piper-te-in-venkatesh-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "te",
+      "locale": "te_IN",
+      "region": "IN",
+      "voice": "venkatesh",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "te_IN-venkatesh-medium.onnx",
+          "sizeBytes": 63516050,
+          "installPath": "bin/piper/te/te_IN/venkatesh/medium/te_IN-venkatesh-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/te/te_IN/venkatesh/medium/te_IN-venkatesh-medium.onnx"
+        },
+        {
+          "name": "te_IN-venkatesh-medium.onnx.json",
+          "sizeBytes": 4973,
+          "installPath": "bin/piper/te/te_IN/venkatesh/medium/te_IN-venkatesh-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/te/te_IN/venkatesh/medium/te_IN-venkatesh-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-te"
+      ]
+    },
+    "tts-piper-tr-tr-dfki-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "tr",
+      "locale": "tr_TR",
+      "region": "TR",
+      "voice": "dfki",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "tr_TR-dfki-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/tr/tr_TR/dfki/medium/tr_TR-dfki-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/tr/tr_TR/dfki/medium/tr_TR-dfki-medium.onnx"
+        },
+        {
+          "name": "tr_TR-dfki-medium.onnx.json",
+          "sizeBytes": 4960,
+          "installPath": "bin/piper/tr/tr_TR/dfki/medium/tr_TR-dfki-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/tr/tr_TR/dfki/medium/tr_TR-dfki-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-tr"
+      ]
+    },
+    "tts-piper-uk-ua-ukrainian-tts-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "uk",
+      "locale": "uk_UA",
+      "region": "UA",
+      "voice": "ukrainian_tts",
+      "quality": "medium",
+      "numSpeakers": 3,
+      "defaultSpeakerId": 0,
+      "aliases": [],
+      "files": [
+        {
+          "name": "uk_UA-ukrainian_tts-medium.onnx",
+          "sizeBytes": 76735663,
+          "installPath": "bin/piper/uk/uk_UA/ukrainian_tts/medium/uk_UA-ukrainian_tts-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/uk/uk_UA/ukrainian_tts/medium/uk_UA-ukrainian_tts-medium.onnx"
+        },
+        {
+          "name": "uk_UA-ukrainian_tts-medium.onnx.json",
+          "sizeBytes": 2002,
+          "installPath": "bin/piper/uk/uk_UA/ukrainian_tts/medium/uk_UA-ukrainian_tts-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/uk/uk_UA/ukrainian_tts/medium/uk_UA-ukrainian_tts-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-uk"
+      ]
+    },
+    "tts-piper-uk-ua-lada-x-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "uk",
+      "locale": "uk_UA",
+      "region": "UA",
+      "voice": "lada",
+      "quality": "x_low",
+      "numSpeakers": 1,
+      "aliases": [
+        "uk-lada-x-low"
+      ],
+      "files": [
+        {
+          "name": "uk_UA-lada-x_low.onnx",
+          "sizeBytes": 20628813,
+          "installPath": "bin/piper/uk/uk_UA/lada/x_low/uk_UA-lada-x_low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/uk/uk_UA/lada/x_low/uk_UA-lada-x_low.onnx"
+        },
+        {
+          "name": "uk_UA-lada-x_low.onnx.json",
+          "sizeBytes": 4186,
+          "installPath": "bin/piper/uk/uk_UA/lada/x_low/uk_UA-lada-x_low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/uk/uk_UA/lada/x_low/uk_UA-lada-x_low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-uk"
+      ]
+    },
+    "tts-piper-vi-vn-vais1000-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "vi",
+      "locale": "vi_VN",
+      "region": "VN",
+      "voice": "vais1000",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "vi_VN-vais1000-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/vi/vi_VN/vais1000/medium/vi_VN-vais1000-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/vi/vi_VN/vais1000/medium/vi_VN-vais1000-medium.onnx"
+        },
+        {
+          "name": "vi_VN-vais1000-medium.onnx.json",
+          "sizeBytes": 4860,
+          "installPath": "bin/piper/vi/vi_VN/vais1000/medium/vi_VN-vais1000-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/vi/vi_VN/vais1000/medium/vi_VN-vais1000-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-vi"
+      ]
+    },
+    "tts-piper-vi-vn-25hours-single-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "vi",
+      "locale": "vi_VN",
+      "region": "VN",
+      "voice": "25hours_single",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [
+        "vi-25hours-single-low"
+      ],
+      "files": [
+        {
+          "name": "vi_VN-25hours_single-low.onnx",
+          "sizeBytes": 63104526,
+          "installPath": "bin/piper/vi/vi_VN/25hours_single/low/vi_VN-25hours_single-low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/vi/vi_VN/25hours_single/low/vi_VN-25hours_single-low.onnx"
+        },
+        {
+          "name": "vi_VN-25hours_single-low.onnx.json",
+          "sizeBytes": 4176,
+          "installPath": "bin/piper/vi/vi_VN/25hours_single/low/vi_VN-25hours_single-low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/vi/vi_VN/25hours_single/low/vi_VN-25hours_single-low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-vi"
+      ]
+    },
+    "tts-piper-vi-vn-vivos-x-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "vi",
+      "locale": "vi_VN",
+      "region": "VN",
+      "voice": "vivos",
+      "quality": "x_low",
+      "numSpeakers": 65,
+      "defaultSpeakerId": 0,
+      "aliases": [
+        "vi-vivos-x-low"
+      ],
+      "files": [
+        {
+          "name": "vi_VN-vivos-x_low.onnx",
+          "sizeBytes": 27789413,
+          "installPath": "bin/piper/vi/vi_VN/vivos/x_low/vi_VN-vivos-x_low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/vi/vi_VN/vivos/x_low/vi_VN-vivos-x_low.onnx"
+        },
+        {
+          "name": "vi_VN-vivos-x_low.onnx.json",
+          "sizeBytes": 5592,
+          "installPath": "bin/piper/vi/vi_VN/vivos/x_low/vi_VN-vivos-x_low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/vi/vi_VN/vivos/x_low/vi_VN-vivos-x_low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-vi"
+      ]
+    },
+    "tts-piper-zh-cn-huayan-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "zh",
+      "locale": "zh_CN",
+      "region": "CN",
+      "voice": "huayan",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "zh_CN-huayan-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/zh/zh_CN/huayan/medium/zh_CN-huayan-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/huayan/medium/zh_CN-huayan-medium.onnx"
+        },
+        {
+          "name": "zh_CN-huayan-medium.onnx.json",
+          "sizeBytes": 4822,
+          "installPath": "bin/piper/zh/zh_CN/huayan/medium/zh_CN-huayan-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/huayan/medium/zh_CN-huayan-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-cmn"
+      ]
+    },
+    "tts-piper-zh-cn-chaowen-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "zh",
+      "locale": "zh_CN",
+      "region": "CN",
+      "voice": "chaowen",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "zh_CN-chaowen-medium.onnx",
+          "sizeBytes": 63221984,
+          "installPath": "bin/piper/zh/zh_CN/chaowen/medium/zh_CN-chaowen-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/chaowen/medium/zh_CN-chaowen-medium.onnx"
+        },
+        {
+          "name": "zh_CN-chaowen-medium.onnx.json",
+          "sizeBytes": 2927,
+          "installPath": "bin/piper/zh/zh_CN/chaowen/medium/zh_CN-chaowen-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/chaowen/medium/zh_CN-chaowen-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-cmn"
+      ]
+    },
+    "tts-piper-zh-cn-xiao-ya-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "zh",
+      "locale": "zh_CN",
+      "region": "CN",
+      "voice": "xiao_ya",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "zh_CN-xiao_ya-medium.onnx",
+          "sizeBytes": 63221984,
+          "installPath": "bin/piper/zh/zh_CN/xiao_ya/medium/zh_CN-xiao_ya-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/xiao_ya/medium/zh_CN-xiao_ya-medium.onnx"
+        },
+        {
+          "name": "zh_CN-xiao_ya-medium.onnx.json",
+          "sizeBytes": 2927,
+          "installPath": "bin/piper/zh/zh_CN/xiao_ya/medium/zh_CN-xiao_ya-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/xiao_ya/medium/zh_CN-xiao_ya-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-cmn"
+      ]
+    },
+    "tts-piper-zh-cn-huayan-x-low": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "zh",
+      "locale": "zh_CN",
+      "region": "CN",
+      "voice": "huayan",
+      "quality": "x_low",
+      "numSpeakers": 1,
+      "aliases": [
+        "zh-cn-huayan-x-low"
+      ],
+      "files": [
+        {
+          "name": "zh_CN-huayan-x_low.onnx",
+          "sizeBytes": 20628813,
+          "installPath": "bin/piper/zh/zh_CN/huayan/x_low/zh_CN-huayan-x_low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/huayan/x_low/zh_CN-huayan-x_low.onnx"
+        },
+        {
+          "name": "zh_CN-huayan-x_low.onnx.json",
+          "sizeBytes": 4164,
+          "installPath": "bin/piper/zh/zh_CN/huayan/x_low/zh_CN-huayan-x_low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/huayan/x_low/zh_CN-huayan-x_low.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-cmn"
+      ]
     }
   }
 }

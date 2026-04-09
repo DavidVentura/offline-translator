@@ -58,6 +58,7 @@ fun TranslationField(
   text: TranslatedText?,
   textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
   onDictionaryLookup: (String) -> Unit = {},
+  canSpeak: Boolean = false,
   isAudioPlaying: Boolean = false,
   isAudioLoading: Boolean = false,
   onSpeak: () -> Unit = {},
@@ -156,25 +157,27 @@ fun TranslationField(
           )
         }
 
-        IconButton(
-          onClick = onSpeak,
-          modifier =
-            Modifier
-              .padding(top = 6.dp)
-              .size(24.dp),
-        ) {
-          if (isAudioLoading && !isAudioPlaying) {
-            CircularProgressIndicator(
-              modifier = Modifier.size(18.dp),
-              strokeWidth = 2.dp,
-              color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-            )
-          } else {
-            Icon(
-              painter = painterResource(id = if (isAudioPlaying) R.drawable.stop else R.drawable.volume_up),
-              contentDescription = if (isAudioPlaying) "Stop audio" else "Speak translation",
-              tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-            )
+        if (canSpeak || isAudioLoading || isAudioPlaying) {
+          IconButton(
+            onClick = onSpeak,
+            modifier =
+              Modifier
+                .padding(top = 6.dp)
+                .size(24.dp),
+          ) {
+            if (isAudioLoading && !isAudioPlaying) {
+              CircularProgressIndicator(
+                modifier = Modifier.size(18.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+              )
+            } else {
+              Icon(
+                painter = painterResource(id = if (isAudioPlaying) R.drawable.stop else R.drawable.volume_up),
+                contentDescription = if (isAudioPlaying) "Stop audio" else "Speak translation",
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+              )
+            }
           }
         }
       }

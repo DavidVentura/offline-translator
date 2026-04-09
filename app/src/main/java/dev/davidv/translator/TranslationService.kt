@@ -372,6 +372,7 @@ alignment: soft
                 configPath = voiceFiles.config.absolutePath,
                 espeakDataPath = espeakDataPath,
                 text = chunkRequest.content,
+                speakerId = voiceFiles.speakerId,
                 isPhonemes = chunkRequest.isPhonemes,
               ) ?: throw IllegalStateException(
                 "Speech synthesis failed for ${language.displayName}",

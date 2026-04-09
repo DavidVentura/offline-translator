@@ -401,6 +401,7 @@ fun TranslatorApp(
             val catalog = viewModel.languageStateManager.catalog.collectAsState().value
             if (curDownloadService != null && catalog != null) {
               val dictionaryDownloadStates by curDownloadService.dictionaryDownloadStates.collectAsState()
+              val ttsDownloadStates by curDownloadService.ttsDownloadStates.collectAsState()
               Scaffold(
                 modifier =
                   Modifier
@@ -417,6 +418,7 @@ fun TranslatorApp(
                     languageAvailabilityState = languageState,
                     downloadStates = downloadStates,
                     dictionaryDownloadStates = dictionaryDownloadStates,
+                    ttsDownloadStates = ttsDownloadStates,
                   )
                 }
               }

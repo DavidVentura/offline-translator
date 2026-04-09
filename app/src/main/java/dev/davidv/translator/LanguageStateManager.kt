@@ -34,6 +34,7 @@ data class LangAvailability(
   val hasToEnglish: Boolean,
   val ocrFiles: Boolean,
   val dictionaryFiles: Boolean,
+  val ttsFiles: Boolean = false,
 ) {
   val translatorFiles: Boolean get() = hasFromEnglish || hasToEnglish
 }
@@ -169,6 +170,10 @@ class LanguageStateManager(
               _fileEvents.emit(FileEvent.DictionaryAvailable(event.language))
             }
 
+            is DownloadEvent.NewTtsAvailable -> {
+              refreshLanguageAvailability()
+            }
+
             is DownloadEvent.CatalogDownloaded -> {
               catalogState.value = event.catalog
               _catalogRefreshToken.value++
@@ -209,6 +214,7 @@ class LanguageStateManager(
                     hasToEnglish = true,
                     ocrFiles = ocrPackId != null && resolver.isInstalled(ocrPackId),
                     dictionaryFiles = dictionaryPackId != null && resolver.isInstalled(dictionaryPackId),
+                    ttsFiles = catalog.installedTtsPackIdForLanguage(lang.code, resolver::isInstalled) != null,
                   ),
                 )
               } else {
@@ -223,6 +229,7 @@ class LanguageStateManager(
                     hasToEnglish = toPackId != null && resolver.isInstalled(toPackId),
                     ocrFiles = ocrPackId != null && resolver.isInstalled(ocrPackId),
                     dictionaryFiles = dictionaryPackId != null && resolver.isInstalled(dictionaryPackId),
+                    ttsFiles = catalog.installedTtsPackIdForLanguage(lang.code, resolver::isInstalled) != null,
                   ),
                 )
               }
@@ -276,6 +283,27 @@ class LanguageStateManager(
     refreshLanguageAvailability()
     scope.launch { _fileEvents.emit(FileEvent.LanguageDeleted(language)) }
     Log.i("LanguageStateManager", "Removed language: ${language.displayName}")
+  }
+
+  fun deleteTts(language: Language) {
+    val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
+    val resolver = PackResolver(catalog, filePathManager)
+    val targetRootPacks =
+      catalog
+        .ttsPackIdsForLanguage(language.code)
+        .filter(resolver::isInstalled)
+        .toSet()
+    if (targetRootPacks.isEmpty()) return
+    val keepRootPacks =
+      catalog.languageList
+        .filter { it.code != language.code }
+        .flatMap { other -> catalog.ttsPackIdsForLanguage(other.code) }
+        .filter(resolver::isInstalled)
+        .toSet()
+    val packsToDelete = catalog.dependencyClosure(targetRootPacks) - catalog.dependencyClosure(keepRootPacks)
+    filePathManager.deletePackFiles(catalog, packsToDelete)
+    refreshLanguageAvailability()
+    Log.i("LanguageStateManager", "Removed TTS for language: ${language.displayName}")
   }
 
   fun getFirstAvailableFromLanguage(excluding: Language? = null): Language? {

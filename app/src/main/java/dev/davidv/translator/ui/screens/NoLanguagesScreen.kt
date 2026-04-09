@@ -110,6 +110,7 @@ fun NoLanguagesScreen(
       val downloadStates by downloadService.downloadStates.collectAsState()
       val catalog by languageStateManager.catalog.collectAsState()
       val dictionaryDownloadStates by downloadService.dictionaryDownloadStates.collectAsState()
+      val ttsDownloadStates by downloadService.ttsDownloadStates.collectAsState()
 
       LanguageAssetManagerScreen(
         context = context,
@@ -119,6 +120,7 @@ fun NoLanguagesScreen(
         languageAvailabilityState = state,
         downloadStates = downloadStates,
         dictionaryDownloadStates = dictionaryDownloadStates,
+        ttsDownloadStates = ttsDownloadStates,
       )
     }
   }

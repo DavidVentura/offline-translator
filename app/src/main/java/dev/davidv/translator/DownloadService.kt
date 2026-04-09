@@ -41,6 +41,8 @@ import java.io.File
 import java.io.InputStream
 import java.net.URL
 import java.util.zip.GZIPInputStream
+import java.util.zip.ZipFile
+import java.util.zip.ZipInputStream
 import kotlin.math.max
 
 class TrackingInputStream(
@@ -110,11 +112,15 @@ class DownloadService : Service() {
   private val _dictionaryDownloadStates = MutableStateFlow<Map<Language, DownloadState>>(emptyMap())
   val dictionaryDownloadStates: StateFlow<Map<Language, DownloadState>> = _dictionaryDownloadStates
 
+  private val _ttsDownloadStates = MutableStateFlow<Map<Language, DownloadState>>(emptyMap())
+  val ttsDownloadStates: StateFlow<Map<Language, DownloadState>> = _ttsDownloadStates
+
   private val _downloadEvents = MutableSharedFlow<DownloadEvent>()
   val downloadEvents: SharedFlow<DownloadEvent> = _downloadEvents.asSharedFlow()
 
   private val downloadJobs = mutableMapOf<Language, Job>()
   private val dictionaryDownloadJobs = mutableMapOf<Language, Job>()
+  private val ttsDownloadJobs = mutableMapOf<Language, Job>()
 
   companion object {
     fun startDownload(
@@ -168,6 +174,30 @@ class DownloadService : Service() {
       context.startService(intent)
     }
 
+    fun startTtsDownload(
+      context: Context,
+      language: Language,
+    ) {
+      val intent =
+        Intent(context, DownloadService::class.java).apply {
+          action = "START_TTS_DOWNLOAD"
+          putExtra("language_code", language.code)
+        }
+      context.startService(intent)
+    }
+
+    fun cancelTtsDownload(
+      context: Context,
+      language: Language,
+    ) {
+      val intent =
+        Intent(context, DownloadService::class.java).apply {
+          action = "CANCEL_TTS_DOWNLOAD"
+          putExtra("language_code", language.code)
+        }
+      context.startService(intent)
+    }
+
     fun fetchCatalog(context: Context) {
       val intent =
         Intent(context, DownloadService::class.java).apply {
@@ -211,6 +241,20 @@ class DownloadService : Service() {
         val catalog = getCatalog() ?: return START_NOT_STICKY
         val language = catalog.languageByCode(languageCode) ?: return START_NOT_STICKY
         cancelDictionaryDownload(language)
+      }
+
+      "START_TTS_DOWNLOAD" -> {
+        val languageCode = intent.getStringExtra("language_code") ?: return START_NOT_STICKY
+        val catalog = getCatalog() ?: return START_NOT_STICKY
+        val language = catalog.languageByCode(languageCode) ?: return START_NOT_STICKY
+        startTtsDownload(language)
+      }
+
+      "CANCEL_TTS_DOWNLOAD" -> {
+        val languageCode = intent.getStringExtra("language_code") ?: return START_NOT_STICKY
+        val catalog = getCatalog() ?: return START_NOT_STICKY
+        val language = catalog.languageByCode(languageCode) ?: return START_NOT_STICKY
+        cancelTtsDownload(language)
       }
 
       "FETCH_CATALOG" -> {
@@ -362,6 +406,85 @@ class DownloadService : Service() {
     Log.i("DownloadService", "Cancelled dictionary download for ${language.displayName}")
   }
 
+  private fun startTtsDownload(language: Language) {
+    if (_ttsDownloadStates.value[language]?.isDownloading == true) return
+    updateTtsDownloadState(language) {
+      DownloadState(
+        isDownloading = true,
+        isCompleted = false,
+        downloaded = 1,
+      )
+    }
+    val job =
+      serviceScope.launch {
+        try {
+          val catalog = getCatalog() ?: return@launch
+          val resolver = PackResolver(catalog, filePathManager)
+          val ttsPackId = catalog.defaultTtsPackIdForLanguage(language.code) ?: return@launch
+          val missingFiles = resolver.missingFiles(setOf(ttsPackId))
+          val downloadTasks = mutableListOf<suspend () -> Boolean>()
+          val toDownload = missingFiles.sumOf { it.file.sizeBytes }
+
+          missingFiles.forEach { missing ->
+            downloadTasks.add {
+              downloadPackFile(catalog, missing.pack, missing.file, language, incrementTts = true)
+            }
+          }
+
+          var success = true
+          if (downloadTasks.isNotEmpty()) {
+            updateTtsDownloadState(language) {
+              it.copy(
+                isDownloading = true,
+                downloaded = 1,
+                totalSize = toDownload,
+              )
+            }
+            Log.i("DownloadService", "Starting TTS download for ${language.displayName}")
+            success = downloadTasks.all { task -> task() }
+          }
+
+          updateTtsDownloadState(language) {
+            DownloadState(
+              isDownloading = false,
+              isCompleted = success,
+            )
+          }
+
+          if (success) {
+            Log.i("DownloadService", "TTS download complete: ${language.displayName}")
+            _downloadEvents.emit(DownloadEvent.NewTtsAvailable(language))
+          } else {
+            _downloadEvents.emit(DownloadEvent.DownloadError("${language.displayName} TTS download failed"))
+            updateTtsDownloadState(language) {
+              it.copy(isDownloading = false, error = "TTS download failed for ${language.displayName}")
+            }
+          }
+        } catch (e: Exception) {
+          Log.e("DownloadService", "TTS download failed for ${language.displayName}", e)
+          updateTtsDownloadState(language) {
+            it.copy(isDownloading = false, error = e.message)
+          }
+          _downloadEvents.emit(DownloadEvent.DownloadError("${language.displayName} TTS download failed"))
+        } finally {
+          ttsDownloadJobs.remove(language)
+        }
+      }
+
+    ttsDownloadJobs[language] = job
+  }
+
+  private fun cancelTtsDownload(language: Language) {
+    ttsDownloadJobs[language]?.cancel()
+    ttsDownloadJobs.remove(language)
+
+    updateTtsDownloadState(language) {
+      it.copy(isDownloading = false, isCancelled = true, error = null)
+    }
+
+    Log.i("DownloadService", "Cancelled TTS download for ${language.displayName}")
+  }
+
   private fun cancelLanguageDownload(language: Language) {
     downloadJobs[language]?.cancel()
     downloadJobs.remove(language)
@@ -439,26 +562,78 @@ class DownloadService : Service() {
     }
   }
 
+  private fun updateTtsDownloadState(
+    language: Language,
+    update: (DownloadState) -> DownloadState,
+  ) {
+    synchronized(this) {
+      val currentStates = _ttsDownloadStates.value.toMutableMap()
+      val currentState = currentStates[language] ?: DownloadState()
+      currentStates[language] = update(currentState)
+      _ttsDownloadStates.value = currentStates
+    }
+  }
+
+  private fun incrementTtsDownloadBytes(
+    language: Language,
+    incrementalBytes: Long,
+  ) {
+    synchronized(this) {
+      val currentStates = _ttsDownloadStates.value.toMutableMap()
+      val currentState = currentStates[language] ?: DownloadState()
+      currentStates[language] =
+        currentState.copy(
+          downloaded = currentState.downloaded + incrementalBytes,
+        )
+      _ttsDownloadStates.value = currentStates
+    }
+  }
+
   private suspend fun downloadPackFile(
     catalog: LanguageCatalog,
     pack: AssetPackV2,
     file: AssetFileV2,
     targetLanguage: Language,
     incrementDictionary: Boolean = false,
+    incrementTts: Boolean = false,
   ): Boolean {
     val outputFile = filePathManager.resolveInstallPath(file.installPath)
     val url = catalog.packDownloadUrl(pack, file, settingsManager.settings.value)
     return try {
       val success =
-        download(
-          url,
-          outputFile,
-          decompress = catalog.shouldDecompress(pack, file),
-        ) { incrementalProgress ->
-          if (incrementDictionary) {
-            incrementDictionaryDownloadBytes(targetLanguage, incrementalProgress)
-          } else {
-            incrementDownloadBytes(targetLanguage, incrementalProgress)
+        if (file.archiveFormat == "zip" && file.extractTo != null) {
+          downloadAndExtractZip(
+            url = url,
+            archiveFile = outputFile,
+            extractTo = filePathManager.resolveInstallPath(file.extractTo),
+            deleteAfterExtract = file.deleteAfterExtract,
+            installMarkerPath = file.installMarkerPath,
+          ) { incrementalProgress ->
+            if (incrementDictionary) {
+              incrementDictionaryDownloadBytes(targetLanguage, incrementalProgress)
+            } else if (incrementTts) {
+              incrementTtsDownloadBytes(targetLanguage, incrementalProgress)
+            } else {
+              incrementDownloadBytes(targetLanguage, incrementalProgress)
+            }
+          }.also { extracted ->
+            if (extracted && file.installMarkerPath != null && file.installMarkerVersion != null) {
+              filePathManager.writeInstallMarker(file.installMarkerPath, file.installMarkerVersion)
+            }
+          }
+        } else {
+          download(
+            url,
+            outputFile,
+            decompress = catalog.shouldDecompress(pack, file),
+          ) { incrementalProgress ->
+            if (incrementDictionary) {
+              incrementDictionaryDownloadBytes(targetLanguage, incrementalProgress)
+            } else if (incrementTts) {
+              incrementTtsDownloadBytes(targetLanguage, incrementalProgress)
+            } else {
+              incrementDownloadBytes(targetLanguage, incrementalProgress)
+            }
           }
         }
       Log.i("DownloadService", "Downloaded ${pack.id}:${file.installPath} from $url = $success")
@@ -522,6 +697,115 @@ class DownloadService : Service() {
       }
       if (outputFile.exists()) {
         outputFile.delete()
+      }
+      false
+    }
+  }
+
+  private suspend fun downloadAndExtractZip(
+    url: String,
+    archiveFile: File,
+    extractTo: File,
+    deleteAfterExtract: Boolean,
+    installMarkerPath: String? = null,
+    onProgress: (Long) -> Unit,
+  ) = withContext(Dispatchers.IO) {
+    val downloaded =
+      download(
+        url = url,
+        outputFile = archiveFile,
+        decompress = false,
+        onProgress = onProgress,
+      )
+    if (!downloaded) {
+      return@withContext false
+    }
+
+    try {
+      val installRootName =
+        installMarkerPath
+          ?.let(filePathManager::resolveInstallPath)
+          ?.parentFile
+          ?.name
+      val extractionRoot =
+        installMarkerPath
+          ?.let(filePathManager::resolveInstallPath)
+          ?.parentFile
+
+      fun normalizedEntryName(entryName: String): String {
+        val trimmed = entryName.trimStart('/').removePrefix("./")
+        if (trimmed.isBlank()) return trimmed
+        val rootName = installRootName ?: return trimmed
+        return if (trimmed == rootName || trimmed.startsWith("$rootName/")) {
+          trimmed
+        } else {
+          "$rootName/$trimmed"
+        }
+      }
+
+      val managedPaths = mutableSetOf<File>()
+      ZipFile(archiveFile).use { zipFile ->
+        val entries = zipFile.entries()
+        while (entries.hasMoreElements()) {
+          val entry = entries.nextElement()
+          val normalizedName = normalizedEntryName(entry.name)
+          val parts = normalizedName.split('/').filter { it.isNotBlank() }
+          if (parts.size >= 2) {
+            managedPaths += File(extractTo, "${parts[0]}/${parts[1]}")
+          } else if (parts.size == 1) {
+            managedPaths += File(extractTo, parts[0])
+          }
+        }
+      }
+      extractionRoot?.let { root ->
+        listOf("phondata", "phonindex", "phontab", "intonations")
+          .map { File(extractTo, it) }
+          .filter { it.exists() }
+          .forEach { it.deleteRecursively() }
+        listOf("lang", "voices")
+          .map { File(extractTo, it) }
+          .filter { it.exists() }
+          .forEach { it.deleteRecursively() }
+        if (root.exists()) {
+          root.deleteRecursively()
+        }
+      }
+      managedPaths
+        .sortedByDescending { it.absolutePath.length }
+        .forEach { path ->
+          if (path.exists()) {
+            path.deleteRecursively()
+          }
+        }
+
+      ZipInputStream(archiveFile.inputStream().buffered()).use { zipInput ->
+        var entry = zipInput.nextEntry
+        while (entry != null) {
+          val output = File(extractTo, normalizedEntryName(entry.name))
+          if (entry.isDirectory) {
+            output.mkdirs()
+          } else {
+            output.parentFile?.mkdirs()
+            output.outputStream().use { stream ->
+              val buffer = ByteArray(16384)
+              var bytesRead: Int
+              while (zipInput.read(buffer).also { bytesRead = it } != -1) {
+                stream.write(buffer, 0, bytesRead)
+              }
+            }
+          }
+          zipInput.closeEntry()
+          entry = zipInput.nextEntry
+        }
+      }
+      if (deleteAfterExtract && archiveFile.exists()) {
+        archiveFile.delete()
+      }
+      true
+    } catch (e: Exception) {
+      Log.e("DownloadService", "Failed to extract zip $archiveFile", e)
+      if (archiveFile.exists()) {
+        archiveFile.delete()
       }
       false
     }

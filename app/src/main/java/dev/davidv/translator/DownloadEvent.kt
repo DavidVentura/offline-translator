@@ -26,6 +26,10 @@ sealed class DownloadEvent {
     val language: Language,
   ) : DownloadEvent()
 
+  data class NewTtsAvailable(
+    val language: Language,
+  ) : DownloadEvent()
+
   data class CatalogDownloaded(
     val catalog: LanguageCatalog,
   ) : DownloadEvent()

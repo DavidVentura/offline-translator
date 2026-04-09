@@ -23,7 +23,12 @@ class PackResolver(
     val pack = catalog.pack(packId) ?: return null
     val missingFiles =
       pack.files.filter { file ->
-        !filePathManager.resolveInstallPath(file.installPath).exists()
+        when {
+          file.installMarkerPath != null && file.installMarkerVersion != null -> {
+            !filePathManager.hasInstallMarker(file.installMarkerPath, file.installMarkerVersion)
+          }
+          else -> !filePathManager.resolveInstallPath(file.installPath).exists()
+        }
       }
     val missingDependencies =
       pack.dependsOn.filter { depId ->

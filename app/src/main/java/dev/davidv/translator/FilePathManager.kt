@@ -5,11 +5,13 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import kotlinx.coroutines.flow.StateFlow
+import org.json.JSONObject
 import java.io.File
 
 data class PiperVoiceFiles(
   val model: File,
   val config: File,
+  val speakerId: Int? = null,
 )
 
 class FilePathManager(
@@ -50,19 +52,49 @@ class FilePathManager(
 
   fun getMucabFile(): File = File(getDataDir(), "mucab.bin")
 
-  fun getPiperVoiceFiles(language: Language): PiperVoiceFiles? {
-    val configName =
-      language.extraFiles.firstOrNull { it.endsWith(".onnx.json") }
-        ?: "${language.code}.onnx.json"
-    val modelName =
-      language.extraFiles.firstOrNull { it.endsWith(".onnx") && !it.endsWith(".onnx.json") }
-        ?: configName.removeSuffix(".json")
+  fun hasInstallMarker(
+    relativePath: String,
+    expectedVersion: Int,
+  ): Boolean {
+    val markerFile = resolveInstallPath(relativePath)
+    if (!markerFile.exists()) return false
+    return try {
+      val root = JSONObject(markerFile.readText())
+      root.optInt("version", -1) == expectedVersion
+    } catch (_: Exception) {
+      false
+    }
+  }
 
-    val modelFile = File(getDataDir(), modelName)
-    val configFile = File(getDataDir(), configName)
+  fun writeInstallMarker(
+    relativePath: String,
+    version: Int,
+  ) {
+    val markerFile = resolveInstallPath(relativePath)
+    markerFile.parentFile?.mkdirs()
+    markerFile.writeText(
+      JSONObject()
+        .put("version", version)
+        .toString(),
+    )
+  }
+
+  fun getPiperVoiceFiles(language: Language): PiperVoiceFiles? {
+    val catalog = loadCatalog() ?: return null
+    val resolver = PackResolver(catalog, this)
+    val voicePackId = catalog.installedTtsPackIdForLanguage(language.code, resolver::isInstalled) ?: return null
+    val voicePack = catalog.pack(voicePackId) ?: return null
+    val configAsset = voicePack.files.firstOrNull { it.name.endsWith(".onnx.json") } ?: return null
+    val modelAsset = voicePack.files.firstOrNull { it.name.endsWith(".onnx") && !it.name.endsWith(".onnx.json") } ?: return null
+    val modelFile = resolveInstallPath(modelAsset.installPath)
+    val configFile = resolveInstallPath(configAsset.installPath)
 
     return if (modelFile.exists() && configFile.exists()) {
-      PiperVoiceFiles(model = modelFile, config = configFile)
+      PiperVoiceFiles(
+        model = modelFile,
+        config = configFile,
+        speakerId = voicePack.defaultSpeakerId,
+      )
     } else {
       null
     }
@@ -124,6 +156,14 @@ class FilePathManager(
     packIds.forEach { packId ->
       val pack = catalog.pack(packId) ?: return@forEach
       pack.files.forEach { assetFile ->
+        if (assetFile.archiveFormat == "zip") {
+          assetFile.installMarkerPath?.let { markerPath ->
+            val extractionRoot = resolveInstallPath(markerPath).parentFile
+            if (extractionRoot?.exists() == true && extractionRoot.deleteRecursively()) {
+              Log.i("FilePathManager", "Deleted extracted archive dir ${extractionRoot.absolutePath} from $packId")
+            }
+          }
+        }
         val file = resolveInstallPath(assetFile.installPath)
         if (file.exists() && file.delete()) {
           Log.i("FilePathManager", "Deleted ${assetFile.installPath} from $packId")
@@ -134,10 +174,11 @@ class FilePathManager(
 
   fun loadCatalog(): LanguageCatalog? {
     val diskFile = getCatalogFile()
+    var diskCatalog: LanguageCatalog? = null
 
     if (diskFile.exists()) {
       try {
-        return parseAndValidateCatalog(diskFile.readText())
+        diskCatalog = parseAndValidateCatalog(diskFile.readText())
       } catch (e: Exception) {
         Log.w("FilePathManager", "Deleting invalid cached catalog: ${diskFile.absolutePath}", e)
         if (!diskFile.delete()) {
@@ -148,10 +189,15 @@ class FilePathManager(
 
     return try {
       val jsonString = context.assets.open("index.json").bufferedReader().readText()
-      parseAndValidateCatalog(jsonString)
+      val bundledCatalog = parseAndValidateCatalog(jsonString)
+      if (diskCatalog != null && diskCatalog.generatedAt >= bundledCatalog.generatedAt) {
+        diskCatalog
+      } else {
+        bundledCatalog
+      }
     } catch (e: Exception) {
       Log.e("FilePathManager", "Error parsing bundled catalog index", e)
-      null
+      diskCatalog
     }
   }
 

@@ -25,9 +25,20 @@ data class LanguageAssetsV2(
   val support: List<String> = emptyList(),
 )
 
+data class LanguageTtsRegionV2(
+  val displayName: String,
+  val voices: List<String> = emptyList(),
+)
+
+data class LanguageTtsV2(
+  val defaultRegion: String? = null,
+  val regions: Map<String, LanguageTtsRegionV2> = emptyMap(),
+)
+
 data class LanguageEntryV2(
   val meta: LanguageMetaV2,
   val assets: LanguageAssetsV2,
+  val tts: LanguageTtsV2? = null,
 )
 
 data class AssetFileV2(
@@ -36,6 +47,11 @@ data class AssetFileV2(
   val installPath: String,
   val url: String,
   val sourcePath: String? = null,
+  val archiveFormat: String? = null,
+  val extractTo: String? = null,
+  val deleteAfterExtract: Boolean = false,
+  val installMarkerPath: String? = null,
+  val installMarkerVersion: Int? = null,
 )
 
 data class AssetPackMetadataV2(
@@ -51,8 +67,15 @@ data class AssetPackV2(
   val from: String? = null,
   val to: String? = null,
   val engine: String? = null,
+  val locale: String? = null,
+  val region: String? = null,
+  val voice: String? = null,
+  val quality: String? = null,
+  val numSpeakers: Int? = null,
+  val defaultSpeakerId: Int? = null,
   val dictionaryCode: String? = null,
   val languages: List<String> = emptyList(),
+  val aliases: List<String> = emptyList(),
   val kind: String? = null,
   val files: List<AssetFileV2>,
   val dependsOn: List<String> = emptyList(),
@@ -96,6 +119,37 @@ data class LanguageCatalog(
         wordCount = pack.metadata?.wordCount ?: 0L,
       )
     }
+
+  fun tts(languageCode: String): LanguageTtsV2? = languages[languageCode]?.tts
+
+  fun ttsPackIdsForLanguage(languageCode: String): List<String> =
+    languages[languageCode]
+      ?.tts
+      ?.let { tts ->
+        buildList {
+          tts.regions.values.forEach { region ->
+            addAll(region.voices)
+          }
+        }.distinct()
+      } ?: emptyList()
+
+  fun defaultTtsPackIdForLanguage(languageCode: String): String? {
+    val tts = languages[languageCode]?.tts ?: return null
+    val region = tts.defaultRegion?.let(tts.regions::get) ?: tts.regions.values.firstOrNull()
+    return region?.voices?.firstOrNull()
+  }
+
+  fun installedTtsPackIdForLanguage(
+    languageCode: String,
+    isInstalled: (String) -> Boolean,
+  ): String? = ttsPackIdsForLanguage(languageCode).firstOrNull(isInstalled)
+
+  fun ttsSizeBytesForLanguage(languageCode: String): Long =
+    defaultTtsPackIdForLanguage(languageCode)
+      ?.let(packs::get)
+      ?.files
+      ?.sumOf { it.sizeBytes }
+      ?: 0L
 
   fun translationPackId(
     from: String,
@@ -243,6 +297,7 @@ fun parseLanguageCatalog(json: String): LanguageCatalog {
                 dictionary = assetsObj.optString("dictionary").ifBlank { null },
                 support = parseStringArray(assetsObj.optJSONArray("support")),
               ),
+            tts = entry.optJSONObject("tts")?.let(::parseLanguageTts),
           ),
         )
       }
@@ -262,8 +317,18 @@ fun parseLanguageCatalog(json: String): LanguageCatalog {
             from = obj.optString("from").ifBlank { null },
             to = obj.optString("to").ifBlank { null },
             engine = obj.optString("engine").ifBlank { null },
+            locale = obj.optString("locale").ifBlank { null },
+            region = obj.optString("region").ifBlank { null },
+            voice = obj.optString("voice").ifBlank { null },
+            quality = obj.optString("quality").ifBlank { null },
+            numSpeakers = obj.optInt("numSpeakers").takeIf { obj.has("numSpeakers") && !obj.isNull("numSpeakers") },
+            defaultSpeakerId =
+              obj.optInt("defaultSpeakerId").takeIf {
+                obj.has("defaultSpeakerId") && !obj.isNull("defaultSpeakerId")
+              },
             dictionaryCode = obj.optString("dictionaryCode").ifBlank { null },
             languages = parseStringArray(obj.optJSONArray("languages")),
+            aliases = parseStringArray(obj.optJSONArray("aliases")),
             kind = obj.optString("kind").ifBlank { null },
             files = parseAssetFiles(obj.getJSONArray("files")),
             dependsOn = parseStringArray(obj.optJSONArray("dependsOn")),
@@ -299,6 +364,25 @@ fun parseLanguageCatalog(json: String): LanguageCatalog {
   )
 }
 
+private fun parseLanguageTts(obj: JSONObject): LanguageTtsV2 =
+  LanguageTtsV2(
+    defaultRegion = obj.optString("defaultRegion").ifBlank { null },
+    regions =
+      buildMap {
+        val regionsObj = obj.optJSONObject("regions") ?: return@buildMap
+        for (regionCode in regionsObj.keys()) {
+          val regionObj = regionsObj.getJSONObject(regionCode)
+          put(
+            regionCode,
+            LanguageTtsRegionV2(
+              displayName = regionObj.optString("displayName").ifBlank { regionCode },
+              voices = parseStringArray(regionObj.optJSONArray("voices")),
+            ),
+          )
+        }
+      },
+  )
+
 private fun parseStringArray(arr: JSONArray?): List<String> =
   buildList {
     if (arr == null) return@buildList
@@ -326,6 +410,14 @@ private fun parseAssetFiles(arr: JSONArray): List<AssetFileV2> =
           installPath = obj.getString("installPath"),
           url = obj.getString("url"),
           sourcePath = obj.optString("sourcePath").ifBlank { null },
+          archiveFormat = obj.optString("archiveFormat").ifBlank { null },
+          extractTo = obj.optString("extractTo").ifBlank { null },
+          deleteAfterExtract = obj.optBoolean("deleteAfterExtract", false),
+          installMarkerPath = obj.optString("installMarkerPath").ifBlank { null },
+          installMarkerVersion =
+            obj.optInt("installMarkerVersion").takeIf {
+              obj.has("installMarkerVersion") && !obj.isNull("installMarkerVersion")
+            },
         ),
       )
     }
