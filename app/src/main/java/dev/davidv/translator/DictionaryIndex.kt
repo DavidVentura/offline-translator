@@ -24,11 +24,3 @@ data class DictionaryInfo(
   val type: String,
   val wordCount: Long,
 )
-
-data class DictionaryIndex(
-  val dictionaries: Map<String, DictionaryInfo>,
-  val updatedAt: Long,
-  val version: Int,
-) {
-  fun infoFor(language: Language): DictionaryInfo? = dictionaries[language.dictionaryCode]
-}

@@ -22,7 +22,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--output",
-        default="index_v2.json",
+        default="index.json",
         help="Path for the generated v2 index.",
     )
     return parser.parse_args()
@@ -238,10 +238,8 @@ def convert_v1_to_v2(language_index: dict, dictionary_index: dict) -> dict:
         "dictionaryBaseUrl": dictionary_base_url,
         "dictionaryVersion": dictionary_version,
         "sources": {
-            "languageIndexPath": "app/src/main/assets/language_index.json",
             "languageIndexVersion": int(language_index["version"]),
             "languageIndexUpdatedAt": int(language_index["updatedAt"]),
-            "dictionaryIndexPath": "app/src/main/assets/dictionary_index.json",
             "dictionaryIndexVersion": int(dictionary_index["version"]),
             "dictionaryIndexUpdatedAt": int(dictionary_index["updated_at"]),
         },

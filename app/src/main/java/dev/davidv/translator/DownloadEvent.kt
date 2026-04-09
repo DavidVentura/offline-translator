@@ -26,12 +26,8 @@ sealed class DownloadEvent {
     val language: Language,
   ) : DownloadEvent()
 
-  data class DictionaryIndexDownloaded(
-    val index: DictionaryIndex,
-  ) : DownloadEvent()
-
-  data class LanguageIndexDownloaded(
-    val index: LanguageIndex,
+  data class CatalogDownloaded(
+    val catalog: LanguageCatalog,
   ) : DownloadEvent()
 
   data class DownloadError(

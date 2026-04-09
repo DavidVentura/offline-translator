@@ -108,19 +108,17 @@ fun NoLanguagesScreen(
       )
 
       val downloadStates by downloadService.downloadStates.collectAsState()
-      val langIndex by languageStateManager.languageIndex.collectAsState()
+      val catalog by languageStateManager.catalog.collectAsState()
       val dictionaryDownloadStates by downloadService.dictionaryDownloadStates.collectAsState()
-      val dictionaryIndex by languageStateManager.dictionaryIndex.collectAsState()
 
       LanguageAssetManagerScreen(
         context = context,
         languageStateManager = languageStateManager,
         languageMetadataManager = languageMetadataManager,
-        languageIndex = langIndex,
+        catalog = catalog,
         languageAvailabilityState = state,
         downloadStates = downloadStates,
         dictionaryDownloadStates = dictionaryDownloadStates,
-        dictionaryIndex = dictionaryIndex,
       )
     }
   }

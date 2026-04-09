@@ -21,7 +21,7 @@ object Constants {
   const val DICT_VERSION = 1
   const val DEFAULT_DICTIONARY_BASE_URL = "https://translator.davidv.dev/dictionaries"
   const val DEFAULT_CATALOG_INDEX_BASE_URL = "https://translator.davidv.dev/languages"
-  const val CATALOG_INDEX_VERSION = 1
+  const val CATALOG_INDEX_VERSION = 2
 }
 
 data class AppSettings(

@@ -118,45 +118,34 @@ class LanguageStateManager(
   private val filePathManager: FilePathManager,
   downloadEvents: SharedFlow<DownloadEvent>? = null,
 ) {
-  private val catalogState = MutableStateFlow<LanguageCatalogV2?>(null)
+  private val catalogState = MutableStateFlow<LanguageCatalog?>(null)
+  val catalog: StateFlow<LanguageCatalog?> = catalogState.asStateFlow()
   private val _languageState = MutableStateFlow(LanguageAvailabilityState())
   val languageState: StateFlow<LanguageAvailabilityState> = _languageState.asStateFlow()
 
-  private val _languageIndex = MutableStateFlow<LanguageIndex?>(null)
-  val languageIndex: StateFlow<LanguageIndex?> = _languageIndex.asStateFlow()
-
-  private val _dictionaryIndex = MutableStateFlow<DictionaryIndex?>(null)
-  val dictionaryIndex: StateFlow<DictionaryIndex?> = _dictionaryIndex.asStateFlow()
-
-  private val _dictionaryIndexVersion = MutableStateFlow(0)
-  val dictionaryIndexVersion: StateFlow<Int> = _dictionaryIndexVersion.asStateFlow()
-
-  private val _languageIndexVersion = MutableStateFlow(0)
-  val languageIndexVersion: StateFlow<Int> = _languageIndexVersion.asStateFlow()
+  private val _catalogRefreshToken = MutableStateFlow(0)
+  val catalogRefreshToken: StateFlow<Int> = _catalogRefreshToken.asStateFlow()
 
   private val _fileEvents = MutableSharedFlow<FileEvent>()
   val fileEvents: SharedFlow<FileEvent> = _fileEvents.asSharedFlow()
 
   private var downloadEventsJob: kotlinx.coroutines.Job? = null
 
-  fun languageByCode(code: String): Language? = _languageIndex.value?.languageByCode(code)
+  fun languageByCode(code: String): Language? = catalogState.value?.languageByCode(code)
 
   init {
     if (downloadEvents != null) {
       connectToDownloadEvents(downloadEvents)
     }
-    loadLanguageIndex()
-    loadDictionaryIndex()
+    loadCatalog()
     loadMucabFile()
   }
 
-  private fun loadLanguageIndex() {
+  private fun loadCatalog() {
     scope.launch {
       withContext(Dispatchers.IO) {
-        catalogState.value = filePathManager.loadLanguageCatalogV2()
-        val index = filePathManager.loadLanguageIndex()
-        _languageIndex.value = index
-        Log.i("LanguageStateManager", "Language index loaded from file: ${index != null}")
+        catalogState.value = filePathManager.loadCatalog()
+        Log.i("LanguageStateManager", "Catalog loaded from file: ${catalogState.value != null}")
       }
       refreshLanguageAvailability()
     }
@@ -169,31 +158,22 @@ class LanguageStateManager(
         downloadEvents.collect { event ->
           when (event) {
             is DownloadEvent.NewTranslationAvailable -> {
-              catalogState.value = filePathManager.loadLanguageCatalogV2()
+              catalogState.value = filePathManager.loadCatalog()
               refreshLanguageAvailability()
               loadMucabFile()
             }
 
             is DownloadEvent.NewDictionaryAvailable -> {
-              catalogState.value = filePathManager.loadLanguageCatalogV2()
+              catalogState.value = filePathManager.loadCatalog()
               refreshLanguageAvailability()
               _fileEvents.emit(FileEvent.DictionaryAvailable(event.language))
             }
 
-            is DownloadEvent.DictionaryIndexDownloaded -> {
-              catalogState.value = filePathManager.loadLanguageCatalogV2()
-              _dictionaryIndex.value = event.index
-              _dictionaryIndexVersion.value++
-              Log.i("LanguageStateManager", "Dictionary index downloaded: ${event.index}")
-            }
-
-            is DownloadEvent.LanguageIndexDownloaded -> {
-              catalogState.value = filePathManager.loadLanguageCatalogV2()
-              _languageIndex.value = event.index
-              _languageIndexVersion.value++
-              _dictionaryIndex.value = filePathManager.loadDictionaryIndex()
-              _dictionaryIndexVersion.value++
+            is DownloadEvent.CatalogDownloaded -> {
+              catalogState.value = event.catalog
+              _catalogRefreshToken.value++
               refreshLanguageAvailability()
+              Log.i("LanguageStateManager", "Catalog downloaded")
             }
 
             is DownloadEvent.DownloadError -> {
@@ -209,8 +189,8 @@ class LanguageStateManager(
     scope.launch {
       _languageState.value = _languageState.value.copy(isChecking = true)
 
-      val languages = _languageIndex.value?.languages ?: return@launch
-      val catalog = catalogState.value ?: withContext(Dispatchers.IO) { filePathManager.loadLanguageCatalogV2() } ?: return@launch
+      val catalog = catalogState.value ?: withContext(Dispatchers.IO) { filePathManager.loadCatalog() } ?: return@launch
+      val languages = catalog.languageList
 
       Log.i("LanguageStateManager", "Refreshing language availability")
       val availabilityMap =
@@ -262,11 +242,11 @@ class LanguageStateManager(
   }
 
   fun deleteDict(language: Language) {
-    val catalog = catalogState.value ?: filePathManager.loadLanguageCatalogV2() ?: return
+    val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
     val targetPack = catalog.dictionaryPackIdForLanguage(language.code) ?: return
     val resolver = PackResolver(catalog, filePathManager)
     val keepRootPacks =
-      (_languageIndex.value?.languages ?: emptyList())
+      catalog.languageList
         .filter { it.code != language.code }
         .mapNotNull { other ->
           catalog.dictionaryPackIdForLanguage(other.code)
@@ -282,11 +262,11 @@ class LanguageStateManager(
   }
 
   fun deleteLanguage(language: Language) {
-    val catalog = catalogState.value ?: filePathManager.loadLanguageCatalogV2() ?: return
+    val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
     val resolver = PackResolver(catalog, filePathManager)
     val targetRootPacks = catalog.corePackIdsForLanguage(language.code)
     val keepRootPacks =
-      (_languageIndex.value?.languages ?: emptyList())
+      catalog.languageList
         .filter { it.code != language.code }
         .flatMap { other -> catalog.corePackIdsForLanguage(other.code) }
         .filter { resolver.isInstalled(it) }
@@ -329,21 +309,6 @@ class LanguageStateManager(
       .filterNot { it == excluding }
       .filter { canTranslate(source, it, state.availableLanguageMap) }
       .firstOrNull()
-  }
-
-  private fun loadDictionaryIndex() {
-    scope.launch {
-      val index =
-        withContext(Dispatchers.IO) {
-          catalogState.value = catalogState.value ?: filePathManager.loadLanguageCatalogV2()
-          filePathManager.loadDictionaryIndex()
-        }
-      _dictionaryIndex.value = index
-      if (index != null) {
-        _fileEvents.emit(FileEvent.DictionaryIndexLoaded(index))
-      }
-      Log.i("LanguageStateManager", "Dictionary index loaded from file: ${index != null}")
-    }
   }
 
   private fun loadMucabFile() {

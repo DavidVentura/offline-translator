@@ -13,7 +13,7 @@ data class MissingPackFile(
 )
 
 class PackResolver(
-  private val catalog: LanguageCatalogV2,
+  private val catalog: LanguageCatalog,
   private val filePathManager: FilePathManager,
 ) {
   private val statusCache = mutableMapOf<String, PackInstallStatus>()

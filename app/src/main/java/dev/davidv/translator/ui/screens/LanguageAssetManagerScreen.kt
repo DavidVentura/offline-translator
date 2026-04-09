@@ -61,19 +61,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.davidv.translator.DictionaryIndex
 import dev.davidv.translator.DictionaryInfo
 import dev.davidv.translator.DownloadService
 import dev.davidv.translator.DownloadState
-import dev.davidv.translator.FavoriteButton
-import dev.davidv.translator.FavoriteEvent
 import dev.davidv.translator.LangAvailability
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageAvailabilityState
-import dev.davidv.translator.LanguageIndex
+import dev.davidv.translator.LanguageCatalog
 import dev.davidv.translator.LanguageMetadata
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
@@ -82,11 +80,46 @@ import kotlin.math.roundToInt
 
 private const val ROW_EXPAND_ANIMATION_MS = 140
 
+private sealed class FavoriteEvent {
+  data class Star(
+    val language: Language,
+  ) : FavoriteEvent()
+
+  data class Unstar(
+    val language: Language,
+  ) : FavoriteEvent()
+}
+
 private data class PendingSharedDictionaryDelete(
   val language: Language,
   val sharedWith: List<Language>,
   val alsoDeleteTranslation: Boolean,
 )
+
+@Composable
+private fun FavoriteButton(
+  isFavorite: Boolean,
+  language: Language,
+  onEvent: (FavoriteEvent) -> Unit,
+) {
+  IconButton(
+    onClick = {
+      if (isFavorite) {
+        onEvent(FavoriteEvent.Unstar(language))
+      } else {
+        onEvent(FavoriteEvent.Star(language))
+      }
+    },
+    modifier = Modifier.size(32.dp),
+  ) {
+    Icon(
+      painter = painterResource(id = if (isFavorite) R.drawable.star_filled else R.drawable.star),
+      contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+      tint = if (isFavorite) Color.Unspecified else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+      modifier = Modifier.size(18.dp),
+    )
+  }
+}
 
 private data class LanguageFeatureRow(
   val label: String,
@@ -120,31 +153,30 @@ fun LanguageAssetManagerScreen(
   context: Context,
   languageStateManager: LanguageStateManager,
   languageMetadataManager: LanguageMetadataManager,
-  languageIndex: LanguageIndex?,
+  catalog: LanguageCatalog?,
   languageAvailabilityState: LanguageAvailabilityState,
   downloadStates: Map<Language, DownloadState>,
   dictionaryDownloadStates: Map<Language, DownloadState>,
-  dictionaryIndex: DictionaryIndex?,
 ) {
   val languageMetadata by languageMetadataManager.metadata.collectAsState()
   val expandedLanguages = remember { mutableStateMapOf<String, Boolean>() }
   var isRefreshing by remember { mutableStateOf(false) }
   var filterQuery by remember { mutableStateOf("") }
   var pendingSharedDictionaryDelete by remember { mutableStateOf<PendingSharedDictionaryDelete?>(null) }
-  val languageIndexVersion by languageStateManager.languageIndexVersion.collectAsState()
+  val catalogRefreshToken by languageStateManager.catalogRefreshToken.collectAsState()
 
-  LaunchedEffect(languageIndexVersion) {
+  LaunchedEffect(catalogRefreshToken) {
     isRefreshing = false
   }
 
   val normalizedFilter = filterQuery.trim().lowercase()
   val rows =
-    languageIndex
-      ?.languages
+    catalog
+      ?.languageList
       ?.sortedBy { it.displayName }
       ?.mapNotNull { language ->
         val availability = languageAvailabilityState.availableLanguageMap[language] ?: LangAvailability(false, false, false, false)
-        val dictInfo = dictionaryIndex?.infoFor(language)
+        val dictInfo = catalog.dictionaryInfoFor(language)
         val translationVisible = !language.isEnglish
         val dictionaryVisible = dictInfo != null
         if (!translationVisible && !dictionaryVisible) {
@@ -183,7 +215,7 @@ fun LanguageAssetManagerScreen(
       isRefreshing = isRefreshing,
       onRefresh = {
         isRefreshing = true
-        DownloadService.fetchLanguageIndex(context)
+        DownloadService.fetchCatalog(context)
       },
       modifier =
         Modifier
@@ -748,4 +780,18 @@ private fun dictionaryTypeLabel(type: String?): String? =
     "english" -> "English"
     "bilingual" -> "Bilingual"
     else -> type.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+  }
+
+private fun humanCount(v: Long): String =
+  when {
+    v < 1000 -> v.toString()
+    v < 1_000_000 -> "${(v / 1000.0).roundToInt()}k"
+    else -> {
+      val millions = v / 1_000_000.0
+      if (millions >= 10) {
+        "${millions.roundToInt()}m"
+      } else {
+        "%.2fm".format(millions)
+      }
+    }
   }

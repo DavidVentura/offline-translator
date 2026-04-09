@@ -59,7 +59,7 @@ data class AssetPackV2(
   val metadata: AssetPackMetadataV2? = null,
 )
 
-data class LanguageCatalogV2(
+data class LanguageCatalog(
   val formatVersion: Int,
   val generatedAt: Long,
   val translationModelsBaseUrl: String,
@@ -70,43 +70,32 @@ data class LanguageCatalogV2(
   val languages: Map<String, LanguageEntryV2>,
   val packs: Map<String, AssetPackV2>,
 ) {
-  fun toLanguageIndex(): LanguageIndex {
-    val languageList = languages.keys.sorted().mapNotNull { code -> languages[code]?.toLanguage(code) }
-    return LanguageIndex(
-      languages = languageList,
-      updatedAt = sources.languageIndexUpdatedAt,
-      version = sources.languageIndexVersion,
-      translationModelsBaseUrl = translationModelsBaseUrl,
-      tesseractModelsBaseUrl = tesseractModelsBaseUrl,
-      dictionaryBaseUrl = dictionaryBaseUrl,
-      dictionaryVersion = dictionaryVersion,
-    )
+  val languageList: List<Language> by lazy {
+    languages.keys.sorted().mapNotNull { code -> languages[code]?.toLanguage(code) }
   }
 
-  fun toDictionaryIndex(): DictionaryIndex {
-    val dictionaries =
-      packs.values
-        .filter { it.feature == "dictionary" && it.dictionaryCode != null }
-        .associate { pack ->
-          pack.dictionaryCode!! to
-            DictionaryInfo(
-              date = pack.metadata?.date ?: 0L,
-              filename = pack.files.first().name,
-              size = pack.files.first().sizeBytes,
-              type = pack.metadata?.type.orEmpty(),
-              wordCount = pack.metadata?.wordCount ?: 0L,
-            )
-        }
-    return DictionaryIndex(
-      dictionaries = dictionaries,
-      updatedAt = sources.dictionaryIndexUpdatedAt,
-      version = sources.dictionaryIndexVersion,
-    )
-  }
+  private val languagesByCode: Map<String, Language> by lazy { languageList.associateBy { it.code } }
+
+  val english: Language by lazy { languagesByCode.getValue("en") }
 
   fun languageEntry(code: String): LanguageEntryV2? = languages[code]
 
   fun pack(packId: String): AssetPackV2? = packs[packId]
+
+  fun languageByCode(code: String): Language? = languagesByCode[code]
+
+  fun dictionaryInfoFor(language: Language): DictionaryInfo? = dictionaryInfo(language.dictionaryCode)
+
+  fun dictionaryInfo(dictionaryCode: String): DictionaryInfo? =
+    packs.values.firstOrNull { it.feature == "dictionary" && it.dictionaryCode == dictionaryCode }?.let { pack ->
+      DictionaryInfo(
+        date = pack.metadata?.date ?: 0L,
+        filename = pack.files.first().name,
+        size = pack.files.first().sizeBytes,
+        type = pack.metadata?.type.orEmpty(),
+        wordCount = pack.metadata?.wordCount ?: 0L,
+      )
+    }
 
   fun translationPackId(
     from: String,
@@ -226,7 +215,7 @@ data class LanguageCatalogV2(
   }
 }
 
-fun parseLanguageCatalogV2(json: String): LanguageCatalogV2 {
+fun parseLanguageCatalog(json: String): LanguageCatalog {
   val root = JSONObject(json)
   val sourcesObj = root.getJSONObject("sources")
 
@@ -291,7 +280,7 @@ fun parseLanguageCatalogV2(json: String): LanguageCatalogV2 {
       }
     }
 
-  return LanguageCatalogV2(
+  return LanguageCatalog(
     formatVersion = root.getInt("formatVersion"),
     generatedAt = root.getLong("generatedAt"),
     translationModelsBaseUrl = root.getString("translationModelsBaseUrl"),

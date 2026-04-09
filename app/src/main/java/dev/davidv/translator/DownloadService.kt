@@ -95,21 +95,13 @@ class DownloadService : Service() {
   private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
   private val settingsManager by lazy { SettingsManager(this) }
   private val filePathManager by lazy { FilePathManager(this, settingsManager.settings) }
-  private var cachedCatalog: LanguageCatalogV2? = null
-  private var cachedLanguageIndex: LanguageIndex? = null
+  private var cachedCatalog: LanguageCatalog? = null
 
-  private fun getCatalog(): LanguageCatalogV2? {
+  private fun getCatalog(): LanguageCatalog? {
     cachedCatalog?.let { return it }
-    val catalog = filePathManager.loadLanguageCatalogV2()
+    val catalog = filePathManager.loadCatalog()
     cachedCatalog = catalog
     return catalog
-  }
-
-  private fun getLanguageIndex(): LanguageIndex? {
-    cachedLanguageIndex?.let { return it }
-    val index = filePathManager.loadLanguageIndex()
-    cachedLanguageIndex = index
-    return index
   }
 
   private val _downloadStates = MutableStateFlow<Map<Language, DownloadState>>(emptyMap())
@@ -176,18 +168,10 @@ class DownloadService : Service() {
       context.startService(intent)
     }
 
-    fun fetchDictionaryIndex(context: Context) {
+    fun fetchCatalog(context: Context) {
       val intent =
         Intent(context, DownloadService::class.java).apply {
-          action = "FETCH_CATALOG_INDEX"
-        }
-      context.startService(intent)
-    }
-
-    fun fetchLanguageIndex(context: Context) {
-      val intent =
-        Intent(context, DownloadService::class.java).apply {
-          action = "FETCH_CATALOG_INDEX"
+          action = "FETCH_CATALOG"
         }
       context.startService(intent)
     }
@@ -201,15 +185,15 @@ class DownloadService : Service() {
     when (intent?.action) {
       "START_DOWNLOAD" -> {
         val languageCode = intent.getStringExtra("language_code") ?: return START_NOT_STICKY
-        val index = getLanguageIndex() ?: return START_NOT_STICKY
-        val language = index.languageByCode(languageCode) ?: return START_NOT_STICKY
-        startLanguageDownload(language, index)
+        val catalog = getCatalog() ?: return START_NOT_STICKY
+        val language = catalog.languageByCode(languageCode) ?: return START_NOT_STICKY
+        startLanguageDownload(language)
       }
 
       "CANCEL_DOWNLOAD" -> {
         val languageCode = intent.getStringExtra("language_code") ?: return START_NOT_STICKY
-        val index = getLanguageIndex() ?: return START_NOT_STICKY
-        val language = index.languageByCode(languageCode) ?: return START_NOT_STICKY
+        val catalog = getCatalog() ?: return START_NOT_STICKY
+        val language = catalog.languageByCode(languageCode) ?: return START_NOT_STICKY
         cancelLanguageDownload(language)
       }
 
@@ -217,20 +201,20 @@ class DownloadService : Service() {
         val languageCode = intent.getStringExtra("language_code") ?: return START_NOT_STICKY
         val dictionarySize = intent.getLongExtra("dictionary_size", 1000000L)
         Log.d("onStartCommand", "Dict download for $languageCode")
-        val index = getLanguageIndex() ?: return START_NOT_STICKY
-        val language = index.languageByCode(languageCode) ?: return START_NOT_STICKY
-        startDictionaryDownload(language, index, dictionarySize)
+        val catalog = getCatalog() ?: return START_NOT_STICKY
+        val language = catalog.languageByCode(languageCode) ?: return START_NOT_STICKY
+        startDictionaryDownload(language, dictionarySize)
       }
 
       "CANCEL_DICT_DOWNLOAD" -> {
         val languageCode = intent.getStringExtra("language_code") ?: return START_NOT_STICKY
-        val index = getLanguageIndex() ?: return START_NOT_STICKY
-        val language = index.languageByCode(languageCode) ?: return START_NOT_STICKY
+        val catalog = getCatalog() ?: return START_NOT_STICKY
+        val language = catalog.languageByCode(languageCode) ?: return START_NOT_STICKY
         cancelDictionaryDownload(language)
       }
 
-      "FETCH_DICTIONARY_INDEX", "FETCH_LANGUAGE_INDEX", "FETCH_CATALOG_INDEX" -> {
-        fetchCatalogIndex()
+      "FETCH_CATALOG" -> {
+        fetchCatalog()
       }
     }
     return START_STICKY
@@ -238,10 +222,7 @@ class DownloadService : Service() {
 
   override fun onBind(intent: Intent): IBinder = binder
 
-  private fun startLanguageDownload(
-    language: Language,
-    index: LanguageIndex,
-  ) {
+  private fun startLanguageDownload(language: Language) {
     if (_downloadStates.value[language]?.isDownloading == true) return
     updateDownloadState(language) {
       DownloadState(
@@ -307,7 +288,6 @@ class DownloadService : Service() {
 
   private fun startDictionaryDownload(
     language: Language,
-    index: LanguageIndex,
     dictionarySize: Long,
   ) {
     if (_dictionaryDownloadStates.value[language]?.isDownloading == true) return
@@ -459,40 +439,8 @@ class DownloadService : Service() {
     }
   }
 
-  private fun downloadLanguageFiles(
-    index: LanguageIndex,
-    dataPath: File,
-    files: List<ModelFile>,
-    targetLanguage: Language,
-  ): List<suspend () -> Boolean> {
-    val base = settingsManager.settings.value.translationModelsBaseUrl ?: index.translationModelsBaseUrl
-    val downloadJobs =
-      files.mapNotNull { modelFile ->
-        val file = File(dataPath, modelFile.name)
-        if (!file.exists()) {
-          val url = "$base/${modelFile.path}"
-          suspend {
-            try {
-              val success =
-                download(url, file, decompress = modelFile.path.endsWith(".gz")) { incrementalProgress ->
-                  incrementDownloadBytes(targetLanguage, incrementalProgress)
-                }
-              Log.i("DownloadService", "Downloaded $url to $file = $success")
-              success
-            } catch (e: Exception) {
-              Log.e("DownloadService", "Failed to download $url", e)
-              false
-            }
-          }
-        } else {
-          null
-        }
-      }
-    return downloadJobs
-  }
-
   private suspend fun downloadPackFile(
-    catalog: LanguageCatalogV2,
+    catalog: LanguageCatalog,
     pack: AssetPackV2,
     file: AssetFileV2,
     targetLanguage: Language,
@@ -517,60 +465,6 @@ class DownloadService : Service() {
       success
     } catch (e: Exception) {
       Log.e("DownloadService", "Failed to download ${pack.id}:${file.installPath} from $url", e)
-      false
-    }
-  }
-
-  private fun downloadTessData(
-    index: LanguageIndex,
-    language: Language,
-  ): suspend () -> Boolean {
-    val tessDataPath = filePathManager.getTesseractDataDir()
-    if (!tessDataPath.isDirectory) {
-      tessDataPath.mkdirs()
-    }
-    val tessFile = File(tessDataPath, "${language.tessName}.traineddata")
-    val tessBase = settingsManager.settings.value.tesseractModelsBaseUrl ?: index.tesseractModelsBaseUrl
-    val url = "$tessBase/${language.tessName}.traineddata"
-
-    if (tessFile.exists()) {
-      return suspend { true }
-    }
-
-    return suspend {
-      try {
-        val success =
-          download(url, tessFile) { incrementalProgress ->
-            incrementDownloadBytes(language, incrementalProgress)
-          }
-        Log.i(
-          "DownloadService",
-          "Downloaded tessdata for ${language.displayName} = $url to $tessFile: $success",
-        )
-        success
-      } catch (e: Exception) {
-        Log.e("DownloadService", "Failed to download tessdata from $url", e)
-        false
-      }
-    }
-  }
-
-  private suspend fun downloadExtraFile(
-    index: LanguageIndex,
-    language: Language,
-    fileName: String,
-    outputFile: File,
-  ): Boolean {
-    val url = "${index.dictionaryBaseUrl}/extra/$fileName"
-    return try {
-      val success =
-        download(url, outputFile) { incrementalProgress ->
-          incrementDownloadBytes(language, incrementalProgress)
-        }
-      Log.i("DownloadService", "Downloaded extra file $fileName for ${language.displayName}: $success")
-      success
-    } catch (e: Exception) {
-      Log.e("DownloadService", "Failed to download extra file $fileName from $url", e)
       false
     }
   }
@@ -633,34 +527,14 @@ class DownloadService : Service() {
     }
   }
 
-  private suspend fun downloadDictionaryFile(
-    index: LanguageIndex,
-    language: Language,
-    outputFile: File,
-  ): Boolean {
-    val url = "${index.dictionaryBaseUrl}/${Constants.DICT_VERSION}/${language.dictionaryCode}.dict"
-
-    return try {
-      download(url, outputFile) { incrementalProgress ->
-        incrementDictionaryDownloadBytes(language, incrementalProgress)
-      }
-    } catch (e: Exception) {
-      Log.e("DownloadService", "Error downloading dictionary file for ${language.displayName}", e)
-      if (outputFile.exists()) {
-        outputFile.delete()
-      }
-      false
-    }
-  }
-
-  private fun fetchCatalogIndex() {
+  private fun fetchCatalog() {
     serviceScope.launch {
       try {
-        val indexFile = filePathManager.getCatalogIndexFile()
-        val url = "${Constants.DEFAULT_CATALOG_INDEX_BASE_URL}/${Constants.CATALOG_INDEX_VERSION}/index_v2.json"
+        val catalogFile = filePathManager.getCatalogFile()
+        val url = "${Constants.DEFAULT_CATALOG_INDEX_BASE_URL}/${Constants.CATALOG_INDEX_VERSION}/index.json"
 
-        indexFile.parentFile?.mkdirs()
-        val tempFile = File(indexFile.parentFile, "${indexFile.name}.tmp")
+        catalogFile.parentFile?.mkdirs()
+        val tempFile = File(catalogFile.parentFile, "${catalogFile.name}.tmp")
 
         val conn = URL(url).openConnection()
         conn.getInputStream().use { inputStream ->
@@ -673,26 +547,20 @@ class DownloadService : Service() {
           }
         }
 
-        if (tempFile.renameTo(indexFile)) {
-          Log.i("DownloadService", "Downloaded v2 catalog index from $url to $indexFile")
-          cachedCatalog = filePathManager.loadLanguageCatalogV2()
-          val languageIndex = filePathManager.loadLanguageIndex()
-          val dictionaryIndex = filePathManager.loadDictionaryIndex()
-          if (languageIndex != null) {
-            cachedLanguageIndex = languageIndex
-            _downloadEvents.emit(DownloadEvent.LanguageIndexDownloaded(languageIndex))
-          }
-          if (dictionaryIndex != null) {
-            _downloadEvents.emit(DownloadEvent.DictionaryIndexDownloaded(dictionaryIndex))
+        if (tempFile.renameTo(catalogFile)) {
+          Log.i("DownloadService", "Downloaded catalog from $url to $catalogFile")
+          cachedCatalog = filePathManager.loadCatalog()
+          cachedCatalog?.let { catalog ->
+            _downloadEvents.emit(DownloadEvent.CatalogDownloaded(catalog))
           }
         } else {
-          Log.e("DownloadService", "Failed to move temp index file $tempFile to final location $indexFile")
+          Log.e("DownloadService", "Failed to move temp catalog file $tempFile to final location $catalogFile")
           tempFile.delete()
-          _downloadEvents.emit(DownloadEvent.DownloadError("Failed to save catalog index"))
+          _downloadEvents.emit(DownloadEvent.DownloadError("Failed to save catalog"))
         }
       } catch (e: Exception) {
-        Log.e("DownloadService", "Error downloading catalog index", e)
-        val errorMessage = "Failed to download catalog index: ${e.message ?: "Unknown error"}"
+        Log.e("DownloadService", "Error downloading catalog", e)
+        val errorMessage = "Failed to download catalog: ${e.message ?: "Unknown error"}"
         _downloadEvents.emit(DownloadEvent.DownloadError(errorMessage))
       }
     }

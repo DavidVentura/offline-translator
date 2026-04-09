@@ -46,7 +46,7 @@ class FilePathManager(
 
   fun getDictionaryFile(language: Language): File = File(getDictionariesDir(), "${language.dictionaryCode}.dict")
 
-  fun getCatalogIndexFile(): File = File(baseDir, "index_v2.json")
+  fun getCatalogFile(): File = File(baseDir, "index.json")
 
   fun getMucabFile(): File = File(getDataDir(), "mucab.bin")
 
@@ -118,7 +118,7 @@ class FilePathManager(
   }
 
   fun deletePackFiles(
-    catalog: LanguageCatalogV2,
+    catalog: LanguageCatalog,
     packIds: Set<String>,
   ) {
     packIds.forEach { packId ->
@@ -132,30 +132,12 @@ class FilePathManager(
     }
   }
 
-  fun loadDictionaryIndex(): DictionaryIndex? {
+  fun loadCatalog(): LanguageCatalog? {
     return try {
-      loadLanguageCatalogV2()?.toDictionaryIndex()
+      val jsonString = loadWithAssetFallback(getCatalogFile(), "index.json") ?: return null
+      parseLanguageCatalog(jsonString)
     } catch (e: Exception) {
-      Log.e("FilePathManager", "Error parsing dictionary index", e)
-      null
-    }
-  }
-
-  fun loadLanguageIndex(): LanguageIndex? {
-    return try {
-      loadLanguageCatalogV2()?.toLanguageIndex()
-    } catch (e: Exception) {
-      Log.e("FilePathManager", "Error parsing language index", e)
-      null
-    }
-  }
-
-  fun loadLanguageCatalogV2(): LanguageCatalogV2? {
-    return try {
-      val jsonString = loadWithAssetFallback(getCatalogIndexFile(), "index_v2.json") ?: return null
-      parseLanguageCatalogV2(jsonString)
-    } catch (e: Exception) {
-      Log.e("FilePathManager", "Error parsing v2 catalog index", e)
+      Log.e("FilePathManager", "Error parsing catalog index", e)
       null
     }
   }
