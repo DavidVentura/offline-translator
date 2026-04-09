@@ -133,6 +133,19 @@ data class LanguageCatalog(
         }.distinct()
       } ?: emptyList()
 
+  fun orderedTtsRegionsForLanguage(languageCode: String): List<Pair<String, LanguageTtsRegionV2>> {
+    val tts = languages[languageCode]?.tts ?: return emptyList()
+    val defaultRegion = tts.defaultRegion
+    val orderedCodes =
+      buildList {
+        defaultRegion?.takeIf(tts.regions::containsKey)?.let(::add)
+        addAll(tts.regions.keys.filter { it != defaultRegion }.sorted())
+      }
+    return orderedCodes.mapNotNull { regionCode ->
+      tts.regions[regionCode]?.let { regionCode to it }
+    }
+  }
+
   fun defaultTtsPackIdForLanguage(languageCode: String): String? {
     val tts = languages[languageCode]?.tts ?: return null
     val region = tts.defaultRegion?.let(tts.regions::get) ?: tts.regions.values.firstOrNull()
@@ -150,6 +163,8 @@ data class LanguageCatalog(
       ?.files
       ?.sumOf { it.sizeBytes }
       ?: 0L
+
+  fun packSizeBytes(packId: String): Long = packs[packId]?.files?.sumOf { it.sizeBytes } ?: 0L
 
   fun translationPackId(
     from: String,

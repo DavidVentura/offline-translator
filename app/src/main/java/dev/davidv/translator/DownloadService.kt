@@ -177,11 +177,13 @@ class DownloadService : Service() {
     fun startTtsDownload(
       context: Context,
       language: Language,
+      packId: String? = null,
     ) {
       val intent =
         Intent(context, DownloadService::class.java).apply {
           action = "START_TTS_DOWNLOAD"
           putExtra("language_code", language.code)
+          packId?.let { putExtra("pack_id", it) }
         }
       context.startService(intent)
     }
@@ -245,9 +247,10 @@ class DownloadService : Service() {
 
       "START_TTS_DOWNLOAD" -> {
         val languageCode = intent.getStringExtra("language_code") ?: return START_NOT_STICKY
+        val packId = intent.getStringExtra("pack_id")
         val catalog = getCatalog() ?: return START_NOT_STICKY
         val language = catalog.languageByCode(languageCode) ?: return START_NOT_STICKY
-        startTtsDownload(language)
+        startTtsDownload(language, packId)
       }
 
       "CANCEL_TTS_DOWNLOAD" -> {
@@ -406,7 +409,10 @@ class DownloadService : Service() {
     Log.i("DownloadService", "Cancelled dictionary download for ${language.displayName}")
   }
 
-  private fun startTtsDownload(language: Language) {
+  private fun startTtsDownload(
+    language: Language,
+    requestedPackId: String? = null,
+  ) {
     if (_ttsDownloadStates.value[language]?.isDownloading == true) return
     updateTtsDownloadState(language) {
       DownloadState(
@@ -420,7 +426,11 @@ class DownloadService : Service() {
         try {
           val catalog = getCatalog() ?: return@launch
           val resolver = PackResolver(catalog, filePathManager)
-          val ttsPackId = catalog.defaultTtsPackIdForLanguage(language.code) ?: return@launch
+          val ttsPackId = requestedPackId ?: catalog.defaultTtsPackIdForLanguage(language.code) ?: return@launch
+          if (ttsPackId !in catalog.ttsPackIdsForLanguage(language.code)) {
+            Log.w("DownloadService", "Ignoring invalid TTS pack $ttsPackId for ${language.code}")
+            return@launch
+          }
           val missingFiles = resolver.missingFiles(setOf(ttsPackId))
           val downloadTasks = mutableListOf<suspend () -> Boolean>()
           val toDownload = missingFiles.sumOf { it.file.sizeBytes }
@@ -452,6 +462,11 @@ class DownloadService : Service() {
           }
 
           if (success) {
+            removeSupersededTtsVoices(
+              catalog = catalog,
+              language = language,
+              selectedPackId = ttsPackId,
+            )
             Log.i("DownloadService", "TTS download complete: ${language.displayName}")
             _downloadEvents.emit(DownloadEvent.NewTtsAvailable(language))
           } else {
@@ -472,6 +487,36 @@ class DownloadService : Service() {
       }
 
     ttsDownloadJobs[language] = job
+  }
+
+  private fun removeSupersededTtsVoices(
+    catalog: LanguageCatalog,
+    language: Language,
+    selectedPackId: String,
+  ) {
+    val resolver = PackResolver(catalog, filePathManager)
+    val supersededRootPacks =
+      catalog
+        .ttsPackIdsForLanguage(language.code)
+        .filter { it != selectedPackId && resolver.isInstalled(it) }
+        .toSet()
+    if (supersededRootPacks.isEmpty()) return
+
+    val keepRootPacks =
+      buildSet {
+        if (resolver.isInstalled(selectedPackId)) {
+          add(selectedPackId)
+        }
+        catalog.languageList
+          .filter { it.code != language.code }
+          .flatMap { other -> catalog.ttsPackIdsForLanguage(other.code) }
+          .filter(resolver::isInstalled)
+          .forEach(::add)
+      }
+    val packsToDelete = catalog.dependencyClosure(supersededRootPacks) - catalog.dependencyClosure(keepRootPacks)
+    if (packsToDelete.isNotEmpty()) {
+      filePathManager.deletePackFiles(catalog, packsToDelete)
+    }
   }
 
   private fun cancelTtsDownload(language: Language) {

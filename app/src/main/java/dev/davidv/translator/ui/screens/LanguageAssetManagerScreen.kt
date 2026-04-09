@@ -40,6 +40,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -95,6 +97,10 @@ private data class PendingSharedDictionaryDelete(
   val sharedWith: List<Language>,
   val deleteLanguage: Boolean,
   val deleteTts: Boolean,
+)
+
+private data class PendingTtsVoicePicker(
+  val language: Language,
 )
 
 @Composable
@@ -168,6 +174,7 @@ fun LanguageAssetManagerScreen(
   var isRefreshing by remember { mutableStateOf(false) }
   var filterQuery by remember { mutableStateOf("") }
   var pendingSharedDictionaryDelete by remember { mutableStateOf<PendingSharedDictionaryDelete?>(null) }
+  var pendingTtsVoicePicker by remember { mutableStateOf<PendingTtsVoicePicker?>(null) }
   val catalogRefreshToken by languageStateManager.catalogRefreshToken.collectAsState()
 
   LaunchedEffect(catalogRefreshToken) {
@@ -252,6 +259,7 @@ fun LanguageAssetManagerScreen(
         ) {
           items(rows, key = { it.language.code }) { row ->
             val expanded = expandedLanguages[row.language.code] == true
+            val rowTtsPackIds = catalog?.ttsPackIdsForLanguage(row.language.code).orEmpty()
             val sharedDictionaryUsers =
               rows
                 .filter { other ->
@@ -312,7 +320,12 @@ fun LanguageAssetManagerScreen(
                 DownloadService.cancelDictDownload(context, row.language)
               },
               onDownloadTts = {
-                DownloadService.startTtsDownload(context, row.language)
+                val onlyVoicePackId = rowTtsPackIds.singleOrNull()
+                if (onlyVoicePackId != null) {
+                  DownloadService.startTtsDownload(context, row.language, onlyVoicePackId)
+                } else {
+                  pendingTtsVoicePicker = PendingTtsVoicePicker(row.language)
+                }
               },
               onDeleteTts = {
                 languageStateManager.deleteTts(row.language)
@@ -400,6 +413,75 @@ fun LanguageAssetManagerScreen(
         TextButton(
           onClick = { pendingSharedDictionaryDelete = null },
         ) {
+          Text("Cancel")
+        }
+      },
+    )
+  }
+
+  pendingTtsVoicePicker?.let { pendingPicker ->
+    val pickerCatalog = catalog ?: return@let
+    val regions = pickerCatalog.orderedTtsRegionsForLanguage(pendingPicker.language.code)
+    val showRegionHeaders = regions.size > 1
+    val scrollState = rememberScrollState()
+    AlertDialog(
+      onDismissRequest = { pendingTtsVoicePicker = null },
+      title = { Text("Pick a voice") },
+      text = {
+        Column(
+          modifier = Modifier.verticalScroll(scrollState),
+          verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+          regions.forEach { (_, region) ->
+            if (showRegionHeaders) {
+              Text(
+                text = region.displayName,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+              )
+            }
+
+            region.voices.forEach { packId ->
+              val pack = pickerCatalog.pack(packId) ?: return@forEach
+              Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Column(
+                  modifier = Modifier.weight(1f),
+                  verticalArrangement = Arrangement.spacedBy(1.dp),
+                ) {
+                  Text(
+                    text = formatVoiceName(pack.voice ?: pack.id),
+                    style = MaterialTheme.typography.bodyMedium,
+                  )
+                  Text(
+                    text = "${formatSize(pickerCatalog.packSizeBytes(packId))}, ${formatQualityLabel(pack.quality)} quality",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                  )
+                }
+                IconButton(
+                  onClick = {
+                    DownloadService.startTtsDownload(context, pendingPicker.language, packId)
+                    pendingTtsVoicePicker = null
+                  },
+                  modifier = Modifier.size(32.dp),
+                ) {
+                  Icon(
+                    painter = painterResource(id = R.drawable.add),
+                    contentDescription = "Download voice",
+                    modifier = Modifier.size(18.dp),
+                  )
+                }
+              }
+            }
+          }
+        }
+      },
+      confirmButton = {},
+      dismissButton = {
+        TextButton(onClick = { pendingTtsVoicePicker = null }) {
           Text("Cancel")
         }
       },
@@ -849,3 +931,20 @@ private fun dictionaryTypeLabel(type: String?): String? =
     "bilingual" -> "Bilingual"
     else -> type.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
   }
+
+private fun formatQualityLabel(quality: String?): String =
+  when (quality?.lowercase()) {
+    "x_low" -> "Extra-low"
+    null, "" -> "Unknown"
+    else -> quality.replace('_', '-').replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+  }
+
+private fun formatVoiceName(voice: String): String =
+  voice
+    .replace('_', ' ')
+    .replace('-', ' ')
+    .split(' ')
+    .filter { it.isNotBlank() }
+    .joinToString(" ") { token ->
+      token.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+    }
