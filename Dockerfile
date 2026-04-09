@@ -13,6 +13,7 @@ RUN apt-get update && \
         make \
         g++ \
         libc-dev \
+        python3 \
         wget \
         unzip \
         git \
@@ -45,12 +46,12 @@ RUN yes | sdkmanager --licenses && \
 ENV ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION
 ENV ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION
 
-# Install Rust 1.87 system-wide
+# Install Rust 1.88 system-wide
 ENV RUSTUP_HOME=/usr/local/rustup
 ENV CARGO_HOME=/home/vagrant/.cargo
 ENV PATH="$CARGO_HOME/bin:${PATH}"
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.87.0 --no-modify-path && \
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.88.0 --no-modify-path && \
     chmod -R a+w $RUSTUP_HOME $CARGO_HOME
 
 # Add Android targets for Rust

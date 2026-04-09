@@ -155,7 +155,11 @@ val abiToOnnxRuntimeTask =
         description = "Build ONNX Runtime for $abi"
         dependsOn(prepareOnnxRuntimeSubmodule)
         workingDir = onnxRuntimeRootDir
-        inputs.dir(onnxRuntimeRootDir)
+        // The ONNX Runtime checkout includes test fixtures with non-portable Unicode paths.
+        // Gradle 8.9 fingerprints Exec task inputs eagerly and fails on CI before the build
+        // starts if any input path is unreadable, so let the external build system manage
+        // incrementality for this source tree instead.
+        doNotTrackState("ONNX Runtime source tree contains CI-unfriendly paths")
         outputs.file(onnxRuntimeSharedLibrary(abi))
         commandLine(
           "python3",
