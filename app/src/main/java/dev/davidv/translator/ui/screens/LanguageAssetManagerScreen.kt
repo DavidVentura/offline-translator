@@ -435,49 +435,59 @@ fun LanguageAssetManagerScreen(
       text = {
         Column(
           modifier = Modifier.verticalScroll(scrollState),
-          verticalArrangement = Arrangement.spacedBy(10.dp),
+          verticalArrangement = Arrangement.spacedBy(if (showRegionHeaders) 16.dp else 8.dp),
         ) {
           regions.forEach { (_, region) ->
-            if (showRegionHeaders) {
-              Text(
-                text = region.displayName,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-              )
-            }
+            Column(
+              verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              if (showRegionHeaders) {
+                Text(
+                  text = region.displayName,
+                  style = MaterialTheme.typography.labelLarge,
+                  fontWeight = FontWeight.SemiBold,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+              }
 
-            region.voices.forEach { packId ->
-              val pack = pickerCatalog.pack(packId) ?: return@forEach
-              Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
+              Column(
+                modifier = Modifier.padding(start = if (showRegionHeaders) 12.dp else 0.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
               ) {
-                Column(
-                  modifier = Modifier.weight(1f),
-                  verticalArrangement = Arrangement.spacedBy(1.dp),
-                ) {
-                  Text(
-                    text = formatVoiceName(pack.voice ?: pack.id),
-                    style = MaterialTheme.typography.bodyMedium,
-                  )
-                  Text(
-                    text = "${formatSize(pickerCatalog.packSizeBytes(packId))}, ${formatQualityLabel(pack.quality)} quality",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                  )
-                }
-                IconButton(
-                  onClick = {
-                    DownloadService.startTtsDownload(context, pendingPicker.language, packId)
-                    pendingTtsVoicePicker = null
-                  },
-                  modifier = Modifier.size(32.dp),
-                ) {
-                  Icon(
-                    painter = painterResource(id = R.drawable.add),
-                    contentDescription = "Download voice",
-                    modifier = Modifier.size(18.dp),
-                  )
+                region.voices.forEach { packId ->
+                  val pack = pickerCatalog.pack(packId) ?: return@forEach
+                  Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                  ) {
+                    Column(
+                      modifier = Modifier.weight(1f),
+                      verticalArrangement = Arrangement.spacedBy(1.dp),
+                    ) {
+                      Text(
+                        text = formatVoiceName(pack.voice ?: pack.id),
+                        style = MaterialTheme.typography.bodyMedium,
+                      )
+                      Text(
+                        text = "${formatSize(pickerCatalog.packSizeBytes(packId))}, ${formatQualityLabel(pack.quality)} quality",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                      )
+                    }
+                    IconButton(
+                      onClick = {
+                        DownloadService.startTtsDownload(context, pendingPicker.language, packId)
+                        pendingTtsVoicePicker = null
+                      },
+                      modifier = Modifier.size(32.dp),
+                    ) {
+                      Icon(
+                        painter = painterResource(id = R.drawable.add),
+                        contentDescription = "Download voice",
+                        modifier = Modifier.size(18.dp),
+                      )
+                    }
+                  }
                 }
               }
             }
