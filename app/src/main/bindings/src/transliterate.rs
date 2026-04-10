@@ -1,5 +1,5 @@
-use icu_experimental::transliterate::Transliterator;
 use icu::locale::Locale;
+use icu_experimental::transliterate::Transliterator;
 
 fn make_transliterator(source_script: &str) -> Option<Transliterator> {
     let locale_str = format!("und-Latn-t-und-{}", source_script.to_lowercase());

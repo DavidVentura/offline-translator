@@ -3,7 +3,7 @@ use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::time::Instant;
 
-use piper_rs::Piper;
+use piper_rs::{BoundaryAfter, PhonemeChunk, Piper};
 
 use crate::logging::{ANDROID_LOG_DEBUG, ANDROID_LOG_ERROR, android_log_with_level};
 
@@ -33,16 +33,19 @@ struct CachedPiper {
 }
 
 fn log_timing(step: &str, started_at: Instant) {
-    log_debug(format!("{step} took {} ms", started_at.elapsed().as_millis()));
+    log_debug(format!(
+        "{step} took {} ms",
+        started_at.elapsed().as_millis()
+    ));
 }
 
-fn summarize_chunk_sizes(chunks: &[String]) -> String {
+fn summarize_phoneme_chunk_sizes(chunks: &[PhonemeChunk]) -> String {
     const MAX_CHUNKS_TO_LOG: usize = 6;
 
     let preview = chunks
         .iter()
         .take(MAX_CHUNKS_TO_LOG)
-        .map(|chunk| chunk.chars().count().to_string())
+        .map(|chunk| chunk.phonemes.chars().count().to_string())
         .collect::<Vec<_>>()
         .join(", ");
 
@@ -50,6 +53,14 @@ fn summarize_chunk_sizes(chunks: &[String]) -> String {
         format!("{preview}, ...")
     } else {
         preview
+    }
+}
+
+fn boundary_after_code(boundary_after: BoundaryAfter) -> i32 {
+    match boundary_after {
+        BoundaryAfter::None => 0,
+        BoundaryAfter::Sentence => 1,
+        BoundaryAfter::Paragraph => 2,
     }
 }
 
@@ -115,7 +126,9 @@ fn configure_espeak_data_directory(espeak_data_path: Option<&str>) {
             unsafe {
                 std::env::set_var(ESPEAK_DATA_ENV, espeak_data_path);
             }
-            log_debug(format!("Configured eSpeak data directory at {espeak_data_path}"));
+            log_debug(format!(
+                "Configured eSpeak data directory at {espeak_data_path}"
+            ));
         }
         Err(existing) if existing == espeak_data_path => {}
         Err(existing) => {
@@ -151,15 +164,17 @@ pub fn synthesize_pcm(
         } else {
             let phonemize_started_at = Instant::now();
             let phoneme_chunks = piper
-                .phonemize_sentences(text)
+                .phonemize_chunks(text)
                 .map_err(|err| format!("Speech synthesis failed: {err}"))?;
-            let total_phoneme_chars: usize =
-                phoneme_chunks.iter().map(|chunk| chunk.chars().count()).sum();
+            let total_phoneme_chars: usize = phoneme_chunks
+                .iter()
+                .map(|chunk| chunk.phonemes.chars().count())
+                .sum();
             log_debug(format!(
                 "phonemize produced {} chunk(s), {} phoneme char(s), chunk sizes [{}]",
                 phoneme_chunks.len(),
                 total_phoneme_chars,
-                summarize_chunk_sizes(&phoneme_chunks),
+                summarize_phoneme_chunk_sizes(&phoneme_chunks),
             ));
             log_timing("phonemize", phonemize_started_at);
         }
@@ -196,7 +211,7 @@ pub fn phonemize_chunks(
     config_path: &str,
     espeak_data_path: Option<&str>,
     text: &str,
-) -> Result<Vec<String>, String> {
+) -> Result<Vec<PhonemeChunk>, String> {
     if text.trim().is_empty() {
         return Err("Text is empty".to_owned());
     }
@@ -207,15 +222,17 @@ pub fn phonemize_chunks(
     with_cached_piper(model_path, config_path, |piper| {
         let phonemize_started_at = Instant::now();
         let phoneme_chunks = piper
-            .phonemize_sentences(text)
+            .phonemize_chunks(text)
             .map_err(|err| format!("Speech synthesis failed: {err}"))?;
-        let total_phoneme_chars: usize =
-            phoneme_chunks.iter().map(|chunk| chunk.chars().count()).sum();
+        let total_phoneme_chars: usize = phoneme_chunks
+            .iter()
+            .map(|chunk| chunk.phonemes.chars().count())
+            .sum();
         log_debug(format!(
             "phonemize produced {} chunk(s), {} phoneme char(s), chunk sizes [{}]",
             phoneme_chunks.len(),
             total_phoneme_chars,
-            summarize_chunk_sizes(&phoneme_chunks),
+            summarize_phoneme_chunk_sizes(&phoneme_chunks),
         ));
         log_timing("phonemize", phonemize_started_at);
         Ok(phoneme_chunks)
@@ -289,10 +306,7 @@ mod jni_bridge {
                 match env.new_object(
                     "dev/davidv/translator/PcmAudio",
                     "(I[S)V",
-                    &[
-                        JValue::Int(audio.sample_rate),
-                        JValue::Object(&pcm_object),
-                    ],
+                    &[JValue::Int(audio.sample_rate), JValue::Object(&pcm_object)],
                 ) {
                     Ok(object) => object.into_raw(),
                     Err(_) => std::ptr::null_mut(),
@@ -347,22 +361,31 @@ mod jni_bridge {
             }
         };
 
-        let string_class = match env.find_class("java/lang/String") {
+        let chunk_class = match env.find_class("dev/davidv/translator/NativePhonemeChunk") {
             Ok(class) => class,
             Err(_) => return std::ptr::null_mut(),
         };
 
-        let array = match env.new_object_array(
-            phoneme_chunks.len() as i32,
-            string_class,
-            JObject::null(),
-        ) {
-            Ok(array) => array,
-            Err(_) => return std::ptr::null_mut(),
-        };
+        let array =
+            match env.new_object_array(phoneme_chunks.len() as i32, chunk_class, JObject::null()) {
+                Ok(array) => array,
+                Err(_) => return std::ptr::null_mut(),
+            };
 
         for (index, chunk) in phoneme_chunks.iter().enumerate() {
-            let java_chunk = match env.new_string(chunk) {
+            let java_text = match env.new_string(&chunk.phonemes) {
+                Ok(value) => value,
+                Err(_) => return std::ptr::null_mut(),
+            };
+            let java_text = JObject::from(java_text);
+            let java_chunk = match env.new_object(
+                "dev/davidv/translator/NativePhonemeChunk",
+                "(Ljava/lang/String;I)V",
+                &[
+                    JValue::Object(&java_text),
+                    JValue::Int(boundary_after_code(chunk.boundary_after)),
+                ],
+            ) {
                 Ok(value) => value,
                 Err(_) => return std::ptr::null_mut(),
             };

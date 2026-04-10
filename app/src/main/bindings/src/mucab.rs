@@ -55,7 +55,10 @@ pub unsafe extern "C" fn Java_dev_davidv_translator_MucabBinding_nativeTranslite
     let text: String = match env.get_string(&java_text) {
         Ok(text) => {
             let t: String = text.into();
-            android_log!(format!("nativeTransliterateJP: Input text length: {}", t.len()));
+            android_log!(format!(
+                "nativeTransliterateJP: Input text length: {}",
+                t.len()
+            ));
             t
         }
         Err(_) => {
@@ -67,7 +70,10 @@ pub unsafe extern "C" fn Java_dev_davidv_translator_MucabBinding_nativeTranslite
     let dict = unsafe { &mut *(dict_ptr as *mut Dictionary) };
     let result = transliterate(&text, dict, spaced);
 
-    android_log!(format!("nativeTransliterateJP: Result length: {}", result.len()));
+    android_log!(format!(
+        "nativeTransliterateJP: Result length: {}",
+        result.len()
+    ));
 
     match env.new_string(&result) {
         Ok(jstring) => jstring.into_raw(),

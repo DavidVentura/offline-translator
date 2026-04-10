@@ -26,20 +26,23 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -66,6 +69,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import dev.davidv.translator.DictionaryInfo
 import dev.davidv.translator.DownloadService
@@ -257,7 +261,7 @@ fun LanguageAssetManagerScreen(
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
         ) {
-          items(rows, key = { it.language.code }) { row ->
+          itemsIndexed(rows, key = { _, row -> row.language.code }) { index, row ->
             val expanded = expandedLanguages[row.language.code] == true
             val rowTtsPackIds = catalog?.ttsPackIdsForLanguage(row.language.code).orEmpty()
             val sharedDictionaryUsers =
@@ -270,6 +274,7 @@ fun LanguageAssetManagerScreen(
                 .sortedBy { it.displayName }
             LanguageAssetCard(
               row = row,
+              zebra = index % 2 == 1,
               expanded = expanded,
               isFavorite = languageMetadata[row.language]?.favorite ?: false,
               translationDownloadState = downloadStates[row.language],
@@ -492,6 +497,7 @@ fun LanguageAssetManagerScreen(
 @Composable
 private fun LanguageAssetCard(
   row: LanguageAssetRow,
+  zebra: Boolean,
   expanded: Boolean,
   isFavorite: Boolean,
   translationDownloadState: DownloadState?,
@@ -538,11 +544,24 @@ private fun LanguageAssetCard(
       row.fullyInstalled -> null
       else -> null
     }
+  val clusterToStarSpacing =
+    if (expanded || row.partiallyInstalled) {
+      8.dp
+    } else {
+      2.dp
+    }
 
   Column(
     modifier =
       Modifier
         .fillMaxWidth()
+        .background(
+          if (zebra) {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.035f)
+          } else {
+            Color.Transparent
+          },
+        )
         .animateContentSize(animationSpec = tween(durationMillis = ROW_EXPAND_ANIMATION_MS))
         .padding(vertical = 1.dp),
   ) {
@@ -581,31 +600,38 @@ private fun LanguageAssetCard(
         )
       }
 
-      FavoriteButton(
-        isFavorite = isFavorite,
-        language = row.language,
-        onEvent = onFavorite,
-      )
-
-      Box(
-        modifier = Modifier.width(66.dp),
-        contentAlignment = Alignment.CenterEnd,
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,
       ) {
-        when {
-          expanded || row.partiallyInstalled -> {
-            FeaturePresenceIndicators(row)
-          }
+        Box(
+          modifier = Modifier.width(60.dp),
+          contentAlignment = Alignment.CenterEnd,
+        ) {
+          when {
+            expanded || row.partiallyInstalled -> {
+              FeaturePresenceIndicators(row)
+            }
 
-          else -> {
-            AggregateActionButton(
-              downloadState = collapsedDownloadState,
-              isInstalled = row.fullyInstalled,
-              onDownload = onDownloadAll,
-              onDelete = onDeleteAll,
-              onCancel = onCancelAll,
-            )
+            else -> {
+              AggregateActionButton(
+                downloadState = collapsedDownloadState,
+                isInstalled = row.fullyInstalled,
+                onDownload = onDownloadAll,
+                onDelete = onDeleteAll,
+                onCancel = onCancelAll,
+              )
+            }
           }
         }
+
+        Spacer(modifier = Modifier.width(clusterToStarSpacing))
+
+        FavoriteButton(
+          isFavorite = isFavorite,
+          language = row.language,
+          onEvent = onFavorite,
+        )
       }
     }
 
@@ -774,7 +800,10 @@ private fun FeaturePresenceIndicators(row: LanguageAssetRow) {
           } else {
             missingTint
           },
-        modifier = Modifier.size(20.dp),
+        modifier =
+          Modifier
+            .size(22.dp)
+            .offset { IntOffset(1, 0) },
       )
     }
   }
@@ -908,10 +937,8 @@ private fun formatSize(sizeBytes: Long): String {
   val sizeMiB = sizeBytes / (1024f * 1024f)
   return if (sizeMiB < 1f) {
     "<1 MB"
-  } else if (sizeMiB >= 10f) {
-    "${sizeMiB.roundToInt()} MB"
   } else {
-    String.format("%.2f MB", sizeMiB)
+    "${sizeMiB.roundToInt()} MB"
   }
 }
 

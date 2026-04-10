@@ -21,8 +21,9 @@ jni = { version = "0.21.1", optional = true }
 tarkka = { git = "https://github.com/DavidVentura/tarkka", optional = true }
 tesseract = { git = "https://github.com/DavidVentura/tesseract-rs", optional = true }
 mucab = { git = "https://github.com/DavidVentura/mucab", optional = true }
+#piper-rs = { path = "~/git/piper-rs", optional = true }
 piper-rs = { git = "https://github.com/DavidVentura/piper-rs", optional = true }
-#piper-rs = { path = "/home/david/git/piper-rs", optional = true, default-features = false, features = [] }
+
 
 icu_experimental = { version = "0.4", features = ["compiled_data"] }
 icu = { version = "2.1" }
