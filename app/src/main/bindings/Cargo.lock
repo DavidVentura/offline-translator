@@ -232,6 +232,7 @@ dependencies = [
 [[package]]
 name = "espeak-rs"
 version = "0.1.9"
+source = "git+https://github.com/DavidVentura/piper-rs#665f7c2896c3ba14c2588021231d27101c44e081"
 dependencies = [
  "espeak-rs-sys",
 ]
@@ -239,6 +240,7 @@ dependencies = [
 [[package]]
 name = "espeak-rs-sys"
 version = "0.1.9"
+source = "git+https://github.com/DavidVentura/piper-rs#665f7c2896c3ba14c2588021231d27101c44e081"
 dependencies = [
  "bindgen 0.69.5",
  "cmake",
@@ -1022,6 +1024,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 [[package]]
 name = "piper-rs"
 version = "0.1.9"
+source = "git+https://github.com/DavidVentura/piper-rs#665f7c2896c3ba14c2588021231d27101c44e081"
 dependencies = [
  "espeak-rs",
  "ndarray 0.16.1",
