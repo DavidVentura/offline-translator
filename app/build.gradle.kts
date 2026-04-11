@@ -211,6 +211,7 @@ val abiToOnnxRuntimeTask =
           "CMAKE_CXX_STANDARD=20",
           "CMAKE_CXX_STANDARD_REQUIRED=ON",
           "CMAKE_CXX_EXTENSIONS=OFF",
+          "onnxruntime_USE_ARM_NEON_NCHWC=ON",
           "--skip_submodule_sync",
         )
       }
