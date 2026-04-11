@@ -18,9 +18,21 @@ data class NativePhonemeChunk(
   val boundaryAfter: Int,
 )
 
+data class NativeTtsVoice(
+  val name: String,
+  val speakerId: Int,
+  val displayName: String,
+)
+
 data class PhonemeChunk(
   val content: String,
   val boundaryAfter: SpeechChunkBoundary,
+)
+
+data class TtsVoiceOption(
+  val name: String,
+  val speakerId: Int,
+  val displayName: String,
 )
 
 class SpeechBinding {
@@ -31,45 +43,93 @@ class SpeechBinding {
   }
 
   fun synthesizePcm(
+    engine: String,
     modelPath: String,
-    configPath: String,
-    espeakDataPath: String?,
+    auxPath: String,
+    supportDataPath: String?,
+    languageCode: String,
     text: String,
+    speechSpeed: Float = 1.0f,
+    voiceName: String? = null,
     speakerId: Int? = null,
     isPhonemes: Boolean = false,
   ): PcmAudio? =
     nativeSynthesizePcm(
+      engine,
       modelPath,
-      configPath,
-      espeakDataPath.orEmpty(),
+      auxPath,
+      supportDataPath.orEmpty(),
+      languageCode,
       text,
+      speechSpeed,
+      voiceName.orEmpty(),
       speakerId ?: -1,
       isPhonemes,
     )
 
   fun phonemizeChunks(
+    engine: String,
     modelPath: String,
-    configPath: String,
-    espeakDataPath: String?,
+    auxPath: String,
+    supportDataPath: String?,
+    languageCode: String,
     text: String,
   ): List<PhonemeChunk>? =
-    nativePhonemizeChunks(modelPath, configPath, espeakDataPath.orEmpty(), text)
+    nativePhonemizeChunks(
+      engine,
+      modelPath,
+      auxPath,
+      supportDataPath.orEmpty(),
+      languageCode,
+      text,
+    )
       ?.map { chunk -> PhonemeChunk(content = chunk.content, boundaryAfter = SpeechChunkBoundary.fromNative(chunk.boundaryAfter)) }
       ?.toList()
 
-  private external fun nativeSynthesizePcm(
+  fun listVoices(
+    engine: String,
     modelPath: String,
-    configPath: String,
-    espeakDataPath: String,
+    auxPath: String,
+    supportDataPath: String?,
+    languageCode: String,
+  ): List<TtsVoiceOption>? =
+    nativeListVoices(
+      engine,
+      modelPath,
+      auxPath,
+      supportDataPath.orEmpty(),
+      languageCode,
+    )?.map { voice ->
+      TtsVoiceOption(name = voice.name, speakerId = voice.speakerId, displayName = voice.displayName)
+    }
+
+  private external fun nativeSynthesizePcm(
+    engine: String,
+    modelPath: String,
+    auxPath: String,
+    supportDataPath: String,
+    languageCode: String,
     text: String,
+    speechSpeed: Float,
+    voiceName: String,
     speakerId: Int,
     isPhonemes: Boolean,
   ): PcmAudio?
 
   private external fun nativePhonemizeChunks(
+    engine: String,
     modelPath: String,
-    configPath: String,
-    espeakDataPath: String,
+    auxPath: String,
+    supportDataPath: String,
+    languageCode: String,
     text: String,
   ): Array<NativePhonemeChunk>?
+
+  private external fun nativeListVoices(
+    engine: String,
+    modelPath: String,
+    auxPath: String,
+    supportDataPath: String,
+    languageCode: String,
+  ): Array<NativeTtsVoice>?
 }

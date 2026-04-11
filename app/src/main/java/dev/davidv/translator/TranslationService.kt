@@ -37,6 +37,9 @@ class TranslationService(
     private const val CLAUSE_PAUSE_MS = 120
     private const val SENTENCE_PAUSE_MS = 180
     private const val PARAGRAPH_PAUSE_MS = 320
+    private const val MIN_PAUSE_SPLIT_CHARS = 12
+    private val SENTENCE_BOUNDARY_CHARS = setOf('.', '?', '!', '。', '？', '！')
+    private val CLAUSE_PAUSE_CHARS = setOf(',', ';', ':', '、', '，', '；', '：')
 
     @Volatile
     private var nativeLibInstance: NativeLib? = null
@@ -348,110 +351,145 @@ alignment: soft
       }
 
       val voiceFiles =
-        filePathManager.getPiperVoiceFiles(language)
+        filePathManager.getTtsVoiceFiles(language)
           ?: return@withContext SpeechSynthesisResult.Error(
-            "No Piper voice installed for ${language.displayName}",
+            "No TTS voice installed for ${language.displayName}",
           )
 
-      val espeakDataPath = filePathManager.getPiperEspeakDataRoot()?.absolutePath
-      val phonemeChunks =
+      val supportDataPath = filePathManager.getTtsSupportDataRoot()?.absolutePath
+      val speechSpeed = settingsManager.settings.value.ttsPlaybackSpeed.coerceIn(0.5f, 2.0f)
+      val selectedVoiceName = settingsManager.settings.value.ttsVoiceOverrides[voiceFiles.languageCode]
+      val speakerId = voiceFiles.speakerId
+      Log.d(
+        "TranslationService",
+        "Using TTS speakerId=$speakerId voiceName=$selectedVoiceName speechSpeed=$speechSpeed engine=${voiceFiles.engine} language=${voiceFiles.languageCode}",
+      )
+      var phonemizeFailed = false
+      val phonemizeText: (String) -> List<PhonemeChunk> = { chunkText: String ->
         speechBinding.phonemizeChunks(
+          engine = voiceFiles.engine,
           modelPath = voiceFiles.model.absolutePath,
-          configPath = voiceFiles.config.absolutePath,
-          espeakDataPath = espeakDataPath,
-          text = text,
-        ) ?: return@withContext SpeechSynthesisResult.Error(
+          auxPath = voiceFiles.aux.absolutePath,
+          supportDataPath = supportDataPath,
+          languageCode = voiceFiles.languageCode,
+          text = chunkText,
+        ) ?: run {
+          phonemizeFailed = true
+          emptyList()
+        }
+      }
+
+      val chunkRequests = buildSpeechChunkRequests(text = text, phonemizeText = phonemizeText)
+      if (phonemizeFailed || chunkRequests.isEmpty()) {
+        return@withContext SpeechSynthesisResult.Error(
           "Speech synthesis failed for ${language.displayName}",
         )
-
-      val chunkRequests =
-        buildSpeechChunkRequests(
-          text = text,
-          phonemeChunks = phonemeChunks,
-          phonemizeText = { chunkText ->
-            speechBinding.phonemizeChunks(
-              modelPath = voiceFiles.model.absolutePath,
-              configPath = voiceFiles.config.absolutePath,
-              espeakDataPath = espeakDataPath,
-              text = chunkText,
-            )
-          },
-        )
+      }
 
       SpeechSynthesisResult.Success(
         flow {
-          for (chunkRequest in chunkRequests) {
+          for ((index, chunkRequest) in chunkRequests.withIndex()) {
             currentCoroutineContext().ensureActive()
+            Log.d(
+              "TranslationService",
+              "Speech chunk ${index + 1}/${chunkRequests.size}: synth start isPhonemes=${chunkRequest.isPhonemes} textLen=${chunkRequest.content.length} boundary=${chunkRequest.boundaryAfter} pauseOverride=${chunkRequest.pauseAfterMsOverride}",
+            )
             val pcmAudio =
               speechBinding.synthesizePcm(
+                engine = voiceFiles.engine,
                 modelPath = voiceFiles.model.absolutePath,
-                configPath = voiceFiles.config.absolutePath,
-                espeakDataPath = espeakDataPath,
+                auxPath = voiceFiles.aux.absolutePath,
+                supportDataPath = supportDataPath,
+                languageCode = voiceFiles.languageCode,
                 text = chunkRequest.content,
-                speakerId = voiceFiles.speakerId,
+                speechSpeed = speechSpeed,
+                voiceName = selectedVoiceName,
+                speakerId = speakerId,
                 isPhonemes = chunkRequest.isPhonemes,
               ) ?: throw IllegalStateException(
                 "Speech synthesis failed for ${language.displayName}",
               )
+            val audioDurationMs = (pcmAudio.pcmSamples.size * 1000L) / pcmAudio.sampleRate
+            Log.d(
+              "TranslationService",
+              "Speech chunk ${index + 1}/${chunkRequests.size}: synth ready samples=${pcmAudio.pcmSamples.size} sampleRate=${pcmAudio.sampleRate} audioMs=$audioDurationMs",
+            )
             currentCoroutineContext().ensureActive()
+            Log.d("TranslationService", "Speech chunk ${index + 1}/${chunkRequests.size}: emit start")
             emit(pcmAudio)
+            Log.d("TranslationService", "Speech chunk ${index + 1}/${chunkRequests.size}: emit returned")
 
             val silenceChunk = pauseChunkFor(chunkRequest, pcmAudio.sampleRate)
             if (silenceChunk != null) {
+              val silenceMs = (silenceChunk.pcmSamples.size * 1000L) / silenceChunk.sampleRate
+              Log.d(
+                "TranslationService",
+                "Speech chunk ${index + 1}/${chunkRequests.size}: silence emit start audioMs=$silenceMs",
+              )
               emit(silenceChunk)
+              Log.d("TranslationService", "Speech chunk ${index + 1}/${chunkRequests.size}: silence emit returned")
             }
           }
         },
       )
+    }
+
+  suspend fun availableTtsVoices(language: Language): List<TtsVoiceOption> =
+    withContext(Dispatchers.IO) {
+      val voiceFiles = filePathManager.getTtsVoiceFiles(language) ?: return@withContext emptyList()
+      val supportDataPath = filePathManager.getTtsSupportDataRoot()?.absolutePath
+      speechBinding.listVoices(
+        engine = voiceFiles.engine,
+        modelPath = voiceFiles.model.absolutePath,
+        auxPath = voiceFiles.aux.absolutePath,
+        supportDataPath = supportDataPath,
+        languageCode = voiceFiles.languageCode,
+      ) ?: emptyList()
     }
 
   private fun buildSpeechChunkRequests(
     text: String,
-    phonemeChunks: List<PhonemeChunk>,
-    phonemizeText: (String) -> List<PhonemeChunk>?,
+    phonemizeText: (String) -> List<PhonemeChunk>,
+  ): List<SpeechChunkRequest> = clearFinalBoundary(buildSpeechChunkRequestsInternal(text, phonemizeText))
+
+  private fun buildSpeechChunkRequestsInternal(
+    text: String,
+    phonemizeText: (String) -> List<PhonemeChunk>,
   ): List<SpeechChunkRequest> {
     val sourceChunks = splitTextIntoSpeechChunks(text)
-    if (sourceChunks.size == phonemeChunks.size) {
-      val expandedRequests =
+    if (sourceChunks.size > 1) {
+      val requests =
         buildList {
-          for ((sourceChunk, phonemeChunk) in sourceChunks.zip(phonemeChunks)) {
-            val splitRequests = buildSplitChunkRequests(sourceChunk, phonemeChunk, phonemizeText)
-            if (splitRequests != null) {
-              addAll(splitRequests)
-            } else {
-              add(
-                SpeechChunkRequest(
-                  content = phonemeChunk.content,
-                  isPhonemes = true,
-                  boundaryAfter = phonemeChunk.boundaryAfter,
-                  pauseAfterMsOverride = null,
-                ),
-              )
-            }
+          for (sourceChunk in sourceChunks) {
+            addAll(buildSpeechChunkRequestsInternal(sourceChunk, phonemizeText))
           }
         }
-
-      if (expandedRequests.size > 1) {
-        return clearFinalBoundary(expandedRequests)
-      }
-    } else {
-      Log.w(
+      Log.d(
         "TranslationService",
-        "Speech text chunk count mismatch: source=${sourceChunks.size} phonemes=${phonemeChunks.size}; skipping clause-level fast split",
+        "Built speech requests from ${sourceChunks.size} source chunk(s) into ${requests.size} playback chunk(s)",
       )
+      return requests
+    }
+
+    val phonemeChunks = phonemizeText(text).filter { it.content.isNotBlank() }
+    if (phonemeChunks.isEmpty()) {
+      return emptyList()
     }
 
     if (phonemeChunks.size > 1) {
-      return clearFinalBoundary(
-        phonemeChunks.map { chunk ->
-          SpeechChunkRequest(
-            content = chunk.content,
-            isPhonemes = true,
-            boundaryAfter = chunk.boundaryAfter,
-            pauseAfterMsOverride = null,
-          )
-        },
-      )
+      return phonemeChunks.map { chunk ->
+        SpeechChunkRequest(
+          content = chunk.content,
+          isPhonemes = true,
+          boundaryAfter = chunk.boundaryAfter,
+          pauseAfterMsOverride = null,
+        )
+      }
+    }
+
+    val splitRequests = buildSplitChunkRequests(text, phonemeChunks.single(), phonemizeText)
+    if (splitRequests != null) {
+      return splitRequests
     }
 
     return listOf(
@@ -467,21 +505,21 @@ alignment: soft
   private fun buildSplitChunkRequests(
     sourceChunk: String,
     phonemeChunk: PhonemeChunk,
-    phonemizeText: (String) -> List<PhonemeChunk>?,
+    phonemizeText: (String) -> List<PhonemeChunk>,
   ): List<SpeechChunkRequest>? {
     if (phonemeChunk.content.length <= 100) {
       return null
     }
 
-    val splitText = splitAtFirstPause(sourceChunk) ?: return null
-    val remainingPhonemeChunks = phonemizeText(splitText.second)?.filter { it.content.isNotBlank() }.orEmpty()
-    if (remainingPhonemeChunks.isEmpty()) {
+    val splitText = splitAtBestPause(sourceChunk) ?: return null
+    val remainingRequests = buildSpeechChunkRequestsInternal(splitText.second, phonemizeText)
+    if (remainingRequests.isEmpty()) {
       return null
     }
 
     Log.d(
       "TranslationService",
-      "Forcing fast speech chunk at first pause for long utterance (${phonemeChunk.content.length} phoneme chars); remainder re-chunked into ${remainingPhonemeChunks.size} chunk(s)",
+      "Forcing fast speech chunk at best pause for long utterance (${phonemeChunk.content.length} phoneme chars); remainder re-chunked into ${remainingRequests.size} chunk(s)",
     )
 
     return buildList {
@@ -493,16 +531,7 @@ alignment: soft
           pauseAfterMsOverride = CLAUSE_PAUSE_MS,
         ),
       )
-      addAll(
-        remainingPhonemeChunks.map { chunk ->
-          SpeechChunkRequest(
-            content = chunk.content,
-            isPhonemes = true,
-            boundaryAfter = chunk.boundaryAfter,
-            pauseAfterMsOverride = null,
-          )
-        },
-      )
+      addAll(remainingRequests)
     }
   }
 
@@ -588,7 +617,7 @@ alignment: soft
     return segments
   }
 
-  private fun isSentenceBoundaryChar(ch: Char): Boolean = ch == '.' || ch == '?' || ch == '!'
+  private fun isSentenceBoundaryChar(ch: Char): Boolean = ch in SENTENCE_BOUNDARY_CHARS
 
   private fun clearFinalBoundary(chunks: List<SpeechChunkRequest>): List<SpeechChunkRequest> {
     if (chunks.isEmpty()) {
@@ -619,19 +648,25 @@ alignment: soft
     return PcmAudio.silence(sampleRate, pauseMs)
   }
 
-  private fun splitAtFirstPause(text: String): Pair<String, String>? {
-    val splitIndex = text.indexOfFirst { it == ',' || it == ';' || it == ':' }
-    if (splitIndex <= 0 || splitIndex >= text.lastIndex) {
-      return null
-    }
+  private fun splitAtBestPause(text: String): Pair<String, String>? {
+    val minSideChars = maxOf(MIN_PAUSE_SPLIT_CHARS, text.length / 4)
+    val midpoint = text.length / 2.0
 
-    val firstChunk = text.substring(0, splitIndex + 1).trim()
-    val secondChunk = text.substring(splitIndex + 1).trim()
-    if (firstChunk.isBlank() || secondChunk.isBlank()) {
-      return null
-    }
-
-    return firstChunk to secondChunk
+    return text.indices
+      .asSequence()
+      .filter { text[it] in CLAUSE_PAUSE_CHARS }
+      .mapNotNull { splitIndex ->
+        val firstChunk = text.substring(0, splitIndex + 1).trim()
+        val secondChunk = text.substring(splitIndex + 1).trim()
+        if (firstChunk.length < minSideChars || secondChunk.length < minSideChars) {
+          return@mapNotNull null
+        }
+        val balancePenalty = kotlin.math.abs(firstChunk.length - secondChunk.length)
+        val midpointPenalty = kotlin.math.abs(midpoint - splitIndex)
+        Triple(balancePenalty, midpointPenalty, firstChunk to secondChunk)
+      }
+      .minWithOrNull(compareBy<Triple<Int, Double, Pair<String, String>>>({ it.first }, { it.second }))
+      ?.third
   }
 }
 

@@ -485,6 +485,7 @@ fun SettingsScreen(
           }
         }
       }
+
       // Advanced Settings Section
       var advancedExpanded by remember { mutableStateOf(false) }
       Card(

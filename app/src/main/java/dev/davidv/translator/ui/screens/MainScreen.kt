@@ -81,6 +81,7 @@ import dev.davidv.translator.R
 import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.TranslatedText
 import dev.davidv.translator.TranslatorMessage
+import dev.davidv.translator.TtsVoiceOption
 import dev.davidv.translator.WordWithTaggedEntries
 import dev.davidv.translator.ui.components.DetectedLanguageSection
 import dev.davidv.translator.ui.components.DictionaryBottomSheet
@@ -124,6 +125,10 @@ fun MainScreen(
   languageMetadata: Map<Language, LanguageMetadata>,
   downloadStates: Map<Language, DownloadState> = emptyMap(),
   settings: AppSettings,
+  availableTtsVoices: List<TtsVoiceOption> = emptyList(),
+  selectedTtsVoiceName: String? = null,
+  onTtsPlaybackSpeedChange: (Float) -> Unit = {},
+  onTtsVoiceSelected: (String) -> Unit = {},
   launchMode: LaunchMode,
 ) {
   var showFullScreenImage by remember { mutableStateOf(false) }
@@ -390,6 +395,9 @@ fun MainScreen(
                 canSpeak = availableLanguages[to]?.ttsFiles == true,
                 isAudioPlaying = isAudioPlaying,
                 isAudioLoading = isAudioLoading,
+                speechPlaybackSpeed = settings.ttsPlaybackSpeed,
+                selectedVoiceName = selectedTtsVoiceName,
+                availableVoices = availableTtsVoices,
                 onSpeak = {
                   if (isAudioPlaying || isAudioLoading) {
                     onStopAudio()
@@ -399,6 +407,8 @@ fun MainScreen(
                     }
                   }
                 },
+                onSpeechPlaybackSpeedChange = onTtsPlaybackSpeedChange,
+                onVoiceSelected = onTtsVoiceSelected,
               )
             }
           }

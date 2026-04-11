@@ -22,6 +22,7 @@ import android.content.SharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.json.JSONObject
 
 class SettingsManager(
   context: Context,
@@ -87,6 +88,12 @@ class SettingsManager(
         "add_spaces_for_japanese_transliteration",
         defaults.addSpacesForJapaneseTransliteration,
       )
+    val ttsPlaybackSpeed = prefs.getFloat("tts_playback_speed", defaults.ttsPlaybackSpeed)
+    val ttsVoiceOverrides =
+      prefs
+        .getString("tts_voice_overrides", null)
+        ?.let(::parseVoiceOverrides)
+        ?: defaults.ttsVoiceOverrides
 
     return AppSettings(
       defaultTargetLanguageCode = defaultTargetLanguageCode,
@@ -106,6 +113,8 @@ class SettingsManager(
       showFilePickerInImagePicker = showFilePickerInImagePicker,
       showTransliterationOnInput = showTransliterationOnInput,
       addSpacesForJapaneseTransliteration = addSpacesForJapaneseTransliteration,
+      ttsPlaybackSpeed = ttsPlaybackSpeed,
+      ttsVoiceOverrides = ttsVoiceOverrides,
     )
   }
 
@@ -193,8 +202,32 @@ class SettingsManager(
         putBoolean("add_spaces_for_japanese_transliteration", newSettings.addSpacesForJapaneseTransliteration)
         modifiedSettings.add("add_spaces_for_japanese_transliteration")
       }
+      if (newSettings.ttsPlaybackSpeed != currentSettings.ttsPlaybackSpeed) {
+        putFloat("tts_playback_speed", newSettings.ttsPlaybackSpeed)
+        modifiedSettings.add("tts_playback_speed")
+      }
+      if (newSettings.ttsVoiceOverrides != currentSettings.ttsVoiceOverrides) {
+        putString("tts_voice_overrides", serializeVoiceOverrides(newSettings.ttsVoiceOverrides))
+        modifiedSettings.add("tts_voice_overrides")
+      }
       apply()
     }
     _settings.value = newSettings
+  }
+
+  private fun parseVoiceOverrides(json: String): Map<String, String> =
+    runCatching {
+      val root = JSONObject(json)
+      root.keys().asSequence().mapNotNull { languageCode ->
+        root.optString(languageCode).takeIf { it.isNotBlank() }?.let { languageCode to it }
+      }.toMap()
+    }.getOrDefault(emptyMap())
+
+  private fun serializeVoiceOverrides(overrides: Map<String, String>): String {
+    val root = JSONObject()
+    overrides.toSortedMap().forEach { (languageCode, voiceName) ->
+      root.put(languageCode, voiceName)
+    }
+    return root.toString()
   }
 }

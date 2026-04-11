@@ -10,8 +10,10 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 
 PIPER_BASE_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main"
+KOKORO_BASE_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0"
 TTS_BASE_URL = "https://translator.davidv.dev/tts"
 TTS_VERSION = 1
+KOKORO_SHARED_PACK_ID = "tts-kokoro-v1.0-core"
 CORE_ESPEAK_FILES = ("phondata", "phonindex", "phontab", "intonations")
 QUALITY_PRIORITY = {
     "medium": 0,
@@ -34,11 +36,11 @@ ESPEAK_DICT_OVERRIDES = {
     "zh": "cmn",
     "zh_hant": "yue",
 }
-
-EXTRA_PIPER_VOICES = {
+EXTRA_TTS_VOICES = {
     # External Polish Piper voice metadata source:
     # https://huggingface.co/WitoldG/polish_piper_models/resolve/main/pl_PL-jarvis_wg_glos-medium.onnx.json
     "pl_PL-jarvis_wg_glos-medium": {
+        "engine": "piper",
         "key": "pl_PL-jarvis_wg_glos-medium",
         "name": "jarvis_wg_glos",
         "language": {
@@ -67,6 +69,7 @@ EXTRA_PIPER_VOICES = {
     # External Hebrew Piper voice metadata source:
     # https://huggingface.co/notmax123/piper-medium-heb/resolve/main/model.config.json
     "he_IL-community_female-medium": {
+        "engine": "piper",
         "key": "he_IL-community_female-medium",
         "name": "community_female",
         "language": {
@@ -95,6 +98,7 @@ EXTRA_PIPER_VOICES = {
     # External Hebrew Piper voice metadata source:
     # https://huggingface.co/notmax123/piper-medium-heb/resolve/main/model.config.json
     "he_IL-community_male-medium": {
+        "engine": "piper",
         "key": "he_IL-community_male-medium",
         "name": "community_male",
         "language": {
@@ -119,6 +123,60 @@ EXTRA_PIPER_VOICES = {
             },
         },
         "aliases": [],
+    },
+    # External Kokoro model metadata source:
+    # https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0
+    "ja_JP-jf_alpha-kokoro-v1.0": {
+        "engine": "kokoro",
+        "shared_pack": KOKORO_SHARED_PACK_ID,
+        "depends_on": ["support-ja-mucab"],
+        "key": "ja_JP-jf_alpha-kokoro-v1.0",
+        "name": "jf_alpha",
+        "language": {
+            "code": "ja_JP",
+            "family": "ja",
+            "region": "JP",
+            "name_native": "日本語",
+            "name_english": "Japanese",
+            "country_english": "Japan",
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {},
+        "aliases": [],
+    },
+    # External Kokoro model metadata source:
+    # https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0
+    "ko_KR-jf_alpha-kokoro-v1.0": {
+        "engine": "kokoro",
+        "shared_pack": KOKORO_SHARED_PACK_ID,
+        "key": "ko_KR-jf_alpha-kokoro-v1.0",
+        "name": "jf_alpha",
+        "language": {
+            "code": "ko_KR",
+            "family": "ko",
+            "region": "KR",
+            "name_native": "한국어",
+            "name_english": "Korean",
+            "country_english": "South Korea",
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {},
+        "aliases": [],
+    },
+}
+
+KOKORO_SHARED_FILES = {
+    "kokoro-v1.0.int8.onnx": {
+        "size_bytes": 92361271,
+        "url": f"{KOKORO_BASE_URL}/kokoro-v1.0.int8.onnx",
+    },
+    "voices-v1.0.bin": {
+        "size_bytes": 28214398,
+        "url": f"{KOKORO_BASE_URL}/voices-v1.0.bin",
     },
 }
 
@@ -176,7 +234,7 @@ def load_json(path: str) -> dict:
 
 def merge_voice_catalogs(voices: dict) -> dict:
     merged = deepcopy(voices)
-    merged.update(EXTRA_PIPER_VOICES)
+    merged.update(EXTRA_TTS_VOICES)
     return merged
 
 
@@ -294,6 +352,26 @@ def build_espeak_support_packs(
         }
 
 
+def build_shared_tts_support_packs(catalog: dict, voices: dict) -> None:
+    if not any(voice.get("shared_pack") == KOKORO_SHARED_PACK_ID for voice in voices.values()):
+        return
+
+    catalog["packs"][KOKORO_SHARED_PACK_ID] = {
+        "feature": "support",
+        "kind": "tts-kokoro-core",
+        "files": [
+            {
+                "name": filename,
+                "sizeBytes": file_info["size_bytes"],
+                "installPath": f"bin/kokoro/{filename}",
+                "url": file_info["url"],
+            }
+            for filename, file_info in KOKORO_SHARED_FILES.items()
+        ],
+        "dependsOn": [],
+    }
+
+
 def merge_tts(
     base_catalog: dict,
     voices: dict,
@@ -327,6 +405,7 @@ def merge_tts(
         required_dict_codes.add(espeak_dict_code(app_language, voice["language"]["code"]))
 
     build_espeak_support_packs(catalog, required_dict_codes, tts_base_url, tts_version, espeak_core_zip_size)
+    build_shared_tts_support_packs(catalog, voices)
 
     regions_by_language: dict[str, dict[str, dict]] = defaultdict(dict)
     for (app_language, region), region_voices in sorted(grouped.items()):
@@ -334,7 +413,9 @@ def merge_tts(
         voice_ids: list[str] = []
 
         for key, voice in ranked:
-            pack_id = f"tts-piper-{key.replace('_', '-').lower()}"
+            engine = voice.get("engine", "piper")
+            install_root = voice.get("install_root", engine)
+            pack_id = f"tts-{engine}-{key.replace('_', '-').lower()}"
             locale_code = voice["language"]["code"]
             dict_code = espeak_dict_code(app_language, locale_code)
             files = []
@@ -346,7 +427,7 @@ def merge_tts(
                     {
                         "name": filename,
                         "sizeBytes": file_info.get("size_bytes", 0),
-                        "installPath": f"bin/piper/{source_path}",
+                        "installPath": f"bin/{install_root}/{source_path}",
                         "url": file_info.get("url") or f"{piper_base_url.rstrip('/')}/{source_path}",
                     }
                 )
@@ -356,9 +437,15 @@ def merge_tts(
             if speaker_id_map:
                 default_speaker_id = sorted(speaker_id_map.values())[0]
 
+            depends_on = [f"tts-espeak-dict-{dict_code}"]
+            shared_pack = voice.get("shared_pack")
+            if shared_pack:
+                depends_on.append(shared_pack)
+            depends_on.extend(voice.get("depends_on", []))
+
             pack = {
                 "feature": "tts",
-                "engine": "piper",
+                "engine": engine,
                 "language": app_language,
                 "locale": locale_code,
                 "region": region,
@@ -368,7 +455,7 @@ def merge_tts(
                 "defaultSpeakerId": default_speaker_id,
                 "aliases": voice.get("aliases", []),
                 "files": files,
-                "dependsOn": [f"tts-espeak-dict-{dict_code}"],
+                "dependsOn": depends_on,
             }
             if default_speaker_id is None:
                 pack.pop("defaultSpeakerId")

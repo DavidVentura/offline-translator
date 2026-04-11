@@ -42,4 +42,6 @@ data class AppSettings(
   val showFilePickerInImagePicker: Boolean = false,
   val showTransliterationOnInput: Boolean = false,
   val addSpacesForJapaneseTransliteration: Boolean = true,
+  val ttsPlaybackSpeed: Float = 1.0f,
+  val ttsVoiceOverrides: Map<String, String> = emptyMap(),
 )

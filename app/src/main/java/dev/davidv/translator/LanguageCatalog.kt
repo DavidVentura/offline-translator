@@ -157,14 +157,18 @@ data class LanguageCatalog(
     isInstalled: (String) -> Boolean,
   ): String? = ttsPackIdsForLanguage(languageCode).firstOrNull(isInstalled)
 
-  fun ttsSizeBytesForLanguage(languageCode: String): Long =
-    defaultTtsPackIdForLanguage(languageCode)
-      ?.let(packs::get)
-      ?.files
-      ?.sumOf { it.sizeBytes }
-      ?: 0L
+  fun ttsSizeBytesForLanguage(languageCode: String): Long = defaultTtsPackIdForLanguage(languageCode)?.let(::packSizeBytes) ?: 0L
 
-  fun packSizeBytes(packId: String): Long = packs[packId]?.files?.sumOf { it.sizeBytes } ?: 0L
+  fun packSizeBytes(packId: String): Long {
+    val seenInstallPaths = mutableSetOf<String>()
+    return dependencyClosure(listOf(packId))
+      .mapNotNull(packs::get)
+      .sumOf { pack ->
+        pack.files.sumOf { file ->
+          if (seenInstallPaths.add(file.installPath)) file.sizeBytes else 0L
+        }
+      }
+  }
 
   fun translationPackId(
     from: String,

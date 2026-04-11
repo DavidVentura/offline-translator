@@ -1,9 +1,9 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::time::Instant;
 
-use piper_rs::{BoundaryAfter, PhonemeChunk, Piper};
+use piper_rs::{Backend, BoundaryAfter, KokoroModel, PhonemeChunk, PiperModel};
 
 use crate::logging::{ANDROID_LOG_DEBUG, ANDROID_LOG_ERROR, android_log_with_level};
 
@@ -19,17 +19,41 @@ fn log_error(message: impl AsRef<str>) {
 }
 
 static ESPEAK_DATA_DIR: OnceLock<String> = OnceLock::new();
-static PIPER_CACHE: OnceLock<Mutex<Option<CachedPiper>>> = OnceLock::new();
+static MODEL_CACHE: OnceLock<Mutex<Option<CachedSpeechModel>>> = OnceLock::new();
 
 pub struct PcmAudio {
     pub sample_rate: i32,
     pub pcm_samples: Vec<i16>,
 }
 
-struct CachedPiper {
+#[derive(Clone)]
+pub struct TtsVoiceInfo {
+    pub name: String,
+    pub speaker_id: i64,
+    pub display_name: String,
+}
+
+fn audio_duration_ms(sample_count: usize, sample_rate: u32) -> u64 {
+    if sample_rate == 0 {
+        return 0;
+    }
+    ((sample_count as u64) * 1000) / u64::from(sample_rate)
+}
+
+enum SpeechModel {
+    Piper(PiperModel),
+    Kokoro(KokoroModel),
+}
+
+struct CachedSpeechModel {
+    engine: String,
     model_path: String,
-    config_path: String,
-    piper: Piper,
+    aux_path: String,
+    language_code: String,
+    support_data_root: String,
+    voices: Vec<(String, i64)>,
+    default_voice: Option<(String, i64)>,
+    model: SpeechModel,
 }
 
 fn log_timing(step: &str, started_at: Instant) {
@@ -64,51 +88,303 @@ fn boundary_after_code(boundary_after: BoundaryAfter) -> i32 {
     }
 }
 
-fn piper_cache() -> &'static Mutex<Option<CachedPiper>> {
-    PIPER_CACHE.get_or_init(|| Mutex::new(None))
+fn normalized_language_family(language_code: &str) -> &str {
+    language_code
+        .split(['-', '_'])
+        .next()
+        .unwrap_or(language_code)
 }
 
-fn with_cached_piper<T>(
+fn kokoro_voice_prefixes(language_code: &str) -> &'static [&'static str] {
+    match normalized_language_family(language_code) {
+        "en" => &["a", "b"],
+        "es" => &["e"],
+        "fr" => &["f"],
+        "hi" => &["h"],
+        "it" => &["i"],
+        "ja" => &["j"],
+        "ko" => &["j"],
+        "pt" => &["p"],
+        "zh" => &["z"],
+        _ => &[],
+    }
+}
+
+fn available_voices(model: &SpeechModel) -> Vec<(String, i64)> {
+    let mut voices = match model {
+        SpeechModel::Piper(model) => model
+            .voices()
+            .map(|voices| {
+                voices
+                    .iter()
+                    .map(|(name, id)| (name.clone(), *id))
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default(),
+        SpeechModel::Kokoro(model) => model
+            .voices()
+            .map(|voices| {
+                voices
+                    .iter()
+                    .map(|(name, id)| (name.clone(), *id))
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default(),
+    };
+    voices.sort_by(|left, right| left.0.cmp(&right.0));
+    voices
+}
+
+fn is_kokoro_voice_name(name: &str) -> bool {
+    let mut chars = name.chars();
+    matches!(
+        (chars.next(), chars.next(), chars.next()),
+        (Some(first), Some(second), Some('_'))
+            if first.is_ascii_lowercase() && second.is_ascii_lowercase()
+    )
+}
+
+fn format_voice_display_name(name: &str) -> String {
+    let trimmed = if is_kokoro_voice_name(name) {
+        &name[3..]
+    } else {
+        name
+    };
+
+    trimmed
+        .split(['_', '-'])
+        .filter(|part| !part.is_empty())
+        .map(|part| {
+            let mut chars = part.chars();
+            match chars.next() {
+                Some(first) => {
+                    let mut formatted = String::new();
+                    formatted.extend(first.to_uppercase());
+                    formatted.push_str(chars.as_str());
+                    formatted
+                }
+                None => String::new(),
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn visible_voices(engine: &str, language_code: &str, voices: &[(String, i64)]) -> Vec<TtsVoiceInfo> {
+    let filtered = if engine == "kokoro" {
+        let prefixes = kokoro_voice_prefixes(language_code);
+        let matching = voices
+            .iter()
+            .filter(|(name, _)| prefixes.iter().any(|prefix| name.starts_with(prefix)))
+            .cloned()
+            .collect::<Vec<_>>();
+        if matching.is_empty() {
+            voices.to_vec()
+        } else {
+            matching
+        }
+    } else {
+        voices.to_vec()
+    };
+
+    filtered
+        .into_iter()
+        .map(|(name, speaker_id)| TtsVoiceInfo {
+            display_name: format_voice_display_name(&name),
+            name,
+            speaker_id,
+        })
+        .collect()
+}
+
+fn select_default_voice(
+    engine: &str,
+    language_code: &str,
+    voices: &[(String, i64)],
+) -> Option<(String, i64)> {
+    if voices.is_empty() {
+        return None;
+    }
+
+    if engine != "kokoro" {
+        return None;
+    }
+
+    for prefix in kokoro_voice_prefixes(language_code) {
+        if let Some((name, id)) = voices.iter().find(|(name, _)| name.starts_with(prefix)) {
+            return Some((name.clone(), *id));
+        }
+    }
+
+    Some(voices[0].clone())
+}
+
+fn resolve_requested_voice(
+    cached_model: &CachedSpeechModel,
+    requested_voice_name: Option<&str>,
+    speaker_id: Option<i64>,
+) -> Option<(String, i64)> {
+    if let Some(requested_voice_name) = requested_voice_name.filter(|value| !value.is_empty()) {
+        if let Some((name, id)) = cached_model
+            .voices
+            .iter()
+            .find(|(name, _)| name == requested_voice_name)
+        {
+            return Some((name.clone(), *id));
+        }
+        log_error(format!(
+            "requested voice `{requested_voice_name}` was not found for engine={} language={}; falling back",
+            cached_model.engine, cached_model.language_code
+        ));
+    }
+
+    if let Some(speaker_id) = speaker_id {
+        if let Some((name, id)) = cached_model
+            .voices
+            .iter()
+            .find(|(_, id)| *id == speaker_id)
+        {
+            return Some((name.clone(), *id));
+        }
+    }
+
+    cached_model.default_voice.clone().or_else(|| {
+        speaker_id.map(|id| (format!("speaker_{id}"), id))
+    })
+}
+
+fn clamp_speech_speed(speech_speed: f32) -> f32 {
+    speech_speed.clamp(0.5, 2.0)
+}
+
+fn piper_length_scale_for_speed(speech_speed: f32) -> f32 {
+    1.0 / clamp_speech_speed(speech_speed)
+}
+
+fn model_cache() -> &'static Mutex<Option<CachedSpeechModel>> {
+    MODEL_CACHE.get_or_init(|| Mutex::new(None))
+}
+
+fn derive_japanese_dict_path(support_data_root: &str, language_code: &str) -> Option<PathBuf> {
+    if language_code != "ja" || support_data_root.is_empty() {
+        return None;
+    }
+
+    let candidate = Path::new(support_data_root).join("mucab.bin");
+    candidate.exists().then_some(candidate)
+}
+
+fn load_speech_model(
+    engine: &str,
     model_path: &str,
-    config_path: &str,
-    f: impl FnOnce(&mut Piper) -> Result<T, String>,
+    aux_path: &str,
+    language_code: &str,
+    support_data_root: &str,
+) -> Result<SpeechModel, String> {
+    if aux_path.is_empty() {
+        return Err(format!("Missing auxiliary path for TTS engine `{engine}`"));
+    }
+
+    match engine {
+        "kokoro" => {
+            let mut model = KokoroModel::new(
+                Path::new(model_path),
+                Path::new(aux_path),
+                language_code,
+                &Backend::Cpu,
+            )
+            .map_err(|err| format!("Failed to load Kokoro voice: {err}"))?;
+            if let Some(dict_path) = derive_japanese_dict_path(support_data_root, language_code) {
+                model
+                    .load_japanese_dict(dict_path.to_string_lossy().as_ref())
+                    .map_err(|err| format!("Failed to load Japanese dictionary: {err}"))?;
+            }
+            Ok(SpeechModel::Kokoro(model))
+        }
+        "piper" => PiperModel::new(Path::new(model_path), Path::new(aux_path), &Backend::Cpu)
+            .map(SpeechModel::Piper)
+            .map_err(|err| format!("Failed to load Piper voice: {err}")),
+        other => Err(format!("Unsupported TTS engine `{other}`")),
+    }
+}
+
+fn with_cached_model<T>(
+    engine: &str,
+    model_path: &str,
+    aux_path: &str,
+    language_code: &str,
+    support_data_root: &str,
+    f: impl FnOnce(&mut CachedSpeechModel) -> Result<T, String>,
 ) -> Result<T, String> {
     let load_started_at = Instant::now();
-    let mut cache = piper_cache()
+    let mut cache = model_cache()
         .lock()
-        .map_err(|_| "Failed to lock Piper cache".to_owned())?;
+        .map_err(|_| "Failed to lock TTS model cache".to_owned())?;
 
     let cache_hit = cache
         .as_ref()
-        .map(|cached| cached.model_path == model_path && cached.config_path == config_path)
+        .map(|cached| {
+            cached.engine == engine
+                && cached.model_path == model_path
+                && cached.aux_path == aux_path
+                && cached.language_code == language_code
+                && cached.support_data_root == support_data_root
+        })
         .unwrap_or(false);
 
     if !cache_hit {
-        log_debug("piper_cache miss; loading model");
-        let piper = Piper::new(Path::new(model_path), Path::new(config_path))
-            .map_err(|err| format!("Failed to load Piper voice: {err}"))?;
-        *cache = Some(CachedPiper {
+        log_debug(format!("tts_cache miss; loading {engine} model"));
+        let model = load_speech_model(
+            engine,
+            model_path,
+            aux_path,
+            language_code,
+            support_data_root,
+        )?;
+        let voices = available_voices(&model);
+        let default_voice = select_default_voice(engine, language_code, &voices);
+        if voices.is_empty() {
+            log_debug(format!(
+                "loaded {engine} model without selectable voices for language={language_code}"
+            ));
+        } else if let Some((name, id)) = default_voice.as_ref() {
+            log_debug(format!(
+                "loaded {engine} model with {} voice(s); default voice for language={language_code} is {name}={id}",
+                voices.len()
+            ));
+        } else {
+            log_debug(format!(
+                "loaded {engine} model with {} voice(s); no automatic default selected for language={language_code}",
+                voices.len()
+            ));
+        }
+        *cache = Some(CachedSpeechModel {
+            engine: engine.to_owned(),
             model_path: model_path.to_owned(),
-            config_path: config_path.to_owned(),
-            piper,
+            aux_path: aux_path.to_owned(),
+            language_code: language_code.to_owned(),
+            support_data_root: support_data_root.to_owned(),
+            voices,
+            default_voice,
+            model,
         });
     } else {
-        log_debug("piper_cache hit; reusing last model");
+        log_debug("tts_cache hit; reusing last model");
     }
     log_timing("load_model", load_started_at);
 
     let cached = cache
         .as_mut()
-        .ok_or_else(|| "Piper cache was unexpectedly empty".to_owned())?;
-    f(&mut cached.piper)
+        .ok_or_else(|| "TTS model cache was unexpectedly empty".to_owned())?;
+    f(cached)
 }
 
-fn configure_espeak_data_directory(espeak_data_path: Option<&str>) {
-    let Some(espeak_data_path) = espeak_data_path.filter(|path| !path.is_empty()) else {
+fn configure_support_data_root(support_data_root: Option<&str>) {
+    let Some(support_data_root) = support_data_root.filter(|path| !path.is_empty()) else {
         return;
     };
 
-    let data_root = Path::new(espeak_data_path);
+    let data_root = Path::new(support_data_root);
     let required = ["phondata", "phonindex", "phontab", "intonations"];
     let direct_layout_ok = required.iter().all(|name| data_root.join(name).exists());
     let nested_layout_ok = required
@@ -116,34 +392,110 @@ fn configure_espeak_data_directory(espeak_data_path: Option<&str>) {
         .all(|name| data_root.join("espeak-ng-data").join(name).exists());
 
     log_debug(format!(
-        "eSpeak data probe root={espeak_data_path} direct_layout_ok={direct_layout_ok} nested_layout_ok={nested_layout_ok}"
+        "eSpeak data probe root={support_data_root} direct_layout_ok={direct_layout_ok} nested_layout_ok={nested_layout_ok}"
     ));
 
-    match ESPEAK_DATA_DIR.set(espeak_data_path.to_owned()) {
+    match ESPEAK_DATA_DIR.set(support_data_root.to_owned()) {
         Ok(()) => {
-            // piper-rs discovers eSpeak data through process-global lookup.
-            // Set the path once before the first synthesis attempt.
             unsafe {
-                std::env::set_var(ESPEAK_DATA_ENV, espeak_data_path);
+                std::env::set_var(ESPEAK_DATA_ENV, support_data_root);
             }
             log_debug(format!(
-                "Configured eSpeak data directory at {espeak_data_path}"
+                "Configured eSpeak data directory at {support_data_root}"
             ));
         }
-        Err(existing) if existing == espeak_data_path => {}
+        Err(existing) if existing == support_data_root => {}
         Err(existing) => {
             log_error(format!(
-                "Ignoring alternate eSpeak data directory {espeak_data_path}; already using {existing}"
+                "Ignoring alternate eSpeak data directory {support_data_root}; already using {existing}"
             ));
         }
     }
 }
 
-pub fn synthesize_pcm(
-    model_path: &str,
-    config_path: &str,
-    espeak_data_path: Option<&str>,
+fn phonemize(model: &mut SpeechModel, text: &str) -> Result<String, String> {
+    match model {
+        SpeechModel::Piper(model) => model
+            .phonemize(text)
+            .map_err(|err| format!("Speech synthesis failed: {err}")),
+        SpeechModel::Kokoro(model) => model
+            .phonemize(text)
+            .map_err(|err| format!("Speech synthesis failed: {err}")),
+    }
+}
+
+fn synthesize(
+    cached_model: &mut CachedSpeechModel,
     text: &str,
+    speech_speed: f32,
+    voice_name: Option<&str>,
+    speaker_id: Option<i64>,
+    is_phonemes: bool,
+) -> Result<(Vec<f32>, u32), String> {
+    let selected_voice = resolve_requested_voice(cached_model, voice_name, speaker_id);
+    let effective_speaker_id = selected_voice.as_ref().map(|(_, id)| *id);
+    let clamped_speech_speed = clamp_speech_speed(speech_speed);
+    match &mut cached_model.model {
+        SpeechModel::Piper(model) => {
+            if let Some((name, id)) = selected_voice.as_ref() {
+                log_debug(format!(
+                    "using voice {name}={id} for engine={} language={} speech_speed={} length_scale={}",
+                    cached_model.engine,
+                    cached_model.language_code,
+                    clamped_speech_speed,
+                    piper_length_scale_for_speed(clamped_speech_speed)
+                ));
+            }
+            if is_phonemes {
+                model
+                    .synthesize_phonemes_with_options(
+                        text,
+                        effective_speaker_id,
+                        Some(piper_length_scale_for_speed(clamped_speech_speed)),
+                    )
+                    .map_err(|err| format!("Speech synthesis failed: {err}"))
+            } else {
+                model
+                    .synthesize_with_options(
+                        text,
+                        effective_speaker_id,
+                        Some(piper_length_scale_for_speed(clamped_speech_speed)),
+                    )
+                    .map_err(|err| format!("Speech synthesis failed: {err}"))
+            }
+        }
+        SpeechModel::Kokoro(model) => {
+            if let Some((name, id)) = selected_voice.as_ref() {
+                log_debug(format!(
+                    "using voice {name}={id} for engine={} language={} speech_speed={} ({} available)",
+                    cached_model.engine,
+                    cached_model.language_code,
+                    clamped_speech_speed,
+                    cached_model.voices.len()
+                ));
+            }
+            if is_phonemes {
+                model
+                    .synthesize_phonemes(text, effective_speaker_id, Some(clamped_speech_speed))
+                    .map_err(|err| format!("Speech synthesis failed: {err}"))
+            } else {
+                model
+                    .synthesize(text, effective_speaker_id, Some(clamped_speech_speed))
+                    .map_err(|err| format!("Speech synthesis failed: {err}"))
+            }
+        }
+    }
+}
+
+pub fn synthesize_pcm(
+    engine: &str,
+    model_path: &str,
+    aux_path: &str,
+    support_data_root: Option<&str>,
+    language_code: &str,
+    text: &str,
+    speech_speed: f32,
+    voice_name: Option<&str>,
     speaker_id: Option<i64>,
     is_phonemes: bool,
 ) -> Result<PcmAudio, String> {
@@ -152,50 +504,59 @@ pub fn synthesize_pcm(
     }
 
     let total_started_at = Instant::now();
-    configure_espeak_data_directory(espeak_data_path);
+    configure_support_data_root(support_data_root);
+    let support_data_root = support_data_root.unwrap_or_default();
 
-    log_debug(format!("Synthesizing speech with model {model_path}"));
-    let (samples, sample_rate) = with_cached_piper(model_path, config_path, |piper| {
-        if is_phonemes {
-            log_debug(format!(
-                "synthesizing direct phoneme chunk with {} phoneme char(s)",
-                text.chars().count()
-            ));
-        } else {
-            let phonemize_started_at = Instant::now();
-            let phoneme_chunks = piper
-                .phonemize_chunks(text)
-                .map_err(|err| format!("Speech synthesis failed: {err}"))?;
-            let total_phoneme_chars: usize = phoneme_chunks
-                .iter()
-                .map(|chunk| chunk.phonemes.chars().count())
-                .sum();
-            log_debug(format!(
-                "phonemize produced {} chunk(s), {} phoneme char(s), chunk sizes [{}]",
-                phoneme_chunks.len(),
-                total_phoneme_chars,
-                summarize_phoneme_chunk_sizes(&phoneme_chunks),
-            ));
-            log_timing("phonemize", phonemize_started_at);
-        }
+    log_debug(format!(
+        "Synthesizing speech with engine={engine} model={model_path}"
+    ));
+    let (samples, sample_rate) = with_cached_model(
+        engine,
+        model_path,
+        aux_path,
+        language_code,
+        support_data_root,
+        |cached_model| {
+            if is_phonemes {
+                log_debug(format!(
+                    "synthesizing direct phoneme chunk with {} phoneme char(s)",
+                    text.chars().count()
+                ));
+            } else {
+                let phonemize_started_at = Instant::now();
+                let phonemes = phonemize(&mut cached_model.model, text)?;
+                log_debug(format!(
+                    "phonemize produced 1 chunk, {} phoneme char(s)",
+                    phonemes.chars().count(),
+                ));
+                log_timing("phonemize", phonemize_started_at);
+            }
 
-        let synth_started_at = Instant::now();
-        let result = piper
-            .create(text, is_phonemes, speaker_id, None, None, None)
-            .map_err(|err| format!("Speech synthesis failed: {err}"))?;
-        log_timing("infer", synth_started_at);
-        Ok(result)
-    })?;
+            let synth_started_at = Instant::now();
+            let result = synthesize(
+                cached_model,
+                text,
+                speech_speed,
+                voice_name,
+                speaker_id,
+                is_phonemes,
+            )?;
+            log_timing("infer", synth_started_at);
+            Ok(result)
+        },
+    )?;
 
     let convert_started_at = Instant::now();
     let pcm_samples: Vec<i16> = samples
         .into_iter()
         .map(|sample| (sample.clamp(-1.0, 1.0) * i16::MAX as f32).round() as i16)
         .collect();
+    let duration_ms = audio_duration_ms(pcm_samples.len(), sample_rate);
     log_debug(format!(
-        "convert_to_pcm produced {} sample(s) at {} Hz",
+        "convert_to_pcm produced {} sample(s) at {} Hz (~{} ms audio)",
         pcm_samples.len(),
-        sample_rate
+        sample_rate,
+        duration_ms,
     ));
     log_timing("convert_to_pcm", convert_started_at);
     log_timing("synthesize_total", total_started_at);
@@ -206,37 +567,74 @@ pub fn synthesize_pcm(
     })
 }
 
-pub fn phonemize_chunks(
+pub fn list_voices(
+    engine: &str,
     model_path: &str,
-    config_path: &str,
-    espeak_data_path: Option<&str>,
+    aux_path: &str,
+    support_data_root: Option<&str>,
+    language_code: &str,
+) -> Result<Vec<TtsVoiceInfo>, String> {
+    configure_support_data_root(support_data_root);
+    let support_data_root = support_data_root.unwrap_or_default();
+
+    with_cached_model(
+        engine,
+        model_path,
+        aux_path,
+        language_code,
+        support_data_root,
+        |cached_model| {
+            Ok(visible_voices(
+                &cached_model.engine,
+                &cached_model.language_code,
+                &cached_model.voices,
+            ))
+        },
+    )
+}
+
+pub fn phonemize_chunks(
+    engine: &str,
+    model_path: &str,
+    aux_path: &str,
+    support_data_root: Option<&str>,
+    language_code: &str,
     text: &str,
 ) -> Result<Vec<PhonemeChunk>, String> {
     if text.trim().is_empty() {
         return Err("Text is empty".to_owned());
     }
 
-    configure_espeak_data_directory(espeak_data_path);
-    log_debug(format!("Phonemizing text with model {model_path}"));
+    configure_support_data_root(support_data_root);
+    let support_data_root = support_data_root.unwrap_or_default();
 
-    with_cached_piper(model_path, config_path, |piper| {
-        let phonemize_started_at = Instant::now();
-        let phoneme_chunks = piper
-            .phonemize_chunks(text)
-            .map_err(|err| format!("Speech synthesis failed: {err}"))?;
-        let total_phoneme_chars: usize = phoneme_chunks
-            .iter()
-            .map(|chunk| chunk.phonemes.chars().count())
-            .sum();
-        log_debug(format!(
-            "phonemize produced {} chunk(s), {} phoneme char(s), chunk sizes [{}]",
-            phoneme_chunks.len(),
-            total_phoneme_chars,
-            summarize_phoneme_chunk_sizes(&phoneme_chunks),
-        ));
-        log_timing("phonemize", phonemize_started_at);
-        Ok(phoneme_chunks)
-    })
+    log_debug(format!(
+        "Phonemizing text with engine={engine} model={model_path}"
+    ));
+
+    with_cached_model(
+        engine,
+        model_path,
+        aux_path,
+        language_code,
+        support_data_root,
+        |cached_model| {
+            let phonemize_started_at = Instant::now();
+            let phonemes = phonemize(&mut cached_model.model, text)?;
+            let phoneme_chunks = vec![PhonemeChunk {
+                phonemes,
+                boundary_after: BoundaryAfter::Paragraph,
+            }];
+            log_debug(format!(
+                "phonemize produced {} chunk(s), {} phoneme char(s), chunk sizes [{}]",
+                phoneme_chunks.len(),
+                phoneme_chunks[0].phonemes.chars().count(),
+                summarize_phoneme_chunk_sizes(&phoneme_chunks),
+            ));
+            log_timing("phonemize", phonemize_started_at);
+            Ok(phoneme_chunks)
+        },
+    )
 }
 
 #[cfg(feature = "android")]
@@ -250,29 +648,48 @@ mod jni_bridge {
     pub unsafe extern "C" fn Java_dev_davidv_translator_SpeechBinding_nativeSynthesizePcm(
         mut env: JNIEnv,
         _: JClass,
+        java_engine: JString,
         java_model_path: JString,
-        java_config_path: JString,
-        java_espeak_data_path: JString,
+        java_aux_path: JString,
+        java_support_data_root: JString,
+        java_language_code: JString,
         java_text: JString,
+        speech_speed: f32,
+        java_voice_name: JString,
         speaker_id: jint,
         is_phonemes: jboolean,
     ) -> jobject {
+        let engine: String = match env.get_string(&java_engine) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
         let model_path: String = match env.get_string(&java_model_path) {
             Ok(value) => value.into(),
             Err(_) => return std::ptr::null_mut(),
         };
 
-        let config_path: String = match env.get_string(&java_config_path) {
+        let aux_path: String = match env.get_string(&java_aux_path) {
             Ok(value) => value.into(),
             Err(_) => return std::ptr::null_mut(),
         };
 
-        let espeak_data_path: String = match env.get_string(&java_espeak_data_path) {
+        let support_data_root: String = match env.get_string(&java_support_data_root) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let language_code: String = match env.get_string(&java_language_code) {
             Ok(value) => value.into(),
             Err(_) => return std::ptr::null_mut(),
         };
 
         let text: String = match env.get_string(&java_text) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let voice_name: String = match env.get_string(&java_voice_name) {
             Ok(value) => value.into(),
             Err(_) => return std::ptr::null_mut(),
         };
@@ -284,10 +701,14 @@ mod jni_bridge {
         };
 
         match synthesize_pcm(
+            &engine,
             &model_path,
-            &config_path,
-            Some(espeak_data_path.as_str()),
+            &aux_path,
+            Some(support_data_root.as_str()),
+            &language_code,
             &text,
+            speech_speed,
+            Some(voice_name.as_str()),
             speaker_id,
             is_phonemes != 0,
         ) {
@@ -323,22 +744,34 @@ mod jni_bridge {
     pub unsafe extern "C" fn Java_dev_davidv_translator_SpeechBinding_nativePhonemizeChunks(
         mut env: JNIEnv,
         _: JClass,
+        java_engine: JString,
         java_model_path: JString,
-        java_config_path: JString,
-        java_espeak_data_path: JString,
+        java_aux_path: JString,
+        java_support_data_root: JString,
+        java_language_code: JString,
         java_text: JString,
     ) -> jobjectArray {
+        let engine: String = match env.get_string(&java_engine) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
         let model_path: String = match env.get_string(&java_model_path) {
             Ok(value) => value.into(),
             Err(_) => return std::ptr::null_mut(),
         };
 
-        let config_path: String = match env.get_string(&java_config_path) {
+        let aux_path: String = match env.get_string(&java_aux_path) {
             Ok(value) => value.into(),
             Err(_) => return std::ptr::null_mut(),
         };
 
-        let espeak_data_path: String = match env.get_string(&java_espeak_data_path) {
+        let support_data_root: String = match env.get_string(&java_support_data_root) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let language_code: String = match env.get_string(&java_language_code) {
             Ok(value) => value.into(),
             Err(_) => return std::ptr::null_mut(),
         };
@@ -349,9 +782,11 @@ mod jni_bridge {
         };
 
         let phoneme_chunks = match phonemize_chunks(
+            &engine,
             &model_path,
-            &config_path,
-            Some(espeak_data_path.as_str()),
+            &aux_path,
+            Some(support_data_root.as_str()),
+            &language_code,
             &text,
         ) {
             Ok(chunks) => chunks,
@@ -391,6 +826,99 @@ mod jni_bridge {
             };
             if env
                 .set_object_array_element(&array, index as i32, java_chunk)
+                .is_err()
+            {
+                return std::ptr::null_mut();
+            }
+        }
+
+        array.into_raw()
+    }
+
+    #[unsafe(no_mangle)]
+    pub unsafe extern "C" fn Java_dev_davidv_translator_SpeechBinding_nativeListVoices(
+        mut env: JNIEnv,
+        _: JClass,
+        java_engine: JString,
+        java_model_path: JString,
+        java_aux_path: JString,
+        java_support_data_root: JString,
+        java_language_code: JString,
+    ) -> jobjectArray {
+        let engine: String = match env.get_string(&java_engine) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let model_path: String = match env.get_string(&java_model_path) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let aux_path: String = match env.get_string(&java_aux_path) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let support_data_root: String = match env.get_string(&java_support_data_root) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let language_code: String = match env.get_string(&java_language_code) {
+            Ok(value) => value.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let voices = match list_voices(
+            &engine,
+            &model_path,
+            &aux_path,
+            Some(support_data_root.as_str()),
+            &language_code,
+        ) {
+            Ok(voices) => voices,
+            Err(error) => {
+                log_error(error);
+                return std::ptr::null_mut();
+            }
+        };
+
+        let voice_class = match env.find_class("dev/davidv/translator/NativeTtsVoice") {
+            Ok(class) => class,
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let array = match env.new_object_array(voices.len() as i32, voice_class, JObject::null()) {
+            Ok(array) => array,
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        for (index, voice) in voices.iter().enumerate() {
+            let java_name = match env.new_string(&voice.name) {
+                Ok(value) => value,
+                Err(_) => return std::ptr::null_mut(),
+            };
+            let java_name = JObject::from(java_name);
+            let java_display_name = match env.new_string(&voice.display_name) {
+                Ok(value) => value,
+                Err(_) => return std::ptr::null_mut(),
+            };
+            let java_display_name = JObject::from(java_display_name);
+            let java_voice = match env.new_object(
+                "dev/davidv/translator/NativeTtsVoice",
+                "(Ljava/lang/String;ILjava/lang/String;)V",
+                &[
+                    JValue::Object(&java_name),
+                    JValue::Int(voice.speaker_id as jint),
+                    JValue::Object(&java_display_name),
+                ],
+            ) {
+                Ok(value) => value,
+                Err(_) => return std::ptr::null_mut(),
+            };
+            if env
+                .set_object_array_element(&array, index as i32, java_voice)
                 .is_err()
             {
                 return std::ptr::null_mut();
