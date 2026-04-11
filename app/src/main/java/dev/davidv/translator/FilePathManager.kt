@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONObject
 import java.io.File
 
-data class PiperVoiceFiles(
+data class TtsVoiceFiles(
+  val engine: String,
   val model: File,
-  val config: File,
+  val aux: File,
+  val languageCode: String,
   val speakerId: Int? = null,
 )
 
@@ -79,28 +81,50 @@ class FilePathManager(
     )
   }
 
-  fun getPiperVoiceFiles(language: Language): PiperVoiceFiles? {
+  fun getTtsVoiceFiles(language: Language): TtsVoiceFiles? {
     val catalog = loadCatalog() ?: return null
     val resolver = PackResolver(catalog, this)
     val voicePackId = catalog.installedTtsPackIdForLanguage(language.code, resolver::isInstalled) ?: return null
     val voicePack = catalog.pack(voicePackId) ?: return null
-    val configAsset = voicePack.files.firstOrNull { it.name.endsWith(".onnx.json") } ?: return null
-    val modelAsset = voicePack.files.firstOrNull { it.name.endsWith(".onnx") && !it.name.endsWith(".onnx.json") } ?: return null
+    val engine = voicePack.engine ?: "piper"
+    val packFiles =
+      catalog
+        .dependencyClosure(setOf(voicePackId))
+        .mapNotNull(catalog::pack)
+        .flatMap { it.files }
+    val modelAsset = packFiles.firstOrNull { it.name.endsWith(".onnx") && !it.name.endsWith(".onnx.json") } ?: return null
     val modelFile = resolveInstallPath(modelAsset.installPath)
-    val configFile = resolveInstallPath(configAsset.installPath)
+    if (!modelFile.exists()) return null
 
-    return if (modelFile.exists() && configFile.exists()) {
-      PiperVoiceFiles(
-        model = modelFile,
-        config = configFile,
-        speakerId = voicePack.defaultSpeakerId,
-      )
-    } else {
-      null
+    return when (engine) {
+      "kokoro" -> {
+        val voicesAsset = packFiles.firstOrNull { it.name.endsWith(".bin") } ?: return null
+        val auxFile = resolveInstallPath(voicesAsset.installPath)
+        if (!auxFile.exists()) return null
+        TtsVoiceFiles(
+          engine = engine,
+          model = modelFile,
+          aux = auxFile,
+          languageCode = language.code,
+          speakerId = voicePack.defaultSpeakerId,
+        )
+      }
+      else -> {
+        val configAsset = packFiles.firstOrNull { it.name.endsWith(".onnx.json") } ?: return null
+        val auxFile = resolveInstallPath(configAsset.installPath)
+        if (!auxFile.exists()) return null
+        TtsVoiceFiles(
+          engine = engine,
+          model = modelFile,
+          aux = auxFile,
+          languageCode = language.code,
+          speakerId = voicePack.defaultSpeakerId,
+        )
+      }
     }
   }
 
-  fun getPiperEspeakDataRoot(): File? {
+  fun getTtsSupportDataRoot(): File? {
     val dataDir = getDataDir()
     val espeakDataDir = File(dataDir, "espeak-ng-data")
     return dataDir.takeIf { espeakDataDir.exists() }

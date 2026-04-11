@@ -31,45 +31,62 @@ class SpeechBinding {
   }
 
   fun synthesizePcm(
+    engine: String,
     modelPath: String,
-    configPath: String,
-    espeakDataPath: String?,
+    auxPath: String,
+    supportDataPath: String?,
+    languageCode: String,
     text: String,
     speakerId: Int? = null,
     isPhonemes: Boolean = false,
   ): PcmAudio? =
     nativeSynthesizePcm(
+      engine,
       modelPath,
-      configPath,
-      espeakDataPath.orEmpty(),
+      auxPath,
+      supportDataPath.orEmpty(),
+      languageCode,
       text,
       speakerId ?: -1,
       isPhonemes,
     )
 
   fun phonemizeChunks(
+    engine: String,
     modelPath: String,
-    configPath: String,
-    espeakDataPath: String?,
+    auxPath: String,
+    supportDataPath: String?,
+    languageCode: String,
     text: String,
   ): List<PhonemeChunk>? =
-    nativePhonemizeChunks(modelPath, configPath, espeakDataPath.orEmpty(), text)
+    nativePhonemizeChunks(
+      engine,
+      modelPath,
+      auxPath,
+      supportDataPath.orEmpty(),
+      languageCode,
+      text,
+    )
       ?.map { chunk -> PhonemeChunk(content = chunk.content, boundaryAfter = SpeechChunkBoundary.fromNative(chunk.boundaryAfter)) }
       ?.toList()
 
   private external fun nativeSynthesizePcm(
+    engine: String,
     modelPath: String,
-    configPath: String,
-    espeakDataPath: String,
+    auxPath: String,
+    supportDataPath: String,
+    languageCode: String,
     text: String,
     speakerId: Int,
     isPhonemes: Boolean,
   ): PcmAudio?
 
   private external fun nativePhonemizeChunks(
+    engine: String,
     modelPath: String,
-    configPath: String,
-    espeakDataPath: String,
+    auxPath: String,
+    supportDataPath: String,
+    languageCode: String,
     text: String,
   ): Array<NativePhonemeChunk>?
 }

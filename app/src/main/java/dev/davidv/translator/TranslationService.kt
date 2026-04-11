@@ -37,6 +37,9 @@ class TranslationService(
     private const val CLAUSE_PAUSE_MS = 120
     private const val SENTENCE_PAUSE_MS = 180
     private const val PARAGRAPH_PAUSE_MS = 320
+    private const val MIN_PAUSE_SPLIT_CHARS = 12
+    private val SENTENCE_BOUNDARY_CHARS = setOf('.', '?', '!', '。', '？', '！')
+    private val CLAUSE_PAUSE_CHARS = setOf(',', ';', ':', '、', '，', '；', '：')
 
     @Volatile
     private var nativeLibInstance: NativeLib? = null
@@ -348,17 +351,19 @@ alignment: soft
       }
 
       val voiceFiles =
-        filePathManager.getPiperVoiceFiles(language)
+        filePathManager.getTtsVoiceFiles(language)
           ?: return@withContext SpeechSynthesisResult.Error(
-            "No Piper voice installed for ${language.displayName}",
+            "No TTS voice installed for ${language.displayName}",
           )
 
-      val espeakDataPath = filePathManager.getPiperEspeakDataRoot()?.absolutePath
+      val supportDataPath = filePathManager.getTtsSupportDataRoot()?.absolutePath
       val phonemeChunks =
         speechBinding.phonemizeChunks(
+          engine = voiceFiles.engine,
           modelPath = voiceFiles.model.absolutePath,
-          configPath = voiceFiles.config.absolutePath,
-          espeakDataPath = espeakDataPath,
+          auxPath = voiceFiles.aux.absolutePath,
+          supportDataPath = supportDataPath,
+          languageCode = voiceFiles.languageCode,
           text = text,
         ) ?: return@withContext SpeechSynthesisResult.Error(
           "Speech synthesis failed for ${language.displayName}",
@@ -370,9 +375,11 @@ alignment: soft
           phonemeChunks = phonemeChunks,
           phonemizeText = { chunkText ->
             speechBinding.phonemizeChunks(
+              engine = voiceFiles.engine,
               modelPath = voiceFiles.model.absolutePath,
-              configPath = voiceFiles.config.absolutePath,
-              espeakDataPath = espeakDataPath,
+              auxPath = voiceFiles.aux.absolutePath,
+              supportDataPath = supportDataPath,
+              languageCode = voiceFiles.languageCode,
               text = chunkText,
             )
           },
@@ -384,9 +391,11 @@ alignment: soft
             currentCoroutineContext().ensureActive()
             val pcmAudio =
               speechBinding.synthesizePcm(
+                engine = voiceFiles.engine,
                 modelPath = voiceFiles.model.absolutePath,
-                configPath = voiceFiles.config.absolutePath,
-                espeakDataPath = espeakDataPath,
+                auxPath = voiceFiles.aux.absolutePath,
+                supportDataPath = supportDataPath,
+                languageCode = voiceFiles.languageCode,
                 text = chunkRequest.content,
                 speakerId = voiceFiles.speakerId,
                 isPhonemes = chunkRequest.isPhonemes,
@@ -473,15 +482,17 @@ alignment: soft
       return null
     }
 
-    val splitText = splitAtFirstPause(sourceChunk) ?: return null
+    val splitText = splitAtBestPause(sourceChunk) ?: return null
     val remainingPhonemeChunks = phonemizeText(splitText.second)?.filter { it.content.isNotBlank() }.orEmpty()
     if (remainingPhonemeChunks.isEmpty()) {
       return null
     }
 
+    val remainingRequests = buildSpeechChunkRequests(splitText.second, remainingPhonemeChunks, phonemizeText)
+
     Log.d(
       "TranslationService",
-      "Forcing fast speech chunk at first pause for long utterance (${phonemeChunk.content.length} phoneme chars); remainder re-chunked into ${remainingPhonemeChunks.size} chunk(s)",
+      "Forcing fast speech chunk at best pause for long utterance (${phonemeChunk.content.length} phoneme chars); remainder re-chunked into ${remainingRequests.size} chunk(s)",
     )
 
     return buildList {
@@ -493,16 +504,7 @@ alignment: soft
           pauseAfterMsOverride = CLAUSE_PAUSE_MS,
         ),
       )
-      addAll(
-        remainingPhonemeChunks.map { chunk ->
-          SpeechChunkRequest(
-            content = chunk.content,
-            isPhonemes = true,
-            boundaryAfter = chunk.boundaryAfter,
-            pauseAfterMsOverride = null,
-          )
-        },
-      )
+      addAll(remainingRequests)
     }
   }
 
@@ -588,7 +590,7 @@ alignment: soft
     return segments
   }
 
-  private fun isSentenceBoundaryChar(ch: Char): Boolean = ch == '.' || ch == '?' || ch == '!'
+  private fun isSentenceBoundaryChar(ch: Char): Boolean = ch in SENTENCE_BOUNDARY_CHARS
 
   private fun clearFinalBoundary(chunks: List<SpeechChunkRequest>): List<SpeechChunkRequest> {
     if (chunks.isEmpty()) {
@@ -619,19 +621,25 @@ alignment: soft
     return PcmAudio.silence(sampleRate, pauseMs)
   }
 
-  private fun splitAtFirstPause(text: String): Pair<String, String>? {
-    val splitIndex = text.indexOfFirst { it == ',' || it == ';' || it == ':' }
-    if (splitIndex <= 0 || splitIndex >= text.lastIndex) {
-      return null
-    }
+  private fun splitAtBestPause(text: String): Pair<String, String>? {
+    val minSideChars = maxOf(MIN_PAUSE_SPLIT_CHARS, text.length / 4)
+    val midpoint = text.length / 2.0
 
-    val firstChunk = text.substring(0, splitIndex + 1).trim()
-    val secondChunk = text.substring(splitIndex + 1).trim()
-    if (firstChunk.isBlank() || secondChunk.isBlank()) {
-      return null
-    }
-
-    return firstChunk to secondChunk
+    return text.indices
+      .asSequence()
+      .filter { text[it] in CLAUSE_PAUSE_CHARS }
+      .mapNotNull { splitIndex ->
+        val firstChunk = text.substring(0, splitIndex + 1).trim()
+        val secondChunk = text.substring(splitIndex + 1).trim()
+        if (firstChunk.length < minSideChars || secondChunk.length < minSideChars) {
+          return@mapNotNull null
+        }
+        val balancePenalty = kotlin.math.abs(firstChunk.length - secondChunk.length)
+        val midpointPenalty = kotlin.math.abs(midpoint - splitIndex)
+        Triple(balancePenalty, midpointPenalty, firstChunk to secondChunk)
+      }
+      .minWithOrNull(compareBy<Triple<Int, Double, Pair<String, String>>>({ it.first }, { it.second }))
+      ?.third
   }
 }
 
