@@ -194,12 +194,23 @@ class TranslationCoordinator(
       val translatePaint =
         measureTimeMillis {
           val pair =
-            paintTranslatedTextOver(
-              processedImage.bitmap,
-              processedImage.textBlocks,
-              translatedBlocks,
-              settingsManager.settings.value.backgroundMode,
-            )
+            when (readingOrder) {
+              ReadingOrder.LEFT_TO_RIGHT ->
+                paintTranslatedTextOver(
+                  processedImage.bitmap,
+                  processedImage.textBlocks,
+                  translatedBlocks,
+                  settingsManager.settings.value.backgroundMode,
+                )
+
+              ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT ->
+                paintTranslatedTextOverVerticalBlocks(
+                  processedImage.bitmap,
+                  processedImage.textBlocks,
+                  translatedBlocks,
+                  settingsManager.settings.value.backgroundMode,
+                )
+            }
           overlayBitmap = pair.first
           allTranslatedText = pair.second
         }

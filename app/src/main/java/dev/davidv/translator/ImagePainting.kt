@@ -23,9 +23,12 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.text.TextPaint
+import android.util.Log
 import kotlin.math.floor
 
 data class OverlayColors(val background: Int, val foreground: Int)
+
+private const val REPAINT_DEBUG_TAG = "RepaintBlocks"
 
 fun getOverlayColors(
   bitmap: Bitmap,
@@ -366,6 +369,69 @@ fun doesTextFitInLines(
   }
 }
 
+fun doesTextFitInRect(
+  text: String,
+  bounds: Rect,
+  textPaint: TextPaint,
+): TextFitResult {
+  if (text.isEmpty()) return TextFitResult.Fits(emptyList())
+  if (bounds.width() <= 0 || bounds.height() <= 0) return TextFitResult.DoesNotFit
+
+  val lineHeight = textPaint.descent() - textPaint.ascent()
+  val maxLines = floor(bounds.height() / lineHeight).toInt().coerceAtLeast(1)
+  val lineBreaks = mutableListOf<TextLineBreak>()
+  var start = 0
+
+  while (start < text.length && lineBreaks.size < maxLines) {
+    while (start < text.length && text[start] == ' ') {
+      start++
+    }
+    if (start >= text.length) break
+
+    val newlineIndex = text.indexOf('\n', startIndex = start).let { if (it == -1) text.length else it }
+    val measuredWidth = FloatArray(1)
+    val countedChars =
+      textPaint.breakText(
+        text,
+        start,
+        newlineIndex,
+        true,
+        bounds.width().toFloat(),
+        measuredWidth,
+      )
+    if (countedChars <= 0) {
+      return TextFitResult.DoesNotFit
+    }
+
+    val rawEnd = start + countedChars
+    val endIndex =
+      when {
+        rawEnd >= newlineIndex -> newlineIndex
+        else -> {
+          val previousSpaceIndex = text.lastIndexOf(' ', startIndex = rawEnd - 1)
+          if (previousSpaceIndex >= start) previousSpaceIndex else rawEnd
+        }
+      }
+
+    val safeEnd = if (endIndex <= start) rawEnd else endIndex
+    lineBreaks.add(TextLineBreak(start, safeEnd))
+    start = safeEnd
+
+    while (start < text.length && text[start] == ' ') {
+      start++
+    }
+    if (start < text.length && text[start] == '\n') {
+      start++
+    }
+  }
+
+  return if (start >= text.length) {
+    TextFitResult.Fits(lineBreaks)
+  } else {
+    TextFitResult.DoesNotFit
+  }
+}
+
 fun paintTranslatedTextOver(
   originalBitmap: Bitmap,
   textBlocks: Array<TextBlock>,
@@ -384,6 +450,12 @@ fun paintTranslatedTextOver(
   var allTranslatedText = ""
 
   textBlocks.forEachIndexed { i, textBlock ->
+    debugRepaintBlock(
+      blockIndex = i,
+      textBlock = textBlock,
+      translated = translatedBlocks.getOrNull(i),
+    )
+
     val blockAvgPixelHeight =
       textBlock.lines
         .map { textLine -> textLine.boundingBox.height() }
@@ -463,6 +535,108 @@ fun paintTranslatedTextOver(
 
   return Pair(mutableBitmap, allTranslatedText.trim())
 }
+
+fun paintTranslatedTextOverVerticalBlocks(
+  originalBitmap: Bitmap,
+  textBlocks: Array<TextBlock>,
+  translatedBlocks: List<String>,
+  backgroundMode: BackgroundMode = BackgroundMode.AUTO_DETECT,
+): Pair<Bitmap, String> {
+  val mutableBitmap = originalBitmap.copy(originalBitmap.config, true)
+  val canvas = Canvas(mutableBitmap)
+  val textPaint =
+    TextPaint().apply {
+      isAntiAlias = true
+    }
+
+  var allTranslatedText = ""
+
+  textBlocks.forEachIndexed { i, textBlock ->
+    val translated = translatedBlocks.getOrNull(i) ?: return@forEachIndexed
+    debugRepaintBlock(
+      blockIndex = i,
+      textBlock = textBlock,
+      translated = translated,
+    )
+
+    allTranslatedText = "${allTranslatedText}\n$translated"
+
+    val blockBounds = textBlock.blockBounds()
+    val allWordRects = textBlock.lines.flatMap { it.wordRects.asList() }.toTypedArray()
+    val minTextSize = 8f
+    val initialTextSize =
+      floor(
+        textBlock.lines
+          .map { line -> line.boundingBox.width() }
+          .average()
+          .toFloat(),
+      ).coerceAtLeast(minTextSize)
+
+    textPaint.textSize = initialTextSize
+    var fitResult = doesTextFitInRect(translated, blockBounds, textPaint)
+    while (fitResult is TextFitResult.DoesNotFit && textPaint.textSize > minTextSize) {
+      textPaint.textSize -= 1f
+      fitResult = doesTextFitInRect(translated, blockBounds, textPaint)
+    }
+
+    val foregroundColor =
+      removeTextWithSmartBlur(
+        canvas,
+        mutableBitmap,
+        blockBounds,
+        allWordRects,
+        backgroundMode,
+      )
+    textPaint.color = foregroundColor
+
+    if (fitResult is TextFitResult.Fits) {
+      val lineHeight = textPaint.descent() - textPaint.ascent()
+      val firstBaseline = blockBounds.top.toFloat() - textPaint.ascent()
+      fitResult.lineBreaks.forEachIndexed { lineIndex, lineBreak ->
+        if (lineBreak.startIndex >= translated.length) return@forEachIndexed
+        canvas.drawText(
+          translated,
+          lineBreak.startIndex,
+          lineBreak.endIndex,
+          blockBounds.left.toFloat(),
+          firstBaseline + (lineIndex * lineHeight),
+          textPaint,
+        )
+      }
+    }
+  }
+
+  return Pair(mutableBitmap, allTranslatedText.trim())
+}
+
+private fun debugRepaintBlock(
+  blockIndex: Int,
+  textBlock: TextBlock,
+  translated: String?,
+) {
+  val blockBounds = textBlock.blockBounds()
+  val sourceText = textBlock.lines.joinToString(separator = " | ") { it.text }
+  Log.d(
+    REPAINT_DEBUG_TAG,
+    "block[$blockIndex] bounds=${blockBounds.compactString()} lines=${textBlock.lines.size} src=\"$sourceText\" translated=\"${translated ?: ""}\"",
+  )
+  textBlock.lines.forEachIndexed { lineIndex, line ->
+    val wordRects = line.wordRects.joinToString(separator = ",") { it.compactString() }
+    Log.d(
+      REPAINT_DEBUG_TAG,
+      "block[$blockIndex] line[$lineIndex] bounds=${line.boundingBox.compactString()} words=${line.wordRects.size} text=\"${line.text}\" wordRects=[$wordRects]",
+    )
+  }
+}
+
+private fun TextBlock.blockBounds(): Rect {
+  val first = lines.firstOrNull()?.boundingBox ?: return Rect(0, 0, 0, 0)
+  val combined = Rect(first)
+  lines.drop(1).forEach { combined.union(it.boundingBox) }
+  return combined
+}
+
+private fun Rect.compactString(): String = "[$left,$top,$right,$bottom]"
 
 private fun toAndroidRect(r: Rect): android.graphics.Rect = android.graphics.Rect(r.left, r.top, r.right, r.bottom)
 
