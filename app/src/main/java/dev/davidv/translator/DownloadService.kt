@@ -772,10 +772,6 @@ class DownloadService : Service() {
           ?.let(filePathManager::resolveInstallPath)
           ?.parentFile
           ?.name
-      val extractionRoot =
-        installMarkerPath
-          ?.let(filePathManager::resolveInstallPath)
-          ?.parentFile
 
       fun normalizedEntryName(entryName: String): String {
         val trimmed = entryName.trimStart('/').removePrefix("./")
@@ -800,19 +796,6 @@ class DownloadService : Service() {
           } else if (parts.size == 1) {
             managedPaths += File(extractTo, parts[0])
           }
-        }
-      }
-      extractionRoot?.let { root ->
-        listOf("phondata", "phonindex", "phontab", "intonations")
-          .map { File(extractTo, it) }
-          .filter { it.exists() }
-          .forEach { it.deleteRecursively() }
-        listOf("lang", "voices")
-          .map { File(extractTo, it) }
-          .filter { it.exists() }
-          .forEach { it.deleteRecursively() }
-        if (root.exists()) {
-          root.deleteRecursively()
         }
       }
       managedPaths
