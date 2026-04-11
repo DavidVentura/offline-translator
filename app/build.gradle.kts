@@ -104,12 +104,13 @@ val ndk = "$androidSdkRoot/ndk/28.0.12674087"
 val bindingsAndroidApi = 28
 val onnxRuntimeRootDir = file("../third_party/onnxruntime")
 val onnxRuntimeSourceFingerprint =
-  providers.exec {
-    workingDir = onnxRuntimeRootDir
-    commandLine(
-      "bash",
-      "-lc",
-      """
+  providers
+    .exec {
+      workingDir = onnxRuntimeRootDir
+      commandLine(
+        "bash",
+        "-lc",
+        """
         set -euo pipefail
         if [ ! -e .git ]; then
           echo missing
@@ -120,11 +121,9 @@ val onnxRuntimeSourceFingerprint =
         git status --short --untracked-files=normal
         git submodule status --recursive
         git submodule foreach --quiet --recursive 'printf "%s\n" "${'$'}displaypath"; git rev-parse HEAD; git stash create || true; git status --short --untracked-files=normal'
-      """
-        .trimIndent(),
-    )
-  }
-    .standardOutput
+        """.trimIndent(),
+      )
+    }.standardOutput
     .asText
     .map(String::trim)
 
@@ -206,6 +205,7 @@ val abiToOnnxRuntimeTask =
           "--disable_ml_ops",
           "--disable_generation_ops",
           "--no_kleidiai",
+          "--use_xnnpack",
           "--no_sve",
           "--cmake_extra_defines",
           "CMAKE_CXX_STANDARD=20",

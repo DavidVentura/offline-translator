@@ -67,6 +67,7 @@ import dev.davidv.translator.LaunchMode
 import dev.davidv.translator.PcmAudioPlayer
 import dev.davidv.translator.TarkkaBinding
 import dev.davidv.translator.TranslatorMessage
+import dev.davidv.translator.TtsVoiceOption
 import dev.davidv.translator.ui.TranslatorViewModel
 import dev.davidv.translator.ui.UiEvent
 import kotlinx.coroutines.Dispatchers
@@ -77,6 +78,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.math.roundToInt
 
 fun toggleFirstLetterCase(word: String): String {
   if (word.isEmpty()) return word
@@ -85,6 +87,10 @@ fun toggleFirstLetterCase(word: String): String {
   val toggled = if (first.isUpperCase()) first.lowercaseChar() else first.uppercaseChar()
   return toggled + word.drop(1)
 }
+
+private fun defaultVoiceNameForLanguage(voices: List<TtsVoiceOption>): String? = voices.firstOrNull()?.name
+
+private fun quantizePlaybackSpeed(speed: Float): Float = ((speed.coerceIn(0.5f, 2.0f) * 10.0f).roundToInt() / 10.0f)
 
 fun openDictionary(
   language: Language,
@@ -185,6 +191,16 @@ fun TranslatorApp(
     kotlinx.coroutines.flow.MutableStateFlow<Map<Language, DownloadState>>(emptyMap())
   }.collectAsState()
   val isTranslating by viewModel.translationCoordinator.isTranslating.collectAsState()
+  val ttsVoicesByLanguage by viewModel.ttsVoices.collectAsState()
+
+  LaunchedEffect(to?.code, to?.let { languageState.availableLanguageMap[it]?.ttsFiles } == true) {
+    val targetLanguage = to ?: return@LaunchedEffect
+    if (languageState.availableLanguageMap[targetLanguage]?.ttsFiles == true) {
+      viewModel.refreshTtsVoices(targetLanguage)
+    } else {
+      viewModel.clearTtsVoices(targetLanguage.code)
+    }
+  }
 
   // Connect/disconnect download service
   LaunchedEffect(downloadService) {
@@ -368,6 +384,11 @@ fun TranslatorApp(
             val currentFrom = from
             val currentTo = to
             if (currentFrom != null && currentTo != null) {
+              val availableTtsVoices = ttsVoicesByLanguage[currentTo.code].orEmpty()
+              val selectedTtsVoiceName =
+                settings.ttsVoiceOverrides[currentTo.code]
+                  ?.takeIf { voiceName -> availableTtsVoices.any { it.name == voiceName } }
+                  ?: defaultVoiceNameForLanguage(availableTtsVoices)
               MainScreen(
                 onSettings = { navController.navigate("settings") },
                 input = input,
@@ -394,6 +415,20 @@ fun TranslatorApp(
                 languageMetadata = languageMetadata,
                 downloadStates = downloadStates,
                 settings = settings,
+                availableTtsVoices = availableTtsVoices,
+                selectedTtsVoiceName = selectedTtsVoiceName,
+                onTtsPlaybackSpeedChange = { newSpeed ->
+                  viewModel.settingsManager.updateSettings(
+                    settings.copy(ttsPlaybackSpeed = quantizePlaybackSpeed(newSpeed)),
+                  )
+                },
+                onTtsVoiceSelected = { voiceName ->
+                  viewModel.settingsManager.updateSettings(
+                    settings.copy(
+                      ttsVoiceOverrides = settings.ttsVoiceOverrides + (currentTo.code to voiceName),
+                    ),
+                  )
+                },
                 launchMode = currentLaunchMode,
               )
             }

@@ -240,6 +240,8 @@ class TranslationCoordinator(
     language: Language,
     text: String,
   ): SpeechSynthesisResult = translationService.synthesizeSpeech(language, text)
+
+  suspend fun availableTtsVoices(language: Language): List<TtsVoiceOption> = translationService.availableTtsVoices(language)
 }
 
 data class ProcessedImageResult(

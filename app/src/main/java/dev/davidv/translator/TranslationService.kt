@@ -357,10 +357,12 @@ alignment: soft
           )
 
       val supportDataPath = filePathManager.getTtsSupportDataRoot()?.absolutePath
+      val speechSpeed = settingsManager.settings.value.ttsPlaybackSpeed.coerceIn(0.5f, 2.0f)
+      val selectedVoiceName = settingsManager.settings.value.ttsVoiceOverrides[voiceFiles.languageCode]
       val speakerId = voiceFiles.speakerId
       Log.d(
         "TranslationService",
-        "Using TTS speakerId=$speakerId engine=${voiceFiles.engine} language=${voiceFiles.languageCode}",
+        "Using TTS speakerId=$speakerId voiceName=$selectedVoiceName speechSpeed=$speechSpeed engine=${voiceFiles.engine} language=${voiceFiles.languageCode}",
       )
       var phonemizeFailed = false
       val phonemizeText: (String) -> List<PhonemeChunk> = { chunkText: String ->
@@ -400,6 +402,8 @@ alignment: soft
                 supportDataPath = supportDataPath,
                 languageCode = voiceFiles.languageCode,
                 text = chunkRequest.content,
+                speechSpeed = speechSpeed,
+                voiceName = selectedVoiceName,
                 speakerId = speakerId,
                 isPhonemes = chunkRequest.isPhonemes,
               ) ?: throw IllegalStateException(
@@ -428,6 +432,19 @@ alignment: soft
           }
         },
       )
+    }
+
+  suspend fun availableTtsVoices(language: Language): List<TtsVoiceOption> =
+    withContext(Dispatchers.IO) {
+      val voiceFiles = filePathManager.getTtsVoiceFiles(language) ?: return@withContext emptyList()
+      val supportDataPath = filePathManager.getTtsSupportDataRoot()?.absolutePath
+      speechBinding.listVoices(
+        engine = voiceFiles.engine,
+        modelPath = voiceFiles.model.absolutePath,
+        auxPath = voiceFiles.aux.absolutePath,
+        supportDataPath = supportDataPath,
+        languageCode = voiceFiles.languageCode,
+      ) ?: emptyList()
     }
 
   private fun buildSpeechChunkRequests(

@@ -40,6 +40,7 @@ import dev.davidv.translator.TranslatedText
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationResult
 import dev.davidv.translator.TranslatorMessage
+import dev.davidv.translator.TtsVoiceOption
 import dev.davidv.translator.WordWithTaggedEntries
 import dev.davidv.translator.canSwapLanguages
 import dev.davidv.translator.canTranslate
@@ -119,6 +120,9 @@ class TranslatorViewModel(
 
   private val _dictionaryLookupLanguage = MutableStateFlow<Language?>(null)
   val dictionaryLookupLanguage: StateFlow<Language?> = _dictionaryLookupLanguage.asStateFlow()
+
+  private val _ttsVoices = MutableStateFlow<Map<String, List<TtsVoiceOption>>>(emptyMap())
+  val ttsVoices: StateFlow<Map<String, List<TtsVoiceOption>>> = _ttsVoices.asStateFlow()
 
   // One-shot UI events (Toast, errors, etc.)
   private val _uiEvents = MutableSharedFlow<UiEvent>()
@@ -422,6 +426,16 @@ class TranslatorViewModel(
 
   fun setModalVisible(visible: Boolean) {
     _modalVisible.value = visible
+  }
+
+  fun refreshTtsVoices(language: Language) {
+    viewModelScope.launch {
+      _ttsVoices.value = _ttsVoices.value + (language.code to translationCoordinator.availableTtsVoices(language))
+    }
+  }
+
+  fun clearTtsVoices(languageCode: String) {
+    _ttsVoices.value = _ttsVoices.value - languageCode
   }
 
   private fun triggerTranslation() {
