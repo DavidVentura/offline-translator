@@ -1,6 +1,6 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1775755406,
+  "generatedAt": 1775911636,
   "translationModelsBaseUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
   "tesseractModelsBaseUrl": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main",
   "dictionaryBaseUrl": "https://translator.davidv.dev/dictionaries",
@@ -1083,7 +1083,7 @@
               "tts-piper-pl-pl-darkman-medium",
               "tts-piper-pl-pl-gosia-medium",
               "tts-piper-pl-pl-mc-speech-medium",
-              "tts-piper-pl-pl-mls-6892-low"
+              "tts-piper-pl-pl-jarvis-wg-glos-medium"
             ]
           }
         }
@@ -9075,30 +9075,28 @@
         "tts-espeak-dict-pl"
       ]
     },
-    "tts-piper-pl-pl-mls-6892-low": {
+    "tts-piper-pl-pl-jarvis-wg-glos-medium": {
       "feature": "tts",
       "engine": "piper",
       "language": "pl",
       "locale": "pl_PL",
       "region": "PL",
-      "voice": "mls_6892",
-      "quality": "low",
+      "voice": "jarvis_wg_glos",
+      "quality": "medium",
       "numSpeakers": 1,
-      "aliases": [
-        "pl-mls_6892-low"
-      ],
+      "aliases": [],
       "files": [
         {
-          "name": "pl_PL-mls_6892-low.onnx",
-          "sizeBytes": 63104526,
-          "installPath": "bin/piper/pl/pl_PL/mls_6892/low/pl_PL-mls_6892-low.onnx",
-          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/mls_6892/low/pl_PL-mls_6892-low.onnx"
+          "name": "pl_PL-jarvis_wg_glos-medium.onnx",
+          "sizeBytes": 63516050,
+          "installPath": "bin/piper/pl/pl_PL/jarvis_wg_glos/medium/pl_PL-jarvis_wg_glos-medium.onnx",
+          "url": "https://huggingface.co/WitoldG/polish_piper_models/resolve/main/pl_PL-jarvis_wg_glos-medium.onnx"
         },
         {
-          "name": "pl_PL-mls_6892-low.onnx.json",
-          "sizeBytes": 4157,
-          "installPath": "bin/piper/pl/pl_PL/mls_6892/low/pl_PL-mls_6892-low.onnx.json",
-          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/mls_6892/low/pl_PL-mls_6892-low.onnx.json"
+          "name": "pl_PL-jarvis_wg_glos-medium.onnx.json",
+          "sizeBytes": 7104,
+          "installPath": "bin/piper/pl/pl_PL/jarvis_wg_glos/medium/pl_PL-jarvis_wg_glos-medium.onnx.json",
+          "url": "https://huggingface.co/WitoldG/polish_piper_models/resolve/main/pl_PL-jarvis_wg_glos-medium.onnx.json"
         }
       ],
       "dependsOn": [

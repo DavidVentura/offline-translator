@@ -34,6 +34,34 @@ ESPEAK_DICT_OVERRIDES = {
     "zh": "cmn",
     "zh_hant": "yue",
 }
+EXTRA_PIPER_VOICES = {
+    "pl_PL-jarvis_wg_glos-medium": {
+        "key": "pl_PL-jarvis_wg_glos-medium",
+        "name": "jarvis_wg_glos",
+        "language": {
+            "code": "pl_PL",
+            "family": "pl",
+            "region": "PL",
+            "name_native": "Polski",
+            "name_english": "Polish",
+            "country_english": "Poland",
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "pl/pl_PL/jarvis_wg_glos/medium/pl_PL-jarvis_wg_glos-medium.onnx": {
+                "size_bytes": 63516050,
+                "url": "https://huggingface.co/WitoldG/polish_piper_models/resolve/main/pl_PL-jarvis_wg_glos-medium.onnx",
+            },
+            "pl/pl_PL/jarvis_wg_glos/medium/pl_PL-jarvis_wg_glos-medium.onnx.json": {
+                "size_bytes": 7104,
+                "url": "https://huggingface.co/WitoldG/polish_piper_models/resolve/main/pl_PL-jarvis_wg_glos-medium.onnx.json",
+            },
+        },
+        "aliases": [],
+    }
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -85,6 +113,12 @@ def parse_args() -> argparse.Namespace:
 def load_json(path: str) -> dict:
     with Path(path).open("r", encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def merge_voice_catalogs(voices: dict) -> dict:
+    merged = deepcopy(voices)
+    merged.update(EXTRA_PIPER_VOICES)
+    return merged
 
 
 def app_language_code(voice: dict, supported_languages: set[str]) -> str | None:
@@ -210,6 +244,7 @@ def merge_tts(
     espeak_core_zip_size: int,
 ) -> dict:
     catalog = deepcopy(base_catalog)
+    voices = merge_voice_catalogs(voices)
     catalog["generatedAt"] = int(time.time())
     for entry in catalog["languages"].values():
         entry.pop("tts", None)
@@ -253,7 +288,7 @@ def merge_tts(
                         "name": filename,
                         "sizeBytes": file_info.get("size_bytes", 0),
                         "installPath": f"bin/piper/{source_path}",
-                        "url": f"{piper_base_url.rstrip('/')}/{source_path}",
+                        "url": file_info.get("url") or f"{piper_base_url.rstrip('/')}/{source_path}",
                     }
                 )
 
