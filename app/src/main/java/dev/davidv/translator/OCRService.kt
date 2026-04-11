@@ -21,6 +21,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
@@ -160,8 +161,11 @@ fun getSentences(
   bitmap: Bitmap,
   tessInstance: TesseractOCR,
   minConfidence: Int = 75,
+  pageSegMode: PageSegMode = PageSegMode.PSM_AUTO_OSD,
+  joinWithoutSpaces: Boolean = false,
+  relaxSingleCharConfidence: Boolean = false,
 ): Array<TextBlock> {
-  tessInstance.setPageSegmentationMode(PageSegMode.PSM_AUTO_OSD)
+  tessInstance.setPageSegmentationMode(pageSegMode)
 
   val detectedWords = tessInstance.processImage(bitmap)
   if (detectedWords == null) {
@@ -184,13 +188,14 @@ fun getSentences(
 
   var filteredWords = mutableListOf<WordInfo>()
   var pendingFirstInLine = false
+  val effectiveMinConfidence = if (relaxSingleCharConfidence) min(minConfidence, 60) else minConfidence
 
   for (i in allWords.indices) {
     val wordInfo = allWords[i]
 
     val shouldInclude =
-      wordInfo.confidence >= minConfidence &&
-        !(wordInfo.text.length == 1 && wordInfo.confidence < min(100, minConfidence + 5))
+      wordInfo.confidence >= effectiveMinConfidence &&
+        (relaxSingleCharConfidence || !(wordInfo.text.length == 1 && wordInfo.confidence < min(100, effectiveMinConfidence + 5)))
 
     if (shouldInclude) {
       val adjustedWordInfo =
@@ -257,7 +262,12 @@ fun getSentences(
           lines.clear()
         }
       } else {
-        line.text = "${line.text} $word".trim()
+        line.text =
+          if (joinWithoutSpaces || line.text.isEmpty()) {
+            line.text + word
+          } else {
+            "${line.text} $word".trim()
+          }
         line.wordRects += boundingBox
         if (boundingBox.right < line.boundingBox.left) {
           Log.e("OCRService", "going to break $boundingBox ${line.boundingBox}")
@@ -282,6 +292,13 @@ fun getSentences(
     lastRight = boundingBox.right
   }
 
+  if (line.text.trim().isNotEmpty()) {
+    lines.add(line)
+  }
+  if (lines.isNotEmpty()) {
+    blocks.add(TextBlock(lines.toTypedArray()))
+  }
+
   return blocks.toTypedArray()
 }
 
@@ -290,22 +307,36 @@ class OCRService(
 ) {
   private var tess: TesseractOCR? = null
   private var initializedToLang: Language? = null
+  private var initializedReadingOrder: ReadingOrder = ReadingOrder.LEFT_TO_RIGHT
 
-  private suspend fun initialize(lang: Language): Boolean =
+  private suspend fun initialize(
+    lang: Language,
+    readingOrder: ReadingOrder,
+  ): Boolean =
     withContext(Dispatchers.IO) {
-      if (initializedToLang == lang) return@withContext true
+      if (initializedToLang == lang && initializedReadingOrder == readingOrder) return@withContext true
 
       try {
         tess?.close()
         tess = null
         initializedToLang = null
+        initializedReadingOrder = ReadingOrder.LEFT_TO_RIGHT
 
         val p = filePathManager.getTesseractDir().toPath()
         val tessdata = Path(p.pathString, "tessdata")
         val dataPath: String = p.absolutePathString()
         tessdata.createDirectories()
 
-        val langs = "${lang.tessName}+eng"
+        val hasJapaneseVerticalModel =
+          lang.code == "ja" &&
+            File(tessdata.pathString, "jpn_vert.traineddata").exists()
+        val langs =
+          when {
+            lang.code == "ja" &&
+              readingOrder == ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT &&
+              hasJapaneseVerticalModel -> "jpn_vert"
+            else -> "${lang.tessName}+eng"
+          }
         Log.i("OCRService", "Initializing tesseract to path $dataPath, languages $langs")
 
         tess = TesseractOCR(tessdata.absolutePathString(), langs)
@@ -321,6 +352,7 @@ class OCRService(
         }
 
         initializedToLang = lang
+        initializedReadingOrder = readingOrder
         Log.i(
           "OCRService",
           "Tesseract initialized successfully with languages: $langs",
@@ -336,19 +368,35 @@ class OCRService(
     bitmap: Bitmap,
     fromLang: Language,
     minConfidence: Int = 75,
+    readingOrder: ReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
   ): Array<TextBlock> =
     withContext(Dispatchers.IO) {
-      if (initializedToLang != fromLang) {
-        val initSuccess = initialize(fromLang)
+      if (initializedToLang != fromLang || initializedReadingOrder != readingOrder) {
+        val initSuccess = initialize(fromLang, readingOrder)
         if (!initSuccess) return@withContext emptyArray()
       }
 
       val tessInstance = tess ?: return@withContext emptyArray()
+      val pageSegMode =
+        when (readingOrder) {
+          ReadingOrder.LEFT_TO_RIGHT -> PageSegMode.PSM_AUTO_OSD
+          ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT -> PageSegMode.PSM_SINGLE_BLOCK_VERT_TEXT
+        }
+      val joinWithoutSpaces = fromLang.code == "ja"
+      val relaxSingleCharConfidence = readingOrder == ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT
 
       val blocks: Array<TextBlock>
       val elapsed =
         measureTimeMillis {
-          blocks = getSentences(bitmap, tessInstance, minConfidence)
+          blocks =
+            getSentences(
+              bitmap = bitmap,
+              tessInstance = tessInstance,
+              minConfidence = minConfidence,
+              pageSegMode = pageSegMode,
+              joinWithoutSpaces = joinWithoutSpaces,
+              relaxSingleCharConfidence = relaxSingleCharConfidence,
+            )
         }
       Log.i("OCRService", "OCR took ${elapsed}ms")
       blocks
@@ -358,6 +406,7 @@ class OCRService(
     tess?.close()
     tess = null
     initializedToLang = null
+    initializedReadingOrder = ReadingOrder.LEFT_TO_RIGHT
     Log.i("OCRService", "OCR service cleaned up")
   }
 }

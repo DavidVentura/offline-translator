@@ -38,6 +38,8 @@ sealed class TranslatorMessage {
 
   data object ShareTranslatedImage : TranslatorMessage()
 
+  data object ToggleJapaneseOcrMode : TranslatorMessage()
+
   data object SwapLanguages : TranslatorMessage()
 
   data object ClearInput : TranslatorMessage()

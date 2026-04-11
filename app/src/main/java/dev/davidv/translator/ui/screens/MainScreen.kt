@@ -25,6 +25,7 @@ import android.util.Log
 import android.widget.TextView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FloatingActionButton
@@ -76,6 +78,7 @@ import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageMetadata
 import dev.davidv.translator.LaunchMode
 import dev.davidv.translator.R
+import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.TranslatedText
 import dev.davidv.translator.TranslatorMessage
 import dev.davidv.translator.WordWithTaggedEntries
@@ -105,6 +108,7 @@ fun MainScreen(
   to: Language,
   detectedLanguage: Language?,
   displayImage: Bitmap?,
+  ocrReadingOrder: ReadingOrder,
   isTranslating: StateFlow<Boolean>,
   isOcrInProgress: StateFlow<Boolean>,
   dictionaryWord: WordWithTaggedEntries?,
@@ -242,9 +246,21 @@ fun MainScreen(
                   isTranslating = isTranslating,
                   onShowFullScreenImage = { showFullScreenImage = true },
                 )
-                Row(modifier = Modifier.align(Alignment.TopEnd)) {
-                  ClearInput(onMessage)
+                Row(
+                  modifier =
+                    Modifier
+                      .align(Alignment.TopEnd)
+                      .padding(8.dp),
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                  if (from.code == "ja") {
+                    JapaneseOcrModeToggle(
+                      readingOrder = ocrReadingOrder,
+                      onMessage = onMessage,
+                    )
+                  }
                   ShareImage(onMessage)
+                  ClearInput(onMessage)
                 }
               }
             }
@@ -430,41 +446,42 @@ fun MainScreen(
 
 @Composable
 fun ShareImage(onMessage: (TranslatorMessage) -> Unit) {
-  IconButton(
+  ActionPillButton(
+    iconRes = R.drawable.share,
+    contentDescription = "Share image",
     onClick = { onMessage(TranslatorMessage.ShareTranslatedImage) },
-    modifier =
-      Modifier
-        .size(32.dp),
-  ) {
-    Icon(
-      painterResource(id = R.drawable.share),
-      contentDescription = "Share image",
-      tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-    )
-  }
+  )
+}
+
+@Composable
+fun JapaneseOcrModeToggle(
+  readingOrder: ReadingOrder,
+  onMessage: (TranslatorMessage) -> Unit,
+) {
+  val isVertical = readingOrder == ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT
+  ActionPillButton(
+    iconRes = if (isVertical) R.drawable.text_rotate_vertical else R.drawable.text_rotation_none,
+    contentDescription = if (isVertical) "Japanese OCR vertical mode" else "Japanese OCR horizontal mode",
+    onClick = { onMessage(TranslatorMessage.ToggleJapaneseOcrMode) },
+  )
 }
 
 @Composable
 fun ClearInput(onMessage: (TranslatorMessage) -> Unit) {
-  IconButton(
+  ActionPillButton(
+    iconRes = R.drawable.cancel,
+    contentDescription = "Clear input",
     onClick = { onMessage(TranslatorMessage.ClearInput) },
-    modifier =
-      Modifier
-        .size(32.dp),
-  ) {
-    Icon(
-      painterResource(id = R.drawable.cancel),
-      contentDescription = "Clear input",
-      tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-    )
-  }
+  )
 }
 
 @Composable
 fun PasteButton(onMessage: (TranslatorMessage) -> Unit) {
   val context = LocalContext.current
 
-  IconButton(
+  ActionPillButton(
+    iconRes = R.drawable.paste,
+    contentDescription = "Paste",
     onClick = {
       val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
       val clipData = clipboardManager.primaryClip
@@ -473,15 +490,29 @@ fun PasteButton(onMessage: (TranslatorMessage) -> Unit) {
         onMessage(TranslatorMessage.TextInput(text))
       }
     },
-    modifier =
-      Modifier
-        .size(32.dp),
+  )
+}
+
+@Composable
+private fun ActionPillButton(
+  iconRes: Int,
+  contentDescription: String,
+  onClick: () -> Unit,
+) {
+  Surface(
+    shape = CircleShape,
+    color = Color(0xCC303030),
   ) {
-    Icon(
-      painterResource(id = R.drawable.paste),
-      contentDescription = "Paste",
-      tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-    )
+    IconButton(
+      onClick = onClick,
+      modifier = Modifier.size(36.dp),
+    ) {
+      Icon(
+        painterResource(id = iconRes),
+        contentDescription = contentDescription,
+        tint = Color.White,
+      )
+    }
   }
 }
 
@@ -541,6 +572,7 @@ fun PopupMode() {
       to = previewLanguage("es", "Spanish"),
       detectedLanguage = previewLanguage("fr", "French"),
       displayImage = null,
+      ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
       isTranslating = MutableStateFlow(false).asStateFlow(),
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.ReadWriteModal {},
@@ -577,6 +609,7 @@ fun MainScreenPreview() {
       to = previewLanguage("es", "Spanish"),
       detectedLanguage = previewLanguage("fr", "French"),
       displayImage = null,
+      ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
       isTranslating = MutableStateFlow(false).asStateFlow(),
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.Normal,
@@ -617,6 +650,7 @@ fun PreviewTranslitText() {
       to = previewLanguage("en", "English"),
       detectedLanguage = null,
       displayImage = null,
+      ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
       isTranslating = MutableStateFlow(false).asStateFlow(),
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.Normal,
@@ -658,6 +692,7 @@ fun PreviewVeryLongText() {
       to = previewLanguage("en", "English"),
       detectedLanguage = null,
       displayImage = null,
+      ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
       isTranslating = MutableStateFlow(false).asStateFlow(),
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.Normal,
@@ -703,6 +738,7 @@ fun PreviewVeryLongTextImage() {
       to = previewLanguage("en", "English"),
       detectedLanguage = null,
       displayImage = bitmap,
+      ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
       isTranslating = MutableStateFlow(false).asStateFlow(),
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.Normal,

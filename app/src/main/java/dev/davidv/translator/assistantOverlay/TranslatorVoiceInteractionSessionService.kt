@@ -25,6 +25,7 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
   private lateinit var settingsManager: SettingsManager
   private lateinit var filePathManager: FilePathManager
   private lateinit var languageMetadataManager: LanguageMetadataManager
+  private lateinit var ocrService: OCRService
   private lateinit var imageProcessor: ImageProcessor
   private lateinit var translationCoordinator: TranslationCoordinator
   private lateinit var overlayTextTranslationHelper: OverlayTextTranslationHelper
@@ -38,7 +39,8 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
     val catalog = filePathManager.loadCatalog()
     val languagesFlow = kotlinx.coroutines.flow.MutableStateFlow(catalog?.languageList ?: emptyList())
     languageMetadataManager = LanguageMetadataManager(this, languagesFlow)
-    imageProcessor = ImageProcessor(this, OCRService(filePathManager))
+    ocrService = OCRService(filePathManager)
+    imageProcessor = ImageProcessor(this, ocrService)
     val english = catalog?.english ?: dev.davidv.translator.Language(code = "en", displayName = "English", shortDisplayName = "EN", tessName = "eng", script = "Latn", dictionaryCode = "en", tessdataSizeBytes = 0, toEnglish = null, fromEnglish = null, extraFiles = emptyList())
     translationCoordinator =
       TranslationCoordinator(
@@ -67,6 +69,9 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
     )
 
   override fun onDestroy() {
+    if (this::ocrService.isInitialized) {
+      ocrService.cleanup()
+    }
     serviceScope.cancel()
     super.onDestroy()
   }

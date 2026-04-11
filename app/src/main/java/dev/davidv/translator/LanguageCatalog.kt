@@ -236,6 +236,7 @@ data class LanguageCatalog(
     val tesseractPack = assets.ocr["tesseract"]?.let(packs::get)
     val tessFile = tesseractPack?.files?.firstOrNull()
     val tessName = tessFile?.name?.removeSuffix(".traineddata") ?: return null
+    val tessdataSizeBytes = tesseractPack?.files?.sumOf { it.sizeBytes } ?: return null
     val dictionaryCode = assets.dictionary?.let(packs::get)?.dictionaryCode ?: code
 
     val supportFiles =
@@ -250,7 +251,7 @@ data class LanguageCatalog(
       tessName = tessName,
       script = meta.script,
       dictionaryCode = dictionaryCode,
-      tessdataSizeBytes = tessFile.sizeBytes,
+      tessdataSizeBytes = tessdataSizeBytes,
       toEnglish = if (code == "en") null else translationDirection(from = code, to = "en"),
       fromEnglish = if (code == "en") null else translationDirection(from = "en", to = code),
       extraFiles = supportFiles,

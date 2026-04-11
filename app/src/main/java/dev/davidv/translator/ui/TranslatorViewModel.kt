@@ -32,6 +32,7 @@ import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.LaunchMode
 import dev.davidv.translator.PcmAudio
+import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.SpeechSynthesisResult
 import dev.davidv.translator.TarkkaBinding
@@ -90,6 +91,9 @@ class TranslatorViewModel(
   val displayImage: StateFlow<Bitmap?> = _displayImage.asStateFlow()
 
   private val originalImage = MutableStateFlow<Bitmap?>(null)
+
+  private val _ocrReadingOrder = MutableStateFlow(ReadingOrder.LEFT_TO_RIGHT)
+  val ocrReadingOrder: StateFlow<ReadingOrder> = _ocrReadingOrder.asStateFlow()
 
   private val _inputType = MutableStateFlow(InputType.TEXT)
   val inputType: StateFlow<InputType> = _inputType.asStateFlow()
@@ -306,9 +310,11 @@ class TranslatorViewModel(
                 fromLang,
                 toLang,
                 bm,
-              ) { imageTextDetected ->
-                _input.value = imageTextDetected.extractedText
-              }
+                onMessage = { imageTextDetected ->
+                  _input.value = imageTextDetected.extractedText
+                },
+                readingOrder = currentReadingOrderFor(fromLang),
+              )
             result?.let {
               _displayImage.value = it.correctedBitmap
               _output.value = TranslatedText(it.translatedText, null)
@@ -334,6 +340,18 @@ class TranslatorViewModel(
         _inputType.value = InputType.TEXT
         originalImage.value = null
         _currentDetectedLanguage.value = null
+      }
+
+      TranslatorMessage.ToggleJapaneseOcrMode -> {
+        _ocrReadingOrder.value =
+          when (_ocrReadingOrder.value) {
+            ReadingOrder.LEFT_TO_RIGHT -> ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT
+            ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT -> ReadingOrder.LEFT_TO_RIGHT
+          }
+        val fromLang = _from.value
+        if (_inputType.value == InputType.IMAGE && fromLang?.code == "ja") {
+          triggerTranslation()
+        }
       }
 
       is TranslatorMessage.InitializeLanguages -> {
@@ -462,9 +480,11 @@ class TranslatorViewModel(
               fromLang,
               toLang,
               bm,
-            ) { imageTextDetected ->
-              _input.value = imageTextDetected.extractedText
-            }
+              onMessage = { imageTextDetected ->
+                _input.value = imageTextDetected.extractedText
+              },
+              readingOrder = currentReadingOrderFor(fromLang),
+            )
           result?.let {
             _displayImage.value = it.correctedBitmap
             _output.value = TranslatedText(it.translatedText, null)
@@ -473,6 +493,13 @@ class TranslatorViewModel(
       }
     }
   }
+
+  private fun currentReadingOrderFor(fromLang: Language): ReadingOrder =
+    if (fromLang.code == "ja") {
+      _ocrReadingOrder.value
+    } else {
+      ReadingOrder.LEFT_TO_RIGHT
+    }
 
   private suspend fun autoTranslateInitialText(
     initialText: String,

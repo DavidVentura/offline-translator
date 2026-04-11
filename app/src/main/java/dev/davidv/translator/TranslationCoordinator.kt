@@ -153,12 +153,13 @@ class TranslationCoordinator(
     to: Language,
     finalBitmap: Bitmap,
     onMessage: (TranslatorMessage.ImageTextDetected) -> Unit,
+    readingOrder: ReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
   ): ProcessedImageResult? {
     _isTranslating.value = true
     return try {
       _isOcrInProgress.value = true
       val minConfidence = settingsManager.settings.value.minConfidence
-      val processedImage = imageProcessor.processImage(finalBitmap, from, minConfidence)
+      val processedImage = imageProcessor.processImage(finalBitmap, from, minConfidence, readingOrder)
       _isOcrInProgress.value = false
 
       Log.d("OCR", "complete, result ${processedImage.textBlocks}")

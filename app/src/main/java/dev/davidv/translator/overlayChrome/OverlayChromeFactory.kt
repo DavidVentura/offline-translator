@@ -14,11 +14,14 @@ import android.widget.ScrollView
 import android.widget.TextView
 import dev.davidv.translator.Language
 import dev.davidv.translator.R
+import dev.davidv.translator.ReadingOrder
 
 data class LanguageToolbarViews(
   val root: View,
   val sourceLabel: TextView,
   val targetLabel: TextView,
+  val readingOrderButton: View? = null,
+  val readingOrderIcon: ImageView? = null,
   val ocrButton: View? = null,
   val ocrIcon: ImageView? = null,
 )
@@ -36,6 +39,9 @@ object OverlayChromeFactory {
     onSourceClick: () -> Unit,
     onSwap: () -> Unit,
     onTargetClick: () -> Unit,
+    showReadingOrderButton: Boolean = false,
+    readingOrder: ReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
+    onReadingOrderClick: (() -> Unit)? = null,
     showOcrButton: Boolean = false,
     onOcrClick: (() -> Unit)? = null,
     onMenuClick: () -> Unit,
@@ -57,6 +63,33 @@ object OverlayChromeFactory {
         gravity = Gravity.START or Gravity.CENTER_VERTICAL
       },
     )
+
+    var readingOrderIcon: ImageView? = null
+    val readingOrderPill =
+      onReadingOrderClick?.let {
+        val readingBtn =
+          ImageView(context).apply {
+            setPadding(iconPad, iconPad, iconPad, iconPad)
+            setOnClickListener { onReadingOrderClick() }
+          }
+        readingOrderIcon = readingBtn
+        updateReadingOrderButtonState(
+          readingButton = null,
+          readingIcon = readingBtn,
+          visible = showReadingOrderButton,
+          readingOrder = readingOrder,
+        )
+        makePill(context, dpToPx, readingBtn).also { pill ->
+          pill.visibility = if (showReadingOrderButton) View.VISIBLE else View.GONE
+          toolbar.addView(
+            pill,
+            FrameLayout.LayoutParams(btnSize, btnSize).apply {
+              gravity = Gravity.START or Gravity.CENTER_VERTICAL
+              leftMargin = btnSize + dpToPx(6)
+            },
+          )
+        }
+      }
 
     val langRow = LinearLayout(context)
     langRow.orientation = LinearLayout.HORIZONTAL
@@ -142,7 +175,22 @@ object OverlayChromeFactory {
       },
     )
 
-    return LanguageToolbarViews(toolbar, sourceLabel, targetLabel, ocrPill, ocrIcon)
+    return LanguageToolbarViews(toolbar, sourceLabel, targetLabel, readingOrderPill, readingOrderIcon, ocrPill, ocrIcon)
+  }
+
+  fun updateReadingOrderButtonState(
+    readingButton: View?,
+    readingIcon: ImageView?,
+    visible: Boolean,
+    readingOrder: ReadingOrder,
+  ) {
+    readingButton?.visibility = if (visible) View.VISIBLE else View.GONE
+    readingIcon?.apply {
+      val isVertical = readingOrder == ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT
+      setImageResource(if (isVertical) R.drawable.text_rotate_vertical else R.drawable.text_rotation_none)
+      setColorFilter(Color.WHITE)
+      contentDescription = if (isVertical) "Japanese OCR vertical mode" else "Japanese OCR horizontal mode"
+    }
   }
 
   fun setOcrButtonActive(

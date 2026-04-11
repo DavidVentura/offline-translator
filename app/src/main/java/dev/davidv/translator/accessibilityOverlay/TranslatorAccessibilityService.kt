@@ -23,6 +23,7 @@ import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.OCRService
 import dev.davidv.translator.OverlayTextTranslationHelper
+import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.TranslatedStyledBlock
 import dev.davidv.translator.TranslationCoordinator
@@ -47,8 +48,10 @@ class TranslatorAccessibilityService : AccessibilityService() {
   private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
   private lateinit var settingsManager: SettingsManager
+  private lateinit var ocrService: OCRService
   private lateinit var imageProcessor: ImageProcessor
   private lateinit var translationCoordinator: TranslationCoordinator
+  private var ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT
   private var lastOcrBitmap: Bitmap? = null
   private var lastOcrRegion: Rect? = null
   private lateinit var overlayTextTranslationHelper: OverlayTextTranslationHelper
@@ -84,7 +87,8 @@ class TranslatorAccessibilityService : AccessibilityService() {
     val filePathManager = FilePathManager(this, settingsManager.settings)
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
     val languageDetector = LanguageDetector(langStateManager::languageByCode)
-    imageProcessor = ImageProcessor(this, OCRService(filePathManager))
+    ocrService = OCRService(filePathManager)
+    imageProcessor = ImageProcessor(this, ocrService)
 
     serviceScope.launch {
       langStateManager.catalog.collect { catalog ->
@@ -139,6 +143,9 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.removeFloatingButton()
     ui.dismissMenu()
     ui.cleanup()
+    if (this::ocrService.isInitialized) {
+      ocrService.cleanup()
+    }
     serviceScope.cancel()
     super.onDestroy()
   }
@@ -154,7 +161,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.removeFloatingButton()
     ui.removeTranslationOverlays()
     input.showInteractionOverlay()
-    ui.showToolbar(forcedSourceLanguage, forcedTargetLanguage)
+    ui.showToolbar(forcedSourceLanguage, forcedTargetLanguage, currentReadingOrderFor(forcedSourceLanguage))
     ui.showBorderWave()
     android.os.Handler(android.os.Looper.getMainLooper()).post {
       if (active) {
@@ -181,7 +188,8 @@ class TranslatorAccessibilityService : AccessibilityService() {
     if (!canSwapLanguages(oldSource, oldTarget)) return
     forcedSourceLanguage = oldTarget
     forcedTargetLanguage = oldSource
-    ui.updateToolbarLabels(forcedSourceLanguage, forcedTargetLanguage)
+    syncReadingOrderForSource()
+    ui.updateToolbarState(forcedSourceLanguage, forcedTargetLanguage, currentReadingOrderFor(forcedSourceLanguage))
     if (active) {
       retranslate()
     }
@@ -192,13 +200,27 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.showLanguagePicker(isSource, availableLangs) { lang ->
       if (isSource) {
         forcedSourceLanguage = lang
+        syncReadingOrderForSource()
       } else {
         forcedTargetLanguage = lang
       }
-      ui.updateToolbarLabels(forcedSourceLanguage, forcedTargetLanguage)
+      ui.updateToolbarState(forcedSourceLanguage, forcedTargetLanguage, currentReadingOrderFor(forcedSourceLanguage))
       if (active) {
         retranslate()
       }
+    }
+  }
+
+  fun toggleJapaneseOcrMode() {
+    if (forcedSourceLanguage?.code != "ja") return
+    ocrReadingOrder =
+      when (ocrReadingOrder) {
+        ReadingOrder.LEFT_TO_RIGHT -> ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT
+        ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT -> ReadingOrder.LEFT_TO_RIGHT
+      }
+    ui.updateToolbarState(forcedSourceLanguage, forcedTargetLanguage, ocrReadingOrder)
+    if (active) {
+      retranslate()
     }
   }
 
@@ -271,7 +293,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
         object : TakeScreenshotCallback {
           override fun onSuccess(screenshot: ScreenshotResult) {
             input.showInteractionOverlay()
-            ui.showToolbar(forcedSourceLanguage, forcedTargetLanguage)
+            ui.showToolbar(forcedSourceLanguage, forcedTargetLanguage, currentReadingOrderFor(forcedSourceLanguage))
 
             val hwBitmap = Bitmap.wrapHardwareBuffer(screenshot.hardwareBuffer, screenshot.colorSpace)
             screenshot.hardwareBuffer.close()
@@ -305,7 +327,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
           override fun onFailure(errorCode: Int) {
             Log.w(tag, "Screenshot failed: $errorCode")
             input.showInteractionOverlay()
-            ui.showToolbar(forcedSourceLanguage, forcedTargetLanguage)
+            ui.showToolbar(forcedSourceLanguage, forcedTargetLanguage, currentReadingOrderFor(forcedSourceLanguage))
             ui.setOcrButtonVisible(true)
           }
         },
@@ -322,7 +344,13 @@ class TranslatorAccessibilityService : AccessibilityService() {
 
     val result =
       withContext(Dispatchers.IO) {
-        translationCoordinator.translateImageWithOverlay(sourceLang, targetLang, bitmap) {}
+        translationCoordinator.translateImageWithOverlay(
+          sourceLang,
+          targetLang,
+          bitmap,
+          onMessage = {},
+          readingOrder = currentReadingOrderFor(sourceLang),
+        )
       }
 
     if (result != null) {
@@ -332,6 +360,19 @@ class TranslatorAccessibilityService : AccessibilityService() {
     } else {
       ui.removeTranslationOverlays()
       ui.setOcrButtonVisible(true)
+    }
+  }
+
+  private fun currentReadingOrderFor(language: Language?): ReadingOrder =
+    if (language?.code == "ja") {
+      ocrReadingOrder
+    } else {
+      ReadingOrder.LEFT_TO_RIGHT
+    }
+
+  private fun syncReadingOrderForSource() {
+    if (forcedSourceLanguage?.code != "ja") {
+      ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT
     }
   }
 

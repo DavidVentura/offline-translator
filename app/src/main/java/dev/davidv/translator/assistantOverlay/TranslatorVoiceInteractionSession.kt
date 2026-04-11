@@ -29,6 +29,7 @@ import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageStateManager
 import dev.davidv.translator.MainActivity
 import dev.davidv.translator.OverlayTextTranslationHelper
+import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.StyledFragment
 import dev.davidv.translator.TranslatedStyledBlock
@@ -82,6 +83,8 @@ class TranslatorVoiceInteractionSession(
   private lateinit var topBarView: View
   private var sourceLabelView: TextView? = null
   private var targetLabelView: TextView? = null
+  private var readingOrderButtonView: View? = null
+  private var readingOrderIconView: ImageView? = null
   private var ocrButtonView: View? = null
   private var ocrIconView: ImageView? = null
   private var menuManager: OverlayMenuManager? = null
@@ -107,6 +110,7 @@ class TranslatorVoiceInteractionSession(
   private var translationJob: Job? = null
   private var forcedSourceLanguage: Language? = null
   private var forcedTargetLanguage: Language? = null
+  private var ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT
   private var lastOcrBitmap: Bitmap? = null
   private var lastOcrRegion: Rect? = null
   private var assistFallbackMessageShown = false
@@ -590,7 +594,7 @@ class TranslatorVoiceInteractionSession(
       sessionScope.launch {
         val result =
           withContext(Dispatchers.IO) {
-            translationCoordinator.translateImageWithOverlay(sourceLanguage, targetLanguage, workingBitmap) {}
+            translationCoordinator.translateImageWithOverlay(sourceLanguage, targetLanguage, workingBitmap, onMessage = {})
           }
         ensureActive()
         processing = false
@@ -785,7 +789,13 @@ class TranslatorVoiceInteractionSession(
       sessionScope.launch {
         val result =
           withContext(Dispatchers.IO) {
-            translationCoordinator.translateImageWithOverlay(sourceLanguage, targetLanguage, bitmap) {}
+            translationCoordinator.translateImageWithOverlay(
+              sourceLanguage,
+              targetLanguage,
+              bitmap,
+              onMessage = {},
+              readingOrder = currentReadingOrderFor(sourceLanguage),
+            )
           }
         ensureActive()
         processing = false
@@ -937,12 +947,17 @@ class TranslatorVoiceInteractionSession(
         onSourceClick = { showLanguagePicker(true) },
         onSwap = { swapLanguages() },
         onTargetClick = { showLanguagePicker(false) },
+        showReadingOrderButton = forcedSourceLanguage?.code == "ja",
+        readingOrder = currentReadingOrderFor(forcedSourceLanguage),
+        onReadingOrderClick = { toggleJapaneseOcrMode() },
         showOcrButton = true,
         onOcrClick = { startManualOcrSelection() },
         onMenuClick = { showDotsMenu() },
       )
     sourceLabelView = toolbarViews.sourceLabel
     targetLabelView = toolbarViews.targetLabel
+    readingOrderButtonView = toolbarViews.readingOrderButton
+    readingOrderIconView = toolbarViews.readingOrderIcon
     ocrButtonView = toolbarViews.ocrButton
     ocrIconView = toolbarViews.ocrIcon
     return toolbarViews.root
@@ -989,6 +1004,7 @@ class TranslatorVoiceInteractionSession(
     val oldTarget = forcedTargetLanguage ?: langStateManager.languageByCode(settingsManager.settings.value.defaultTargetLanguageCode) ?: return
     forcedSourceLanguage = oldTarget
     forcedTargetLanguage = oldSource
+    syncReadingOrderForSource()
     updateToolbarLabels()
     retranslate()
   }
@@ -1014,6 +1030,12 @@ class TranslatorVoiceInteractionSession(
     sourceLabelView?.text = forcedSourceLanguage?.shortDisplayName ?: "Auto"
     val currentTarget = forcedTargetLanguage ?: langStateManager.languageByCode(settingsManager.settings.value.defaultTargetLanguageCode)
     targetLabelView?.text = currentTarget?.shortDisplayName ?: "?"
+    OverlayChromeFactory.updateReadingOrderButtonState(
+      readingButton = readingOrderButtonView,
+      readingIcon = readingOrderIconView,
+      visible = forcedSourceLanguage?.code == "ja",
+      readingOrder = currentReadingOrderFor(forcedSourceLanguage),
+    )
   }
 
   private fun showLanguagePicker(isSource: Boolean) {
@@ -1023,11 +1045,36 @@ class TranslatorVoiceInteractionSession(
     ) { language ->
       if (isSource) {
         forcedSourceLanguage = language
+        syncReadingOrderForSource()
       } else {
         forcedTargetLanguage = language
       }
       updateToolbarLabels()
       retranslate()
+    }
+  }
+
+  private fun toggleJapaneseOcrMode() {
+    if (forcedSourceLanguage?.code != "ja") return
+    ocrReadingOrder =
+      when (ocrReadingOrder) {
+        ReadingOrder.LEFT_TO_RIGHT -> ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT
+        ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT -> ReadingOrder.LEFT_TO_RIGHT
+      }
+    updateToolbarLabels()
+    retranslate()
+  }
+
+  private fun currentReadingOrderFor(language: Language?): ReadingOrder =
+    if (language?.code == "ja") {
+      ocrReadingOrder
+    } else {
+      ReadingOrder.LEFT_TO_RIGHT
+    }
+
+  private fun syncReadingOrderForSource() {
+    if (forcedSourceLanguage?.code != "ja") {
+      ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT
     }
   }
 

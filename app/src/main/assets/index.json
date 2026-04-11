@@ -3077,10 +3077,15 @@
       "files": [
         {
           "name": "jpn.traineddata",
-          "sizeBytes": 2471260,
+          "sizeBytes": 14330109,
           "installPath": "tesseract/tessdata/jpn.traineddata",
-          "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/jpn.traineddata",
-          "sourcePath": "jpn.traineddata"
+          "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/refs/heads/main/jpn.traineddata"
+        },
+        {
+          "name": "jpn_vert.traineddata",
+          "sizeBytes": 14330809,
+          "installPath": "tesseract/tessdata/jpn_vert.traineddata",
+          "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/refs/heads/main/jpn_vert.traineddata"
         }
       ],
       "dependsOn": [

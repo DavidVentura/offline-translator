@@ -30,6 +30,7 @@ import dev.davidv.translator.Language
 import dev.davidv.translator.MainActivity
 import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.R
+import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.TranslatedStyledBlock
 import dev.davidv.translator.assistantOverlay.BorderWaveView
@@ -47,6 +48,8 @@ class OverlayUI(
   private var toolbarView: View? = null
   private var sourceLabelView: TextView? = null
   private var targetLabelView: TextView? = null
+  private var readingOrderButtonView: View? = null
+  private var readingOrderIconView: ImageView? = null
   private var ocrButtonView: View? = null
   private var ocrIconView: ImageView? = null
   private val translationOverlays = mutableListOf<View>()
@@ -195,6 +198,7 @@ class OverlayUI(
   fun showToolbar(
     forcedSourceLanguage: Language?,
     forcedTargetLanguage: Language?,
+    readingOrder: ReadingOrder,
   ) {
     if (toolbarView != null) return
 
@@ -209,6 +213,9 @@ class OverlayUI(
         onSourceClick = { service.showLanguagePicker(true) },
         onSwap = { service.swapLanguages() },
         onTargetClick = { service.showLanguagePicker(false) },
+        showReadingOrderButton = forcedSourceLanguage?.code == "ja",
+        readingOrder = readingOrder,
+        onReadingOrderClick = { service.toggleJapaneseOcrMode() },
         showOcrButton = true,
         onOcrClick = { service.startManualOcrSelection() },
         onMenuClick = { service.showDotsMenu() },
@@ -216,6 +223,8 @@ class OverlayUI(
     val toolbar = toolbarViews.root
     sourceLabelView = toolbarViews.sourceLabel
     targetLabelView = toolbarViews.targetLabel
+    readingOrderButtonView = toolbarViews.readingOrderButton
+    readingOrderIconView = toolbarViews.readingOrderIcon
     ocrButtonView = toolbarViews.ocrButton
     ocrIconView = toolbarViews.ocrIcon
 
@@ -241,18 +250,27 @@ class OverlayUI(
       toolbarView = null
       sourceLabelView = null
       targetLabelView = null
+      readingOrderButtonView = null
+      readingOrderIconView = null
       ocrButtonView = null
       ocrIconView = null
     }
   }
 
-  fun updateToolbarLabels(
+  fun updateToolbarState(
     forcedSourceLanguage: Language?,
     forcedTargetLanguage: Language?,
+    readingOrder: ReadingOrder,
   ) {
     sourceLabelView?.text = forcedSourceLanguage?.shortDisplayName ?: "Auto"
     val currentTarget = forcedTargetLanguage ?: service.langStateManager.languageByCode(settingsManager.settings.value.defaultTargetLanguageCode)
     targetLabelView?.text = currentTarget?.shortDisplayName ?: "?"
+    OverlayChromeFactory.updateReadingOrderButtonState(
+      readingButton = readingOrderButtonView,
+      readingIcon = readingOrderIconView,
+      visible = forcedSourceLanguage?.code == "ja",
+      readingOrder = readingOrder,
+    )
   }
 
   fun setOcrButtonVisible(visible: Boolean) {

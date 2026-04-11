@@ -36,9 +36,10 @@ class ImageProcessor(
     bitmap: Bitmap,
     fromLang: Language,
     minConfidence: Int = 75,
+    readingOrder: ReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
   ): ProcessedImage =
     withContext(Dispatchers.IO) {
-      val textBlocks = ocrService.extractText(bitmap, fromLang, minConfidence)
+      val textBlocks = ocrService.extractText(bitmap, fromLang, minConfidence, readingOrder)
 
       ProcessedImage(
         bitmap = bitmap,
