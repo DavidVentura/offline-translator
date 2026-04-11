@@ -5,6 +5,7 @@ import android.media.AudioFormat
 import android.media.AudioTrack
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -44,8 +46,10 @@ class PcmAudioPlayer(
         var totalFrames = 0
 
         try {
-          audioChunks.collect { audio ->
+          var chunkIndex = 0
+          audioChunks.buffer(capacity = 2).collect { audio ->
             ensureActive()
+            chunkIndex += 1
 
             val currentTrack =
               if (track == null) {
@@ -64,6 +68,11 @@ class PcmAudioPlayer(
                 track!!
               }
 
+            val audioDurationMs = (audio.pcmSamples.size * 1000L) / audio.sampleRate
+            Log.d(
+              "PcmAudioPlayer",
+              "Chunk $chunkIndex: write start samples=${audio.pcmSamples.size} sampleRate=${audio.sampleRate} audioMs=$audioDurationMs playing=${currentTrack.playState == AudioTrack.PLAYSTATE_PLAYING}",
+            )
             val written =
               currentTrack.write(
                 audio.pcmSamples,
@@ -79,9 +88,11 @@ class PcmAudioPlayer(
               currentTrack.release()
               throw IllegalStateException("AudioTrack wrote $written of ${audio.pcmSamples.size} samples")
             }
+            Log.d("PcmAudioPlayer", "Chunk $chunkIndex: write done written=$written")
 
             totalFrames += audio.pcmSamples.size
             if (currentTrack.playState != AudioTrack.PLAYSTATE_PLAYING) {
+              Log.d("PcmAudioPlayer", "Chunk $chunkIndex: playback start")
               currentTrack.play()
             }
           }
@@ -144,16 +155,14 @@ class PcmAudioPlayer(
           .setUsage(AudioAttributes.USAGE_MEDIA)
           .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
           .build(),
-      )
-      .setAudioFormat(
+      ).setAudioFormat(
         AudioFormat
           .Builder()
           .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
           .setSampleRate(audio.sampleRate)
           .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
           .build(),
-      )
-      .setTransferMode(AudioTrack.MODE_STREAM)
+      ).setTransferMode(AudioTrack.MODE_STREAM)
       .setBufferSizeInBytes(maxOf(minBufferSize, audio.pcmSamples.size * Short.SIZE_BYTES))
       .build()
   }

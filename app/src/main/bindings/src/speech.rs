@@ -44,6 +44,8 @@ struct CachedSpeechModel {
     aux_path: String,
     language_code: String,
     support_data_root: String,
+    voices: Vec<(String, i64)>,
+    default_voice: Option<(String, i64)>,
     model: SpeechModel,
 }
 
@@ -77,6 +79,75 @@ fn boundary_after_code(boundary_after: BoundaryAfter) -> i32 {
         BoundaryAfter::Sentence => 1,
         BoundaryAfter::Paragraph => 2,
     }
+}
+
+fn normalized_language_family(language_code: &str) -> &str {
+    language_code
+        .split(['-', '_'])
+        .next()
+        .unwrap_or(language_code)
+}
+
+fn kokoro_voice_prefixes(language_code: &str) -> &'static [&'static str] {
+    match normalized_language_family(language_code) {
+        "en" => &["a", "b"],
+        "es" => &["e"],
+        "fr" => &["f"],
+        "hi" => &["h"],
+        "it" => &["i"],
+        "ja" => &["j"],
+        "ko" => &["j"],
+        "pt" => &["p"],
+        "zh" => &["z"],
+        _ => &[],
+    }
+}
+
+fn available_voices(model: &SpeechModel) -> Vec<(String, i64)> {
+    let mut voices = match model {
+        SpeechModel::Piper(model) => model
+            .voices()
+            .map(|voices| {
+                voices
+                    .iter()
+                    .map(|(name, id)| (name.clone(), *id))
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default(),
+        SpeechModel::Kokoro(model) => model
+            .voices()
+            .map(|voices| {
+                voices
+                    .iter()
+                    .map(|(name, id)| (name.clone(), *id))
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default(),
+    };
+    voices.sort_by(|left, right| left.0.cmp(&right.0));
+    voices
+}
+
+fn select_default_voice(
+    engine: &str,
+    language_code: &str,
+    voices: &[(String, i64)],
+) -> Option<(String, i64)> {
+    if voices.is_empty() {
+        return None;
+    }
+
+    if engine != "kokoro" {
+        return None;
+    }
+
+    for prefix in kokoro_voice_prefixes(language_code) {
+        if let Some((name, id)) = voices.iter().find(|(name, _)| name.starts_with(prefix)) {
+            return Some((name.clone(), *id));
+        }
+    }
+
+    Some(voices[0].clone())
 }
 
 fn model_cache() -> &'static Mutex<Option<CachedSpeechModel>> {
@@ -131,7 +202,7 @@ fn with_cached_model<T>(
     aux_path: &str,
     language_code: &str,
     support_data_root: &str,
-    f: impl FnOnce(&mut SpeechModel) -> Result<T, String>,
+    f: impl FnOnce(&mut CachedSpeechModel) -> Result<T, String>,
 ) -> Result<T, String> {
     let load_started_at = Instant::now();
     let mut cache = model_cache()
@@ -158,12 +229,31 @@ fn with_cached_model<T>(
             language_code,
             support_data_root,
         )?;
+        let voices = available_voices(&model);
+        let default_voice = select_default_voice(engine, language_code, &voices);
+        if voices.is_empty() {
+            log_debug(format!(
+                "loaded {engine} model without selectable voices for language={language_code}"
+            ));
+        } else if let Some((name, id)) = default_voice.as_ref() {
+            log_debug(format!(
+                "loaded {engine} model with {} voice(s); default voice for language={language_code} is {name}={id}",
+                voices.len()
+            ));
+        } else {
+            log_debug(format!(
+                "loaded {engine} model with {} voice(s); no automatic default selected for language={language_code}",
+                voices.len()
+            ));
+        }
         *cache = Some(CachedSpeechModel {
             engine: engine.to_owned(),
             model_path: model_path.to_owned(),
             aux_path: aux_path.to_owned(),
             language_code: language_code.to_owned(),
             support_data_root: support_data_root.to_owned(),
+            voices,
+            default_voice,
             model,
         });
     } else {
@@ -174,7 +264,7 @@ fn with_cached_model<T>(
     let cached = cache
         .as_mut()
         .ok_or_else(|| "TTS model cache was unexpectedly empty".to_owned())?;
-    f(&mut cached.model)
+    f(cached)
 }
 
 fn configure_support_data_root(support_data_root: Option<&str>) {
@@ -223,31 +313,42 @@ fn phonemize(model: &mut SpeechModel, text: &str) -> Result<String, String> {
 }
 
 fn synthesize(
-    model: &mut SpeechModel,
+    cached_model: &mut CachedSpeechModel,
     text: &str,
     speaker_id: Option<i64>,
     is_phonemes: bool,
 ) -> Result<(Vec<f32>, u32), String> {
-    match model {
+    let effective_speaker_id = speaker_id.or(cached_model.default_voice.as_ref().map(|(_, id)| *id));
+    match &mut cached_model.model {
         SpeechModel::Piper(model) => {
             if is_phonemes {
                 model
-                    .synthesize_phonemes(text, speaker_id)
+                    .synthesize_phonemes(text, effective_speaker_id)
                     .map_err(|err| format!("Speech synthesis failed: {err}"))
             } else {
                 model
-                    .synthesize(text, speaker_id)
+                    .synthesize(text, effective_speaker_id)
                     .map_err(|err| format!("Speech synthesis failed: {err}"))
             }
         }
         SpeechModel::Kokoro(model) => {
+            if speaker_id.is_none() {
+                if let Some((name, id)) = cached_model.default_voice.as_ref() {
+                    log_debug(format!(
+                        "using cached default voice {name}={id} for engine={} language={} ({} available)",
+                        cached_model.engine,
+                        cached_model.language_code,
+                        cached_model.voices.len()
+                    ));
+                }
+            }
             if is_phonemes {
                 model
-                    .synthesize_phonemes(text, speaker_id, None)
+                    .synthesize_phonemes(text, effective_speaker_id, None)
                     .map_err(|err| format!("Speech synthesis failed: {err}"))
             } else {
                 model
-                    .synthesize(text, speaker_id, None)
+                    .synthesize(text, effective_speaker_id, None)
                     .map_err(|err| format!("Speech synthesis failed: {err}"))
             }
         }
@@ -281,7 +382,7 @@ pub fn synthesize_pcm(
         aux_path,
         language_code,
         support_data_root,
-        |model| {
+        |cached_model| {
             if is_phonemes {
                 log_debug(format!(
                     "synthesizing direct phoneme chunk with {} phoneme char(s)",
@@ -289,7 +390,7 @@ pub fn synthesize_pcm(
                 ));
             } else {
                 let phonemize_started_at = Instant::now();
-                let phonemes = phonemize(model, text)?;
+                let phonemes = phonemize(&mut cached_model.model, text)?;
                 log_debug(format!(
                     "phonemize produced 1 chunk, {} phoneme char(s)",
                     phonemes.chars().count(),
@@ -298,7 +399,7 @@ pub fn synthesize_pcm(
             }
 
             let synth_started_at = Instant::now();
-            let result = synthesize(model, text, speaker_id, is_phonemes)?;
+            let result = synthesize(cached_model, text, speaker_id, is_phonemes)?;
             log_timing("infer", synth_started_at);
             Ok(result)
         },
@@ -350,9 +451,9 @@ pub fn phonemize_chunks(
         aux_path,
         language_code,
         support_data_root,
-        |model| {
+        |cached_model| {
             let phonemize_started_at = Instant::now();
-            let phonemes = phonemize(model, text)?;
+            let phonemes = phonemize(&mut cached_model.model, text)?;
             let phoneme_chunks = vec![PhonemeChunk {
                 phonemes,
                 boundary_after: BoundaryAfter::Paragraph,
