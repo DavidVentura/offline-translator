@@ -3,7 +3,7 @@ use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::time::Instant;
 
-use piper_rs::{BoundaryAfter, KokoroModel, PhonemeChunk, PiperModel};
+use piper_rs::{Backend, BoundaryAfter, KokoroModel, PhonemeChunk, PiperModel};
 
 use crate::logging::{ANDROID_LOG_DEBUG, ANDROID_LOG_ERROR, android_log_with_level};
 
@@ -291,6 +291,7 @@ fn load_speech_model(
                 Path::new(model_path),
                 Path::new(aux_path),
                 language_code,
+                &Backend::Cpu,
             )
             .map_err(|err| format!("Failed to load Kokoro voice: {err}"))?;
             if let Some(dict_path) = derive_japanese_dict_path(support_data_root, language_code) {
@@ -300,7 +301,7 @@ fn load_speech_model(
             }
             Ok(SpeechModel::Kokoro(model))
         }
-        "piper" => PiperModel::new(Path::new(model_path), Path::new(aux_path))
+        "piper" => PiperModel::new(Path::new(model_path), Path::new(aux_path), &Backend::Cpu)
             .map(SpeechModel::Piper)
             .map_err(|err| format!("Failed to load Piper voice: {err}")),
         other => Err(format!("Unsupported TTS engine `{other}`")),

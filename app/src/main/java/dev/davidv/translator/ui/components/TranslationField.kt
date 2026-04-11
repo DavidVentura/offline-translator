@@ -27,7 +27,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -61,7 +60,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -69,7 +67,6 @@ import dev.davidv.translator.R
 import dev.davidv.translator.TranslatedText
 import dev.davidv.translator.TtsVoiceOption
 import dev.davidv.translator.ui.theme.TranslatorTheme
-import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -199,8 +196,7 @@ fun TranslationField(
                     onLongClick = {
                       showSpeechOptions = true
                     },
-                  )
-                  .semantics {
+                  ).semantics {
                     contentDescription = if (isAudioPlaying) "Stop audio" else "Speak translation"
                   },
               contentAlignment = Alignment.Center,
@@ -234,37 +230,18 @@ fun TranslationField(
                   text = "Playback speed",
                   style = MaterialTheme.typography.labelLarge,
                 )
-                Row(
+                SpeechSpeedControl(
+                  speed = speechPlaybackSpeed,
+                  onSpeedChange = onSpeechPlaybackSpeedChange,
                   modifier =
                     Modifier
-                      .fillMaxWidth()
                       .padding(top = 8.dp),
-                  verticalAlignment = Alignment.CenterVertically,
-                ) {
-                  SpeechOptionChip(
-                    label = "-",
-                    onClick = {
-                      onSpeechPlaybackSpeedChange((speechPlaybackSpeed - 0.1f).coerceAtLeast(0.5f))
-                    },
-                  )
-                  Text(
-                    text = String.format(Locale.US, "%.2fx", speechPlaybackSpeed),
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                  )
-                  SpeechOptionChip(
-                    label = "+",
-                    onClick = {
-                      onSpeechPlaybackSpeedChange((speechPlaybackSpeed + 0.1f).coerceAtMost(2.0f))
-                    },
-                  )
-                }
+                )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
                 Text(
-                  text = "Voice:",
+                  text = "Voice",
                   style = MaterialTheme.typography.labelLarge,
                 )
                 Column(
@@ -276,7 +253,7 @@ fun TranslationField(
                 ) {
                   if (availableVoices.isEmpty()) {
                     Text(
-                      text = "No voices available",
+                      text = "Default voice",
                       style = MaterialTheme.typography.bodyMedium,
                       color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -320,29 +297,6 @@ fun TranslationField(
         }
       }
     }
-  }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun SpeechOptionChip(
-  label: String,
-  onClick: () -> Unit,
-) {
-  Box(
-    modifier =
-      Modifier
-        .clip(RoundedCornerShape(8.dp))
-        .background(MaterialTheme.colorScheme.surfaceVariant)
-        .combinedClickable(onClick = onClick, onLongClick = {})
-        .padding(horizontal = 12.dp, vertical = 6.dp),
-    contentAlignment = Alignment.Center,
-  ) {
-    Text(
-      text = label,
-      style = MaterialTheme.typography.labelLarge,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
   }
 }
 
