@@ -1,0 +1,356 @@
+{
+  "dictionaries": {
+    "ar": {
+      "date": 1758204389,
+      "filename": "ar.dict",
+      "size": 901080,
+      "type": "english",
+      "word_count": 55376
+    },
+    "az": {
+      "date": 1758204389,
+      "filename": "az.dict",
+      "size": 344665,
+      "type": "english",
+      "word_count": 12877
+    },
+    "be": {
+      "date": 1774864382,
+      "filename": "be.dict",
+      "size": 203909,
+      "type": "english",
+      "word_count": 6879
+    },
+    "bg": {
+      "date": 1758204389,
+      "filename": "bg.dict",
+      "size": 828145,
+      "type": "english",
+      "word_count": 48951
+    },
+    "bn": {
+      "date": 1758204389,
+      "filename": "bn.dict",
+      "size": 233173,
+      "type": "english",
+      "word_count": 8536
+    },
+    "ca": {
+      "date": 1758204389,
+      "filename": "ca.dict",
+      "size": 1743759,
+      "type": "english",
+      "word_count": 184490
+    },
+    "cs": {
+      "date": 1758204389,
+      "filename": "cs.dict",
+      "size": 1310029,
+      "type": "bilingual",
+      "word_count": 62171
+    },
+    "da": {
+      "date": 1758204389,
+      "filename": "da.dict",
+      "size": 717848,
+      "type": "english",
+      "word_count": 48487
+    },
+    "de": {
+      "date": 1758204389,
+      "filename": "de.dict",
+      "size": 29940942,
+      "type": "bilingual",
+      "word_count": 898517
+    },
+    "el": {
+      "date": 1758204389,
+      "filename": "el.dict",
+      "size": 10843652,
+      "type": "bilingual",
+      "word_count": 773782
+    },
+    "en": {
+      "date": 1758204389,
+      "filename": "en.dict",
+      "size": 22748995,
+      "type": "english",
+      "word_count": 1017608
+    },
+    "es": {
+      "date": 1758204389,
+      "filename": "es.dict",
+      "size": 21559131,
+      "type": "bilingual",
+      "word_count": 1102610
+    },
+    "et": {
+      "date": 1758204389,
+      "filename": "et.dict",
+      "size": 246469,
+      "type": "english",
+      "word_count": 11645
+    },
+    "fa": {
+      "date": 1758204389,
+      "filename": "fa.dict",
+      "size": 369903,
+      "type": "english",
+      "word_count": 14088
+    },
+    "fi": {
+      "date": 1758204389,
+      "filename": "fi.dict",
+      "size": 5255475,
+      "type": "english",
+      "word_count": 242681
+    },
+    "fr": {
+      "date": 1758204389,
+      "filename": "fr.dict",
+      "size": 31812323,
+      "type": "bilingual",
+      "word_count": 1891044
+    },
+    "gu": {
+      "date": 1758204389,
+      "filename": "gu.dict",
+      "size": 159284,
+      "type": "english",
+      "word_count": 5849
+    },
+    "he": {
+      "date": 1758204389,
+      "filename": "he.dict",
+      "size": 339526,
+      "type": "english",
+      "word_count": 11478
+    },
+    "hi": {
+      "date": 1758204389,
+      "filename": "hi.dict",
+      "size": 690397,
+      "type": "english",
+      "word_count": 28300
+    },
+    "hr": {
+      "date": 1758366416,
+      "filename": "hr.dict",
+      "size": 1529839,
+      "type": "english",
+      "word_count": 62894
+    },
+    "hu": {
+      "date": 1758204389,
+      "filename": "hu.dict",
+      "size": 1966339,
+      "type": "english",
+      "word_count": 70308
+    },
+    "id": {
+      "date": 1758204389,
+      "filename": "id.dict",
+      "size": 2788182,
+      "type": "bilingual",
+      "word_count": 82529
+    },
+    "is": {
+      "date": 1758204389,
+      "filename": "is.dict",
+      "size": 493231,
+      "type": "english",
+      "word_count": 21793
+    },
+    "it": {
+      "date": 1758204389,
+      "filename": "it.dict",
+      "size": 10638315,
+      "type": "bilingual",
+      "word_count": 597363
+    },
+    "ja": {
+      "date": 1758204389,
+      "filename": "ja.dict",
+      "size": 7362403,
+      "type": "bilingual",
+      "word_count": 210298
+    },
+    "kn": {
+      "date": 1758204389,
+      "filename": "kn.dict",
+      "size": 58645,
+      "type": "english",
+      "word_count": 2172
+    },
+    "ko": {
+      "date": 1758204389,
+      "filename": "ko.dict",
+      "size": 3291793,
+      "type": "bilingual",
+      "word_count": 129264
+    },
+    "lt": {
+      "date": 1758204389,
+      "filename": "lt.dict",
+      "size": 408964,
+      "type": "english",
+      "word_count": 26356
+    },
+    "lv": {
+      "date": 1758204389,
+      "filename": "lv.dict",
+      "size": 1144802,
+      "type": "english",
+      "word_count": 121674
+    },
+    "ml": {
+      "date": 1758204389,
+      "filename": "ml.dict",
+      "size": 243670,
+      "type": "english",
+      "word_count": 10022
+    },
+    "ms": {
+      "date": 1758204389,
+      "filename": "ms.dict",
+      "size": 550668,
+      "type": "bilingual",
+      "word_count": 16211
+    },
+    "nb": {
+      "date": 1774864382,
+      "filename": "nb.dict",
+      "size": 834490,
+      "type": "english",
+      "word_count": 69343
+    },
+    "nl": {
+      "date": 1758204389,
+      "filename": "nl.dict",
+      "size": 14256198,
+      "type": "bilingual",
+      "word_count": 559438
+    },
+    "nn": {
+      "date": 1774864382,
+      "filename": "nn.dict",
+      "size": 769090,
+      "type": "english",
+      "word_count": 56394
+    },
+    "no": {
+      "date": 1774864382,
+      "filename": "no.dict",
+      "size": 30563,
+      "type": "english",
+      "word_count": 1576
+    },
+    "pl": {
+      "date": 1758204389,
+      "filename": "pl.dict",
+      "size": 7601814,
+      "type": "bilingual",
+      "word_count": 201681
+    },
+    "pt": {
+      "date": 1758204389,
+      "filename": "pt.dict",
+      "size": 9044098,
+      "type": "bilingual",
+      "word_count": 538348
+    },
+    "ro": {
+      "date": 1758204389,
+      "filename": "ro.dict",
+      "size": 1474168,
+      "type": "english",
+      "word_count": 114525
+    },
+    "ru": {
+      "date": 1758204389,
+      "filename": "ru.dict",
+      "size": 21377315,
+      "type": "bilingual",
+      "word_count": 763134
+    },
+    "sk": {
+      "date": 1758204389,
+      "filename": "sk.dict",
+      "size": 319474,
+      "type": "english",
+      "word_count": 15069
+    },
+    "sl": {
+      "date": 1758204389,
+      "filename": "sl.dict",
+      "size": 171049,
+      "type": "english",
+      "word_count": 6955
+    },
+    "sq": {
+      "date": 1758204389,
+      "filename": "sq.dict",
+      "size": 354067,
+      "type": "english",
+      "word_count": 17989
+    },
+    "sv": {
+      "date": 1758204389,
+      "filename": "sv.dict",
+      "size": 2818616,
+      "type": "english",
+      "word_count": 286313
+    },
+    "ta": {
+      "date": 1758204389,
+      "filename": "ta.dict",
+      "size": 332774,
+      "type": "english",
+      "word_count": 8592
+    },
+    "te": {
+      "date": 1758204389,
+      "filename": "te.dict",
+      "size": 428546,
+      "type": "english",
+      "word_count": 20102
+    },
+    "th": {
+      "date": 1774864382,
+      "filename": "th.dict",
+      "size": 1935529,
+      "type": "bilingual",
+      "word_count": 34786
+    },
+    "tr": {
+      "date": 1758204389,
+      "filename": "tr.dict",
+      "size": 4279915,
+      "type": "bilingual",
+      "word_count": 264946
+    },
+    "uk": {
+      "date": 1758204389,
+      "filename": "uk.dict",
+      "size": 1294460,
+      "type": "english",
+      "word_count": 47095
+    },
+    "vi": {
+      "date": 1774864382,
+      "filename": "vi.dict",
+      "size": 844488,
+      "type": "bilingual",
+      "word_count": 20394
+    },
+    "zh": {
+      "date": 1758204389,
+      "filename": "zh.dict",
+      "size": 10139921,
+      "type": "bilingual",
+      "word_count": 435742
+    }
+  },
+  "updated_at": 1774864382,
+  "version": 1
+}

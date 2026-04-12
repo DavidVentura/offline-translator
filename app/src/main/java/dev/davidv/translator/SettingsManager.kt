@@ -54,12 +54,9 @@ class SettingsManager(
     val defaultTargetLanguageCode = prefs.getString("default_target_language", null) ?: defaults.defaultTargetLanguageCode
     val defaultSourceLanguageCode = prefs.getString("default_source_language", null)
 
-    val translationModelsBaseUrl = prefs.getString("translation_models_base_url_v3", null)
-    val tesseractModelsBaseUrl = prefs.getString("tesseract_models_base_url", null)
-
-    val dictionaryBaseUrl =
-      prefs.getString("dictionary_base_url", null)
-        ?: defaults.dictionaryBaseUrl
+    val catalogIndexUrl =
+      prefs.getString("catalog_index_url", null)
+        ?: defaults.catalogIndexUrl
 
     val backgroundModeName = prefs.getString("background_mode", null)
     val backgroundMode =
@@ -98,9 +95,7 @@ class SettingsManager(
     return AppSettings(
       defaultTargetLanguageCode = defaultTargetLanguageCode,
       defaultSourceLanguageCode = defaultSourceLanguageCode,
-      translationModelsBaseUrl = translationModelsBaseUrl,
-      tesseractModelsBaseUrl = tesseractModelsBaseUrl,
-      dictionaryBaseUrl = dictionaryBaseUrl,
+      catalogIndexUrl = catalogIndexUrl,
       backgroundMode = backgroundMode,
       minConfidence = minConfidence,
       maxImageSize = maxImageSize,
@@ -134,25 +129,9 @@ class SettingsManager(
         }
         modifiedSettings.add("default_source_language")
       }
-      if (newSettings.translationModelsBaseUrl != currentSettings.translationModelsBaseUrl) {
-        if (newSettings.translationModelsBaseUrl != null) {
-          putString("translation_models_base_url_v3", newSettings.translationModelsBaseUrl)
-        } else {
-          remove("translation_models_base_url_v3")
-        }
-        modifiedSettings.add("translation_models_base_url_v3")
-      }
-      if (newSettings.tesseractModelsBaseUrl != currentSettings.tesseractModelsBaseUrl) {
-        if (newSettings.tesseractModelsBaseUrl != null) {
-          putString("tesseract_models_base_url", newSettings.tesseractModelsBaseUrl)
-        } else {
-          remove("tesseract_models_base_url")
-        }
-        modifiedSettings.add("tesseract_models_base_url")
-      }
-      if (newSettings.dictionaryBaseUrl != currentSettings.dictionaryBaseUrl) {
-        putString("dictionary_base_url", newSettings.dictionaryBaseUrl)
-        modifiedSettings.add("dictionary_base_url")
+      if (newSettings.catalogIndexUrl != currentSettings.catalogIndexUrl) {
+        putString("catalog_index_url", newSettings.catalogIndexUrl)
+        modifiedSettings.add("catalog_index_url")
       }
       if (newSettings.backgroundMode != currentSettings.backgroundMode) {
         putString("background_mode", newSettings.backgroundMode.name)
@@ -210,6 +189,9 @@ class SettingsManager(
         putString("tts_voice_overrides", serializeVoiceOverrides(newSettings.ttsVoiceOverrides))
         modifiedSettings.add("tts_voice_overrides")
       }
+      remove("translation_models_base_url_v3")
+      remove("tesseract_models_base_url")
+      remove("dictionary_base_url")
       apply()
     }
     _settings.value = newSettings

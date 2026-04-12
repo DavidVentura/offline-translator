@@ -643,7 +643,7 @@ class DownloadService : Service() {
     incrementTts: Boolean = false,
   ): Boolean {
     val outputFile = filePathManager.resolveInstallPath(file.installPath)
-    val url = catalog.packDownloadUrl(pack, file, settingsManager.settings.value)
+    val url = catalog.packDownloadUrl(pack, file)
     return try {
       val success =
         if (file.archiveFormat == "zip" && file.extractTo != null) {
@@ -843,7 +843,7 @@ class DownloadService : Service() {
     serviceScope.launch {
       try {
         val catalogFile = filePathManager.getCatalogFile()
-        val url = "${Constants.DEFAULT_CATALOG_INDEX_BASE_URL}/${Constants.CATALOG_INDEX_VERSION}/index.json"
+        val url = settingsManager.settings.value.catalogIndexUrl
 
         catalogFile.parentFile?.mkdirs()
         val tempFile = File(catalogFile.parentFile, "${catalogFile.name}.tmp")

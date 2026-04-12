@@ -18,18 +18,13 @@
 package dev.davidv.translator
 
 object Constants {
-  const val DICT_VERSION = 1
-  const val DEFAULT_DICTIONARY_BASE_URL = "https://translator.davidv.dev/dictionaries"
-  const val DEFAULT_CATALOG_INDEX_BASE_URL = "https://translator.davidv.dev/languages"
-  const val CATALOG_INDEX_VERSION = 2
+  const val DEFAULT_CATALOG_INDEX_URL = "https://offline-translator.davidv.dev/index.json"
 }
 
 data class AppSettings(
   val defaultTargetLanguageCode: String = "en",
   val defaultSourceLanguageCode: String? = null,
-  val translationModelsBaseUrl: String? = null,
-  val tesseractModelsBaseUrl: String? = null,
-  val dictionaryBaseUrl: String = Constants.DEFAULT_DICTIONARY_BASE_URL,
+  val catalogIndexUrl: String = Constants.DEFAULT_CATALOG_INDEX_URL,
   val backgroundMode: BackgroundMode = BackgroundMode.AUTO_DETECT,
   val minConfidence: Int = 75,
   val maxImageSize: Int = 1500,

@@ -59,7 +59,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.davidv.translator.AppSettings
@@ -526,50 +525,17 @@ fun SettingsScreen(
 
           // Expandable content
           if (advancedExpanded) {
-            // Translation Models Base URL
+            // Catalog Index URL
             Text(
-              text = "Base URL for Translation Models",
+              text = "Catalog Index URL",
               style = MaterialTheme.typography.bodyMedium,
               color = MaterialTheme.colorScheme.onSurface,
             )
 
             OutlinedTextField(
-              value = settings.translationModelsBaseUrl ?: "",
+              value = settings.catalogIndexUrl,
               onValueChange = {
-                onSettingsChange(settings.copy(translationModelsBaseUrl = it.ifBlank { null }))
-              },
-              placeholder = { Text(catalog?.translationModelsBaseUrl ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis) },
-              modifier = Modifier.fillMaxWidth(),
-              singleLine = true,
-            )
-
-            Text(
-              text = "Base URL for Tesseract Models",
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurface,
-            )
-
-            OutlinedTextField(
-              value = settings.tesseractModelsBaseUrl ?: "",
-              onValueChange = {
-                onSettingsChange(settings.copy(tesseractModelsBaseUrl = it.ifBlank { null }))
-              },
-              placeholder = { Text(catalog?.tesseractModelsBaseUrl ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis) },
-              modifier = Modifier.fillMaxWidth(),
-              singleLine = true,
-            )
-
-            // Dictionary Base URL
-            Text(
-              text = "Base URL for Dictionaries",
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurface,
-            )
-
-            OutlinedTextField(
-              value = settings.dictionaryBaseUrl,
-              onValueChange = {
-                onSettingsChange(settings.copy(dictionaryBaseUrl = it))
+                onSettingsChange(settings.copy(catalogIndexUrl = it))
               },
               modifier = Modifier.fillMaxWidth(),
               singleLine = true,

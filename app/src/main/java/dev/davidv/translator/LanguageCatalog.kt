@@ -85,9 +85,6 @@ data class AssetPackV2(
 data class LanguageCatalog(
   val formatVersion: Int,
   val generatedAt: Long,
-  val translationModelsBaseUrl: String,
-  val tesseractModelsBaseUrl: String,
-  val dictionaryBaseUrl: String,
   val dictionaryVersion: Int,
   val sources: CatalogSourcesV2,
   val languages: Map<String, LanguageEntryV2>,
@@ -218,18 +215,7 @@ data class LanguageCatalog(
   fun packDownloadUrl(
     pack: AssetPackV2,
     file: AssetFileV2,
-    settings: AppSettings,
-  ): String {
-    val sourcePath = file.sourcePath ?: return file.url
-    val base =
-      when (pack.feature) {
-        "translation" -> settings.translationModelsBaseUrl ?: translationModelsBaseUrl
-        "ocr" -> settings.tesseractModelsBaseUrl ?: tesseractModelsBaseUrl
-        "dictionary", "support" -> settings.dictionaryBaseUrl
-        else -> return file.url
-      }.trimEnd('/')
-    return "$base/$sourcePath"
-  }
+  ): String = file.url
 
   fun shouldDecompress(
     pack: AssetPackV2,
@@ -368,9 +354,6 @@ fun parseLanguageCatalog(json: String): LanguageCatalog {
   return LanguageCatalog(
     formatVersion = root.getInt("formatVersion"),
     generatedAt = root.getLong("generatedAt"),
-    translationModelsBaseUrl = root.getString("translationModelsBaseUrl"),
-    tesseractModelsBaseUrl = root.getString("tesseractModelsBaseUrl"),
-    dictionaryBaseUrl = root.getString("dictionaryBaseUrl"),
     dictionaryVersion = root.getInt("dictionaryVersion"),
     sources =
       CatalogSourcesV2(
