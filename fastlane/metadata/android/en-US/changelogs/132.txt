@@ -1,0 +1,3 @@
+- OCR: support vertical Japanese text (re-download the lang to get the new model)
+- TTS: Add models for every language
+- TTS: Add control for voice / speed (long press speaker icon)
