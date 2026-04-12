@@ -27,6 +27,7 @@ ENGINE_PRIORITY = {
     "piper": 0,
     "mimic3": 0,
     "mms": 1,
+    "sherpa_vits": 2,
     "coqui_vits": 2,
     "kokoro": 3,
 }
@@ -35,15 +36,21 @@ DEFAULT_REGION_OVERRIDES = {
     "es": "ES",
     "nl": "NL",
     "pt": "BR",
+    "zh_hant": "TW",
 }
 APP_LANGUAGE_OVERRIDES = {
     "zh_CN": "zh",
+    "zh_TW": "zh_hant",
     "zh_HK": "zh_hant",
     "yue_HK": "zh_hant",
 }
 ESPEAK_DICT_OVERRIDES = {
     "zh": "cmn",
-    "zh_hant": "yue",
+}
+BANNED_TTS_VOICES = {
+    # Broken Spanish Piper MLS voices. Keep them out of the generated TTS catalog.
+    "es_ES-mls_10246-low",
+    "es_ES-mls_9972-low",
 }
 EXTRA_TTS_VOICES = {
     # External Polish Piper voice metadata source:
@@ -404,6 +411,76 @@ EXTRA_TTS_VOICES = {
         },
         "aliases": [],
     },
+    # External Traditional Chinese Piper voice metadata source:
+    # https://huggingface.co/colafly/piper_zh_tw/resolve/main/yt-chinese_female.onnx.json
+    "zh_TW-mandarin_traditional-medium": {
+        "engine": "piper",
+        "key": "zh_TW-mandarin_traditional-medium",
+        "name": "Mandarin (Traditional)",
+        "language": {
+            "code": "zh_TW",
+            "family": "zh",
+            "region": "TW",
+            "name_native": "繁體中文",
+            "name_english": "Chinese",
+            "country_english": "Taiwan",
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "zh_hant/zh_TW/mandarin_traditional/medium/yt-chinese_female.onnx": {
+                "size_bytes": 63531476,
+                "url": "https://huggingface.co/colafly/piper_zh_tw/resolve/main/yt-chinese_female.onnx",
+            },
+            "zh_hant/zh_TW/mandarin_traditional/medium/yt-chinese_female.onnx.json": {
+                "size_bytes": 7352,
+                "url": "https://huggingface.co/colafly/piper_zh_tw/resolve/main/yt-chinese_female.onnx.json",
+            },
+        },
+        "aliases": [],
+    },
+    # External Hong Kong Cantonese Sherpa VITS voice metadata source:
+    # https://huggingface.co/csukuangfj/vits-cantonese-hf-xiaomaiiwn/tree/main
+    "zh_HK-cantonese-medium": {
+        "engine": "sherpa_vits",
+        "key": "zh_HK-cantonese-medium",
+        "name": "Cantonese",
+        "language": {
+            "code": "zh_HK",
+            "family": "zh",
+            "region": "HK",
+            "name_native": "廣東話",
+            "name_english": "Chinese",
+            "country_english": "Hong Kong",
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "zh_hant/zh_HK/cantonese/medium/vits-cantonese-hf-xiaomaiiwn.onnx": {
+                "size_bytes": 114059955,
+                "url": "https://huggingface.co/csukuangfj/vits-cantonese-hf-xiaomaiiwn/resolve/main/vits-cantonese-hf-xiaomaiiwn.onnx",
+            },
+            "zh_hant/zh_HK/cantonese/medium/config.json": {
+                "size_bytes": 2746,
+                "url": "https://huggingface.co/csukuangfj/vits-cantonese-hf-xiaomaiiwn/resolve/main/config.json",
+            },
+            "zh_hant/zh_HK/cantonese/medium/lexicon.txt": {
+                "size_bytes": 294061,
+                "url": "https://huggingface.co/csukuangfj/vits-cantonese-hf-xiaomaiiwn/resolve/main/lexicon.txt",
+            },
+            "zh_hant/zh_HK/cantonese/medium/tokens.txt": {
+                "size_bytes": 529,
+                "url": "https://huggingface.co/csukuangfj/vits-cantonese-hf-xiaomaiiwn/resolve/main/tokens.txt",
+            },
+            "zh_hant/zh_HK/cantonese/medium/rule.fst": {
+                "size_bytes": 64482,
+                "url": "https://huggingface.co/csukuangfj/vits-cantonese-hf-xiaomaiiwn/resolve/main/rule.fst",
+            },
+        },
+        "aliases": [],
+    },
     # External MMS model metadata source:
     # https://huggingface.co/willwade/mms-tts-multilingual-models-onnx/tree/main/azj-script_latin
     "az_AZ-north_latin-mms": {
@@ -675,6 +752,8 @@ def load_json(path: str) -> dict:
 def merge_voice_catalogs(voices: dict) -> dict:
     merged = deepcopy(voices)
     merged.update(EXTRA_TTS_VOICES)
+    for key in BANNED_TTS_VOICES:
+        merged.pop(key, None)
     return merged
 
 
@@ -689,7 +768,9 @@ def app_language_code(voice: dict, supported_languages: set[str]) -> str | None:
 
 
 def espeak_dict_code(app_language: str, locale_code: str) -> str:
-    if locale_code.startswith("yue_"):
+    if locale_code.startswith("zh_TW"):
+        return "cmn"
+    if locale_code.startswith("zh_HK") or locale_code.startswith("yue_"):
         return "yue"
     return ESPEAK_DICT_OVERRIDES.get(app_language, app_language)
 

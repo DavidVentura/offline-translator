@@ -1,6 +1,6 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1775990797,
+  "generatedAt": 1776012156,
   "translationModelsBaseUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
   "tesseractModelsBaseUrl": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main",
   "dictionaryBaseUrl": "https://translator.davidv.dev/dictionaries",
@@ -499,8 +499,7 @@
             "voices": [
               "tts-piper-es-es-davefx-medium",
               "tts-piper-es-es-sharvard-medium",
-              "tts-piper-es-es-mls-10246-low",
-              "tts-piper-es-es-mls-9972-low"
+              "tts-piper-es-es-carlfm-x-low"
             ]
           },
           "MX": {
@@ -959,8 +958,8 @@
           "KR": {
             "displayName": "South Korea",
             "voices": [
-              "tts-kokoro-ko-kr-jf-alpha-kokoro-v1.0",
-              "tts-mimic3-ko-ko-kss-low"
+              "tts-mimic3-ko-ko-kss-low",
+              "tts-kokoro-ko-kr-jf-alpha-kokoro-v1.0"
             ]
           }
         }
@@ -1698,16 +1697,16 @@
       "tts": {
         "defaultRegion": "TW",
         "regions": {
-          "TW": {
-            "displayName": "Taiwan",
-            "voices": [
-              "tts-piper-zh-tw-mandarin-traditional-medium"
-            ]
-          },
           "HK": {
             "displayName": "Hong Kong",
             "voices": [
               "tts-sherpa_vits-zh-hk-cantonese-medium"
+            ]
+          },
+          "TW": {
+            "displayName": "Taiwan",
+            "voices": [
+              "tts-piper-zh-tw-mandarin-traditional-medium"
             ]
           }
         }
@@ -8174,60 +8173,30 @@
         "tts-espeak-dict-es"
       ]
     },
-    "tts-piper-es-es-mls-10246-low": {
+    "tts-piper-es-es-carlfm-x-low": {
       "feature": "tts",
       "engine": "piper",
       "language": "es",
       "locale": "es_ES",
       "region": "ES",
-      "voice": "mls_10246",
-      "quality": "low",
+      "voice": "carlfm",
+      "quality": "x_low",
       "numSpeakers": 1,
       "aliases": [
-        "es-mls_10246-low"
+        "es-carlfm-x-low"
       ],
       "files": [
         {
-          "name": "es_ES-mls_10246-low.onnx",
-          "sizeBytes": 63104526,
-          "installPath": "bin/piper/es/es_ES/mls_10246/low/es_ES-mls_10246-low.onnx",
-          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/mls_10246/low/es_ES-mls_10246-low.onnx"
+          "name": "es_ES-carlfm-x_low.onnx",
+          "sizeBytes": 28130791,
+          "installPath": "bin/piper/es/es_ES/carlfm/x_low/es_ES-carlfm-x_low.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/carlfm/x_low/es_ES-carlfm-x_low.onnx"
         },
         {
-          "name": "es_ES-mls_10246-low.onnx.json",
-          "sizeBytes": 4160,
-          "installPath": "bin/piper/es/es_ES/mls_10246/low/es_ES-mls_10246-low.onnx.json",
-          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/mls_10246/low/es_ES-mls_10246-low.onnx.json"
-        }
-      ],
-      "dependsOn": [
-        "tts-espeak-dict-es"
-      ]
-    },
-    "tts-piper-es-es-mls-9972-low": {
-      "feature": "tts",
-      "engine": "piper",
-      "language": "es",
-      "locale": "es_ES",
-      "region": "ES",
-      "voice": "mls_9972",
-      "quality": "low",
-      "numSpeakers": 1,
-      "aliases": [
-        "es-mls_9972-low"
-      ],
-      "files": [
-        {
-          "name": "es_ES-mls_9972-low.onnx",
-          "sizeBytes": 63104526,
-          "installPath": "bin/piper/es/es_ES/mls_9972/low/es_ES-mls_9972-low.onnx",
-          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/mls_9972/low/es_ES-mls_9972-low.onnx"
-        },
-        {
-          "name": "es_ES-mls_9972-low.onnx.json",
+          "name": "es_ES-carlfm-x_low.onnx.json",
           "sizeBytes": 4159,
-          "installPath": "bin/piper/es/es_ES/mls_9972/low/es_ES-mls_9972-low.onnx.json",
-          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/mls_9972/low/es_ES-mls_9972-low.onnx.json"
+          "installPath": "bin/piper/es/es_ES/carlfm/x_low/es_ES-carlfm-x_low.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/carlfm/x_low/es_ES-carlfm-x_low.onnx.json"
         }
       ],
       "dependsOn": [
@@ -9189,22 +9158,6 @@
       ],
       "dependsOn": []
     },
-    "tts-kokoro-ko-kr-jf-alpha-kokoro-v1.0": {
-      "feature": "tts",
-      "engine": "kokoro",
-      "language": "ko",
-      "locale": "ko_KR",
-      "region": "KR",
-      "voice": "jf_alpha",
-      "quality": "high",
-      "numSpeakers": 1,
-      "aliases": [],
-      "files": [],
-      "dependsOn": [
-        "tts-espeak-dict-ko",
-        "tts-kokoro-v1.0-core"
-      ]
-    },
     "tts-mimic3-ko-ko-kss-low": {
       "feature": "tts",
       "engine": "mimic3",
@@ -9237,6 +9190,22 @@
       ],
       "dependsOn": [
         "tts-espeak-dict-ko"
+      ]
+    },
+    "tts-kokoro-ko-kr-jf-alpha-kokoro-v1.0": {
+      "feature": "tts",
+      "engine": "kokoro",
+      "language": "ko",
+      "locale": "ko_KR",
+      "region": "KR",
+      "voice": "jf_alpha",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [],
+      "dependsOn": [
+        "tts-espeak-dict-ko",
+        "tts-kokoro-v1.0-core"
       ]
     },
     "tts-coqui_vits-lt-lt-cv-coqui-vits": {
@@ -10702,34 +10671,6 @@
         "tts-espeak-dict-cmn"
       ]
     },
-    "tts-piper-zh-tw-mandarin-traditional-medium": {
-      "feature": "tts",
-      "engine": "piper",
-      "language": "zh_hant",
-      "locale": "zh_TW",
-      "region": "TW",
-      "voice": "Mandarin (Traditional)",
-      "quality": "medium",
-      "numSpeakers": 1,
-      "aliases": [],
-      "files": [
-        {
-          "name": "yt-chinese_female.onnx",
-          "sizeBytes": 63531476,
-          "installPath": "bin/piper/zh_hant/zh_TW/mandarin_traditional/medium/yt-chinese_female.onnx",
-          "url": "https://huggingface.co/colafly/piper_zh_tw/resolve/main/yt-chinese_female.onnx"
-        },
-        {
-          "name": "yt-chinese_female.onnx.json",
-          "sizeBytes": 7352,
-          "installPath": "bin/piper/zh_hant/zh_TW/mandarin_traditional/medium/yt-chinese_female.onnx.json",
-          "url": "https://huggingface.co/colafly/piper_zh_tw/resolve/main/yt-chinese_female.onnx.json"
-        }
-      ],
-      "dependsOn": [
-        "tts-espeak-dict-cmn"
-      ]
-    },
     "tts-sherpa_vits-zh-hk-cantonese-medium": {
       "feature": "tts",
       "engine": "sherpa_vits",
@@ -10773,6 +10714,34 @@
         }
       ],
       "dependsOn": []
+    },
+    "tts-piper-zh-tw-mandarin-traditional-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "zh_hant",
+      "locale": "zh_TW",
+      "region": "TW",
+      "voice": "Mandarin (Traditional)",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "yt-chinese_female.onnx",
+          "sizeBytes": 63531476,
+          "installPath": "bin/piper/zh_hant/zh_TW/mandarin_traditional/medium/yt-chinese_female.onnx",
+          "url": "https://huggingface.co/colafly/piper_zh_tw/resolve/main/yt-chinese_female.onnx"
+        },
+        {
+          "name": "yt-chinese_female.onnx.json",
+          "sizeBytes": 7352,
+          "installPath": "bin/piper/zh_hant/zh_TW/mandarin_traditional/medium/yt-chinese_female.onnx.json",
+          "url": "https://huggingface.co/colafly/piper_zh_tw/resolve/main/yt-chinese_female.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-cmn"
+      ]
     }
   }
 }
