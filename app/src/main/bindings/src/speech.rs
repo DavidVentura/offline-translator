@@ -352,6 +352,9 @@ fn load_speech_model(
         )
         .map(SpeechModel::SherpaVits)
         .map_err(|err| format!("Failed to load Sherpa VITS voice: {err}")),
+        "mimic3" => PiperModel::from_mimic3(Path::new(model_path), Path::new(aux_path), &Backend::Cpu)
+            .map(SpeechModel::Piper)
+            .map_err(|err| format!("Failed to load Mimic3 voice: {err}")),
         "piper" => PiperModel::new(Path::new(model_path), Path::new(aux_path), &Backend::Cpu)
             .map(SpeechModel::Piper)
             .map_err(|err| format!("Failed to load Piper voice: {err}")),

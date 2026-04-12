@@ -25,6 +25,7 @@ QUALITY_PRIORITY = {
 }
 ENGINE_PRIORITY = {
     "piper": 0,
+    "mimic3": 0,
     "mms": 1,
     "coqui_vits": 2,
     "kokoro": 3,
@@ -367,6 +368,40 @@ EXTRA_TTS_VOICES = {
         "num_speakers": 1,
         "speaker_id_map": {},
         "files": {},
+        "aliases": [],
+    },
+    # External Mimic3 model metadata source:
+    # https://translator.davidv.dev/tts/1/vits-mimic3-ko_KO-kss_low/
+    "ko_KO-kss_low": {
+        "engine": "mimic3",
+        "install_root": "piper",
+        "key": "ko_KO-kss_low",
+        "name": "kss",
+        "language": {
+            "code": "ko_KO",
+            "family": "ko",
+            "region": "KR",
+            "name_native": "한국어",
+            "name_english": "Korean",
+            "country_english": "South Korea",
+        },
+        "quality": "low",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "ko/ko_KO/kss/low/ko_KO-kss_low.onnx": {
+                "size_bytes": 62793110,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-mimic3-ko_KO-kss_low/ko_KO-kss_low.onnx",
+            },
+            "ko/ko_KO/kss/low/ko_KO-kss_low.onnx.json": {
+                "size_bytes": 3411,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-mimic3-ko_KO-kss_low/ko_KO-kss_low.onnx.json",
+            },
+            "ko/ko_KO/kss/low/tokens.txt": {
+                "size_bytes": 260,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-mimic3-ko_KO-kss_low/tokens.txt",
+            },
+        },
         "aliases": [],
     },
     # External MMS model metadata source:
@@ -779,7 +814,7 @@ def build_shared_tts_support_packs(catalog: dict, voices: dict) -> None:
 
 
 def engine_supports_espeak(engine: str) -> bool:
-    return engine in {"piper", "kokoro"}
+    return engine in {"piper", "mimic3", "kokoro"}
 
 
 def merge_tts(

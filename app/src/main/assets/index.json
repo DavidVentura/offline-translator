@@ -959,7 +959,8 @@
           "KR": {
             "displayName": "South Korea",
             "voices": [
-              "tts-kokoro-ko-kr-jf-alpha-kokoro-v1.0"
+              "tts-kokoro-ko-kr-jf-alpha-kokoro-v1.0",
+              "tts-mimic3-ko-ko-kss-low"
             ]
           }
         }
@@ -9202,6 +9203,40 @@
       "dependsOn": [
         "tts-espeak-dict-ko",
         "tts-kokoro-v1.0-core"
+      ]
+    },
+    "tts-mimic3-ko-ko-kss-low": {
+      "feature": "tts",
+      "engine": "mimic3",
+      "language": "ko",
+      "locale": "ko_KO",
+      "region": "KR",
+      "voice": "kss",
+      "quality": "low",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "ko_KO-kss_low.onnx",
+          "sizeBytes": 62793110,
+          "installPath": "bin/piper/ko/ko_KO/kss/low/ko_KO-kss_low.onnx",
+          "url": "https://translator.davidv.dev/tts/1/vits-mimic3-ko_KO-kss_low/ko_KO-kss_low.onnx"
+        },
+        {
+          "name": "ko_KO-kss_low.onnx.json",
+          "sizeBytes": 3411,
+          "installPath": "bin/piper/ko/ko_KO/kss/low/ko_KO-kss_low.onnx.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-mimic3-ko_KO-kss_low/ko_KO-kss_low.onnx.json"
+        },
+        {
+          "name": "tokens.txt",
+          "sizeBytes": 260,
+          "installPath": "bin/piper/ko/ko_KO/kss/low/tokens.txt",
+          "url": "https://translator.davidv.dev/tts/1/vits-mimic3-ko_KO-kss_low/tokens.txt"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-ko"
       ]
     },
     "tts-coqui_vits-lt-lt-cv-coqui-vits": {
