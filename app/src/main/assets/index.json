@@ -1,6 +1,6 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1775947076,
+  "generatedAt": 1775990797,
   "translationModelsBaseUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
   "tesseractModelsBaseUrl": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main",
   "dictionaryBaseUrl": "https://translator.davidv.dev/dictionaries",
@@ -162,6 +162,17 @@
           "tesseract": "ocr-tesseract-bs"
         },
         "dictionary": "dict-hr"
+      },
+      "tts": {
+        "defaultRegion": "BA",
+        "regions": {
+          "BA": {
+            "displayName": "Bosnia and Herzegovina",
+            "voices": [
+              "tts-coqui_vits-bs-ba-cv-coqui-vits"
+            ]
+          }
+        }
       }
     },
     "ca": {
@@ -518,6 +529,17 @@
           "tesseract": "ocr-tesseract-et"
         },
         "dictionary": "dict-et"
+      },
+      "tts": {
+        "defaultRegion": "EE",
+        "regions": {
+          "EE": {
+            "displayName": "Estonia",
+            "voices": [
+              "tts-coqui_vits-et-ee-cv-coqui-vits"
+            ]
+          }
+        }
       }
     },
     "fa": {
@@ -721,6 +743,17 @@
           "tesseract": "ocr-tesseract-hr"
         },
         "dictionary": "dict-hr"
+      },
+      "tts": {
+        "defaultRegion": "HR",
+        "regions": {
+          "HR": {
+            "displayName": "Croatia",
+            "voices": [
+              "tts-coqui_vits-hr-hr-cv-coqui-vits"
+            ]
+          }
+        }
       }
     },
     "hu": {
@@ -948,6 +981,17 @@
           "tesseract": "ocr-tesseract-lt"
         },
         "dictionary": "dict-lt"
+      },
+      "tts": {
+        "defaultRegion": "LT",
+        "regions": {
+          "LT": {
+            "displayName": "Lithuania",
+            "voices": [
+              "tts-coqui_vits-lt-lt-cv-coqui-vits"
+            ]
+          }
+        }
       }
     },
     "lv": {
@@ -7413,6 +7457,50 @@
       ],
       "dependsOn": []
     },
+    "tts-coqui_vits-bs-ba-cv-coqui-vits": {
+      "feature": "tts",
+      "engine": "coqui_vits",
+      "language": "bs",
+      "locale": "bs_BA",
+      "region": "BA",
+      "voice": "cv",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "model.onnx",
+          "sizeBytes": 71043321,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/model.onnx",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/model.onnx"
+        },
+        {
+          "name": "config.json",
+          "sizeBytes": 8452,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/config.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/config.json"
+        },
+        {
+          "name": "language_ids.json",
+          "sizeBytes": 15,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/language_ids.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/language_ids.json"
+        },
+        {
+          "name": "speaker_ids.json",
+          "sizeBytes": 19,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/speaker_ids.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/speaker_ids.json"
+        },
+        {
+          "name": "tokens.txt",
+          "sizeBytes": 1760,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/tokens.txt",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/tokens.txt"
+        }
+      ],
+      "dependsOn": []
+    },
     "tts-piper-ca-es-upc-ona-medium": {
       "feature": "tts",
       "engine": "piper",
@@ -8184,6 +8272,50 @@
         "tts-espeak-dict-es"
       ]
     },
+    "tts-coqui_vits-et-ee-cv-coqui-vits": {
+      "feature": "tts",
+      "engine": "coqui_vits",
+      "language": "et",
+      "locale": "et_EE",
+      "region": "EE",
+      "voice": "cv",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "model.onnx",
+          "sizeBytes": 71030265,
+          "installPath": "bin/coqui_vits/vits-coqui-et-cv/model.onnx",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-et-cv/model.onnx"
+        },
+        {
+          "name": "config.json",
+          "sizeBytes": 8281,
+          "installPath": "bin/coqui_vits/vits-coqui-et-cv/config.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-et-cv/config.json"
+        },
+        {
+          "name": "language_ids.json",
+          "sizeBytes": 15,
+          "installPath": "bin/coqui_vits/vits-coqui-et-cv/language_ids.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-et-cv/language_ids.json"
+        },
+        {
+          "name": "speaker_ids.json",
+          "sizeBytes": 19,
+          "installPath": "bin/coqui_vits/vits-coqui-et-cv/speaker_ids.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-et-cv/speaker_ids.json"
+        },
+        {
+          "name": "tokens.txt",
+          "sizeBytes": 1522,
+          "installPath": "bin/coqui_vits/vits-coqui-et-cv/tokens.txt",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-et-cv/tokens.txt"
+        }
+      ],
+      "dependsOn": []
+    },
     "tts-piper-fa-ir-gyro-medium": {
       "feature": "tts",
       "engine": "piper",
@@ -8662,6 +8794,50 @@
         "tts-espeak-dict-hi"
       ]
     },
+    "tts-coqui_vits-hr-hr-cv-coqui-vits": {
+      "feature": "tts",
+      "engine": "coqui_vits",
+      "language": "hr",
+      "locale": "hr_HR",
+      "region": "HR",
+      "voice": "cv",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "model.onnx",
+          "sizeBytes": 71043321,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/model.onnx",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/model.onnx"
+        },
+        {
+          "name": "config.json",
+          "sizeBytes": 8452,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/config.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/config.json"
+        },
+        {
+          "name": "language_ids.json",
+          "sizeBytes": 15,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/language_ids.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/language_ids.json"
+        },
+        {
+          "name": "speaker_ids.json",
+          "sizeBytes": 19,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/speaker_ids.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/speaker_ids.json"
+        },
+        {
+          "name": "tokens.txt",
+          "sizeBytes": 1760,
+          "installPath": "bin/coqui_vits/vits-coqui-hr-cv/tokens.txt",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/tokens.txt"
+        }
+      ],
+      "dependsOn": []
+    },
     "tts-piper-hu-hu-anna-medium": {
       "feature": "tts",
       "engine": "piper",
@@ -9010,6 +9186,50 @@
         "tts-espeak-dict-ko",
         "tts-kokoro-v1.0-core"
       ]
+    },
+    "tts-coqui_vits-lt-lt-cv-coqui-vits": {
+      "feature": "tts",
+      "engine": "coqui_vits",
+      "language": "lt",
+      "locale": "lt_LT",
+      "region": "LT",
+      "voice": "cv",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "model.onnx",
+          "sizeBytes": 71032571,
+          "installPath": "bin/coqui_vits/vits-coqui-lt-cv/model.onnx",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-lt-cv/model.onnx"
+        },
+        {
+          "name": "config.json",
+          "sizeBytes": 8276,
+          "installPath": "bin/coqui_vits/vits-coqui-lt-cv/config.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-lt-cv/config.json"
+        },
+        {
+          "name": "language_ids.json",
+          "sizeBytes": 15,
+          "installPath": "bin/coqui_vits/vits-coqui-lt-cv/language_ids.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-lt-cv/language_ids.json"
+        },
+        {
+          "name": "speaker_ids.json",
+          "sizeBytes": 19,
+          "installPath": "bin/coqui_vits/vits-coqui-lt-cv/speaker_ids.json",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-lt-cv/speaker_ids.json"
+        },
+        {
+          "name": "tokens.txt",
+          "sizeBytes": 1564,
+          "installPath": "bin/coqui_vits/vits-coqui-lt-cv/tokens.txt",
+          "url": "https://translator.davidv.dev/tts/1/vits-coqui-lt-cv/tokens.txt"
+        }
+      ],
+      "dependsOn": []
     },
     "tts-piper-lv-lv-aivars-medium": {
       "feature": "tts",

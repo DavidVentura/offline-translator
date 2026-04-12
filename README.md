@@ -31,7 +31,7 @@ Language packs contain the full translation models, translation happens _on your
 - Automatic language detection is done via [cld2](https://github.com/CLD2Owners/cld2)
 - Dictionary is based on data from Wiktionary, exported by [Kaikki](https://kaikki.org/)
   - For Japanese specifically, there's a second "word dictionary" (Mecab) for transliterating Kanji
-- TTS uses [Piper](https://github.com/OHF-Voice/piper1-gpl) voices
+- TTS uses [Piper](https://github.com/OHF-Voice/piper1-gpl), [Coqui](https://github.com/coqui-ai/tts), [Kokoro](https://github.com/hexgrad/kokoro), [MMS](https://huggingface.co/facebook/mms-tts) voices
 
 ### Translating other apps
 

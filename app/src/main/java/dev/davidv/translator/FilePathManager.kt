@@ -121,6 +121,18 @@ class FilePathManager(
           speakerId = voicePack.defaultSpeakerId,
         )
       }
+      "coqui_vits" -> {
+        val configAsset = packFiles.firstOrNull { it.name == "config.json" } ?: return null
+        val auxFile = resolveInstallPath(configAsset.installPath)
+        if (!auxFile.exists()) return null
+        TtsVoiceFiles(
+          engine = engine,
+          model = modelFile,
+          aux = auxFile,
+          languageCode = language.code,
+          speakerId = voicePack.defaultSpeakerId,
+        )
+      }
       else -> {
         val configAsset = packFiles.firstOrNull { it.name.endsWith(".onnx.json") } ?: return null
         val auxFile = resolveInstallPath(configAsset.installPath)

@@ -12,6 +12,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 PIPER_BASE_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main"
 KOKORO_BASE_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0"
 MMS_BASE_URL = "https://huggingface.co/willwade/mms-tts-multilingual-models-onnx/resolve/main"
+COQUI_VITS_BASE_URL = "https://translator.davidv.dev/tts/1"
 TTS_BASE_URL = "https://translator.davidv.dev/tts"
 TTS_VERSION = 1
 KOKORO_SHARED_PACK_ID = "tts-kokoro-v1.0-core"
@@ -25,7 +26,8 @@ QUALITY_PRIORITY = {
 ENGINE_PRIORITY = {
     "piper": 0,
     "mms": 1,
-    "kokoro": 2,
+    "coqui_vits": 2,
+    "kokoro": 3,
 }
 DEFAULT_REGION_OVERRIDES = {
     "en": "US",
@@ -155,6 +157,171 @@ EXTRA_TTS_VOICES = {
             "heb/tokens.txt": {
                 "size_bytes": 179,
                 "url": f"{MMS_BASE_URL}/heb/tokens.txt",
+            },
+        },
+        "aliases": [],
+    },
+    # External Coqui VITS model metadata source:
+    # https://translator.davidv.dev/tts/1/vits-coqui-et-cv/
+    "et_EE-cv-coqui_vits": {
+        "engine": "coqui_vits",
+        "key": "et_EE-cv-coqui_vits",
+        "name": "cv",
+        "language": {
+            "code": "et_EE",
+            "family": "et",
+            "region": "EE",
+            "name_native": "Eesti",
+            "name_english": "Estonian",
+            "country_english": "Estonia",
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "vits-coqui-et-cv/model.onnx": {
+                "size_bytes": 71030265,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-et-cv/model.onnx",
+            },
+            "vits-coqui-et-cv/config.json": {
+                "size_bytes": 8281,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-et-cv/config.json",
+            },
+            "vits-coqui-et-cv/language_ids.json": {
+                "size_bytes": 15,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-et-cv/language_ids.json",
+            },
+            "vits-coqui-et-cv/speaker_ids.json": {
+                "size_bytes": 19,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-et-cv/speaker_ids.json",
+            },
+            "vits-coqui-et-cv/tokens.txt": {
+                "size_bytes": 1522,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-et-cv/tokens.txt",
+            },
+        },
+        "aliases": [],
+    },
+    # External Coqui VITS model metadata source:
+    # https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/
+    "hr_HR-cv-coqui_vits": {
+        "engine": "coqui_vits",
+        "key": "hr_HR-cv-coqui_vits",
+        "name": "cv",
+        "language": {
+            "code": "hr_HR",
+            "family": "hr",
+            "region": "HR",
+            "name_native": "Hrvatski",
+            "name_english": "Croatian",
+            "country_english": "Croatia",
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "vits-coqui-hr-cv/model.onnx": {
+                "size_bytes": 71043321,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/model.onnx",
+            },
+            "vits-coqui-hr-cv/config.json": {
+                "size_bytes": 8452,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/config.json",
+            },
+            "vits-coqui-hr-cv/language_ids.json": {
+                "size_bytes": 15,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/language_ids.json",
+            },
+            "vits-coqui-hr-cv/speaker_ids.json": {
+                "size_bytes": 19,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/speaker_ids.json",
+            },
+            "vits-coqui-hr-cv/tokens.txt": {
+                "size_bytes": 1760,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/tokens.txt",
+            },
+        },
+        "aliases": [],
+    },
+    # External Coqui VITS model metadata source:
+    # https://translator.davidv.dev/tts/1/vits-coqui-hr-cv/
+    # Bosnian fallback backed by the Croatian Common Voice model files.
+    "bs_BA-cv-coqui_vits": {
+        "engine": "coqui_vits",
+        "key": "bs_BA-cv-coqui_vits",
+        "name": "cv",
+        "language": {
+            "code": "bs_BA",
+            "family": "bs",
+            "region": "BA",
+            "name_native": "Bosanski",
+            "name_english": "Bosnian",
+            "country_english": "Bosnia and Herzegovina",
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "vits-coqui-hr-cv/model.onnx": {
+                "size_bytes": 71043321,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/model.onnx",
+            },
+            "vits-coqui-hr-cv/config.json": {
+                "size_bytes": 8452,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/config.json",
+            },
+            "vits-coqui-hr-cv/language_ids.json": {
+                "size_bytes": 15,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/language_ids.json",
+            },
+            "vits-coqui-hr-cv/speaker_ids.json": {
+                "size_bytes": 19,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/speaker_ids.json",
+            },
+            "vits-coqui-hr-cv/tokens.txt": {
+                "size_bytes": 1760,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-hr-cv/tokens.txt",
+            },
+        },
+        "aliases": [],
+    },
+    # External Coqui VITS model metadata source:
+    # https://translator.davidv.dev/tts/1/vits-coqui-lt-cv/
+    "lt_LT-cv-coqui_vits": {
+        "engine": "coqui_vits",
+        "key": "lt_LT-cv-coqui_vits",
+        "name": "cv",
+        "language": {
+            "code": "lt_LT",
+            "family": "lt",
+            "region": "LT",
+            "name_native": "Lietuvių",
+            "name_english": "Lithuanian",
+            "country_english": "Lithuania",
+        },
+        "quality": "medium",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {
+            "vits-coqui-lt-cv/model.onnx": {
+                "size_bytes": 71032571,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-lt-cv/model.onnx",
+            },
+            "vits-coqui-lt-cv/config.json": {
+                "size_bytes": 8276,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-lt-cv/config.json",
+            },
+            "vits-coqui-lt-cv/language_ids.json": {
+                "size_bytes": 15,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-lt-cv/language_ids.json",
+            },
+            "vits-coqui-lt-cv/speaker_ids.json": {
+                "size_bytes": 19,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-lt-cv/speaker_ids.json",
+            },
+            "vits-coqui-lt-cv/tokens.txt": {
+                "size_bytes": 1564,
+                "url": f"{COQUI_VITS_BASE_URL}/vits-coqui-lt-cv/tokens.txt",
             },
         },
         "aliases": [],
