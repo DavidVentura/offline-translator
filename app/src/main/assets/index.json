@@ -1,6 +1,6 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1776027802,
+  "generatedAt": 1776028539,
   "translationModelsBaseUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
   "tesseractModelsBaseUrl": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main",
   "dictionaryBaseUrl": "https://translator.davidv.dev/dictionaries",
