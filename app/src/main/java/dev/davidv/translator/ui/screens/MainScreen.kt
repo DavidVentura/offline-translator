@@ -135,6 +135,8 @@ fun MainScreen(
   var showImageSourceSheet by remember { mutableStateOf(false) }
   val extraTopPadding = if (launchMode == LaunchMode.Normal) 0.dp else 8.dp
   val context = LocalContext.current
+  val showOnlyOutputInReadonlyModal =
+    launchMode == LaunchMode.ReadonlyModal && settings.onlyShowOutputOnReadonlyModal
 
   // Handle back button when dictionary is open
   BackHandler(enabled = dictionaryWord != null) {
@@ -273,7 +275,7 @@ fun MainScreen(
               }
             }
 
-            if (displayImage == null || settings.showOCRDetection) {
+            if (!showOnlyOutputInReadonlyModal && (displayImage == null || settings.showOCRDetection)) {
               val showTranslit = settings.showTransliterationOnInput && inputTransliteration != null
               Column(
                 modifier =
@@ -365,25 +367,33 @@ fun MainScreen(
               },
             )
 
-            Box(
-              modifier =
-                Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 16.dp),
-              contentAlignment = Alignment.Center,
-            ) {
-              HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(0.5f),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant,
-              )
+            if (!showOnlyOutputInReadonlyModal) {
+              Box(
+                modifier =
+                  Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                contentAlignment = Alignment.Center,
+              ) {
+                HorizontalDivider(
+                  modifier = Modifier.fillMaxWidth(0.5f),
+                  thickness = 1.dp,
+                  color = MaterialTheme.colorScheme.outlineVariant,
+                )
+              }
             }
 
             Box(
               modifier =
                 Modifier
                   .fillMaxWidth()
-                  .height(parentHeight * 0.5f),
+                  .let { modifier ->
+                    if (showOnlyOutputInReadonlyModal && displayImage == null) {
+                      modifier.weight(1f, fill = true)
+                    } else {
+                      modifier.height(parentHeight * 0.5f)
+                    }
+                  },
             ) {
               TranslationField(
                 text = output,

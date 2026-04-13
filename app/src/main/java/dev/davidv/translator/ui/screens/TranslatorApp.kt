@@ -17,11 +17,15 @@
 
 package dev.davidv.translator.ui.screens
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import android.view.Gravity
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -44,6 +48,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +57,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
@@ -283,9 +290,20 @@ fun TranslatorApp(
     animationSpec = tween(300),
     label = "opacity",
   )
+  val useCompactReadonlyModal =
+    currentLaunchMode == LaunchMode.ReadonlyModal && settings.onlyShowOutputOnReadonlyModal
+  val compactReadonlyModalHeightPx =
+    with(LocalDensity.current) {
+      (LocalConfiguration.current.screenHeightDp.dp * (0.46f * 0.75f)).roundToPx()
+    }
 
   val heightFactor by animateFloatAsState(
-    targetValue = if (currentLaunchMode == LaunchMode.Normal) 1f else 0.6f,
+    targetValue =
+      when {
+        currentLaunchMode == LaunchMode.Normal -> 1f
+        useCompactReadonlyModal -> 1f
+        else -> 0.6f
+      },
     animationSpec = tween(300),
     label = "heightFactor",
   )
@@ -294,6 +312,44 @@ fun TranslatorApp(
     animationSpec = tween(300),
     label = "widthFactor",
   )
+  val modalGravity =
+    when {
+      currentLaunchMode == LaunchMode.ReadonlyModal && settings.onlyShowOutputOnReadonlyModal ->
+        when (settings.readonlyModalOutputAlignment) {
+          dev.davidv.translator.ReadonlyModalOutputAlignment.TOP -> Gravity.TOP or Gravity.CENTER_HORIZONTAL
+          dev.davidv.translator.ReadonlyModalOutputAlignment.MIDDLE -> Gravity.CENTER
+          dev.davidv.translator.ReadonlyModalOutputAlignment.BOTTOM -> Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+        }
+      currentLaunchMode != LaunchMode.Normal -> Gravity.CENTER
+      else -> null
+    }
+
+  SideEffect {
+    val activity = context as? Activity ?: return@SideEffect
+    val window = activity.window ?: return@SideEffect
+    if (currentLaunchMode != LaunchMode.Normal && modalVisible) {
+      window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+      window.setDimAmount(0.12f)
+    } else {
+      window.setDimAmount(0f)
+      window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+    }
+    when {
+      useCompactReadonlyModal && modalGravity != null -> {
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, compactReadonlyModalHeightPx)
+        window.setGravity(modalGravity)
+      }
+      modalGravity != null -> {
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        window.setGravity(modalGravity)
+      }
+      else -> {
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        window.setGravity(Gravity.CENTER)
+      }
+    }
+  }
+
   Box(
     modifier = Modifier.fillMaxSize(),
     contentAlignment = Alignment.Center,

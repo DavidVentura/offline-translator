@@ -80,6 +80,22 @@ class SettingsManager(
     val showOCRDetection = prefs.getBoolean("show_ocr_detection", defaults.showOCRDetection)
     val showFilePickerInImagePicker = prefs.getBoolean("show_file_picker_in_image_picker", defaults.showFilePickerInImagePicker)
     val showTransliterationOnInput = prefs.getBoolean("show_transliteration_on_input", defaults.showTransliterationOnInput)
+    val onlyShowOutputOnReadonlyModal =
+      prefs.getBoolean(
+        "only_show_output_on_readonly_modal",
+        defaults.onlyShowOutputOnReadonlyModal,
+      )
+    val readonlyModalOutputAlignmentName = prefs.getString("readonly_modal_output_alignment", null)
+    val readonlyModalOutputAlignment =
+      if (readonlyModalOutputAlignmentName != null) {
+        try {
+          ReadonlyModalOutputAlignment.valueOf(readonlyModalOutputAlignmentName)
+        } catch (_: IllegalArgumentException) {
+          defaults.readonlyModalOutputAlignment
+        }
+      } else {
+        defaults.readonlyModalOutputAlignment
+      }
     val addSpacesForJapaneseTransliteration =
       prefs.getBoolean(
         "add_spaces_for_japanese_transliteration",
@@ -107,6 +123,8 @@ class SettingsManager(
       showOCRDetection = showOCRDetection,
       showFilePickerInImagePicker = showFilePickerInImagePicker,
       showTransliterationOnInput = showTransliterationOnInput,
+      onlyShowOutputOnReadonlyModal = onlyShowOutputOnReadonlyModal,
+      readonlyModalOutputAlignment = readonlyModalOutputAlignment,
       addSpacesForJapaneseTransliteration = addSpacesForJapaneseTransliteration,
       ttsPlaybackSpeed = ttsPlaybackSpeed,
       ttsVoiceOverrides = ttsVoiceOverrides,
@@ -176,6 +194,14 @@ class SettingsManager(
       if (newSettings.showTransliterationOnInput != currentSettings.showTransliterationOnInput) {
         putBoolean("show_transliteration_on_input", newSettings.showTransliterationOnInput)
         modifiedSettings.add("show_transliteration_on_input")
+      }
+      if (newSettings.onlyShowOutputOnReadonlyModal != currentSettings.onlyShowOutputOnReadonlyModal) {
+        putBoolean("only_show_output_on_readonly_modal", newSettings.onlyShowOutputOnReadonlyModal)
+        modifiedSettings.add("only_show_output_on_readonly_modal")
+      }
+      if (newSettings.readonlyModalOutputAlignment != currentSettings.readonlyModalOutputAlignment) {
+        putString("readonly_modal_output_alignment", newSettings.readonlyModalOutputAlignment.name)
+        modifiedSettings.add("readonly_modal_output_alignment")
       }
       if (newSettings.addSpacesForJapaneseTransliteration != currentSettings.addSpacesForJapaneseTransliteration) {
         putBoolean("add_spaces_for_japanese_transliteration", newSettings.addSpacesForJapaneseTransliteration)

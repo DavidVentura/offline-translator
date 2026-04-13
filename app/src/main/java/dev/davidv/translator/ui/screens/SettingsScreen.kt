@@ -68,6 +68,7 @@ import dev.davidv.translator.LanguageCatalog
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.PermissionHelper
 import dev.davidv.translator.R
+import dev.davidv.translator.ReadonlyModalOutputAlignment
 import dev.davidv.translator.ui.theme.TranslatorTheme
 import kotlinx.coroutines.delay
 
@@ -292,6 +293,71 @@ fun SettingsScreen(
               maxLines = 1,
               overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
             )
+          }
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Column(modifier = Modifier.weight(1f)) {
+              Text(
+                text = "Hide input when acting as a popup",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+              )
+            }
+
+            Switch(
+              checked = settings.onlyShowOutputOnReadonlyModal,
+              onCheckedChange = { checked ->
+                onSettingsChange(settings.copy(onlyShowOutputOnReadonlyModal = checked))
+              },
+            )
+          }
+
+          if (settings.onlyShowOutputOnReadonlyModal) {
+            var readonlyModalAlignmentExpanded by remember { mutableStateOf(false) }
+
+            Text(
+              text = "Readonly popup vertical position",
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            ExposedDropdownMenuBox(
+              expanded = readonlyModalAlignmentExpanded,
+              onExpandedChange = { readonlyModalAlignmentExpanded = it },
+              modifier = Modifier.fillMaxWidth(),
+            ) {
+              OutlinedTextField(
+                value = settings.readonlyModalOutputAlignment.displayName,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {
+                  ExposedDropdownMenuDefaults.TrailingIcon(expanded = readonlyModalAlignmentExpanded)
+                },
+                modifier =
+                  Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+              )
+              ExposedDropdownMenu(
+                expanded = readonlyModalAlignmentExpanded,
+                onDismissRequest = { readonlyModalAlignmentExpanded = false },
+              ) {
+                ReadonlyModalOutputAlignment.entries.forEach { alignment ->
+                  DropdownMenuItem(
+                    text = { Text(alignment.displayName) },
+                    onClick = {
+                      onSettingsChange(settings.copy(readonlyModalOutputAlignment = alignment))
+                      readonlyModalAlignmentExpanded = false
+                    },
+                  )
+                }
+              }
+            }
           }
         }
       }

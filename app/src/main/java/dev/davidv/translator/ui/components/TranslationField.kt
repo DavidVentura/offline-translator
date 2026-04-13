@@ -105,55 +105,60 @@ fun TranslationField(
           this.text = AnnotatedString(text?.translated ?: "")
         },
   ) {
-    Column(
+    Box(
       modifier =
         Modifier
-          .fillMaxWidth()
-          .verticalScroll(rememberScrollState())
+          .fillMaxSize()
           // Leave space for trailing action buttons.
           .padding(end = 32.dp),
+      contentAlignment = Alignment.TopStart,
     ) {
-      AndroidView(
+      Column(
         modifier =
           Modifier
-            .fillMaxSize(),
-        factory = { context ->
-          TextView(context).apply {
-            this.tag = "output_textview_tag"
-            this.contentDescription = "Output textview"
-            this.text = text?.translated ?: ""
-            this.textSize = fontSize
-            this.setTextColor(textColor)
-            this.setTextIsSelectable(true)
-            this.customSelectionActionModeCallback = actionModeCallback
-            this.customInsertionActionModeCallback = actionModeCallback
-            actionModeCallback.setTextView(this)
-          }
-        },
-        update = { textView ->
-          textView.text = text?.translated ?: ""
-          textView.textSize = fontSize
-          textView.customSelectionActionModeCallback = actionModeCallback
-          actionModeCallback.setTextView(textView)
-        },
-      )
-
-      if (text?.transliterated != null) {
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+      ) {
         AndroidView(
+          modifier = Modifier.fillMaxWidth(),
           factory = { context ->
             TextView(context).apply {
-              this.text = text.transliterated
-              this.textSize = smallerFontSize
+              this.tag = "output_textview_tag"
+              this.contentDescription = "Output textview"
+              this.text = text?.translated ?: ""
+              this.textSize = fontSize
               this.setTextColor(textColor)
               this.setTextIsSelectable(true)
+              this.customSelectionActionModeCallback = actionModeCallback
+              this.customInsertionActionModeCallback = actionModeCallback
+              actionModeCallback.setTextView(this)
             }
           },
           update = { textView ->
-            textView.text = text.transliterated
-            textView.textSize = smallerFontSize
+            textView.text = text?.translated ?: ""
+            textView.textSize = fontSize
+            textView.customSelectionActionModeCallback = actionModeCallback
+            actionModeCallback.setTextView(textView)
           },
-          modifier = Modifier.padding(top = 8.dp, bottom = 20.dp),
         )
+
+        if (text?.transliterated != null) {
+          AndroidView(
+            factory = { context ->
+              TextView(context).apply {
+                this.text = text.transliterated
+                this.textSize = smallerFontSize
+                this.setTextColor(textColor)
+                this.setTextIsSelectable(true)
+              }
+            },
+            update = { textView ->
+              textView.text = text.transliterated
+              textView.textSize = smallerFontSize
+            },
+            modifier = Modifier.padding(top = 8.dp, bottom = 20.dp),
+          )
+        }
       }
     }
 
