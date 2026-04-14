@@ -601,9 +601,6 @@ private fun previewLanguage(
   script = "Latn",
   dictionaryCode = code,
   tessdataSizeBytes = 0,
-  toEnglish = null,
-  fromEnglish = null,
-  extraFiles = emptyList(),
 )
 
 @Preview(

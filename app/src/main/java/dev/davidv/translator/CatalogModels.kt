@@ -57,9 +57,6 @@ data class NativeLanguage(
   val script: String,
   val dictionaryCode: String,
   val tessdataSizeBytes: Long,
-  val toEnglish: LanguageDirection?,
-  val fromEnglish: LanguageDirection?,
-  val extraFiles: Array<String>,
 )
 
 data class NativeLangAvailability(
@@ -132,6 +129,7 @@ class LanguageCatalog private constructor(
   val generatedAt: Long,
   val dictionaryVersion: Int,
   val languageList: List<Language>,
+  private val availabilityMap: Map<Language, LangAvailability>,
 ) : Closeable {
   companion object {
     private val binding = CatalogBinding()
@@ -139,17 +137,36 @@ class LanguageCatalog private constructor(
     fun open(
       bundledJson: String,
       diskJson: String?,
+      baseDir: String,
     ): LanguageCatalog? {
-      val handle = binding.openCatalog(bundledJson, diskJson)
+      val handle = binding.openCatalog(bundledJson, diskJson, baseDir)
       if (handle == 0L) return null
 
       return try {
+        val languageList = binding.languages(handle).map(NativeLanguage::toLanguage)
+        val languagesByCode = languageList.associateBy { it.code }
         LanguageCatalog(
           nativeHandle = handle,
           formatVersion = binding.formatVersion(handle),
           generatedAt = binding.generatedAt(handle),
           dictionaryVersion = binding.dictionaryVersion(handle),
-          languageList = binding.languages(handle).map(NativeLanguage::toLanguage),
+          languageList = languageList,
+          availabilityMap =
+            buildMap {
+              binding.computeLanguageAvailability(handle).forEach { row ->
+                val language = languagesByCode[row.code] ?: return@forEach
+                put(
+                  language,
+                  LangAvailability(
+                    hasFromEnglish = row.hasFromEnglish,
+                    hasToEnglish = row.hasToEnglish,
+                    ocrFiles = row.ocrFiles,
+                    dictionaryFiles = row.dictionaryFiles,
+                    ttsFiles = row.ttsFiles,
+                  ),
+                )
+              }
+            },
         )
       } catch (t: Throwable) {
         binding.closeCatalog(handle)
@@ -168,24 +185,7 @@ class LanguageCatalog private constructor(
 
   fun dictionaryInfo(dictionaryCode: String): DictionaryInfo? = binding.dictionaryInfo(handle(), dictionaryCode)
 
-  fun computeLanguageAvailability(baseDir: String): Map<Language, LangAvailability> {
-    val languagesByCode = languageList.associateBy { it.code }
-    return buildMap {
-      binding.computeLanguageAvailability(handle(), baseDir).forEach { row ->
-        val language = languagesByCode[row.code] ?: return@forEach
-        put(
-          language,
-          LangAvailability(
-            hasFromEnglish = row.hasFromEnglish,
-            hasToEnglish = row.hasToEnglish,
-            ocrFiles = row.ocrFiles,
-            dictionaryFiles = row.dictionaryFiles,
-            ttsFiles = row.ttsFiles,
-          ),
-        )
-      }
-    }
-  }
+  fun computeLanguageAvailability(): Map<Language, LangAvailability> = availabilityMap
 
   fun ttsPackIdsForLanguage(languageCode: String): List<String> = binding.ttsPackIds(handle(), languageCode).toList()
 
@@ -202,63 +202,43 @@ class LanguageCatalog private constructor(
   ): Boolean = binding.canSwapLanguages(handle(), from.code, to.code)
 
   fun canTranslate(
-    baseDir: String,
     from: Language,
     to: Language,
-  ): Boolean = binding.canTranslate(handle(), baseDir, from.code, to.code)
+  ): Boolean = binding.canTranslate(handle(), from.code, to.code)
 
   fun resolveTranslationPlan(
-    baseDir: String,
     from: Language,
     to: Language,
-  ): TranslationPlan? = binding.resolveTranslationPlan(handle(), baseDir, from.code, to.code)?.toTranslationPlan()
+  ): TranslationPlan? = binding.resolveTranslationPlan(handle(), from.code, to.code)?.toTranslationPlan()
 
-  fun planLanguageDownload(
-    baseDir: String,
-    languageCode: String,
-  ): DownloadPlan = binding.planLanguageDownload(handle(), baseDir, languageCode).toDownloadPlan()
+  fun planLanguageDownload(languageCode: String): DownloadPlan = binding.planLanguageDownload(handle(), languageCode).toDownloadPlan()
 
-  fun planDictionaryDownload(
-    baseDir: String,
-    languageCode: String,
-  ): DownloadPlan? = binding.planDictionaryDownload(handle(), baseDir, languageCode)?.toDownloadPlan()
+  fun planDictionaryDownload(languageCode: String): DownloadPlan? = binding.planDictionaryDownload(handle(), languageCode)?.toDownloadPlan()
 
   fun planTtsDownload(
-    baseDir: String,
     languageCode: String,
     selectedPackId: String? = null,
-  ): DownloadPlan? = binding.planTtsDownload(handle(), baseDir, languageCode, selectedPackId)?.toDownloadPlan()
+  ): DownloadPlan? = binding.planTtsDownload(handle(), languageCode, selectedPackId)?.toDownloadPlan()
 
-  fun planDeleteLanguage(
-    baseDir: String,
-    languageCode: String,
-  ): DeletePlan = binding.planDeleteLanguage(handle(), baseDir, languageCode).toDeletePlan()
+  fun planDeleteLanguage(languageCode: String): DeletePlan = binding.planDeleteLanguage(handle(), languageCode).toDeletePlan()
 
-  fun planDeleteDictionary(
-    baseDir: String,
-    languageCode: String,
-  ): DeletePlan = binding.planDeleteDictionary(handle(), baseDir, languageCode).toDeletePlan()
+  fun planDeleteDictionary(languageCode: String): DeletePlan = binding.planDeleteDictionary(handle(), languageCode).toDeletePlan()
 
-  fun planDeleteTts(
-    baseDir: String,
-    languageCode: String,
-  ): DeletePlan = binding.planDeleteTts(handle(), baseDir, languageCode).toDeletePlan()
+  fun planDeleteTts(languageCode: String): DeletePlan = binding.planDeleteTts(handle(), languageCode).toDeletePlan()
 
   fun planDeleteSupersededTts(
-    baseDir: String,
     languageCode: String,
     selectedPackId: String,
-  ): DeletePlan = binding.planDeleteSupersededTts(handle(), baseDir, languageCode, selectedPackId).toDeletePlan()
+  ): DeletePlan = binding.planDeleteSupersededTts(handle(), languageCode, selectedPackId).toDeletePlan()
 
   fun defaultTtsPackIdForLanguage(languageCode: String): String? = binding.defaultTtsPackIdForLanguage(handle(), languageCode)
 
   fun ttsSizeBytesForLanguage(languageCode: String): Long = binding.ttsSizeBytesForLanguage(handle(), languageCode)
 
-  fun resolveTtsVoiceFiles(
-    baseDir: String,
-    languageCode: String,
-  ): TtsVoiceFiles? =
-    binding.resolveTtsVoiceFiles(handle(), baseDir, languageCode)?.let { files ->
+  fun translationSizeBytesForLanguage(languageCode: String): Long = binding.translationSizeBytesForLanguage(handle(), languageCode)
+
+  fun resolveTtsVoiceFiles(languageCode: String): TtsVoiceFiles? =
+    binding.resolveTtsVoiceFiles(handle(), languageCode)?.let { files ->
       TtsVoiceFiles(
         engine = files.engine,
         model = File(files.modelPath),
@@ -297,9 +277,6 @@ private fun NativeLanguage.toLanguage(): Language =
     script = script,
     dictionaryCode = dictionaryCode,
     tessdataSizeBytes = tessdataSizeBytes,
-    toEnglish = toEnglish,
-    fromEnglish = fromEnglish,
-    extraFiles = extraFiles.toList(),
   )
 
 private fun NativeDownloadTask.toDownloadTask(): DownloadTask =

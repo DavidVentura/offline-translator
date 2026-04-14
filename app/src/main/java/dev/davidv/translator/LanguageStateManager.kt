@@ -112,6 +112,7 @@ class LanguageStateManager(
             }
 
             is DownloadEvent.NewTtsAvailable -> {
+              setCatalog(filePathManager.loadCatalog())
               refreshLanguageAvailability()
             }
 
@@ -135,13 +136,11 @@ class LanguageStateManager(
     scope.launch {
       _languageState.value = _languageState.value.copy(isChecking = true)
 
-      val catalog = catalogState.value ?: withContext(Dispatchers.IO) { filePathManager.loadCatalog() } ?: return@launch
+      val catalog = withContext(Dispatchers.IO) { filePathManager.loadCatalog() } ?: return@launch
+      setCatalog(catalog)
 
       Log.i("LanguageStateManager", "Refreshing language availability")
-      val availabilityMap =
-        withContext(Dispatchers.IO) {
-          computeAvailabilityMapNative(catalog)
-        }
+      val availabilityMap = catalog.computeLanguageAvailability()
 
       val hasLanguages = availabilityMap.any { !it.key.isEnglish && it.value.translatorFiles }
       Log.i("LanguageStateManager", "hasLanguages = $hasLanguages")
@@ -156,8 +155,7 @@ class LanguageStateManager(
 
   fun deleteDict(language: Language) {
     val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
-    val baseDir = filePathManager.currentBaseDir().absolutePath
-    filePathManager.applyDeletePlan(catalog.planDeleteDictionary(baseDir, language.code))
+    filePathManager.applyDeletePlan(catalog.planDeleteDictionary(language.code))
 
     refreshLanguageAvailability()
     scope.launch { _fileEvents.emit(FileEvent.DictionaryDeleted(language)) }
@@ -166,8 +164,7 @@ class LanguageStateManager(
 
   fun deleteLanguage(language: Language) {
     val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
-    val baseDir = filePathManager.currentBaseDir().absolutePath
-    filePathManager.applyDeletePlan(catalog.planDeleteLanguage(baseDir, language.code))
+    filePathManager.applyDeletePlan(catalog.planDeleteLanguage(language.code))
     refreshLanguageAvailability()
     scope.launch { _fileEvents.emit(FileEvent.LanguageDeleted(language)) }
     Log.i("LanguageStateManager", "Removed language: ${language.displayName}")
@@ -175,8 +172,7 @@ class LanguageStateManager(
 
   fun deleteTts(language: Language) {
     val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
-    val baseDir = filePathManager.currentBaseDir().absolutePath
-    filePathManager.applyDeletePlan(catalog.planDeleteTts(baseDir, language.code))
+    filePathManager.applyDeletePlan(catalog.planDeleteTts(language.code))
     refreshLanguageAvailability()
     Log.i("LanguageStateManager", "Removed TTS for language: ${language.displayName}")
   }
@@ -194,7 +190,7 @@ class LanguageStateManager(
     to: Language,
   ): Boolean {
     val catalog = catalogState.value ?: return false
-    return catalog.canTranslate(filePathManager.currentBaseDir().absolutePath, from, to)
+    return catalog.canTranslate(from, to)
   }
 
   fun getFirstAvailableFromLanguage(excluding: Language? = null): Language? {
@@ -248,10 +244,6 @@ class LanguageStateManager(
         }
       }
     }
-  }
-
-  private fun computeAvailabilityMapNative(catalog: LanguageCatalog): Map<Language, LangAvailability> {
-    return catalog.computeLanguageAvailability(filePathManager.currentBaseDir().absolutePath)
   }
 
   private fun setCatalog(newCatalog: LanguageCatalog?) {

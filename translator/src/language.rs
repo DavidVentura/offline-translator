@@ -43,9 +43,6 @@ pub struct Language {
     pub script: String,
     pub dictionary_code: String,
     pub tessdata_size_bytes: u64,
-    pub to_english: Option<LanguageDirection>,
-    pub from_english: Option<LanguageDirection>,
-    pub extra_files: Vec<String>,
 }
 
 impl PartialEq for Language {
@@ -65,19 +62,6 @@ impl Hash for Language {
 impl Language {
     pub fn tess_filename(&self) -> String {
         format!("{}.traineddata", self.tess_name)
-    }
-
-    pub fn size_bytes(&self) -> u64 {
-        self.to_english
-            .as_ref()
-            .map(LanguageDirection::total_size)
-            .unwrap_or(0)
-            + self
-                .from_english
-                .as_ref()
-                .map(LanguageDirection::total_size)
-                .unwrap_or(0)
-            + self.tessdata_size_bytes
     }
 
     pub fn is_english(&self) -> bool {
@@ -120,13 +104,9 @@ mod tests {
             script: "Latn".to_string(),
             dictionary_code: "en".to_string(),
             tessdata_size_bytes: 42,
-            to_english: None,
-            from_english: None,
-            extra_files: vec![],
         };
 
         assert_eq!(language.tess_filename(), "eng.traineddata");
-        assert_eq!(language.size_bytes(), 42);
         assert!(language.is_english());
     }
 }

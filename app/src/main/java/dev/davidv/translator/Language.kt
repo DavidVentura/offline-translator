@@ -17,23 +17,6 @@
 
 package dev.davidv.translator
 
-data class ModelFile(
-  val name: String,
-  val sizeBytes: Long,
-  val path: String,
-)
-
-data class LanguageDirection(
-  val model: ModelFile,
-  val srcVocab: ModelFile,
-  val tgtVocab: ModelFile,
-  val lex: ModelFile,
-) {
-  fun allFiles(): List<ModelFile> = listOf(model, srcVocab, tgtVocab, lex).distinctBy { it.name }
-
-  fun totalSize(): Long = allFiles().sumOf { it.sizeBytes }
-}
-
 data class Language(
   val code: String,
   val displayName: String,
@@ -42,12 +25,8 @@ data class Language(
   val script: String,
   val dictionaryCode: String,
   val tessdataSizeBytes: Long,
-  val toEnglish: LanguageDirection?,
-  val fromEnglish: LanguageDirection?,
-  val extraFiles: List<String>,
 ) {
   val tessFilename: String get() = "$tessName.traineddata"
-  val sizeBytes: Long get() = (toEnglish?.totalSize() ?: 0) + (fromEnglish?.totalSize() ?: 0) + tessdataSizeBytes
   val isEnglish: Boolean get() = code == "en"
 
   override fun equals(other: Any?): Boolean = other is Language && code == other.code

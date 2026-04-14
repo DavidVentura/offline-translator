@@ -381,6 +381,13 @@ impl LanguageCatalog {
             .unwrap_or(0)
     }
 
+    pub fn translation_size_bytes_for_language(&self, language_code: &str) -> u64 {
+        self.root_pack_ids_for_feature(language_code, LanguageFeature::Translation)
+            .iter()
+            .map(|pack_id| self.pack_size_bytes(pack_id))
+            .sum()
+    }
+
     pub fn tts_voice_pack_info(&self, pack_id: &str) -> Option<TtsVoicePackInfo> {
         let pack = self.pack(pack_id)?;
         let PackKind::Tts(tts) = &pack.kind else {

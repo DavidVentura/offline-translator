@@ -1,6 +1,9 @@
 use std::path::Path;
 
-use crate::catalog::{LanguageCatalog, PackInstallChecker, PackResolver};
+use crate::catalog::{
+    CatalogSnapshot, LanguageCatalog, PackInstallChecker, PackResolver,
+    has_translation_direction_installed, is_pack_installed,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TranslatedText {
@@ -76,55 +79,131 @@ fn cache_key(from_code: &str, to_code: &str) -> String {
     format!("{from_code}{to_code}")
 }
 
-impl LanguageCatalog {
-    pub fn resolve_translation_plan<C>(
-        &self,
-        base_dir: &str,
-        from_code: &str,
-        to_code: &str,
-        resolver: &mut PackResolver<'_, C>,
-    ) -> Option<TranslationPlan>
-    where
-        C: PackInstallChecker,
-    {
-        if from_code == to_code {
-            return Some(TranslationPlan::default());
-        }
-
-        let steps = if from_code == "en" {
-            vec![self.resolve_translation_step(base_dir, "en", to_code, resolver)?]
-        } else if to_code == "en" {
-            vec![self.resolve_translation_step(base_dir, from_code, "en", resolver)?]
-        } else {
-            vec![
-                self.resolve_translation_step(base_dir, from_code, "en", resolver)?,
-                self.resolve_translation_step(base_dir, "en", to_code, resolver)?,
-            ]
-        };
-
-        Some(TranslationPlan { steps })
+pub fn resolve_translation_plan<C>(
+    catalog: &LanguageCatalog,
+    base_dir: &str,
+    from_code: &str,
+    to_code: &str,
+    resolver: &mut PackResolver<'_, C>,
+) -> Option<TranslationPlan>
+where
+    C: PackInstallChecker,
+{
+    if from_code == to_code {
+        return Some(TranslationPlan::default());
     }
 
-    fn resolve_translation_step<C>(
-        &self,
-        base_dir: &str,
-        from_code: &str,
-        to_code: &str,
-        resolver: &mut PackResolver<'_, C>,
-    ) -> Option<TranslationStep>
-    where
-        C: PackInstallChecker,
-    {
-        if !self.has_translation_direction_installed(from_code, to_code, resolver) {
+    let steps = if from_code == "en" {
+        vec![resolve_translation_step(
+            catalog, base_dir, "en", to_code, resolver,
+        )?]
+    } else if to_code == "en" {
+        vec![resolve_translation_step(
+            catalog, base_dir, from_code, "en", resolver,
+        )?]
+    } else {
+        vec![
+            resolve_translation_step(catalog, base_dir, from_code, "en", resolver)?,
+            resolve_translation_step(catalog, base_dir, "en", to_code, resolver)?,
+        ]
+    };
+
+    Some(TranslationPlan { steps })
+}
+
+pub fn resolve_translation_plan_with_checker<C>(
+    catalog: &LanguageCatalog,
+    base_dir: &str,
+    from_code: &str,
+    to_code: &str,
+    install_checker: &C,
+) -> Option<TranslationPlan>
+where
+    C: PackInstallChecker,
+{
+    if from_code == to_code {
+        return Some(TranslationPlan::default());
+    }
+
+    let step = |from: &str, to: &str| {
+        let pack_id = catalog.translation_pack_id(from, to)?;
+        if !is_pack_installed(catalog, install_checker, &pack_id) {
             return None;
         }
-
-        let direction = self.translation_direction(from_code, to_code)?;
+        let direction = catalog.translation_direction(from, to)?;
         Some(TranslationStep {
-            from_code: from_code.to_string(),
-            to_code: to_code.to_string(),
-            cache_key: cache_key(from_code, to_code),
+            from_code: from.to_string(),
+            to_code: to.to_string(),
+            cache_key: cache_key(from, to),
             config: build_bergamot_config(base_dir, &direction),
         })
+    };
+
+    let steps = if from_code == "en" {
+        vec![step("en", to_code)?]
+    } else if to_code == "en" {
+        vec![step(from_code, "en")?]
+    } else {
+        vec![step(from_code, "en")?, step("en", to_code)?]
+    };
+
+    Some(TranslationPlan { steps })
+}
+
+pub fn resolve_translation_plan_in_snapshot(
+    snapshot: &CatalogSnapshot,
+    from_code: &str,
+    to_code: &str,
+) -> Option<TranslationPlan> {
+    if from_code == to_code {
+        return Some(TranslationPlan::default());
     }
+
+    let step = |from: &str, to: &str| {
+        let pack_id = snapshot.catalog.translation_pack_id(from, to)?;
+        let status = snapshot.pack_statuses.get(&pack_id)?;
+        if !status.installed {
+            return None;
+        }
+        let direction = snapshot.catalog.translation_direction(from, to)?;
+        Some(TranslationStep {
+            from_code: from.to_string(),
+            to_code: to.to_string(),
+            cache_key: cache_key(from, to),
+            config: build_bergamot_config(&snapshot.base_dir, &direction),
+        })
+    };
+
+    let steps = if from_code == "en" {
+        vec![step("en", to_code)?]
+    } else if to_code == "en" {
+        vec![step(from_code, "en")?]
+    } else {
+        vec![step(from_code, "en")?, step("en", to_code)?]
+    };
+
+    Some(TranslationPlan { steps })
+}
+
+fn resolve_translation_step<C>(
+    catalog: &LanguageCatalog,
+    base_dir: &str,
+    from_code: &str,
+    to_code: &str,
+    resolver: &mut PackResolver<'_, C>,
+) -> Option<TranslationStep>
+where
+    C: PackInstallChecker,
+{
+    if !has_translation_direction_installed(catalog, from_code, to_code, resolver) {
+        return None;
+    }
+
+    let direction = catalog.translation_direction(from_code, to_code)?;
+    Some(TranslationStep {
+        from_code: from_code.to_string(),
+        to_code: to_code.to_string(),
+        cache_key: cache_key(from_code, to_code),
+        config: build_bergamot_config(base_dir, &direction),
+    })
 }

@@ -10,7 +10,8 @@ class CatalogBinding {
   fun openCatalog(
     bundledJson: String,
     diskJson: String?,
-  ): Long = nativeOpenCatalog(bundledJson, diskJson.orEmpty())
+    baseDir: String,
+  ): Long = nativeOpenCatalog(bundledJson, diskJson.orEmpty(), baseDir)
 
   fun closeCatalog(handle: Long) {
     if (handle != 0L) {
@@ -26,10 +27,7 @@ class CatalogBinding {
 
   fun languages(handle: Long): Array<NativeLanguage> = nativeLanguages(handle) ?: emptyArray()
 
-  fun computeLanguageAvailability(
-    handle: Long,
-    baseDir: String,
-  ): Array<NativeLangAvailability> = nativeComputeLanguageAvailability(handle, baseDir) ?: emptyArray()
+  fun computeLanguageAvailability(handle: Long): Array<NativeLangAvailability> = nativeComputeLanguageAvailability(handle) ?: emptyArray()
 
   fun dictionaryInfo(
     handle: Long,
@@ -59,66 +57,62 @@ class CatalogBinding {
 
   fun canTranslate(
     handle: Long,
-    baseDir: String,
     fromCode: String,
     toCode: String,
-  ): Boolean = nativeCanTranslate(handle, baseDir, fromCode, toCode)
+  ): Boolean = nativeCanTranslate(handle, fromCode, toCode)
 
   fun resolveTranslationPlan(
     handle: Long,
-    baseDir: String,
     fromCode: String,
     toCode: String,
-  ): NativeTranslationPlan? = nativeResolveTranslationPlan(handle, baseDir, fromCode, toCode)
+  ): NativeTranslationPlan? = nativeResolveTranslationPlan(handle, fromCode, toCode)
 
   fun planLanguageDownload(
     handle: Long,
-    baseDir: String,
     languageCode: String,
-  ): NativeDownloadPlan = nativePlanLanguageDownload(handle, baseDir, languageCode)
+  ): NativeDownloadPlan = nativePlanLanguageDownload(handle, languageCode)
 
   fun planDictionaryDownload(
     handle: Long,
-    baseDir: String,
     languageCode: String,
-  ): NativeDownloadPlan? = nativePlanDictionaryDownload(handle, baseDir, languageCode)
+  ): NativeDownloadPlan? = nativePlanDictionaryDownload(handle, languageCode)
 
   fun planTtsDownload(
     handle: Long,
-    baseDir: String,
     languageCode: String,
     selectedPackId: String?,
-  ): NativeDownloadPlan? = nativePlanTtsDownload(handle, baseDir, languageCode, selectedPackId.orEmpty())
+  ): NativeDownloadPlan? = nativePlanTtsDownload(handle, languageCode, selectedPackId.orEmpty())
 
   fun planDeleteLanguage(
     handle: Long,
-    baseDir: String,
     languageCode: String,
-  ): NativeDeletePlan = nativePlanDeleteLanguage(handle, baseDir, languageCode)
+  ): NativeDeletePlan = nativePlanDeleteLanguage(handle, languageCode)
 
   fun planDeleteDictionary(
     handle: Long,
-    baseDir: String,
     languageCode: String,
-  ): NativeDeletePlan = nativePlanDeleteDictionary(handle, baseDir, languageCode)
+  ): NativeDeletePlan = nativePlanDeleteDictionary(handle, languageCode)
 
   fun planDeleteTts(
     handle: Long,
-    baseDir: String,
     languageCode: String,
-  ): NativeDeletePlan = nativePlanDeleteTts(handle, baseDir, languageCode)
+  ): NativeDeletePlan = nativePlanDeleteTts(handle, languageCode)
 
   fun planDeleteSupersededTts(
     handle: Long,
-    baseDir: String,
     languageCode: String,
     selectedPackId: String,
-  ): NativeDeletePlan = nativePlanDeleteSupersededTts(handle, baseDir, languageCode, selectedPackId)
+  ): NativeDeletePlan = nativePlanDeleteSupersededTts(handle, languageCode, selectedPackId)
 
   fun ttsSizeBytesForLanguage(
     handle: Long,
     languageCode: String,
   ): Long = nativeTtsSizeBytesForLanguage(handle, languageCode)
+
+  fun translationSizeBytesForLanguage(
+    handle: Long,
+    languageCode: String,
+  ): Long = nativeTranslationSizeBytesForLanguage(handle, languageCode)
 
   fun defaultTtsPackIdForLanguage(
     handle: Long,
@@ -127,13 +121,13 @@ class CatalogBinding {
 
   fun resolveTtsVoiceFiles(
     handle: Long,
-    baseDir: String,
     languageCode: String,
-  ): NativeTtsVoiceFiles? = nativeResolveTtsVoiceFiles(handle, baseDir, languageCode)
+  ): NativeTtsVoiceFiles? = nativeResolveTtsVoiceFiles(handle, languageCode)
 
   private external fun nativeOpenCatalog(
     bundledJson: String,
     diskJson: String,
+    baseDir: String,
   ): Long
 
   private external fun nativeCloseCatalog(handle: Long)
@@ -146,10 +140,7 @@ class CatalogBinding {
 
   private external fun nativeLanguages(handle: Long): Array<NativeLanguage>?
 
-  private external fun nativeComputeLanguageAvailability(
-    handle: Long,
-    baseDir: String,
-  ): Array<NativeLangAvailability>?
+  private external fun nativeComputeLanguageAvailability(handle: Long): Array<NativeLangAvailability>?
 
   private external fun nativeDictionaryInfo(
     handle: Long,
@@ -179,63 +170,59 @@ class CatalogBinding {
 
   private external fun nativeCanTranslate(
     handle: Long,
-    baseDir: String,
     fromCode: String,
     toCode: String,
   ): Boolean
 
   private external fun nativeResolveTranslationPlan(
     handle: Long,
-    baseDir: String,
     fromCode: String,
     toCode: String,
   ): NativeTranslationPlan?
 
   private external fun nativePlanLanguageDownload(
     handle: Long,
-    baseDir: String,
     languageCode: String,
   ): NativeDownloadPlan
 
   private external fun nativePlanDictionaryDownload(
     handle: Long,
-    baseDir: String,
     languageCode: String,
   ): NativeDownloadPlan?
 
   private external fun nativePlanTtsDownload(
     handle: Long,
-    baseDir: String,
     languageCode: String,
     selectedPackId: String?,
   ): NativeDownloadPlan?
 
   private external fun nativePlanDeleteLanguage(
     handle: Long,
-    baseDir: String,
     languageCode: String,
   ): NativeDeletePlan
 
   private external fun nativePlanDeleteDictionary(
     handle: Long,
-    baseDir: String,
     languageCode: String,
   ): NativeDeletePlan
 
   private external fun nativePlanDeleteTts(
     handle: Long,
-    baseDir: String,
     languageCode: String,
   ): NativeDeletePlan
 
   private external fun nativePlanDeleteSupersededTts(
     handle: Long,
-    baseDir: String,
     languageCode: String,
     selectedPackId: String,
   ): NativeDeletePlan
 
   private external fun nativeTtsSizeBytesForLanguage(
+    handle: Long,
+    languageCode: String,
+  ): Long
+
+  private external fun nativeTranslationSizeBytesForLanguage(
     handle: Long,
     languageCode: String,
   ): Long
@@ -247,7 +234,6 @@ class CatalogBinding {
 
   private external fun nativeResolveTtsVoiceFiles(
     handle: Long,
-    baseDir: String,
     languageCode: String,
   ): NativeTtsVoiceFiles?
 }

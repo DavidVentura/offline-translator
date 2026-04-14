@@ -85,7 +85,7 @@ class FilePathManager(
 
   fun getTtsVoiceFiles(language: Language): TtsVoiceFiles? {
     val catalog = loadCatalog() ?: return null
-    return catalog.resolveTtsVoiceFiles(currentBaseDir().absolutePath, language.code)
+    return catalog.resolveTtsVoiceFiles(language.code)
   }
 
   fun getTtsSupportDataRoot(): File? {
@@ -130,8 +130,8 @@ class FilePathManager(
     val catalog =
       try {
         when {
-          bundledJson != null -> LanguageCatalog.open(bundledJson, diskJson)
-          diskJson != null -> LanguageCatalog.open(diskJson, null)
+          bundledJson != null -> LanguageCatalog.open(bundledJson, diskJson, currentBaseDir().absolutePath)
+          diskJson != null -> LanguageCatalog.open(diskJson, null, currentBaseDir().absolutePath)
           else -> null
         }
       } catch (e: Exception) {

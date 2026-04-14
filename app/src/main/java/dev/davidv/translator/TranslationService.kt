@@ -76,8 +76,7 @@ class TranslationService(
     if (from == to) return@withContext
 
     val catalog = filePathManager.loadCatalog() ?: return@withContext
-    val baseDir = filePathManager.currentBaseDir().absolutePath
-    val plan = catalog.resolveTranslationPlan(baseDir, from, to) ?: return@withContext
+    val plan = catalog.resolveTranslationPlan(from, to) ?: return@withContext
     loadPlanIntoCache(plan)
   }
 
@@ -93,9 +92,8 @@ class TranslationService(
       val catalog =
         filePathManager.loadCatalog()
           ?: return@withContext BatchTranslationResult.Error("Catalog unavailable")
-      val baseDir = filePathManager.currentBaseDir().absolutePath
       val plan =
-        catalog.resolveTranslationPlan(baseDir, from, to)
+        catalog.resolveTranslationPlan(from, to)
           ?: return@withContext BatchTranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
       loadPlanIntoCache(plan)
 
@@ -139,9 +137,8 @@ class TranslationService(
       val catalog =
         filePathManager.loadCatalog()
           ?: return@withContext TranslationResult.Error("Catalog unavailable")
-      val baseDir = filePathManager.currentBaseDir().absolutePath
       val plan =
-        catalog.resolveTranslationPlan(baseDir, from, to)
+        catalog.resolveTranslationPlan(from, to)
           ?: return@withContext TranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
       loadPlanIntoCache(plan)
 
@@ -179,9 +176,8 @@ class TranslationService(
       val catalog =
         filePathManager.loadCatalog()
           ?: return@withContext BatchAlignedTranslationResult.Error("Catalog unavailable")
-      val baseDir = filePathManager.currentBaseDir().absolutePath
       val plan =
-        catalog.resolveTranslationPlan(baseDir, from, to)
+        catalog.resolveTranslationPlan(from, to)
           ?: return@withContext BatchAlignedTranslationResult.Error(
             "Language pair ${from.code} -> ${to.code} not installed",
           )

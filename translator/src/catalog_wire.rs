@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 
-use crate::language::{Language, LanguageDirection, ModelFile};
+use crate::language::Language;
 
 use super::model::{
     AssetFileV2, AssetPackMetadataV2, CatalogSourcesV2, DictionaryPack, LanguageCatalog,
@@ -163,6 +163,13 @@ struct LanguageCatalogWire {
     packs: HashMap<String, AssetPackWire>,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct CatalogHeaderWire {
+    format_version: i32,
+    generated_at: i64,
+}
+
 impl From<CatalogSourcesWire> for CatalogSourcesV2 {
     fn from(value: CatalogSourcesWire) -> Self {
         Self {
@@ -309,54 +316,6 @@ fn compile_tts_config(value: Option<LanguageTtsWire>) -> Option<LanguageTtsV2> {
     })
 }
 
-fn to_model_file(file: &AssetFileV2) -> ModelFile {
-    ModelFile {
-        name: file.name.clone(),
-        size_bytes: file.size_bytes,
-        path: file.install_path.clone(),
-    }
-}
-
-fn translation_direction(
-    packs: &HashMap<String, PackRecord>,
-    from: &str,
-    to: &str,
-) -> Option<LanguageDirection> {
-    let pack = packs.values().find(|pack| {
-        matches!(
-            &pack.kind,
-            PackKind::Translation(direction) if direction.from == from && direction.to == to
-        )
-    })?;
-
-    let by_name = pack
-        .files
-        .iter()
-        .map(|file| (file.name.clone(), file))
-        .collect::<HashMap<_, _>>();
-    let model = by_name
-        .values()
-        .find(|file| file.name.starts_with("model."))?;
-    let lex = by_name
-        .values()
-        .find(|file| file.name.starts_with("lex."))?;
-    let mut vocab_files = by_name
-        .values()
-        .filter(|file| file.name.contains("vocab"))
-        .copied()
-        .collect::<Vec<_>>();
-    vocab_files.sort_by(|left, right| left.name.cmp(&right.name));
-    let src_vocab = vocab_files.first()?;
-    let tgt_vocab = vocab_files.get(1).copied().unwrap_or(src_vocab);
-
-    Some(LanguageDirection {
-        model: to_model_file(model),
-        src_vocab: to_model_file(src_vocab),
-        tgt_vocab: to_model_file(tgt_vocab),
-        lex: to_model_file(lex),
-    })
-}
-
 fn compile_language_info(
     entry: LanguageEntryWire,
     packs: &HashMap<String, PackRecord>,
@@ -393,12 +352,6 @@ fn compile_language_info(
             _ => None,
         })
         .unwrap_or_else(|| entry.meta.code.clone());
-    let extra_files = resources
-        .support_root_packs
-        .iter()
-        .filter_map(|pack_id| packs.get(pack_id))
-        .flat_map(|pack| pack.files.iter().map(|file| file.name.clone()))
-        .collect::<Vec<_>>();
     let code = entry.meta.code.clone();
 
     Some(LanguageInfo {
@@ -410,17 +363,6 @@ fn compile_language_info(
             script: entry.meta.script,
             dictionary_code,
             tessdata_size_bytes,
-            to_english: if code == "en" {
-                None
-            } else {
-                translation_direction(packs, &code, "en")
-            },
-            from_english: if code == "en" {
-                None
-            } else {
-                translation_direction(packs, "en", &code)
-            },
-            extra_files,
         },
         resources,
         tts: compile_tts_config(entry.tts),
@@ -537,12 +479,24 @@ pub fn select_best_catalog<'a>(
     bundled_json: &'a str,
     disk_json: Option<&'a str>,
 ) -> Result<&'a str, String> {
-    let bundled = parse_and_validate_catalog(bundled_json);
-    let disk = disk_json.map(parse_and_validate_catalog).transpose();
+    let parse_header = |json: &str| -> Result<CatalogHeaderWire, String> {
+        let header =
+            serde_json::from_str::<CatalogHeaderWire>(json).map_err(|error| error.to_string())?;
+        if header.format_version != 2 {
+            return Err(format!(
+                "Unsupported catalog formatVersion={}",
+                header.format_version
+            ));
+        }
+        Ok(header)
+    };
+
+    let bundled = parse_header(bundled_json);
+    let disk = disk_json.map(parse_header).transpose();
 
     match (bundled, disk) {
-        (Ok(bundled_catalog), Ok(Some(disk_catalog))) => {
-            if disk_catalog.generated_at >= bundled_catalog.generated_at {
+        (Ok(bundled_header), Ok(Some(disk_header))) => {
+            if disk_header.generated_at >= bundled_header.generated_at {
                 Ok(disk_json.expect("disk_json present when disk catalog parsed"))
             } else {
                 Ok(bundled_json)

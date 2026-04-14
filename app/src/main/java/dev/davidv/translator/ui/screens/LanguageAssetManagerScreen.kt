@@ -151,6 +151,7 @@ private data class LanguageAssetRow(
   val translationVisible: Boolean,
   val dictionaryVisible: Boolean,
   val ttsVisible: Boolean,
+  val translationSizeBytes: Long,
   val ttsPackIds: List<String>,
   val ttsSizeBytes: Long,
 ) {
@@ -212,6 +213,7 @@ fun LanguageAssetManagerScreen(
               translationVisible = translationVisible,
               dictionaryVisible = dictionaryVisible,
               ttsVisible = ttsVisible,
+              translationSizeBytes = catalog.translationSizeBytesForLanguage(language.code),
               ttsPackIds = ttsPackIds,
               ttsSizeBytes = catalog.ttsSizeBytesForLanguage(language.code),
             )
@@ -561,7 +563,7 @@ private fun LanguageAssetCard(
       onCancelTts = onCancelTts,
     )
   val totalVisibleSize =
-    (if (row.translationVisible) row.language.sizeBytes else 0L) +
+    (if (row.translationVisible) row.translationSizeBytes else 0L) +
       (if (row.dictionaryVisible) row.dictionaryInfo?.size ?: 0L else 0L) +
       (if (row.ttsVisible) row.ttsSizeBytes else 0L)
   val collapsedDownloadState =
@@ -701,7 +703,7 @@ private fun buildFeatureRows(
     featureRows +=
       LanguageFeatureRow(
         label = "Translation",
-        secondaryLabel = formatSize(row.language.sizeBytes),
+        secondaryLabel = formatSize(row.translationSizeBytes),
         installed = row.translationInstalled,
         downloadState = translationDownloadState,
         onDownload = onDownloadTranslation,

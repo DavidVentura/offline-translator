@@ -284,7 +284,7 @@ class DownloadService : Service() {
       serviceScope.launch {
         try {
           val catalog = getCatalog() ?: return@launch
-          val downloadPlan = catalog.planLanguageDownload(baseDirPath, language.code)
+          val downloadPlan = catalog.planLanguageDownload(language.code)
           val downloadTasks = mutableListOf<suspend () -> Boolean>()
           val toDownload = downloadPlan.totalSize
 
@@ -349,7 +349,7 @@ class DownloadService : Service() {
     val job =
       serviceScope.launch {
         val catalog = getCatalog() ?: return@launch
-        val downloadPlan = catalog.planDictionaryDownload(baseDirPath, language.code) ?: return@launch
+        val downloadPlan = catalog.planDictionaryDownload(language.code) ?: return@launch
         val downloadTasks = mutableListOf<suspend () -> Boolean>()
         val toDownload = if (downloadPlan.tasks.isNotEmpty()) downloadPlan.totalSize else dictionarySize
 
@@ -425,7 +425,7 @@ class DownloadService : Service() {
           val catalog = getCatalog() ?: return@launch
           val ttsPackId = requestedPackId ?: catalog.defaultTtsPackIdForLanguage(language.code) ?: return@launch
           val downloadPlan =
-            catalog.planTtsDownload(baseDirPath, language.code, ttsPackId) ?: run {
+            catalog.planTtsDownload(language.code, ttsPackId) ?: run {
               Log.w("DownloadService", "Ignoring invalid TTS pack $ttsPackId for ${language.code}")
               return@launch
             }
@@ -491,7 +491,7 @@ class DownloadService : Service() {
     language: Language,
     selectedPackId: String,
   ) {
-    val deletePlan = catalog.planDeleteSupersededTts(baseDirPath, language.code, selectedPackId)
+    val deletePlan = catalog.planDeleteSupersededTts(language.code, selectedPackId)
     if (deletePlan.filePaths.isNotEmpty() || deletePlan.directoryPaths.isNotEmpty()) {
       filePathManager.applyDeletePlan(deletePlan)
     }

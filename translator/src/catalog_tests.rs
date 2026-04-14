@@ -3,9 +3,10 @@ use std::collections::HashMap;
 use crate::catalog::{
     AssetFileV2, AssetPackMetadataV2, CatalogSourcesV2, LangAvailability, LanguageCatalog,
     LanguageFeature, LanguageTtsRegionV2, LanguageTtsV2, PackInstallChecker, PackRecord,
-    PackResolver,
+    PackResolver, compute_language_availability, plan_language_download,
 };
 use crate::language::Language;
+use crate::translate::resolve_translation_plan;
 
 use super::model::{
     DictionaryPack, LanguageInfo, LanguageResources, OcrPack, PackKind, SupportPack,
@@ -203,9 +204,6 @@ fn base_catalog() -> LanguageCatalog {
         script: "Latn".to_string(),
         dictionary_code: "en".to_string(),
         tessdata_size_bytes: 10,
-        to_english: None,
-        from_english: None,
-        extra_files: vec![],
     };
     let spanish = Language {
         code: "es".to_string(),
@@ -215,9 +213,6 @@ fn base_catalog() -> LanguageCatalog {
         script: "Latn".to_string(),
         dictionary_code: "es".to_string(),
         tessdata_size_bytes: 11,
-        to_english: None,
-        from_english: None,
-        extra_files: vec!["mucab.bin".to_string()],
     };
 
     let languages = HashMap::from([
@@ -443,13 +438,17 @@ fn computes_dependency_closure_and_pack_size_without_double_counting() {
         catalog.pack_size_bytes("translate-en-es"),
         20 + 21 + 22 + 23 + 28
     );
+    assert_eq!(
+        catalog.translation_size_bytes_for_language("es"),
+        (20 + 21 + 22 + 23 + 28) + (24 + 25 + 26 + 27 + 28)
+    );
 }
 
 #[test]
 fn resolves_missing_pack_files_through_install_boundary() {
     let catalog = base_catalog();
     let checker = FakeInstallChecker::with_files(&["bin/model.enes.bin", "bin/shared.bin"]);
-    let plan = catalog.plan_language_download("es", &mut PackResolver::new(&catalog, &checker));
+    let plan = plan_language_download(&catalog, "es", &mut PackResolver::new(&catalog, &checker));
     let missing_paths = plan
         .tasks
         .into_iter()
@@ -492,7 +491,7 @@ fn computes_language_availability_from_pack_install_state() {
     ]);
     let mut resolver = PackResolver::new(&catalog, &checker);
 
-    let availability = catalog.compute_language_availability(&mut resolver);
+    let availability = compute_language_availability(&catalog, &mut resolver);
     let spanish = catalog.language_by_code("es").unwrap();
     let english = catalog.language_by_code("en").unwrap();
 
@@ -525,7 +524,6 @@ fn builds_languages_and_dictionary_info_from_catalog() {
     let dictionary_info = catalog.dictionary_info("en").unwrap();
 
     assert_eq!(spanish.tess_name, "spa");
-    assert_eq!(spanish.extra_files, vec!["mucab.bin".to_string()]);
     assert_eq!(dictionary_info.filename, "en.dict");
     assert_eq!(dictionary_info.type_name, "wiktionary");
     assert_eq!(dictionary_info.word_count, 456);
@@ -541,6 +539,17 @@ fn parses_bundled_catalog_asset() {
 }
 
 #[test]
+fn selects_best_catalog_using_headers_only() {
+    let bundled = r#"{"formatVersion":2,"generatedAt":1}"#;
+    let disk = r#"{"formatVersion":2,"generatedAt":2}"#;
+
+    let selected = crate::catalog::select_best_catalog(bundled, Some(disk))
+        .expect("header-only catalogs should still compare");
+
+    assert_eq!(selected, disk);
+}
+
+#[test]
 fn resolves_direct_translation_plan_from_installed_catalog() {
     let catalog = base_catalog();
     let checker = FakeInstallChecker::with_files(&[
@@ -552,14 +561,14 @@ fn resolves_direct_translation_plan_from_installed_catalog() {
     ]);
     let mut resolver = PackResolver::new(&catalog, &checker);
 
-    let plan = catalog
-        .resolve_translation_plan(
-            "/data/user/0/dev.davidv.translator/files",
-            "en",
-            "es",
-            &mut resolver,
-        )
-        .expect("direct plan should resolve");
+    let plan = resolve_translation_plan(
+        &catalog,
+        "/data/user/0/dev.davidv.translator/files",
+        "en",
+        "es",
+        &mut resolver,
+    )
+    .expect("direct plan should resolve");
 
     assert_eq!(plan.steps.len(), 1);
     assert_eq!(plan.steps[0].cache_key, "enes");
@@ -591,9 +600,6 @@ fn resolves_pivot_translation_plan_from_installed_catalog() {
         script: "Latn".to_string(),
         dictionary_code: "fr".to_string(),
         tessdata_size_bytes: 0,
-        to_english: None,
-        from_english: None,
-        extra_files: vec![],
     };
     catalog.languages.insert(
         "fr".to_string(),
@@ -663,8 +669,7 @@ fn resolves_pivot_translation_plan_from_installed_catalog() {
     ]);
     let mut resolver = PackResolver::new(&catalog, &checker);
 
-    let plan = catalog
-        .resolve_translation_plan("/tmp/base", "es", "fr", &mut resolver)
+    let plan = resolve_translation_plan(&catalog, "/tmp/base", "es", "fr", &mut resolver)
         .expect("pivot plan should resolve");
 
     assert!(plan.is_pivot());
@@ -679,9 +684,5 @@ fn refuses_translation_plan_when_required_direction_is_missing() {
     let checker = FakeInstallChecker::with_files(&["bin/model.esen.bin"]);
     let mut resolver = PackResolver::new(&catalog, &checker);
 
-    assert!(
-        catalog
-            .resolve_translation_plan("/tmp/base", "es", "en", &mut resolver)
-            .is_none()
-    );
+    assert!(resolve_translation_plan(&catalog, "/tmp/base", "es", "en", &mut resolver).is_none());
 }

@@ -6,10 +6,14 @@ use jni::objects::{JClass, JObject, JObjectArray, JString, JValue};
 use jni::sys::{jboolean, jint, jlong, jobject, jobjectArray};
 use serde_json::Value;
 use translator::{
-    DeletePlan, DictionaryInfo, DownloadPlan, DownloadTask, LangAvailability, Language,
-    LanguageCatalog, LanguageDirection, ModelFile, PackInstallChecker, PackResolver,
-    TranslationPlan, TranslationStep, TtsVoicePackInfo, parse_and_validate_catalog,
-    select_best_catalog,
+    CatalogSnapshot, DeletePlan, DictionaryInfo, DownloadPlan, DownloadTask, LangAvailability,
+    Language, LanguageCatalog, PackInstallChecker, TranslationPlan, TranslationStep,
+    TtsVoicePackInfo, build_catalog_snapshot, can_translate_in_snapshot,
+    parse_and_validate_catalog, plan_delete_dictionary_in_snapshot,
+    plan_delete_language_in_snapshot, plan_delete_superseded_tts_in_snapshot,
+    plan_delete_tts_in_snapshot, plan_dictionary_download_in_snapshot,
+    plan_language_download_in_snapshot, plan_tts_download_in_snapshot,
+    resolve_translation_plan_in_snapshot, resolve_tts_voice_files_in_snapshot, select_best_catalog,
 };
 
 struct FsInstallChecker {
@@ -58,26 +62,34 @@ fn new_java_string<'local>(env: &mut JNIEnv<'local>, value: &str) -> Option<JStr
     env.new_string(value).ok()
 }
 
-fn catalog_from_handle<'a>(handle: jlong) -> Option<&'a LanguageCatalog> {
+fn snapshot_from_handle<'a>(handle: jlong) -> Option<&'a CatalogSnapshot> {
     if handle == 0 {
         return None;
     }
-    Some(unsafe { &*(handle as *const LanguageCatalog) })
+    Some(unsafe { &*(handle as *const CatalogSnapshot) })
 }
 
-fn box_catalog(catalog: LanguageCatalog) -> jlong {
-    Box::into_raw(Box::new(catalog)) as jlong
+fn box_snapshot(snapshot: CatalogSnapshot) -> jlong {
+    Box::into_raw(Box::new(snapshot)) as jlong
 }
 
-fn drop_catalog(handle: jlong) {
+fn drop_snapshot(handle: jlong) {
     if handle != 0 {
-        drop(unsafe { Box::from_raw(handle as *mut LanguageCatalog) });
+        drop(unsafe { Box::from_raw(handle as *mut CatalogSnapshot) });
     }
 }
 
 fn parse_selected_catalog(bundled_json: &str, disk_json: Option<&str>) -> Option<LanguageCatalog> {
-    let selected = select_best_catalog(bundled_json, disk_json).ok()?;
-    parse_and_validate_catalog(selected).ok()
+    let preferred = select_best_catalog(bundled_json, disk_json).ok()?;
+    let fallback = if std::ptr::eq(preferred, bundled_json) {
+        disk_json
+    } else {
+        Some(bundled_json)
+    };
+
+    parse_and_validate_catalog(preferred)
+        .ok()
+        .or_else(|| fallback.and_then(|json| parse_and_validate_catalog(json).ok()))
 }
 
 fn new_string_array(env: &mut JNIEnv, values: &[String]) -> Option<jobjectArray> {
@@ -102,46 +114,6 @@ fn new_nullable_integer<'a>(env: &mut JNIEnv<'a>, value: Option<i32>) -> Option<
     }
 }
 
-fn new_model_file<'a>(env: &mut JNIEnv<'a>, file: &ModelFile) -> Option<JObject<'a>> {
-    let name = new_java_string(env, &file.name)?;
-    let path = new_java_string(env, &file.path)?;
-    env.new_object(
-        "dev/davidv/translator/ModelFile",
-        "(Ljava/lang/String;JLjava/lang/String;)V",
-        &[
-            JValue::Object(&JObject::from(name)),
-            JValue::Long(file.size_bytes as jlong),
-            JValue::Object(&JObject::from(path)),
-        ],
-    )
-    .ok()
-}
-
-fn new_language_direction<'a>(
-    env: &mut JNIEnv<'a>,
-    direction: Option<&LanguageDirection>,
-) -> Option<JObject<'a>> {
-    let Some(direction) = direction else {
-        return Some(JObject::null());
-    };
-
-    let model = new_model_file(env, &direction.model)?;
-    let src_vocab = new_model_file(env, &direction.src_vocab)?;
-    let tgt_vocab = new_model_file(env, &direction.tgt_vocab)?;
-    let lex = new_model_file(env, &direction.lex)?;
-    env.new_object(
-        "dev/davidv/translator/LanguageDirection",
-        "(Ldev/davidv/translator/ModelFile;Ldev/davidv/translator/ModelFile;Ldev/davidv/translator/ModelFile;Ldev/davidv/translator/ModelFile;)V",
-        &[
-            JValue::Object(&model),
-            JValue::Object(&src_vocab),
-            JValue::Object(&tgt_vocab),
-            JValue::Object(&lex),
-        ],
-    )
-    .ok()
-}
-
 fn new_native_language<'a>(env: &mut JNIEnv<'a>, language: &Language) -> Option<JObject<'a>> {
     let code = new_java_string(env, &language.code)?;
     let display_name = new_java_string(env, &language.display_name)?;
@@ -149,12 +121,9 @@ fn new_native_language<'a>(env: &mut JNIEnv<'a>, language: &Language) -> Option<
     let tess_name = new_java_string(env, &language.tess_name)?;
     let script = new_java_string(env, &language.script)?;
     let dictionary_code = new_java_string(env, &language.dictionary_code)?;
-    let to_english = new_language_direction(env, language.to_english.as_ref())?;
-    let from_english = new_language_direction(env, language.from_english.as_ref())?;
-    let extra_files = new_string_array(env, &language.extra_files)?;
     env.new_object(
         "dev/davidv/translator/NativeLanguage",
-        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JLdev/davidv/translator/LanguageDirection;Ldev/davidv/translator/LanguageDirection;[Ljava/lang/String;)V",
+        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V",
         &[
             JValue::Object(&JObject::from(code)),
             JValue::Object(&JObject::from(display_name)),
@@ -163,9 +132,6 @@ fn new_native_language<'a>(env: &mut JNIEnv<'a>, language: &Language) -> Option<
             JValue::Object(&JObject::from(script)),
             JValue::Object(&JObject::from(dictionary_code)),
             JValue::Long(language.tessdata_size_bytes as jlong),
-            JValue::Object(&to_english),
-            JValue::Object(&from_english),
-            JValue::Object(&JObject::from(unsafe { JObjectArray::from_raw(extra_files) })),
         ],
     )
     .ok()
@@ -476,14 +442,22 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeOpenCatalog(
     _: JClass,
     bundled_json: JString,
     disk_json: JString,
+    base_dir: JString,
 ) -> jlong {
     let Some(bundled_json) = java_string(&mut env, bundled_json) else {
         return 0;
     };
     let disk_json = optional_java_string(&mut env, disk_json);
-    parse_selected_catalog(&bundled_json, disk_json.as_deref())
-        .map(box_catalog)
-        .unwrap_or(0)
+    let Some(base_dir) = java_string(&mut env, base_dir) else {
+        return 0;
+    };
+    let Some(catalog) = parse_selected_catalog(&bundled_json, disk_json.as_deref()) else {
+        return 0;
+    };
+    let checker = FsInstallChecker {
+        base_dir: Path::new(&base_dir).to_path_buf(),
+    };
+    box_snapshot(build_catalog_snapshot(catalog, base_dir, &checker))
 }
 
 #[unsafe(no_mangle)]
@@ -492,7 +466,7 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeCloseCatalog(
     _: JClass,
     handle: jlong,
 ) {
-    drop_catalog(handle);
+    drop_snapshot(handle);
 }
 
 #[unsafe(no_mangle)]
@@ -501,8 +475,8 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeFormatVersion(
     _: JClass,
     handle: jlong,
 ) -> jint {
-    catalog_from_handle(handle)
-        .map(|catalog| catalog.format_version)
+    snapshot_from_handle(handle)
+        .map(|snapshot| snapshot.catalog.format_version)
         .unwrap_or(0)
 }
 
@@ -512,8 +486,8 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeGeneratedAt(
     _: JClass,
     handle: jlong,
 ) -> jlong {
-    catalog_from_handle(handle)
-        .map(|catalog| catalog.generated_at)
+    snapshot_from_handle(handle)
+        .map(|snapshot| snapshot.catalog.generated_at)
         .unwrap_or(0)
 }
 
@@ -523,8 +497,8 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeDictionaryVers
     _: JClass,
     handle: jlong,
 ) -> jint {
-    catalog_from_handle(handle)
-        .map(|catalog| catalog.dictionary_version)
+    snapshot_from_handle(handle)
+        .map(|snapshot| snapshot.catalog.dictionary_version)
         .unwrap_or(0)
 }
 
@@ -534,10 +508,10 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeLanguages(
     _: JClass,
     handle: jlong,
 ) -> jobjectArray {
-    let Some(catalog) = catalog_from_handle(handle) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
-    let languages = catalog.language_list();
+    let languages = snapshot.catalog.language_list();
     new_native_languages_array(&mut env, &languages).unwrap_or(std::ptr::null_mut())
 }
 
@@ -546,22 +520,14 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeComputeLanguag
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
 ) -> jobjectArray {
-    let Some(catalog) = catalog_from_handle(handle) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
-        return std::ptr::null_mut();
-    };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    let mut availability = catalog
-        .compute_language_availability(&mut resolver)
-        .into_iter()
-        .map(|(language, availability)| (language.code, availability))
+    let mut availability = snapshot
+        .availability_by_code
+        .iter()
+        .map(|(code, availability)| (code.clone(), *availability))
         .collect::<Vec<_>>();
     availability.sort_by(|left, right| left.0.cmp(&right.0));
     new_native_lang_availability_array(&mut env, &availability).unwrap_or(std::ptr::null_mut())
@@ -574,13 +540,13 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeDictionaryInfo
     handle: jlong,
     dictionary_code: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(dictionary_code) = java_string(&mut env, dictionary_code) else {
         return std::ptr::null_mut();
     };
-    let Some(info) = catalog.dictionary_info(&dictionary_code) else {
+    let Some(info) = snapshot.catalog.dictionary_info(&dictionary_code) else {
         return std::ptr::null_mut();
     };
     new_dictionary_info(&mut env, &info)
@@ -595,13 +561,13 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeTtsPackIds(
     handle: jlong,
     language_code: JString,
 ) -> jobjectArray {
-    let Some(catalog) = catalog_from_handle(handle) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
-    let pack_ids = catalog.tts_pack_ids_for_language(&language_code);
+    let pack_ids = snapshot.catalog.tts_pack_ids_for_language(&language_code);
     new_string_array(&mut env, &pack_ids).unwrap_or(std::ptr::null_mut())
 }
 
@@ -612,13 +578,15 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeOrderedTtsRegi
     handle: jlong,
     language_code: JString,
 ) -> jobjectArray {
-    let Some(catalog) = catalog_from_handle(handle) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
-    let regions = catalog.ordered_tts_regions_for_language(&language_code);
+    let regions = snapshot
+        .catalog
+        .ordered_tts_regions_for_language(&language_code);
     new_native_tts_region_array(&mut env, &regions).unwrap_or(std::ptr::null_mut())
 }
 
@@ -629,13 +597,13 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeTtsVoicePackIn
     handle: jlong,
     pack_id: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(pack_id) = java_string(&mut env, pack_id) else {
         return std::ptr::null_mut();
     };
-    let Some(info) = catalog.tts_voice_pack_info(&pack_id) else {
+    let Some(info) = snapshot.catalog.tts_voice_pack_info(&pack_id) else {
         return std::ptr::null_mut();
     };
     new_native_tts_voice_pack_info(&mut env, &info)
@@ -651,7 +619,7 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeCanSwapLanguag
     from_code: JString,
     to_code: JString,
 ) -> jboolean {
-    let Some(catalog) = catalog_from_handle(handle) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return 0;
     };
     let Some(from_code) = java_string(&mut env, from_code) else {
@@ -660,7 +628,7 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeCanSwapLanguag
     let Some(to_code) = java_string(&mut env, to_code) else {
         return 0;
     };
-    catalog.can_swap_languages(&from_code, &to_code) as u8
+    snapshot.catalog.can_swap_languages(&from_code, &to_code) as u8
 }
 
 #[unsafe(no_mangle)]
@@ -668,14 +636,10 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeCanTranslate(
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     from_code: JString,
     to_code: JString,
 ) -> jboolean {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return 0;
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return 0;
     };
     let Some(from_code) = java_string(&mut env, from_code) else {
@@ -684,11 +648,7 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeCanTranslate(
     let Some(to_code) = java_string(&mut env, to_code) else {
         return 0;
     };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    catalog.can_translate(&from_code, &to_code, &mut resolver) as u8
+    can_translate_in_snapshot(snapshot, &from_code, &to_code) as u8
 }
 
 #[unsafe(no_mangle)]
@@ -696,14 +656,10 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeResolveTransla
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     from_code: JString,
     to_code: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return std::ptr::null_mut();
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(from_code) = java_string(&mut env, from_code) else {
@@ -712,13 +668,7 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeResolveTransla
     let Some(to_code) = java_string(&mut env, to_code) else {
         return std::ptr::null_mut();
     };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    let Some(plan) =
-        catalog.resolve_translation_plan(&base_dir, &from_code, &to_code, &mut resolver)
-    else {
+    let Some(plan) = resolve_translation_plan_in_snapshot(snapshot, &from_code, &to_code) else {
         return std::ptr::null_mut();
     };
     new_native_translation_plan(&mut env, &plan)
@@ -731,23 +681,15 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativePlanLanguageDo
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     language_code: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return std::ptr::null_mut();
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    let plan = catalog.plan_language_download(&language_code, &mut resolver);
+    let plan = plan_language_download_in_snapshot(snapshot, &language_code);
     new_native_download_plan(&mut env, &plan)
         .map(JObject::into_raw)
         .unwrap_or(std::ptr::null_mut())
@@ -758,23 +700,15 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativePlanDictionary
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     language_code: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return std::ptr::null_mut();
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    let Some(plan) = catalog.plan_dictionary_download(&language_code, &mut resolver) else {
+    let Some(plan) = plan_dictionary_download_in_snapshot(snapshot, &language_code) else {
         return std::ptr::null_mut();
     };
     new_native_download_plan(&mut env, &plan)
@@ -787,26 +721,18 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativePlanTtsDownloa
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     language_code: JString,
     selected_pack_id: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return std::ptr::null_mut();
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
     let selected_pack_id = optional_java_string(&mut env, selected_pack_id);
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
     let Some(plan) =
-        catalog.plan_tts_download(&language_code, selected_pack_id.as_deref(), &mut resolver)
+        plan_tts_download_in_snapshot(snapshot, &language_code, selected_pack_id.as_deref())
     else {
         return std::ptr::null_mut();
     };
@@ -820,23 +746,15 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativePlanDeleteLang
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     language_code: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return std::ptr::null_mut();
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    let plan = catalog.plan_delete_language(&language_code, &mut resolver);
+    let plan = plan_delete_language_in_snapshot(snapshot, &language_code);
     new_native_delete_plan(&mut env, &plan)
         .map(JObject::into_raw)
         .unwrap_or(std::ptr::null_mut())
@@ -847,23 +765,15 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativePlanDeleteDict
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     language_code: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return std::ptr::null_mut();
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    let plan = catalog.plan_delete_dictionary(&language_code, &mut resolver);
+    let plan = plan_delete_dictionary_in_snapshot(snapshot, &language_code);
     new_native_delete_plan(&mut env, &plan)
         .map(JObject::into_raw)
         .unwrap_or(std::ptr::null_mut())
@@ -874,23 +784,15 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativePlanDeleteTts(
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     language_code: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return std::ptr::null_mut();
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    let plan = catalog.plan_delete_tts(&language_code, &mut resolver);
+    let plan = plan_delete_tts_in_snapshot(snapshot, &language_code);
     new_native_delete_plan(&mut env, &plan)
         .map(JObject::into_raw)
         .unwrap_or(std::ptr::null_mut())
@@ -901,14 +803,10 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativePlanDeleteSupe
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     language_code: JString,
     selected_pack_id: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return std::ptr::null_mut();
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
@@ -917,11 +815,7 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativePlanDeleteSupe
     let Some(selected_pack_id) = java_string(&mut env, selected_pack_id) else {
         return std::ptr::null_mut();
     };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    let plan = catalog.plan_delete_superseded_tts(&language_code, &selected_pack_id, &mut resolver);
+    let plan = plan_delete_superseded_tts_in_snapshot(snapshot, &language_code, &selected_pack_id);
     new_native_delete_plan(&mut env, &plan)
         .map(JObject::into_raw)
         .unwrap_or(std::ptr::null_mut())
@@ -934,13 +828,31 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeTtsSizeBytesFo
     handle: jlong,
     language_code: JString,
 ) -> jlong {
-    let Some(catalog) = catalog_from_handle(handle) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return 0;
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return 0;
     };
-    catalog.tts_size_bytes_for_language(&language_code) as jlong
+    snapshot.catalog.tts_size_bytes_for_language(&language_code) as jlong
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeTranslationSizeBytesForLanguage(
+    mut env: JNIEnv,
+    _: JClass,
+    handle: jlong,
+    language_code: JString,
+) -> jlong {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
+        return 0;
+    };
+    let Some(language_code) = java_string(&mut env, language_code) else {
+        return 0;
+    };
+    snapshot
+        .catalog
+        .translation_size_bytes_for_language(&language_code) as jlong
 }
 
 #[unsafe(no_mangle)]
@@ -950,13 +862,14 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeDefaultTtsPack
     handle: jlong,
     language_code: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
-    catalog
+    snapshot
+        .catalog
         .default_tts_pack_id_for_language(&language_code)
         .and_then(|value| new_java_string(&mut env, &value))
         .map(JString::into_raw)
@@ -968,24 +881,20 @@ pub extern "C" fn Java_dev_davidv_translator_CatalogBinding_nativeResolveTtsVoic
     mut env: JNIEnv,
     _: JClass,
     handle: jlong,
-    base_dir: JString,
     language_code: JString,
 ) -> jobject {
-    let Some(catalog) = catalog_from_handle(handle) else {
-        return std::ptr::null_mut();
-    };
-    let Some(base_dir) = java_string(&mut env, base_dir) else {
+    let Some(snapshot) = snapshot_from_handle(handle) else {
         return std::ptr::null_mut();
     };
     let Some(language_code) = java_string(&mut env, language_code) else {
         return std::ptr::null_mut();
     };
-    let checker = FsInstallChecker {
-        base_dir: Path::new(&base_dir).to_path_buf(),
-    };
-    let mut resolver = PackResolver::new(catalog, &checker);
-    let Some(files) = catalog.resolve_tts_voice_files(&language_code, &mut resolver) else {
+    let Some(files) = resolve_tts_voice_files_in_snapshot(snapshot, &language_code) else {
         return std::ptr::null_mut();
+    };
+    let base_dir = &snapshot.base_dir;
+    let checker = FsInstallChecker {
+        base_dir: Path::new(base_dir).to_path_buf(),
     };
     let model_path = checker.resolve(&files.model_install_path);
     if !model_path.exists() {
