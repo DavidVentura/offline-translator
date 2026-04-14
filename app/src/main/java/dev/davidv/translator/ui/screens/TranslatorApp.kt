@@ -200,9 +200,9 @@ fun TranslatorApp(
   val isTranslating by viewModel.translationCoordinator.isTranslating.collectAsState()
   val ttsVoicesByLanguage by viewModel.ttsVoices.collectAsState()
 
-  LaunchedEffect(to?.code, to?.let { languageState.availableLanguageMap[it]?.ttsFiles } == true) {
+  LaunchedEffect(to?.code, to?.let { languageState.availabilityFor(it)?.ttsFiles } == true) {
     val targetLanguage = to ?: return@LaunchedEffect
-    if (languageState.availableLanguageMap[targetLanguage]?.ttsFiles == true) {
+    if (languageState.availabilityFor(targetLanguage)?.ttsFiles == true) {
       viewModel.refreshTtsVoices(targetLanguage)
     } else {
       viewModel.clearTtsVoices(targetLanguage.code)
@@ -468,7 +468,7 @@ fun TranslatorApp(
                   isAudioLoading = false
                   pcmAudioPlayer.stop()
                 },
-                availableLanguages = languageState.availableLanguageMap,
+                languageState = languageState,
                 languageMetadata = languageMetadata,
                 downloadStates = downloadStates,
                 settings = settings,
@@ -523,9 +523,9 @@ fun TranslatorApp(
             val englishLang = catalog?.english
             val availableWithEnglish =
               if (englishLang != null) {
-                (languageState.availableLanguageMap.filterValues { it.translatorFiles }.keys + englishLang).toList()
+                (languageState.translatorLanguages() + englishLang).distinctBy { it.code }
               } else {
-                languageState.availableLanguageMap.filterValues { it.translatorFiles }.keys.toList()
+                languageState.translatorLanguages()
               }
             SettingsScreen(
               settings = settings,

@@ -223,10 +223,10 @@ impl From<translator::TtsVoicePackInfo> for TtsVoicePackInfo {
 }
 
 #[derive(uniffi::Record)]
-pub struct TtsRegionEntry {
+pub struct TtsVoicePickerRegion {
     pub code: String,
     pub display_name: String,
-    pub voices: Vec<String>,
+    pub voices: Vec<TtsVoicePackInfo>,
 }
 
 #[derive(uniffi::Record)]
@@ -321,30 +321,21 @@ impl CatalogHandle {
             .map(Into::into)
     }
 
-    fn tts_pack_ids(&self, language_code: String) -> Vec<String> {
-        self.snapshot
-            .catalog
-            .tts_pack_ids_for_language(&language_code)
+    fn has_tts_voices(&self, language_code: String) -> bool {
+        self.snapshot.catalog.has_tts_voices(&language_code)
     }
 
-    fn ordered_tts_regions(&self, language_code: String) -> Vec<TtsRegionEntry> {
+    fn tts_voice_picker_regions(&self, language_code: String) -> Vec<TtsVoicePickerRegion> {
         self.snapshot
             .catalog
-            .ordered_tts_regions_for_language(&language_code)
+            .tts_voice_picker_regions(&language_code)
             .into_iter()
-            .map(|(code, region)| TtsRegionEntry {
-                code,
+            .map(|region| TtsVoicePickerRegion {
+                code: region.code,
                 display_name: region.display_name,
-                voices: region.voices,
+                voices: region.voices.into_iter().map(Into::into).collect(),
             })
             .collect()
-    }
-
-    fn tts_voice_pack_info(&self, pack_id: String) -> Option<TtsVoicePackInfo> {
-        self.snapshot
-            .catalog
-            .tts_voice_pack_info(&pack_id)
-            .map(Into::into)
     }
 
     fn can_swap_languages(&self, from_code: String, to_code: String) -> bool {

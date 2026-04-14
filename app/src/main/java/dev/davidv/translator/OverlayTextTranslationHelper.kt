@@ -57,16 +57,14 @@ class OverlayTextTranslationHelper(
     if (forcedTargetLanguage != null) return forcedTargetLanguage
     val code = settingsManager.settings.value.defaultTargetLanguageCode
     return langStateManager.languageByCode(code)
-      ?: langStateManager.languageState.value.availableLanguageMap.keys.firstOrNull { it.isEnglish }
-      ?: langStateManager.languageState.value.availableLanguageMap.keys.first()
+      ?: langStateManager.languageState.value.allLanguages().firstOrNull { it.isEnglish }
+      ?: langStateManager.languageState.value.allLanguages().first()
   }
 
   fun availableLanguages(isSource: Boolean): List<Language> {
     val metadata = languageMetadataManager.metadata.value
-    return langStateManager.languageState.value.availableLanguageMap
-      .filterValues { it.translatorFiles && (!isSource || it.ocrFiles) }
-      .keys
-      .toList()
+    return langStateManager.languageState.value
+      .translatorLanguages(requireOcr = isSource)
       .sortedWith(
         compareByDescending<Language> { metadata[it]?.favorite ?: false }
           .thenBy { it.displayName },
@@ -80,9 +78,6 @@ class OverlayTextTranslationHelper(
 
   private suspend fun awaitTranslatorLanguages(): List<Language> {
     langStateManager.languageState.first { !it.isChecking }
-    return langStateManager.languageState.value.availableLanguageMap
-      .filterValues { it.translatorFiles }
-      .keys
-      .toList()
+    return langStateManager.languageState.value.translatorLanguages()
   }
 }

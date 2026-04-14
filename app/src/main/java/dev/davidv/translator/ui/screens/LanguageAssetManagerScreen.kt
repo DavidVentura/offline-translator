@@ -152,7 +152,6 @@ private data class LanguageAssetRow(
   val dictionaryVisible: Boolean,
   val ttsVisible: Boolean,
   val translationSizeBytes: Long,
-  val ttsPackIds: List<String>,
   val ttsSizeBytes: Long,
 ) {
   val translationInstalled: Boolean get() = translationVisible && availability.translatorFiles
@@ -190,45 +189,45 @@ fun LanguageAssetManagerScreen(
   }
 
   val normalizedFilter = filterQuery.trim().lowercase()
-  val availableLanguageMap = languageAvailabilityState.availableLanguageMap
   val rows =
-    remember(catalog, availableLanguageMap, normalizedFilter) {
+    remember(catalog, languageAvailabilityState.availableLanguages, normalizedFilter) {
       catalog
-        ?.languageList
-        ?.sortedBy { it.displayName }
-        ?.mapNotNull { language ->
-          val availability = availableLanguageMap[language] ?: LangAvailability(false, false, false, false)
-          val dictInfo = catalog.dictionaryInfoFor(language)
-          val translationVisible = !language.isEnglish
-          val dictionaryVisible = dictInfo != null
-          val ttsPackIds = catalog.ttsPackIdsForLanguage(language.code)
-          val ttsVisible = ttsPackIds.isNotEmpty()
-          if (!translationVisible && !dictionaryVisible && !ttsVisible) {
-            null
-          } else {
-            LanguageAssetRow(
-              language = language,
-              availability = availability,
-              dictionaryInfo = dictInfo,
-              translationVisible = translationVisible,
-              dictionaryVisible = dictionaryVisible,
-              ttsVisible = ttsVisible,
-              translationSizeBytes = catalog.translationSizeBytesForLanguage(language.code),
-              ttsPackIds = ttsPackIds,
-              ttsSizeBytes = catalog.ttsSizeBytesForLanguage(language.code),
-            )
-          }
-        }?.filter { row ->
-          if (normalizedFilter.isBlank()) {
-            true
-          } else {
-            val language = row.language
-            val haystack =
-              listOf(language.displayName, language.shortDisplayName, language.code)
-                .joinToString(" ")
-                .lowercase()
-            normalizedFilter in haystack
-          }
+        ?.let { loadedCatalog ->
+          languageAvailabilityState.availableLanguages
+            .sortedBy { it.language.displayName }
+            .mapNotNull { entry ->
+              val language = entry.language
+              val availability = entry.availability
+              val dictInfo = loadedCatalog.dictionaryInfoFor(language)
+              val translationVisible = !language.isEnglish
+              val dictionaryVisible = dictInfo != null
+              val ttsVisible = loadedCatalog.hasTtsVoices(language.code)
+              if (!translationVisible && !dictionaryVisible && !ttsVisible) {
+                null
+              } else {
+                LanguageAssetRow(
+                  language = language,
+                  availability = availability,
+                  dictionaryInfo = dictInfo,
+                  translationVisible = translationVisible,
+                  dictionaryVisible = dictionaryVisible,
+                  ttsVisible = ttsVisible,
+                  translationSizeBytes = loadedCatalog.translationSizeBytesForLanguage(language.code),
+                  ttsSizeBytes = loadedCatalog.ttsSizeBytesForLanguage(language.code),
+                )
+              }
+            }.filter { row ->
+              if (normalizedFilter.isBlank()) {
+                true
+              } else {
+                val language = row.language
+                val haystack =
+                  listOf(language.displayName, language.shortDisplayName, language.code)
+                    .joinToString(" ")
+                    .lowercase()
+                normalizedFilter in haystack
+              }
+            }
         }
         ?: emptyList()
     }
@@ -343,12 +342,7 @@ fun LanguageAssetManagerScreen(
                 DownloadService.cancelDictDownload(context, row.language)
               },
               onDownloadTts = {
-                val onlyVoicePackId = row.ttsPackIds.singleOrNull()
-                if (onlyVoicePackId != null) {
-                  DownloadService.startTtsDownload(context, row.language, onlyVoicePackId)
-                } else {
-                  pendingTtsVoicePicker = PendingTtsVoicePicker(row.language)
-                }
+                pendingTtsVoicePicker = PendingTtsVoicePicker(row.language)
               },
               onDeleteTts = {
                 languageStateManager.deleteTts(row.language)
@@ -444,7 +438,7 @@ fun LanguageAssetManagerScreen(
 
   pendingTtsVoicePicker?.let { pendingPicker ->
     val pickerCatalog = catalog ?: return@let
-    val regions = pickerCatalog.orderedTtsRegionsForLanguage(pendingPicker.language.code)
+    val regions = pickerCatalog.ttsVoicePickerRegions(pendingPicker.language.code)
     val showRegionHeaders = regions.size > 1
     val scrollState = rememberScrollState()
     AlertDialog(
@@ -455,7 +449,7 @@ fun LanguageAssetManagerScreen(
           modifier = Modifier.verticalScroll(scrollState),
           verticalArrangement = Arrangement.spacedBy(if (showRegionHeaders) 16.dp else 8.dp),
         ) {
-          regions.forEach { (_, region) ->
+          regions.forEach { region ->
             Column(
               verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -472,8 +466,7 @@ fun LanguageAssetManagerScreen(
                 modifier = Modifier.padding(start = if (showRegionHeaders) 12.dp else 0.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
               ) {
-                region.voices.forEach { packId ->
-                  val pack = pickerCatalog.ttsVoicePackInfo(packId) ?: return@forEach
+                region.voices.forEach { pack ->
                   Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -494,7 +487,7 @@ fun LanguageAssetManagerScreen(
                     }
                     IconButton(
                       onClick = {
-                        DownloadService.startTtsDownload(context, pendingPicker.language, packId)
+                        DownloadService.startTtsDownload(context, pendingPicker.language, pack.packId)
                         pendingTtsVoicePicker = null
                       },
                       modifier = Modifier.size(32.dp),

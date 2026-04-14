@@ -9,11 +9,22 @@ data class LanguageTtsRegionV2(
   val voices: List<String> = emptyList(),
 )
 
+data class LanguageAvailabilityEntry(
+  val language: Language,
+  val availability: LangAvailability,
+)
+
 data class TtsVoicePackInfo(
   val packId: String,
   val displayName: String,
   val quality: String? = null,
   val sizeBytes: Long,
+)
+
+data class TtsVoicePickerRegion(
+  val code: String,
+  val displayName: String,
+  val voices: List<TtsVoicePackInfo>,
 )
 
 data class TranslationPlanStep(
@@ -55,6 +66,7 @@ class LanguageCatalog private constructor(
   val formatVersion: Int,
   val generatedAt: Long,
   val dictionaryVersion: Int,
+  val languageRows: List<LanguageAvailabilityEntry>,
   val languageList: List<Language>,
   private val languagesByCode: Map<String, Language>,
   private val availabilityByCode: Map<String, LangAvailability>,
@@ -67,37 +79,42 @@ class LanguageCatalog private constructor(
     ): LanguageCatalog? {
       val handle = CatalogHandle.open(bundledJson, diskJson, baseDir)
       val rows = handle.languageRows()
-      val languageList =
+      val languageRows =
         rows.map { row ->
           row.language.let {
-            Language(
-              code = it.code,
-              displayName = it.displayName,
-              shortDisplayName = it.shortDisplayName,
-              tessName = it.tessName,
-              script = it.script,
-              dictionaryCode = it.dictionaryCode,
-              tessdataSizeBytes = it.tessdataSizeBytes,
+            val language =
+              Language(
+                code = it.code,
+                displayName = it.displayName,
+                shortDisplayName = it.shortDisplayName,
+                tessName = it.tessName,
+                script = it.script,
+                dictionaryCode = it.dictionaryCode,
+                tessdataSizeBytes = it.tessdataSizeBytes,
+              )
+            LanguageAvailabilityEntry(
+              language = language,
+              availability =
+                LangAvailability(
+                  hasFromEnglish = row.availability.hasFromEnglish,
+                  hasToEnglish = row.availability.hasToEnglish,
+                  ocrFiles = row.availability.ocrFiles,
+                  dictionaryFiles = row.availability.dictionaryFiles,
+                  ttsFiles = row.availability.ttsFiles,
+                ),
             )
           }
         }
+      val languageList = languageRows.map { it.language }
       val languagesByCode = languageList.associateBy { it.code }
       val availabilityByCode =
-        rows.associate { row ->
-          row.language.code to
-            LangAvailability(
-              hasFromEnglish = row.availability.hasFromEnglish,
-              hasToEnglish = row.availability.hasToEnglish,
-              ocrFiles = row.availability.ocrFiles,
-              dictionaryFiles = row.availability.dictionaryFiles,
-              ttsFiles = row.availability.ttsFiles,
-            )
-        }
+        languageRows.associate { row -> row.language.code to row.availability }
       return LanguageCatalog(
         handle = handle,
         formatVersion = handle.formatVersion(),
         generatedAt = handle.generatedAt(),
         dictionaryVersion = handle.dictionaryVersion(),
+        languageRows = languageRows,
         languageList = languageList,
         languagesByCode = languagesByCode,
         availabilityByCode = availabilityByCode,
@@ -118,21 +135,18 @@ class LanguageCatalog private constructor(
       DictionaryInfo(date = it.date, filename = it.filename, size = it.size, type = it.typeName, wordCount = it.wordCount)
     }
 
-  fun computeLanguageAvailability(): Map<Language, LangAvailability> =
-    languageList.associateWith { language ->
-      availabilityByCode[language.code] ?: LangAvailability(false, false, false, false)
+  fun availabilityFor(language: Language?): LangAvailability? = language?.let { availabilityByCode[it.code] }
+
+  fun hasTtsVoices(languageCode: String): Boolean = handle.hasTtsVoices(languageCode)
+
+  fun ttsVoicePickerRegions(languageCode: String): List<TtsVoicePickerRegion> =
+    handle.ttsVoicePickerRegions(languageCode).map { region ->
+      TtsVoicePickerRegion(
+        code = region.code,
+        displayName = region.displayName,
+        voices = region.voices.map { TtsVoicePackInfo(it.packId, it.displayName, it.quality, it.sizeBytes) },
+      )
     }
-
-  fun availabilityFor(language: Language): LangAvailability =
-    availabilityByCode[language.code] ?: LangAvailability(false, false, false, false)
-
-  fun ttsPackIdsForLanguage(languageCode: String): List<String> = handle.ttsPackIds(languageCode)
-
-  fun orderedTtsRegionsForLanguage(languageCode: String): List<Pair<String, LanguageTtsRegionV2>> =
-    handle.orderedTtsRegions(languageCode).map { it.code to LanguageTtsRegionV2(it.displayName, it.voices) }
-
-  fun ttsVoicePackInfo(packId: String): TtsVoicePackInfo? =
-    handle.ttsVoicePackInfo(packId)?.let { TtsVoicePackInfo(it.packId, it.displayName, it.quality, it.sizeBytes) }
 
   fun canSwapLanguages(
     from: Language,

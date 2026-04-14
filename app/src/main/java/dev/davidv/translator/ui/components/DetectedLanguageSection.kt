@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import dev.davidv.translator.DownloadState
 import dev.davidv.translator.LangAvailability
 import dev.davidv.translator.Language
+import dev.davidv.translator.LanguageAvailabilityEntry
+import dev.davidv.translator.LanguageAvailabilityState
 import dev.davidv.translator.TranslatorMessage
 import dev.davidv.translator.ui.theme.TranslatorTheme
 
@@ -35,7 +37,7 @@ import dev.davidv.translator.ui.theme.TranslatorTheme
 fun DetectedLanguageSection(
   detectedLanguage: Language?,
   from: Language,
-  availableLanguages: Map<Language, LangAvailability>,
+  languageState: LanguageAvailabilityState,
   onMessage: (TranslatorMessage) -> Unit,
   downloadStates: Map<Language, DownloadState>,
   onEvent: (LanguageEvent) -> Unit,
@@ -43,7 +45,7 @@ fun DetectedLanguageSection(
   if (detectedLanguage != null && detectedLanguage != from) {
     DetectedLanguageToast(
       detectedLanguage = detectedLanguage,
-      availableLanguages = availableLanguages,
+      languageState = languageState,
       onSwitchClick = {
         onMessage(TranslatorMessage.FromLang(detectedLanguage))
       },
@@ -53,6 +55,13 @@ fun DetectedLanguageSection(
     )
   }
 }
+
+private fun previewLanguageState(entries: List<Pair<Language, LangAvailability>>) =
+  LanguageAvailabilityState(
+    hasLanguages = true,
+    availableLanguages = entries.map { (language, availability) -> LanguageAvailabilityEntry(language, availability) },
+    isChecking = false,
+  )
 
 private fun previewLanguage(
   code: String,
@@ -74,12 +83,14 @@ fun DetectedLanguageSectionPreview() {
     DetectedLanguageSection(
       detectedLanguage = previewLanguage("fr", "French"),
       from = previewLanguage("en", "English"),
-      availableLanguages =
-        mapOf(
-          previewLanguage("en", "English") to LangAvailability(true, true, true, true),
-          previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
-          previewLanguage("fr", "French") to LangAvailability(true, true, true, true),
-          previewLanguage("de", "German") to LangAvailability(false, false, true, true),
+      languageState =
+        previewLanguageState(
+          listOf(
+            previewLanguage("en", "English") to LangAvailability(true, true, true, true),
+            previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
+            previewLanguage("fr", "French") to LangAvailability(true, true, true, true),
+            previewLanguage("de", "German") to LangAvailability(false, false, true, true),
+          ),
         ),
       onMessage = {},
       downloadStates = emptyMap(),
@@ -95,11 +106,13 @@ fun DetectedLanguageSectionNoDetectionPreview() {
     DetectedLanguageSection(
       detectedLanguage = null,
       from = previewLanguage("en", "English"),
-      availableLanguages =
-        mapOf(
-          previewLanguage("en", "English") to LangAvailability(true, true, true, true),
-          previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
-          previewLanguage("fr", "French") to LangAvailability(true, true, true, true),
+      languageState =
+        previewLanguageState(
+          listOf(
+            previewLanguage("en", "English") to LangAvailability(true, true, true, true),
+            previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
+            previewLanguage("fr", "French") to LangAvailability(true, true, true, true),
+          ),
         ),
       onMessage = {},
       downloadStates = emptyMap(),
@@ -118,11 +131,13 @@ fun DetectedLanguageSectionDarkPreview() {
     DetectedLanguageSection(
       detectedLanguage = previewLanguage("de", "German"),
       from = previewLanguage("es", "Spanish"),
-      availableLanguages =
-        mapOf(
-          previewLanguage("en", "English") to LangAvailability(true, true, true, true),
-          previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
-          previewLanguage("de", "German") to LangAvailability(true, true, true, true),
+      languageState =
+        previewLanguageState(
+          listOf(
+            previewLanguage("en", "English") to LangAvailability(true, true, true, true),
+            previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
+            previewLanguage("de", "German") to LangAvailability(true, true, true, true),
+          ),
         ),
       onMessage = {},
       downloadStates = emptyMap(),

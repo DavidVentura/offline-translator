@@ -9,6 +9,7 @@ pub use model::{
     AssetFileV2, AssetPackMetadataV2, CatalogSourcesV2, DeletePlan, DictionaryInfo, DownloadPlan,
     DownloadTask, LangAvailability, LanguageCatalog, LanguageFeature, LanguageTtsRegionV2,
     LanguageTtsV2, PackKind, PackRecord, ResolvedTtsVoiceFiles, TtsVoicePackInfo,
+    TtsVoicePickerRegion,
 };
 pub use planner::{
     CatalogSnapshot, PackInstallChecker, PackInstallStatus, PackResolver, build_catalog_snapshot,

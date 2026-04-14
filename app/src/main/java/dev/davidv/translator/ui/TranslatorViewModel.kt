@@ -158,8 +158,9 @@ class TranslatorViewModel(
 
     viewModelScope.launch {
       languageStateManager.languageState.collect { languageState ->
-        languageState.availableLanguageMap.forEach { (language, availability) ->
-          if (availability.dictionaryFiles && !_dictionaryBindings.value.containsKey(language)) {
+        languageState.availableLanguages.forEach { row ->
+          val language = row.language
+          if (row.availability.dictionaryFiles && !_dictionaryBindings.value.containsKey(language)) {
             openDictionary(
               language,
               filePathManager,
@@ -182,12 +183,12 @@ class TranslatorViewModel(
         val catalog = languageStateManager.catalog.value ?: return@collect
         val curSettings = settingsManager.settings.value
         val targetLang = catalog.languageByCode(curSettings.defaultTargetLanguageCode)
-        if (targetLang != null && languageState.availableLanguageMap[targetLang]?.translatorFiles != true) {
+        if (targetLang != null && languageState.availabilityFor(targetLang)?.translatorFiles != true) {
           _to.value = catalog.english
           settingsManager.updateSettings(curSettings.copy(defaultTargetLanguageCode = "en"))
         }
         val sourceLang = curSettings.defaultSourceLanguageCode?.let { catalog.languageByCode(it) }
-        if (sourceLang != null && languageState.availableLanguageMap[sourceLang]?.translatorFiles != true) {
+        if (sourceLang != null && languageState.availabilityFor(sourceLang)?.translatorFiles != true) {
           _from.value = catalog.english
           settingsManager.updateSettings(curSettings.copy(defaultSourceLanguageCode = "en"))
         }
@@ -200,7 +201,7 @@ class TranslatorViewModel(
         val catalog = languageStateManager.catalog.value ?: return@collect
         val curSettings = settingsManager.settings.value
         val preferredSource = curSettings.defaultSourceLanguageCode?.let { catalog.languageByCode(it) }
-        val preferredAvail = preferredSource != null && languageState.availableLanguageMap[preferredSource]?.translatorFiles == true
+        val preferredAvail = preferredSource != null && languageState.availabilityFor(preferredSource)?.translatorFiles == true
 
         if (_from.value == null) {
           val currentTo = _to.value
@@ -529,7 +530,7 @@ class TranslatorViewModel(
     val translated: TranslationResult?
 
     if (detected != null) {
-      if (languageState.availableLanguageMap[detected]?.translatorFiles == true) {
+      if (languageState.availabilityFor(detected)?.translatorFiles == true) {
         _from.value = detected
         var actualTo = _to.value!!
         if (_to.value == detected) {
@@ -598,14 +599,14 @@ class TranslatorViewModel(
     when (event) {
       is FileEvent.LanguageDeleted -> {
         val catalog = languageStateManager.catalog.value
-        val langs = languageStateManager.languageState.value.availableLanguageMap.filterKeys { it != event.language }
+        val langs = languageStateManager.languageState.value.translatorLanguages().filter { it != event.language }
         val currentFrom = _from.value
         val currentTo = _to.value
         if (currentFrom == event.language || currentFrom == null) {
           _from.value =
             when {
               currentTo != null -> firstAvailableSourceLanguage(currentTo, langs, excluding = currentTo)
-              else -> langs.filter { it.key != event.language && it.value.translatorFiles }.keys.firstOrNull()
+              else -> langs.firstOrNull()
             }
         }
         if (currentTo == event.language) {
@@ -661,10 +662,10 @@ class TranslatorViewModel(
 
   private fun firstAvailableSourceLanguage(
     target: Language,
-    availableLanguages: Map<Language, dev.davidv.translator.LangAvailability>,
+    availableLanguages: List<Language>,
     excluding: Language? = null,
   ): Language? =
-    availableLanguages.keys
+    availableLanguages
       .asSequence()
       .filterNot { it == excluding }
       .filter { languageStateManager.canTranslate(it, target) }
@@ -672,10 +673,10 @@ class TranslatorViewModel(
 
   private fun firstAvailableTargetLanguage(
     source: Language,
-    availableLanguages: Map<Language, dev.davidv.translator.LangAvailability>,
+    availableLanguages: List<Language>,
     excluding: Language? = null,
   ): Language? =
-    availableLanguages.keys
+    availableLanguages
       .asSequence()
       .filterNot { it == excluding }
       .filter { languageStateManager.canTranslate(source, it) }

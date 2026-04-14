@@ -43,18 +43,20 @@ import androidx.compose.ui.unit.sp
 import dev.davidv.translator.DownloadState
 import dev.davidv.translator.LangAvailability
 import dev.davidv.translator.Language
+import dev.davidv.translator.LanguageAvailabilityEntry
+import dev.davidv.translator.LanguageAvailabilityState
 import dev.davidv.translator.ui.theme.TranslatorTheme
 
 @Composable
 fun DetectedLanguageToast(
   detectedLanguage: Language,
-  availableLanguages: Map<Language, LangAvailability>,
+  languageState: LanguageAvailabilityState,
   onSwitchClick: () -> Unit,
   onEvent: (LanguageEvent) -> Unit,
   modifier: Modifier = Modifier,
   downloadStates: Map<Language, DownloadState> = emptyMap(),
 ) {
-  val isLanguageAvailable = availableLanguages[detectedLanguage]?.translatorFiles == true
+  val isLanguageAvailable = languageState.availabilityFor(detectedLanguage)?.translatorFiles == true
 
   Row(
     modifier =
@@ -99,7 +101,7 @@ fun DetectedLanguageToast(
       LanguageDownloadButton(
         language = detectedLanguage,
         downloadState = downloadStates[detectedLanguage],
-        isLanguageAvailable = availableLanguages[detectedLanguage]!!.translatorFiles,
+        isLanguageAvailable = false,
         onEvent = onEvent,
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         enabled = true,
@@ -107,6 +109,13 @@ fun DetectedLanguageToast(
     }
   }
 }
+
+private fun previewLanguageState(entries: List<Pair<Language, LangAvailability>>) =
+  LanguageAvailabilityState(
+    hasLanguages = true,
+    availableLanguages = entries.map { (language, availability) -> LanguageAvailabilityEntry(language, availability) },
+    isChecking = false,
+  )
 
 private fun previewLanguage(
   code: String,
@@ -127,7 +136,7 @@ fun DetectedLanguageToastPreview() {
   TranslatorTheme {
     DetectedLanguageToast(
       detectedLanguage = previewLanguage("es", "Spanish"),
-      availableLanguages = mapOf(previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true)),
+      languageState = previewLanguageState(listOf(previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true))),
       onSwitchClick = {},
       onEvent = {},
       downloadStates = emptyMap(),
@@ -144,7 +153,7 @@ fun DetectedLanguageToastDarkPreview() {
   TranslatorTheme {
     DetectedLanguageToast(
       detectedLanguage = previewLanguage("fr", "French"),
-      availableLanguages = mapOf(previewLanguage("fr", "French") to LangAvailability(true, true, true, true)),
+      languageState = previewLanguageState(listOf(previewLanguage("fr", "French") to LangAvailability(true, true, true, true))),
       onSwitchClick = {},
       onEvent = {},
       downloadStates = emptyMap(),
@@ -161,7 +170,7 @@ fun MissingLanguage() {
   TranslatorTheme {
     DetectedLanguageToast(
       detectedLanguage = previewLanguage("es", "Spanish"),
-      availableLanguages = mapOf(previewLanguage("fr", "French") to LangAvailability(false, false, true, true)),
+      languageState = previewLanguageState(listOf(previewLanguage("fr", "French") to LangAvailability(false, false, true, true))),
       onSwitchClick = {},
       onEvent = {},
       downloadStates = emptyMap(),

@@ -67,11 +67,7 @@ class AidlTranslationService : Service() {
 
         CoroutineScope(Dispatchers.IO).launch {
           langStateManager.languageState.first { !it.isChecking }
-          val langs =
-            langStateManager.languageState.value.availableLanguageMap
-              .filterValues { it.translatorFiles }
-              .keys
-              .toList()
+          val langs = langStateManager.languageState.value.translatorLanguages()
           while (translationCoordinator.isTranslating.value) {
             delay(100)
           }

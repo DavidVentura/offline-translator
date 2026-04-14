@@ -141,6 +141,13 @@ pub struct TtsVoicePackInfo {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TtsVoicePickerRegion {
+    pub code: String,
+    pub display_name: String,
+    pub voices: Vec<TtsVoicePackInfo>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ResolvedTtsVoiceFiles {
     pub engine: String,
     pub model_install_path: String,
@@ -359,6 +366,11 @@ impl LanguageCatalog {
             .unwrap_or(0)
     }
 
+    pub fn has_tts_voices(&self, language_code: &str) -> bool {
+        !self.root_pack_ids_for_feature(language_code, LanguageFeature::Tts)
+            .is_empty()
+    }
+
     pub fn translation_size_bytes_for_language(&self, language_code: &str) -> u64 {
         self.root_pack_ids_for_feature(language_code, LanguageFeature::Translation)
             .iter()
@@ -377,6 +389,22 @@ impl LanguageCatalog {
             quality: tts.quality.clone(),
             size_bytes: self.pack_size_bytes(pack_id),
         })
+    }
+
+    pub fn tts_voice_picker_regions(&self, language_code: &str) -> Vec<TtsVoicePickerRegion> {
+        self.ordered_tts_regions_for_language(language_code)
+            .into_iter()
+            .map(|(code, region)| TtsVoicePickerRegion {
+                code,
+                display_name: region.display_name,
+                voices: region
+                    .voices
+                    .into_iter()
+                    .filter_map(|pack_id| self.tts_voice_pack_info(&pack_id))
+                    .collect(),
+            })
+            .filter(|region| !region.voices.is_empty())
+            .collect()
     }
 
     pub fn pack_size_bytes(&self, pack_id: &str) -> u64 {

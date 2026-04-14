@@ -758,8 +758,6 @@ internal interface UniffiForeignFutureCompleteVoid : com.sun.jna.Callback {
 
 
 
-
-
 // For large crates we prevent `MethodTooLargeException` (see #2340)
 // N.B. the name of the extension is very misleading, since it is 
 // rather `InterfaceTooLargeException`, caused by too many methods 
@@ -789,9 +787,9 @@ fun uniffi_bindings_checksum_method_cataloghandle_format_version(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_generated_at(
 ): Short
-fun uniffi_bindings_checksum_method_cataloghandle_language_rows(
+fun uniffi_bindings_checksum_method_cataloghandle_has_tts_voices(
 ): Short
-fun uniffi_bindings_checksum_method_cataloghandle_ordered_tts_regions(
+fun uniffi_bindings_checksum_method_cataloghandle_language_rows(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_plan_delete_dictionary(
 ): Short
@@ -813,11 +811,9 @@ fun uniffi_bindings_checksum_method_cataloghandle_resolve_tts_voice_files(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_translation_size_bytes(
 ): Short
-fun uniffi_bindings_checksum_method_cataloghandle_tts_pack_ids(
-): Short
 fun uniffi_bindings_checksum_method_cataloghandle_tts_size_bytes(
 ): Short
-fun uniffi_bindings_checksum_method_cataloghandle_tts_voice_pack_info(
+fun uniffi_bindings_checksum_method_cataloghandle_tts_voice_picker_regions(
 ): Short
 fun uniffi_bindings_checksum_constructor_cataloghandle_open(
 ): Short
@@ -890,9 +886,9 @@ fun uniffi_bindings_fn_method_cataloghandle_format_version(`ptr`: Pointer,uniffi
 ): Int
 fun uniffi_bindings_fn_method_cataloghandle_generated_at(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
+fun uniffi_bindings_fn_method_cataloghandle_has_tts_voices(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
 fun uniffi_bindings_fn_method_cataloghandle_language_rows(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-fun uniffi_bindings_fn_method_cataloghandle_ordered_tts_regions(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_plan_delete_dictionary(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -914,11 +910,9 @@ fun uniffi_bindings_fn_method_cataloghandle_resolve_tts_voice_files(`ptr`: Point
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_translation_size_bytes(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-fun uniffi_bindings_fn_method_cataloghandle_tts_pack_ids(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_tts_size_bytes(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-fun uniffi_bindings_fn_method_cataloghandle_tts_voice_pack_info(`ptr`: Pointer,`packId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+fun uniffi_bindings_fn_method_cataloghandle_tts_voice_picker_regions(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun ffi_bindings_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -1067,10 +1061,10 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_bindings_checksum_method_cataloghandle_generated_at() != 11555.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_language_rows() != 43539.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_has_tts_voices() != 62763.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_ordered_tts_regions() != 9747.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_language_rows() != 43539.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_dictionary() != 62985.toShort()) {
@@ -1103,13 +1097,10 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_bindings_checksum_method_cataloghandle_translation_size_bytes() != 52553.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_tts_pack_ids() != 40069.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_tts_size_bytes() != 14893.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_tts_voice_pack_info() != 17859.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_tts_voice_picker_regions() != 20449.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_constructor_cataloghandle_open() != 5436.toShort()) {
@@ -1499,9 +1490,9 @@ public interface CatalogHandleInterface {
     
     fun `generatedAt`(): kotlin.Long
     
-    fun `languageRows`(): List<LanguageRow>
+    fun `hasTtsVoices`(`languageCode`: kotlin.String): kotlin.Boolean
     
-    fun `orderedTtsRegions`(`languageCode`: kotlin.String): List<TtsRegionEntry>
+    fun `languageRows`(): List<LanguageRow>
     
     fun `planDeleteDictionary`(`languageCode`: kotlin.String): DeletePlan
     
@@ -1523,11 +1514,9 @@ public interface CatalogHandleInterface {
     
     fun `translationSizeBytes`(`languageCode`: kotlin.String): kotlin.Long
     
-    fun `ttsPackIds`(`languageCode`: kotlin.String): List<kotlin.String>
-    
     fun `ttsSizeBytes`(`languageCode`: kotlin.String): kotlin.Long
     
-    fun `ttsVoicePackInfo`(`packId`: kotlin.String): TtsVoicePackInfo?
+    fun `ttsVoicePickerRegions`(`languageCode`: kotlin.String): List<TtsVoicePickerRegion>
     
     companion object
 }
@@ -1698,24 +1687,24 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
-    override fun `languageRows`(): List<LanguageRow> {
-            return FfiConverterSequenceTypeLanguageRow.lift(
+    override fun `hasTtsVoices`(`languageCode`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
     callWithPointer {
     uniffiRustCall() { _status ->
-    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_language_rows(
-        it, _status)
+    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_has_tts_voices(
+        it, FfiConverterString.lower(`languageCode`),_status)
 }
     }
     )
     }
     
 
-    override fun `orderedTtsRegions`(`languageCode`: kotlin.String): List<TtsRegionEntry> {
-            return FfiConverterSequenceTypeTtsRegionEntry.lift(
+    override fun `languageRows`(): List<LanguageRow> {
+            return FfiConverterSequenceTypeLanguageRow.lift(
     callWithPointer {
     uniffiRustCall() { _status ->
-    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_ordered_tts_regions(
-        it, FfiConverterString.lower(`languageCode`),_status)
+    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_language_rows(
+        it, _status)
 }
     }
     )
@@ -1842,18 +1831,6 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
-    override fun `ttsPackIds`(`languageCode`: kotlin.String): List<kotlin.String> {
-            return FfiConverterSequenceString.lift(
-    callWithPointer {
-    uniffiRustCall() { _status ->
-    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_tts_pack_ids(
-        it, FfiConverterString.lower(`languageCode`),_status)
-}
-    }
-    )
-    }
-    
-
     override fun `ttsSizeBytes`(`languageCode`: kotlin.String): kotlin.Long {
             return FfiConverterLong.lift(
     callWithPointer {
@@ -1866,12 +1843,12 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
-    override fun `ttsVoicePackInfo`(`packId`: kotlin.String): TtsVoicePackInfo? {
-            return FfiConverterOptionalTypeTtsVoicePackInfo.lift(
+    override fun `ttsVoicePickerRegions`(`languageCode`: kotlin.String): List<TtsVoicePickerRegion> {
+            return FfiConverterSequenceTypeTtsVoicePickerRegion.lift(
     callWithPointer {
     uniffiRustCall() { _status ->
-    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_tts_voice_pack_info(
-        it, FfiConverterString.lower(`packId`),_status)
+    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_tts_voice_picker_regions(
+        it, FfiConverterString.lower(`languageCode`),_status)
 }
     }
     )
@@ -2296,42 +2273,6 @@ public object FfiConverterTypeTranslationStep: FfiConverterRustBuffer<Translatio
 
 
 
-data class TtsRegionEntry (
-    var `code`: kotlin.String, 
-    var `displayName`: kotlin.String, 
-    var `voices`: List<kotlin.String>
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeTtsRegionEntry: FfiConverterRustBuffer<TtsRegionEntry> {
-    override fun read(buf: ByteBuffer): TtsRegionEntry {
-        return TtsRegionEntry(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterSequenceString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: TtsRegionEntry) = (
-            FfiConverterString.allocationSize(value.`code`) +
-            FfiConverterString.allocationSize(value.`displayName`) +
-            FfiConverterSequenceString.allocationSize(value.`voices`)
-    )
-
-    override fun write(value: TtsRegionEntry, buf: ByteBuffer) {
-            FfiConverterString.write(value.`code`, buf)
-            FfiConverterString.write(value.`displayName`, buf)
-            FfiConverterSequenceString.write(value.`voices`, buf)
-    }
-}
-
-
-
 data class TtsVoiceFiles (
     var `engine`: kotlin.String, 
     var `modelPath`: kotlin.String, 
@@ -2411,6 +2352,42 @@ public object FfiConverterTypeTtsVoicePackInfo: FfiConverterRustBuffer<TtsVoiceP
             FfiConverterString.write(value.`displayName`, buf)
             FfiConverterOptionalString.write(value.`quality`, buf)
             FfiConverterLong.write(value.`sizeBytes`, buf)
+    }
+}
+
+
+
+data class TtsVoicePickerRegion (
+    var `code`: kotlin.String, 
+    var `displayName`: kotlin.String, 
+    var `voices`: List<TtsVoicePackInfo>
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeTtsVoicePickerRegion: FfiConverterRustBuffer<TtsVoicePickerRegion> {
+    override fun read(buf: ByteBuffer): TtsVoicePickerRegion {
+        return TtsVoicePickerRegion(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeTtsVoicePackInfo.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: TtsVoicePickerRegion) = (
+            FfiConverterString.allocationSize(value.`code`) +
+            FfiConverterString.allocationSize(value.`displayName`) +
+            FfiConverterSequenceTypeTtsVoicePackInfo.allocationSize(value.`voices`)
+    )
+
+    override fun write(value: TtsVoicePickerRegion, buf: ByteBuffer) {
+            FfiConverterString.write(value.`code`, buf)
+            FfiConverterString.write(value.`displayName`, buf)
+            FfiConverterSequenceTypeTtsVoicePackInfo.write(value.`voices`, buf)
     }
 }
 
@@ -2665,38 +2642,6 @@ public object FfiConverterOptionalTypeTtsVoiceFiles: FfiConverterRustBuffer<TtsV
 /**
  * @suppress
  */
-public object FfiConverterOptionalTypeTtsVoicePackInfo: FfiConverterRustBuffer<TtsVoicePackInfo?> {
-    override fun read(buf: ByteBuffer): TtsVoicePackInfo? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterTypeTtsVoicePackInfo.read(buf)
-    }
-
-    override fun allocationSize(value: TtsVoicePackInfo?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterTypeTtsVoicePackInfo.allocationSize(value)
-        }
-    }
-
-    override fun write(value: TtsVoicePackInfo?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterTypeTtsVoicePackInfo.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
 public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.String>> {
     override fun read(buf: ByteBuffer): List<kotlin.String> {
         val len = buf.getInt()
@@ -2809,24 +2754,52 @@ public object FfiConverterSequenceTypeTranslationStep: FfiConverterRustBuffer<Li
 /**
  * @suppress
  */
-public object FfiConverterSequenceTypeTtsRegionEntry: FfiConverterRustBuffer<List<TtsRegionEntry>> {
-    override fun read(buf: ByteBuffer): List<TtsRegionEntry> {
+public object FfiConverterSequenceTypeTtsVoicePackInfo: FfiConverterRustBuffer<List<TtsVoicePackInfo>> {
+    override fun read(buf: ByteBuffer): List<TtsVoicePackInfo> {
         val len = buf.getInt()
-        return List<TtsRegionEntry>(len) {
-            FfiConverterTypeTtsRegionEntry.read(buf)
+        return List<TtsVoicePackInfo>(len) {
+            FfiConverterTypeTtsVoicePackInfo.read(buf)
         }
     }
 
-    override fun allocationSize(value: List<TtsRegionEntry>): ULong {
+    override fun allocationSize(value: List<TtsVoicePackInfo>): ULong {
         val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeTtsRegionEntry.allocationSize(it) }.sum()
+        val sizeForItems = value.map { FfiConverterTypeTtsVoicePackInfo.allocationSize(it) }.sum()
         return sizeForLength + sizeForItems
     }
 
-    override fun write(value: List<TtsRegionEntry>, buf: ByteBuffer) {
+    override fun write(value: List<TtsVoicePackInfo>, buf: ByteBuffer) {
         buf.putInt(value.size)
         value.iterator().forEach {
-            FfiConverterTypeTtsRegionEntry.write(it, buf)
+            FfiConverterTypeTtsVoicePackInfo.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeTtsVoicePickerRegion: FfiConverterRustBuffer<List<TtsVoicePickerRegion>> {
+    override fun read(buf: ByteBuffer): List<TtsVoicePickerRegion> {
+        val len = buf.getInt()
+        return List<TtsVoicePickerRegion>(len) {
+            FfiConverterTypeTtsVoicePickerRegion.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<TtsVoicePickerRegion>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeTtsVoicePickerRegion.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<TtsVoicePickerRegion>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeTtsVoicePickerRegion.write(it, buf)
         }
     }
 }

@@ -75,6 +75,8 @@ import dev.davidv.translator.DownloadService
 import dev.davidv.translator.DownloadState
 import dev.davidv.translator.LangAvailability
 import dev.davidv.translator.Language
+import dev.davidv.translator.LanguageAvailabilityEntry
+import dev.davidv.translator.LanguageAvailabilityState
 import dev.davidv.translator.LanguageMetadata
 import dev.davidv.translator.LaunchMode
 import dev.davidv.translator.R
@@ -122,7 +124,7 @@ fun MainScreen(
   canSwapLanguages: Boolean = true,
   onStopAudio: () -> Unit = {},
   // System integration
-  availableLanguages: Map<Language, LangAvailability>,
+  languageState: LanguageAvailabilityState,
   languageMetadata: Map<Language, LanguageMetadata>,
   downloadStates: Map<Language, DownloadState> = emptyMap(),
   settings: AppSettings,
@@ -202,7 +204,7 @@ fun MainScreen(
           from = from,
           to = to,
           canSwap = canSwapLanguages,
-          availableLanguages = availableLanguages,
+          languageState = languageState,
           languageMetadata = languageMetadata,
           onMessage = onMessage,
           drawable =
@@ -357,7 +359,7 @@ fun MainScreen(
             DetectedLanguageSection(
               detectedLanguage = detectedLanguage,
               from = from,
-              availableLanguages = availableLanguages,
+              languageState = languageState,
               onMessage = onMessage,
               downloadStates = downloadStates,
               onEvent = { event ->
@@ -407,7 +409,7 @@ fun MainScreen(
                 onDictionaryLookup = {
                   onMessage(TranslatorMessage.DictionaryLookup(it, to))
                 },
-                canSpeak = availableLanguages[to]?.ttsFiles == true,
+                canSpeak = languageState.availabilityFor(to)?.ttsFiles == true,
                 isAudioPlaying = isAudioPlaying,
                 isAudioLoading = isAudioLoading,
                 speechPlaybackSpeed = settings.ttsPlaybackSpeed,
@@ -603,6 +605,13 @@ private fun previewLanguage(
   tessdataSizeBytes = 0,
 )
 
+private fun previewLanguageState(vararg languages: Pair<Language, LangAvailability>) =
+  LanguageAvailabilityState(
+    hasLanguages = true,
+    availableLanguages = languages.map { (language, availability) -> LanguageAvailabilityEntry(language, availability) },
+    isChecking = false,
+  )
+
 @Preview(
   showBackground = true,
   uiMode = Configuration.UI_MODE_NIGHT_YES,
@@ -623,8 +632,8 @@ fun PopupMode() {
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.ReadWriteModal {},
       onMessage = {},
-      availableLanguages =
-        mapOf(
+      languageState =
+        previewLanguageState(
           previewLanguage("en", "English") to LangAvailability(true, true, true, true),
           previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
           previewLanguage("fr", "French") to LangAvailability(true, true, true, true),
@@ -660,8 +669,8 @@ fun MainScreenPreview() {
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.Normal,
       onMessage = {},
-      availableLanguages =
-        mapOf(
+      languageState =
+        previewLanguageState(
           previewLanguage("en", "English") to LangAvailability(true, true, true, true),
           previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
           previewLanguage("fr", "French") to LangAvailability(true, true, true, true),
@@ -701,8 +710,8 @@ fun PreviewTranslitText() {
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.Normal,
       onMessage = {},
-      availableLanguages =
-        mapOf(
+      languageState =
+        previewLanguageState(
           previewLanguage("en", "English") to LangAvailability(true, true, true, true),
           previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
           previewLanguage("fr", "French") to LangAvailability(true, true, true, true),
@@ -743,8 +752,8 @@ fun PreviewVeryLongText() {
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.Normal,
       onMessage = {},
-      availableLanguages =
-        mapOf(
+      languageState =
+        previewLanguageState(
           previewLanguage("en", "English") to LangAvailability(true, true, true, true),
           previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
           previewLanguage("fr", "French") to LangAvailability(true, true, true, true),
@@ -789,8 +798,8 @@ fun PreviewVeryLongTextImage() {
       isOcrInProgress = MutableStateFlow(false).asStateFlow(),
       launchMode = LaunchMode.Normal,
       onMessage = {},
-      availableLanguages =
-        mapOf(
+      languageState =
+        previewLanguageState(
           previewLanguage("en", "English") to LangAvailability(true, true, true, true),
           previewLanguage("es", "Spanish") to LangAvailability(true, true, true, true),
           previewLanguage("fr", "French") to LangAvailability(true, true, true, true),

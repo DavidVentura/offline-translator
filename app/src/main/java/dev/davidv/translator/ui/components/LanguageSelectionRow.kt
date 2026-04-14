@@ -31,6 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.davidv.translator.LangAvailability
 import dev.davidv.translator.Language
+import dev.davidv.translator.LanguageAvailabilityEntry
+import dev.davidv.translator.LanguageAvailabilityState
 import dev.davidv.translator.LanguageMetadata
 import dev.davidv.translator.R
 import dev.davidv.translator.TranslatorMessage
@@ -41,7 +43,7 @@ fun LanguageSelectionRow(
   from: Language,
   to: Language,
   canSwap: Boolean,
-  availableLanguages: Map<Language, LangAvailability>,
+  languageState: LanguageAvailabilityState,
   languageMetadata: Map<Language, LanguageMetadata>,
   onMessage: (TranslatorMessage) -> Unit,
   onSettings: (() -> Unit)?,
@@ -53,12 +55,12 @@ fun LanguageSelectionRow(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     val fromLanguages =
-      availableLanguages.keys.filter { x ->
-        x != to && x != from && (availableLanguages[x]?.hasToEnglish == true || x.isEnglish)
+      languageState.allLanguages().filter { x ->
+        x != to && x != from && (languageState.availabilityFor(x)?.hasToEnglish == true || x.isEnglish)
       }
     val toLanguages =
-      availableLanguages.keys.filter { x ->
-        x != from && x != to && (availableLanguages[x]?.hasFromEnglish == true || x.isEnglish)
+      languageState.allLanguages().filter { x ->
+        x != from && x != to && (languageState.availabilityFor(x)?.hasFromEnglish == true || x.isEnglish)
       }
 
     LanguageSelector(
@@ -122,7 +124,7 @@ fun LanguageSelectionRowPreview() {
       from = previewLanguage("en", "English"),
       to = previewLanguage("es", "Spanish"),
       canSwap = true,
-      availableLanguages = previewAvailability(),
+      languageState = previewAvailability(),
       languageMetadata = mapOf(previewLanguage("es", "Spanish") to LanguageMetadata(favorite = true)),
       onMessage = {},
       onSettings = {},
@@ -132,11 +134,28 @@ fun LanguageSelectionRowPreview() {
 }
 
 private fun previewAvailability() =
-  mapOf(
-    previewLanguage("en", "English") to LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
-    previewLanguage("es", "Spanish") to LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
-    previewLanguage("fr", "French") to LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
-    previewLanguage("de", "German") to LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
+  LanguageAvailabilityState(
+    hasLanguages = true,
+    availableLanguages =
+      listOf(
+        LanguageAvailabilityEntry(
+          previewLanguage("en", "English"),
+          LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
+        ),
+        LanguageAvailabilityEntry(
+          previewLanguage("es", "Spanish"),
+          LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
+        ),
+        LanguageAvailabilityEntry(
+          previewLanguage("fr", "French"),
+          LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
+        ),
+        LanguageAvailabilityEntry(
+          previewLanguage("de", "German"),
+          LangAvailability(hasFromEnglish = true, hasToEnglish = true, ocrFiles = true, dictionaryFiles = false),
+        ),
+      ),
+    isChecking = false,
   )
 
 @Preview(
@@ -150,7 +169,7 @@ fun LanguageSelectionRowDarkPreview() {
       from = previewLanguage("fr", "French"),
       to = previewLanguage("de", "German"),
       canSwap = true,
-      availableLanguages = previewAvailability(),
+      languageState = previewAvailability(),
       languageMetadata = mapOf(previewLanguage("fr", "French") to LanguageMetadata(favorite = true)),
       onMessage = {},
       onSettings = {},

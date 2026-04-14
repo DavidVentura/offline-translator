@@ -41,9 +41,23 @@ data class LangAvailability(
 
 data class LanguageAvailabilityState(
   val hasLanguages: Boolean = false,
-  val availableLanguageMap: Map<Language, LangAvailability> = emptyMap(),
+  val availableLanguages: List<LanguageAvailabilityEntry> = emptyList(),
   val isChecking: Boolean = true,
-)
+) {
+  fun availabilityFor(language: Language?): LangAvailability? =
+    language?.let { target ->
+      availableLanguages.firstOrNull { it.language.code == target.code }?.availability
+    }
+
+  fun allLanguages(): List<Language> = availableLanguages.map { it.language }
+
+  fun translatorLanguages(requireOcr: Boolean = false): List<Language> =
+    availableLanguages
+      .asSequence()
+      .filter { it.availability.translatorFiles && (!requireOcr || it.availability.ocrFiles) }
+      .map { it.language }
+      .toList()
+}
 
 fun isDictionaryAvailable(
   filePathManager: FilePathManager,
@@ -140,14 +154,13 @@ class LanguageStateManager(
       setCatalog(catalog)
 
       Log.i("LanguageStateManager", "Refreshing language availability")
-      val availabilityMap = catalog.computeLanguageAvailability()
-
-      val hasLanguages = availabilityMap.any { !it.key.isEnglish && it.value.translatorFiles }
+      val availableLanguages = catalog.languageRows
+      val hasLanguages = availableLanguages.any { !it.language.isEnglish && it.availability.translatorFiles }
       Log.i("LanguageStateManager", "hasLanguages = $hasLanguages")
       _languageState.value =
         LanguageAvailabilityState(
           hasLanguages = hasLanguages,
-          availableLanguageMap = availabilityMap,
+          availableLanguages = availableLanguages,
           isChecking = false,
         )
     }
@@ -195,11 +208,7 @@ class LanguageStateManager(
 
   fun getFirstAvailableFromLanguage(excluding: Language? = null): Language? {
     val state = _languageState.value
-    return state.availableLanguageMap
-      .filterNot { it.key == excluding }
-      .filter { it.value.translatorFiles }
-      .keys
-      .firstOrNull()
+    return state.translatorLanguages().firstOrNull { it != excluding }
   }
 
   fun getFirstAvailableSourceLanguage(
@@ -207,7 +216,7 @@ class LanguageStateManager(
     excluding: Language? = null,
   ): Language? {
     val state = _languageState.value
-    return state.availableLanguageMap.keys
+    return state.allLanguages()
       .asSequence()
       .filterNot { it == excluding }
       .filter { canTranslate(it, target) }
@@ -219,7 +228,7 @@ class LanguageStateManager(
     excluding: Language? = null,
   ): Language? {
     val state = _languageState.value
-    return state.availableLanguageMap.keys
+    return state.allLanguages()
       .asSequence()
       .filterNot { it == excluding }
       .filter { canTranslate(source, it) }
