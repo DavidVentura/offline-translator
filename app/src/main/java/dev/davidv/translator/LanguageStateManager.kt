@@ -100,24 +100,24 @@ class LanguageStateManager(
         downloadEvents.collect { event ->
           when (event) {
             is DownloadEvent.NewTranslationAvailable -> {
-              setCatalog(filePathManager.loadCatalog())
+              setCatalog(withContext(Dispatchers.IO) { filePathManager.reloadCatalog() })
               refreshLanguageAvailability()
               loadMucabFile()
             }
 
             is DownloadEvent.NewDictionaryAvailable -> {
-              setCatalog(filePathManager.loadCatalog())
+              setCatalog(withContext(Dispatchers.IO) { filePathManager.reloadCatalog() })
               refreshLanguageAvailability()
               _fileEvents.emit(FileEvent.DictionaryAvailable(event.language))
             }
 
             is DownloadEvent.NewTtsAvailable -> {
-              setCatalog(filePathManager.loadCatalog())
+              setCatalog(withContext(Dispatchers.IO) { filePathManager.reloadCatalog() })
               refreshLanguageAvailability()
             }
 
             is DownloadEvent.CatalogDownloaded -> {
-              setCatalog(filePathManager.loadCatalog())
+              setCatalog(withContext(Dispatchers.IO) { filePathManager.reloadCatalog() })
               _catalogRefreshToken.value++
               refreshLanguageAvailability()
               Log.i("LanguageStateManager", "Catalog downloaded")
@@ -136,7 +136,7 @@ class LanguageStateManager(
     scope.launch {
       _languageState.value = _languageState.value.copy(isChecking = true)
 
-      val catalog = withContext(Dispatchers.IO) { filePathManager.loadCatalog() } ?: return@launch
+      val catalog = withContext(Dispatchers.IO) { filePathManager.reloadCatalog() } ?: return@launch
       setCatalog(catalog)
 
       Log.i("LanguageStateManager", "Refreshing language availability")
@@ -247,9 +247,7 @@ class LanguageStateManager(
   }
 
   private fun setCatalog(newCatalog: LanguageCatalog?) {
-    val oldCatalog = catalogState.value
-    if (oldCatalog === newCatalog) return
+    if (catalogState.value === newCatalog) return
     catalogState.value = newCatalog
-    oldCatalog?.close()
   }
 }

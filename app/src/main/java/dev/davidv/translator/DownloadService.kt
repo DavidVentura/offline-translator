@@ -97,14 +97,8 @@ class DownloadService : Service() {
   private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
   private val settingsManager by lazy { SettingsManager(this) }
   private val filePathManager by lazy { FilePathManager(this, settingsManager.settings) }
-  private var cachedCatalog: LanguageCatalog? = null
 
-  private fun getCatalog(): LanguageCatalog? {
-    cachedCatalog?.let { return it }
-    val catalog = filePathManager.loadCatalog()
-    replaceCachedCatalog(catalog)
-    return catalog
-  }
+  private fun getCatalog(): LanguageCatalog? = filePathManager.loadCatalog()
 
   private val _downloadStates = MutableStateFlow<Map<Language, DownloadState>>(emptyMap())
   val downloadStates: StateFlow<Map<Language, DownloadState>> = _downloadStates
@@ -314,6 +308,7 @@ class DownloadService : Service() {
             )
           }
           if (success) {
+            filePathManager.reloadCatalog()
             Log.i("DownloadService", "Download complete: ${language.displayName}")
             _downloadEvents.emit(DownloadEvent.NewTranslationAvailable(language))
           } else {
@@ -380,6 +375,7 @@ class DownloadService : Service() {
         }
 
         if (success) {
+          filePathManager.reloadCatalog()
           Log.i("DownloadService", "Dictionary download complete: ${language.displayName}")
           _downloadEvents.emit(DownloadEvent.NewDictionaryAvailable(language))
         } else {
@@ -459,8 +455,9 @@ class DownloadService : Service() {
           }
 
           if (success) {
+            val refreshedCatalog = filePathManager.reloadCatalog() ?: catalog
             removeSupersededTtsVoices(
-              catalog = catalog,
+              catalog = refreshedCatalog,
               language = language,
               selectedPackId = ttsPackId,
             )
@@ -837,7 +834,7 @@ class DownloadService : Service() {
 
         if (tempFile.renameTo(catalogFile)) {
           Log.i("DownloadService", "Downloaded catalog from $url to $catalogFile")
-          replaceCachedCatalog(filePathManager.loadCatalog())
+          filePathManager.reloadCatalog()
           _downloadEvents.emit(DownloadEvent.CatalogDownloaded)
         } else {
           Log.e("DownloadService", "Failed to move temp catalog file $tempFile to final location $catalogFile")
@@ -855,15 +852,7 @@ class DownloadService : Service() {
   override fun onDestroy() {
     super.onDestroy()
     serviceScope.cancel()
-    replaceCachedCatalog(null)
     cleanupTempFiles()
-  }
-
-  private fun replaceCachedCatalog(newCatalog: LanguageCatalog?) {
-    val oldCatalog = cachedCatalog
-    if (oldCatalog === newCatalog) return
-    cachedCatalog = newCatalog
-    oldCatalog?.close()
   }
 
   private fun cleanupTempFiles() {

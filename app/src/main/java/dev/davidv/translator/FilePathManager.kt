@@ -20,6 +20,10 @@ class FilePathManager(
   private val context: Context,
   private val settingsFlow: StateFlow<AppSettings>,
 ) {
+  private val catalogLock = Any()
+  private var cachedCatalog: LanguageCatalog? = null
+  private var cachedCatalogBaseDir: String? = null
+
   private val baseDir: File
     get() =
       if (settingsFlow.value.useExternalStorage) {
@@ -81,6 +85,7 @@ class FilePathManager(
         .put("version", version)
         .toString(),
     )
+    invalidateCatalog()
   }
 
   fun getTtsVoiceFiles(language: Language): TtsVoiceFiles? {
@@ -108,9 +113,35 @@ class FilePathManager(
         Log.i("FilePathManager", "Deleted file $relativePath")
       }
     }
+
+    invalidateCatalog()
   }
 
   fun loadCatalog(): LanguageCatalog? {
+    val baseDirPath = currentBaseDir().absolutePath
+    synchronized(catalogLock) {
+      cachedCatalog?.takeIf { cachedCatalogBaseDir == baseDirPath }?.let { return it }
+      val catalog = openCatalog(baseDirPath)
+      replaceCachedCatalogLocked(catalog, baseDirPath)
+      return catalog
+    }
+  }
+
+  fun reloadCatalog(): LanguageCatalog? =
+    synchronized(catalogLock) {
+      val baseDirPath = currentBaseDir().absolutePath
+      val catalog = openCatalog(baseDirPath)
+      replaceCachedCatalogLocked(catalog, baseDirPath)
+      catalog
+    }
+
+  fun invalidateCatalog() {
+    synchronized(catalogLock) {
+      replaceCachedCatalogLocked(null, null)
+    }
+  }
+
+  private fun openCatalog(baseDirPath: String): LanguageCatalog? {
     val bundledJson =
       try {
         context.assets.open("index.json").bufferedReader().readText()
@@ -130,8 +161,8 @@ class FilePathManager(
     val catalog =
       try {
         when {
-          bundledJson != null -> LanguageCatalog.open(bundledJson, diskJson, currentBaseDir().absolutePath)
-          diskJson != null -> LanguageCatalog.open(diskJson, null, currentBaseDir().absolutePath)
+          bundledJson != null -> LanguageCatalog.open(bundledJson, diskJson, baseDirPath)
+          diskJson != null -> LanguageCatalog.open(diskJson, null, baseDirPath)
           else -> null
         }
       } catch (e: Exception) {
@@ -143,5 +174,16 @@ class FilePathManager(
       Log.e("FilePathManager", "No valid catalog found")
     }
     return catalog
+  }
+
+  private fun replaceCachedCatalogLocked(
+    newCatalog: LanguageCatalog?,
+    baseDirPath: String?,
+  ) {
+    if (cachedCatalog === newCatalog && cachedCatalogBaseDir == baseDirPath) return
+    // Old snapshots may still be in use by callers that obtained them before a reload,
+    // so ownership stays shared and we avoid eagerly closing the previous handle here.
+    cachedCatalog = newCatalog
+    cachedCatalogBaseDir = baseDirPath
   }
 }
