@@ -316,6 +316,7 @@ tasks.named("preBuild") {
 dependencies {
 
   implementation(libs.androidx.core.ktx)
+  implementation(libs.androidx.appcompat)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.activity.compose)
@@ -324,6 +325,7 @@ dependencies {
   implementation(libs.androidx.ui.graphics)
   implementation(libs.androidx.ui.tooling.preview)
   implementation(libs.androidx.material3)
+  implementation(libs.material)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.exifinterface)
   implementation(libs.androidx.uiautomator)
@@ -338,7 +340,6 @@ dependencies {
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.kotlinx.serialization.json)
-  implementation(project(":app:bergamot"))
   implementation(libs.kotlinx.serialization.json.v162)
   implementation("com.vanniktech:android-image-cropper:4.6.0")
   implementation("net.java.dev.jna:jna:5.14.0@aar")

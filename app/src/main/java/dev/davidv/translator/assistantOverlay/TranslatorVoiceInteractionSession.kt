@@ -22,7 +22,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import dev.davidv.bergamot.TokenAlignment
 import dev.davidv.translator.BatchAlignedTranslationResult
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
@@ -32,6 +31,7 @@ import dev.davidv.translator.OverlayTextTranslationHelper
 import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.StyledFragment
+import dev.davidv.translator.TokenAlignment
 import dev.davidv.translator.TranslatedStyledBlock
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationSegment

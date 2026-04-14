@@ -1,5 +1,6 @@
 uniffi::setup_scaffolding!();
 
+pub mod bergamot;
 pub mod logging;
 #[cfg(feature = "mucab")]
 pub mod mucab;

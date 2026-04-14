@@ -2,28 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/examples" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/regression-tests" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/fbgemm" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/fbgemm/third_party/asmjit" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/fbgemm/third_party/cpuinfo" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/fbgemm/third_party/googletest" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/intgemm" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/nccl" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/onnxjs" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/onnxjs/deps/eigen" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/ruy" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/ruy/third_party/cpuinfo" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/ruy/third_party/googletest" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/sentencepiece" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/simd_utils" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/marian-dev/src/3rd_party/simple-websocket-server" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/pybind11" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/3rd_party/ssplit-cpp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/bergamot-translator/bergamot-translator-tests" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/bergamot/src/main/cpp/third_party/cld2" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/third_party/onnxruntime" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/third_party/onnxruntime/cmake/external/emsdk" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/third_party/onnxruntime/cmake/external/libprotobuf-mutator" vcs="Git" />

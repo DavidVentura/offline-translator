@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.Display
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
-import dev.davidv.bergamot.TokenAlignment
 import dev.davidv.translator.BatchAlignedTranslationResult
 import dev.davidv.translator.BatchTextTranslator
 import dev.davidv.translator.FilePathManager
@@ -26,6 +25,7 @@ import dev.davidv.translator.OverlayTextTranslationHelper
 import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.SpeechService
+import dev.davidv.translator.TokenAlignment
 import dev.davidv.translator.TranslatedStyledBlock
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationSegment

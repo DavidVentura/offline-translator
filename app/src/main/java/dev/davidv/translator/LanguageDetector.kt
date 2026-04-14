@@ -18,7 +18,6 @@
 package dev.davidv.translator
 
 import android.util.Log
-import dev.davidv.bergamot.LangDetect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -27,7 +26,7 @@ class LanguageDetector(
 ) {
   private val tag = this.javaClass.name.substringAfterLast('.')
 
-  private val langDetect = LangDetect()
+  private val nativeLanguageDetector = NativeLanguageDetector()
 
   suspend fun detectLanguage(
     text: String,
@@ -38,7 +37,7 @@ class LanguageDetector(
         return@withContext null
       }
 
-      val detected = langDetect.detectLanguage(text, fromLang?.code)
+      val detected = nativeLanguageDetector.detectLanguage(text, fromLang?.code) ?: return@withContext null
       if (detected.isReliable) {
         languageByCode(detected.language)
       } else {
@@ -61,7 +60,7 @@ class LanguageDetector(
       for (lang in availableLanguages) {
         if (lang == hint) continue
         Log.d(tag, "trying ${lang.code}")
-        val detected = langDetect.detectLanguage(text, lang.code)
+        val detected = nativeLanguageDetector.detectLanguage(text, lang.code) ?: continue
         if (detected.isReliable) {
           val detectedLang = languageByCode(detected.language)
           if (detectedLang == lang) {

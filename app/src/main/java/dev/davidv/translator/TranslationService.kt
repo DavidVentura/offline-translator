@@ -18,8 +18,6 @@
 package dev.davidv.translator
 
 import android.util.Log
-import dev.davidv.bergamot.NativeLib
-import dev.davidv.bergamot.TranslationWithAlignment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.system.measureTimeMillis
@@ -30,25 +28,25 @@ class TranslationService(
 ) {
   companion object {
     @Volatile
-    private var nativeLibInstance: NativeLib? = null
+    private var translationRuntimeInstance: TranslationRuntime? = null
 
-    private fun getNativeLib(): NativeLib =
-      nativeLibInstance ?: synchronized(this) {
-        nativeLibInstance ?: NativeLib().also {
-          Log.d("TranslationService", "Initialized bergamot")
-          nativeLibInstance = it
+    private fun getTranslationRuntime(): TranslationRuntime =
+      translationRuntimeInstance ?: synchronized(this) {
+        translationRuntimeInstance ?: TranslationRuntime().also {
+          Log.d("TranslationService", "Initialized translation runtime")
+          translationRuntimeInstance = it
         }
       }
 
     fun cleanup() {
       synchronized(this) {
-        nativeLibInstance?.cleanup()
-        nativeLibInstance = null
+        translationRuntimeInstance?.cleanup()
+        translationRuntimeInstance = null
       }
     }
   }
 
-  private val nativeLib = getNativeLib()
+  private val translationRuntime = getTranslationRuntime()
 
   private var mucabBinding: MucabBinding? = null
 
@@ -190,9 +188,9 @@ class TranslationService(
     texts: Array<String>,
   ): Array<String> {
     if (plan.steps.size == 1) {
-      return nativeLib.translateMultiple(texts, plan.steps[0].cacheKey)
+      return translationRuntime.translateMultiple(texts, plan.steps[0].cacheKey)
     } else if (plan.steps.size == 2) {
-      return nativeLib.pivotMultiple(plan.steps[0].cacheKey, plan.steps[1].cacheKey, texts)
+      return translationRuntime.pivotMultiple(plan.steps[0].cacheKey, plan.steps[1].cacheKey, texts)
     }
     return emptyArray()
   }
@@ -202,9 +200,9 @@ class TranslationService(
     texts: Array<String>,
   ): Array<TranslationWithAlignment> {
     if (plan.steps.size == 1) {
-      return nativeLib.translateMultipleWithAlignment(texts, plan.steps[0].cacheKey)
+      return translationRuntime.translateMultipleWithAlignment(texts, plan.steps[0].cacheKey)
     } else if (plan.steps.size == 2) {
-      return nativeLib.pivotMultipleWithAlignment(plan.steps[0].cacheKey, plan.steps[1].cacheKey, texts)
+      return translationRuntime.pivotMultipleWithAlignment(plan.steps[0].cacheKey, plan.steps[1].cacheKey, texts)
     }
     return emptyArray()
   }
@@ -212,7 +210,7 @@ class TranslationService(
   private fun loadPlanIntoCache(plan: TranslationPlan) {
     plan.steps.forEach { step ->
       Log.d("TranslationService", "Preloading model with key: ${step.cacheKey}")
-      nativeLib.loadModelIntoCache(step.config, step.cacheKey)
+      translationRuntime.loadModelIntoCache(step.config, step.cacheKey)
       Log.d("TranslationService", "Preloaded model ${step.fromCode} -> ${step.toCode} with key: ${step.cacheKey}")
     }
   }

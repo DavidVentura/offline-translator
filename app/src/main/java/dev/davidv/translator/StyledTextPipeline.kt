@@ -1,7 +1,5 @@
 package dev.davidv.translator
 
-import dev.davidv.bergamot.TokenAlignment
-
 data class TextStyle(
   val textColor: Int? = null,
   val bgColor: Int? = null,

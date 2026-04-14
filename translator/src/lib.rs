@@ -1,10 +1,13 @@
+pub mod bergamot;
 pub mod catalog;
 pub mod language;
+pub mod language_detect;
 pub mod ocr;
 pub mod settings;
 pub mod translate;
 pub mod tts;
 
+pub use bergamot::BergamotEngine;
 pub use catalog::{
     AssetFileV2, AssetPackMetadataV2, CatalogSnapshot, CatalogSourcesV2, DeletePlan,
     DictionaryInfo, DownloadPlan, DownloadTask, LangAvailability, LanguageAvailabilityRow,
@@ -23,6 +26,7 @@ pub use catalog::{
     resolve_tts_voice_files, resolve_tts_voice_files_in_snapshot, select_best_catalog,
 };
 pub use language::Language;
+pub use language_detect::{DetectionResult, detect_language};
 pub use ocr::{DetectedWord, ReadingOrder, Rect, TextBlock, TextLine};
 pub use settings::{AppSettings, BackgroundMode, DEFAULT_CATALOG_INDEX_URL};
 pub use translate::{

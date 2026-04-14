@@ -23,4 +23,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Translator"
 include(":app")
-include(":app:bergamot")

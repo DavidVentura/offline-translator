@@ -15,13 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.davidv.bergamot
+package dev.davidv.translator
 
 import android.util.Log
 
-class NativeLib {
+class TranslationRuntime {
   init {
-    Log.d("NativeLib", "Initializing bergamot library")
+    Log.d("TranslationRuntime", "Initializing translation runtime")
     initializeService()
   }
 
@@ -57,10 +57,9 @@ class NativeLib {
   external fun cleanup()
 
   companion object {
-    // Used to load the 'bergamot' library on application startup.
     init {
-      Log.d("NativeLib", "Loading bergamot library")
-      System.loadLibrary("bergamot-sys")
+      Log.d("TranslationRuntime", "Loading bindings library")
+      System.loadLibrary("bindings")
     }
   }
 }
@@ -84,9 +83,9 @@ data class DetectionResult(
   val confidence: Int,
 )
 
-class LangDetect {
+class NativeLanguageDetector {
   external fun detectLanguage(
     text: String,
     langCode: String?,
-  ): DetectionResult
+  ): DetectionResult?
 }
