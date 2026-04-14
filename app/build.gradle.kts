@@ -341,6 +341,7 @@ dependencies {
   implementation(project(":app:bergamot"))
   implementation(libs.kotlinx.serialization.json.v162)
   implementation("com.vanniktech:android-image-cropper:4.6.0")
+  implementation("net.java.dev.jna:jna:5.14.0@aar")
 }
 
 ktlint {
@@ -351,7 +352,7 @@ ktlint {
     reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
   }
   filter {
-    exclude { element -> element.file.path.contains("generated/") }
+    exclude { it.file.path.contains("generated/") || it.file.path.contains("uniffi") }
   }
 }
 

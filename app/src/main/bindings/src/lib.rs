@@ -1,5 +1,5 @@
-#[cfg(feature = "android")]
-pub mod catalog;
+uniffi::setup_scaffolding!();
+
 pub mod logging;
 #[cfg(feature = "mucab")]
 pub mod mucab;
@@ -10,3 +10,4 @@ pub mod tarkka;
 #[cfg(feature = "tesseract")]
 pub mod tesseract;
 pub mod transliterate;
+pub mod uniffi_catalog;

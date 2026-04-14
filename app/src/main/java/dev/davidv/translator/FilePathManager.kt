@@ -90,7 +90,7 @@ class FilePathManager(
 
   fun getTtsVoiceFiles(language: Language): TtsVoiceFiles? {
     val catalog = loadCatalog() ?: return null
-    return catalog.resolveTtsVoiceFiles(language.code)
+    return catalog.use { it.resolveTtsVoiceFiles(language.code) }
   }
 
   fun getTtsSupportDataRoot(): File? {
@@ -120,10 +120,10 @@ class FilePathManager(
   fun loadCatalog(): LanguageCatalog? {
     val baseDirPath = currentBaseDir().absolutePath
     synchronized(catalogLock) {
-      cachedCatalog?.takeIf { cachedCatalogBaseDir == baseDirPath }?.let { return it }
+      cachedCatalog?.takeIf { cachedCatalogBaseDir == baseDirPath }?.let { return it.duplicate() }
       val catalog = openCatalog(baseDirPath)
       replaceCachedCatalogLocked(catalog, baseDirPath)
-      return catalog
+      return catalog?.duplicate()
     }
   }
 
@@ -132,7 +132,7 @@ class FilePathManager(
       val baseDirPath = currentBaseDir().absolutePath
       val catalog = openCatalog(baseDirPath)
       replaceCachedCatalogLocked(catalog, baseDirPath)
-      catalog
+      catalog?.duplicate()
     }
 
   fun invalidateCatalog() {
@@ -181,9 +181,11 @@ class FilePathManager(
     baseDirPath: String?,
   ) {
     if (cachedCatalog === newCatalog && cachedCatalogBaseDir == baseDirPath) return
-    // Old snapshots may still be in use by callers that obtained them before a reload,
-    // so ownership stays shared and we avoid eagerly closing the previous handle here.
+    val oldCatalog = cachedCatalog
     cachedCatalog = newCatalog
     cachedCatalogBaseDir = baseDirPath
+    if (oldCatalog != null && oldCatalog !== newCatalog) {
+      oldCatalog.close()
+    }
   }
 }

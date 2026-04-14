@@ -76,8 +76,10 @@ class TranslationService(
     if (from == to) return@withContext
 
     val catalog = filePathManager.loadCatalog() ?: return@withContext
-    val plan = catalog.resolveTranslationPlan(from, to) ?: return@withContext
-    loadPlanIntoCache(plan)
+    catalog.use {
+      val plan = it.resolveTranslationPlan(from, to) ?: return@withContext
+      loadPlanIntoCache(plan)
+    }
   }
 
   suspend fun translateMultiple(
@@ -89,12 +91,10 @@ class TranslationService(
       if (from == to) {
         return@withContext BatchTranslationResult.Success(texts.map { TranslatedText(it, null) })
       }
-      val catalog =
-        filePathManager.loadCatalog()
-          ?: return@withContext BatchTranslationResult.Error("Catalog unavailable")
       val plan =
-        catalog.resolveTranslationPlan(from, to)
-          ?: return@withContext BatchTranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
+        filePathManager.loadCatalog()?.use { catalog ->
+          catalog.resolveTranslationPlan(from, to)
+        } ?: return@withContext BatchTranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
       loadPlanIntoCache(plan)
 
       val result: Array<String>
@@ -134,12 +134,10 @@ class TranslationService(
         return@withContext TranslationResult.Success(TranslatedText("", null))
       }
 
-      val catalog =
-        filePathManager.loadCatalog()
-          ?: return@withContext TranslationResult.Error("Catalog unavailable")
       val plan =
-        catalog.resolveTranslationPlan(from, to)
-          ?: return@withContext TranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
+        filePathManager.loadCatalog()?.use { catalog ->
+          catalog.resolveTranslationPlan(from, to)
+        } ?: return@withContext TranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
       loadPlanIntoCache(plan)
 
       try {
@@ -173,14 +171,12 @@ class TranslationService(
           texts.map { TranslationWithAlignment(it, it, emptyArray()) },
         )
       }
-      val catalog =
-        filePathManager.loadCatalog()
-          ?: return@withContext BatchAlignedTranslationResult.Error("Catalog unavailable")
       val plan =
-        catalog.resolveTranslationPlan(from, to)
-          ?: return@withContext BatchAlignedTranslationResult.Error(
-            "Language pair ${from.code} -> ${to.code} not installed",
-          )
+        filePathManager.loadCatalog()?.use { catalog ->
+          catalog.resolveTranslationPlan(from, to)
+        } ?: return@withContext BatchAlignedTranslationResult.Error(
+          "Language pair ${from.code} -> ${to.code} not installed",
+        )
       loadPlanIntoCache(plan)
 
       try {
