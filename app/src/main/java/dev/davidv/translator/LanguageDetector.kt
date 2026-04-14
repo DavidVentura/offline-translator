@@ -27,6 +27,7 @@ class LanguageDetector(
   private val tag = this.javaClass.name.substringAfterLast('.')
 
   private val nativeLanguageDetector = NativeLanguageDetector()
+  private val languageRoutingRuntime = LanguageRoutingRuntime()
 
   suspend fun detectLanguage(
     text: String,
@@ -52,24 +53,12 @@ class LanguageDetector(
   ): Language? =
     withContext(Dispatchers.IO) {
       Log.d(tag, "detectLanguageRobust: ${hint ?: "null"} | $text")
-      val initialDetection = detectLanguage(text, hint)
-      if (initialDetection != null) {
-        return@withContext initialDetection
-      }
-
-      for (lang in availableLanguages) {
-        if (lang == hint) continue
-        Log.d(tag, "trying ${lang.code}")
-        val detected = nativeLanguageDetector.detectLanguage(text, lang.code) ?: continue
-        if (detected.isReliable) {
-          val detectedLang = languageByCode(detected.language)
-          if (detectedLang == lang) {
-            return@withContext lang
-          }
-        }
-      }
-
-      Log.w(tag, "no reliable detection")
-      return@withContext null
+      val detectedCode =
+        languageRoutingRuntime.detectLanguageRobustCode(
+          text,
+          hint?.code,
+          availableLanguages.map { it.code }.toTypedArray(),
+        ) ?: return@withContext null
+      languageByCode(detectedCode)
     }
 }

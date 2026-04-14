@@ -3,6 +3,7 @@ pub mod catalog;
 pub mod language;
 pub mod language_detect;
 pub mod ocr;
+pub mod routing;
 pub mod settings;
 pub mod translate;
 pub mod tts;
@@ -28,6 +29,10 @@ pub use catalog::{
 pub use language::Language;
 pub use language_detect::{DetectionResult, detect_language};
 pub use ocr::{DetectedWord, ReadingOrder, Rect, TextBlock, TextLine};
+pub use routing::{
+    BatchTextRoutingPlan, NothingReason, SourceTextBatch, detect_language_robust_code,
+    plan_batch_text_translation,
+};
 pub use settings::{AppSettings, BackgroundMode, DEFAULT_CATALOG_INDEX_URL};
 pub use translate::{
     TokenAlignment, TranslatedText, TranslationPlan, TranslationStep, TranslationWithAlignment,

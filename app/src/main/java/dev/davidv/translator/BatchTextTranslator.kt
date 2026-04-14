@@ -21,7 +21,7 @@ enum class NothingReason {
 class BatchTextTranslator(
   private val translationCoordinator: TranslationCoordinator,
 ) {
-  private val noTranslationPattern = Regex("^[\\d\\s\\p{Punct}·•–—―]+$")
+  private val languageRoutingRuntime = LanguageRoutingRuntime()
 
   suspend fun translateTexts(
     inputs: List<String>,
@@ -29,52 +29,30 @@ class BatchTextTranslator(
     targetLanguage: Language,
     availableLanguages: List<Language>,
   ): BatchTextTranslationOutput {
-    val uniqueInputs = inputs.distinct()
-    val passthrough = linkedMapOf<String, String>()
-    val translatable = mutableListOf<String>()
-    for (text in uniqueInputs) {
-      if (noTranslationPattern.matches(text)) {
-        passthrough[text] = text
-      } else {
-        translatable.add(text)
-      }
-    }
+    val availableByCode = availableLanguages.associateBy { it.code }
+    val routingPlan =
+      languageRoutingRuntime.planBatchTextTranslation(
+        inputs = inputs.toTypedArray(),
+        forcedSourceCode = forcedSourceLanguage?.code,
+        targetCode = targetLanguage.code,
+        availableLanguageCodes = availableLanguages.map { it.code }.toTypedArray(),
+      )
 
-    val textsBySource = linkedMapOf<Language, MutableList<String>>()
-    var detectedSameAsTarget = 0
-    var undetectedTexts = 0
-
-    if (forcedSourceLanguage != null) {
-      if (translatable.isNotEmpty()) {
-        textsBySource.getOrPut(forcedSourceLanguage) { mutableListOf() }.addAll(translatable)
-      }
-    } else {
-      for (text in translatable) {
-        val source = translationCoordinator.detectLanguageRobust(text, null, availableLanguages)
-        when {
-          source == null -> undetectedTexts++
-          source == targetLanguage -> detectedSameAsTarget++
-          else -> textsBySource.getOrPut(source) { mutableListOf() }.add(text)
-        }
-      }
-    }
-
-    if (textsBySource.isEmpty() && passthrough.isEmpty()) {
-      val reason =
-        when {
-          detectedSameAsTarget > 0 && undetectedTexts == 0 -> NothingReason.ALREADY_TARGET_LANGUAGE
-          undetectedTexts > 0 && detectedSameAsTarget == 0 -> NothingReason.COULD_NOT_DETECT
-          else -> NothingReason.NO_TRANSLATABLE_TEXT
-        }
-      return BatchTextTranslationOutput.NothingToTranslate(reason)
+    if (routingPlan.nothingReason != null && routingPlan.batches.isEmpty() && routingPlan.passthroughTexts.isEmpty()) {
+      return BatchTextTranslationOutput.NothingToTranslate(NothingReason.valueOf(routingPlan.nothingReason))
     }
 
     val translatedByText = linkedMapOf<String, String>()
-    translatedByText.putAll(passthrough)
-    for ((sourceLanguage, texts) in textsBySource) {
-      when (val result = translationCoordinator.translateTexts(sourceLanguage, targetLanguage, texts.toTypedArray())) {
+    routingPlan.passthroughTexts.forEach { text -> translatedByText[text] = text }
+    for (batch in routingPlan.batches) {
+      val sourceLanguage = availableByCode[batch.sourceLanguageCode]
+      if (sourceLanguage == null) {
+        Log.e("BatchTextTranslator", "Missing source language ${batch.sourceLanguageCode} in available language set")
+        continue
+      }
+      when (val result = translationCoordinator.translateTexts(sourceLanguage, targetLanguage, batch.texts)) {
         is BatchTranslationResult.Success -> {
-          texts.zip(result.result).forEach { (text, translated) ->
+          batch.texts.zip(result.result).forEach { (text, translated) ->
             translatedByText[text] = translated.translated
           }
         }

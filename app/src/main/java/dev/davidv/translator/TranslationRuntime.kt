@@ -19,8 +19,16 @@ package dev.davidv.translator
 
 import android.util.Log
 
+private object NativeBindingsLoader {
+  init {
+    Log.d("TranslationRuntime", "Loading bindings library")
+    System.loadLibrary("bindings")
+  }
+}
+
 class TranslationRuntime {
   init {
+    NativeBindingsLoader
     Log.d("TranslationRuntime", "Initializing translation runtime")
     initializeService()
   }
@@ -55,13 +63,6 @@ class TranslationRuntime {
   private external fun initializeService()
 
   external fun cleanup()
-
-  companion object {
-    init {
-      Log.d("TranslationRuntime", "Loading bindings library")
-      System.loadLibrary("bindings")
-    }
-  }
 }
 
 data class TokenAlignment(
@@ -84,8 +85,42 @@ data class DetectionResult(
 )
 
 class NativeLanguageDetector {
+  init {
+    NativeBindingsLoader
+  }
+
   external fun detectLanguage(
     text: String,
     langCode: String?,
   ): DetectionResult?
+}
+
+data class SourceTextBatch(
+  val sourceLanguageCode: String,
+  val texts: Array<String>,
+)
+
+data class BatchTextRoutingPlan(
+  val passthroughTexts: Array<String>,
+  val batches: Array<SourceTextBatch>,
+  val nothingReason: String?,
+)
+
+class LanguageRoutingRuntime {
+  init {
+    NativeBindingsLoader
+  }
+
+  external fun detectLanguageRobustCode(
+    text: String,
+    hintCode: String?,
+    availableLanguageCodes: Array<String>,
+  ): String?
+
+  external fun planBatchTextTranslation(
+    inputs: Array<String>,
+    forcedSourceCode: String?,
+    targetCode: String,
+    availableLanguageCodes: Array<String>,
+  ): BatchTextRoutingPlan
 }

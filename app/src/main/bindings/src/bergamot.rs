@@ -3,7 +3,11 @@ use std::sync::{Mutex, OnceLock};
 use jni::JNIEnv;
 use jni::objects::{JObject, JObjectArray, JString, JValue};
 use jni::sys::jobjectArray;
-use translator::{BergamotEngine, TranslationWithAlignment, detect_language};
+use translator::{
+    BatchTextRoutingPlan as RustBatchTextRoutingPlan, BergamotEngine,
+    TranslationWithAlignment, detect_language, detect_language_robust_code,
+    plan_batch_text_translation,
+};
 
 use crate::logging::{ANDROID_LOG_DEBUG, ANDROID_LOG_ERROR, android_log_with_level};
 
@@ -94,6 +98,13 @@ fn string_array(
     Ok(array.into_raw())
 }
 
+fn string_vec_from_array(
+    env: &mut JNIEnv,
+    values: JObjectArray,
+) -> Result<Vec<String>, String> {
+    get_string_array(env, values)
+}
+
 fn alignment_array(
     env: &mut JNIEnv,
     values: &[translator::TokenAlignment],
@@ -178,6 +189,78 @@ fn detection_result_object(
     )
     .map(|object| object.into_raw())
     .map_err(|e| e.to_string())
+}
+
+fn source_text_batch_array(
+    env: &mut JNIEnv,
+    values: &[translator::SourceTextBatch],
+) -> Result<jobjectArray, String> {
+    let class = env
+        .find_class("dev/davidv/translator/SourceTextBatch")
+        .map_err(|e| e.to_string())?;
+    let array = env
+        .new_object_array(values.len() as i32, class, JObject::null())
+        .map_err(|e| e.to_string())?;
+    for (idx, value) in values.iter().enumerate() {
+        let code = env
+            .new_string(&value.source_language_code)
+            .map_err(|e| e.to_string())?;
+        let texts = string_array(env, &value.texts)?;
+        let code_obj = JObject::from(code);
+        let texts_obj = unsafe { JObject::from_raw(texts) };
+        let obj = env
+            .new_object(
+                "dev/davidv/translator/SourceTextBatch",
+                "(Ljava/lang/String;[Ljava/lang/String;)V",
+                &[JValue::Object(&code_obj), JValue::Object(&texts_obj)],
+            )
+            .map_err(|e| e.to_string())?;
+        env.set_object_array_element(&array, idx as i32, obj)
+            .map_err(|e| e.to_string())?;
+    }
+    Ok(array.into_raw())
+}
+
+fn batch_text_routing_plan_object(
+    env: &mut JNIEnv,
+    plan: RustBatchTextRoutingPlan,
+) -> Result<jni::sys::jobject, String> {
+    let passthrough_texts = string_array(env, &plan.passthrough_texts)?;
+    let batches = source_text_batch_array(env, &plan.batches)?;
+
+    let passthrough_obj = unsafe { JObject::from_raw(passthrough_texts) };
+    let batches_obj = unsafe { JObject::from_raw(batches) };
+    match plan.nothing_reason {
+        Some(reason) => {
+            let reason = env.new_string(reason.as_str()).map_err(|e| e.to_string())?;
+            let reason_obj = JObject::from(reason);
+            env.new_object(
+                "dev/davidv/translator/BatchTextRoutingPlan",
+                "([Ljava/lang/String;[Ldev/davidv/translator/SourceTextBatch;Ljava/lang/String;)V",
+                &[
+                    JValue::Object(&passthrough_obj),
+                    JValue::Object(&batches_obj),
+                    JValue::Object(&reason_obj),
+                ],
+            )
+            .map(|object| object.into_raw())
+            .map_err(|e| e.to_string())
+        }
+        None => {
+            let reason_obj = JObject::null();
+            env.new_object(
+                "dev/davidv/translator/BatchTextRoutingPlan",
+                "([Ljava/lang/String;[Ldev/davidv/translator/SourceTextBatch;Ljava/lang/String;)V",
+                &[
+                    JValue::Object(&passthrough_obj),
+                    JValue::Object(&batches_obj),
+                    JValue::Object(&reason_obj),
+                ],
+            )
+            .map(|object| object.into_raw())
+            .map_err(|e| e.to_string())
+        }
+    }
 }
 
 #[unsafe(no_mangle)]
@@ -342,6 +425,76 @@ pub unsafe extern "system" fn Java_dev_davidv_translator_NativeLanguageDetector_
             Some(result) => detection_result_object(&mut env, &result),
             None => Ok(std::ptr::null_mut()),
         }
+    })();
+    match result {
+        Ok(result) => result,
+        Err(err) => {
+            throw_runtime_exception(&mut env, &err);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "system" fn Java_dev_davidv_translator_LanguageRoutingRuntime_detectLanguageRobustCode(
+    mut env: JNIEnv,
+    _: JObject,
+    text: JString,
+    hint: JString,
+    available_language_codes: JObjectArray,
+) -> jni::sys::jstring {
+    let result: Result<jni::sys::jstring, String> = (|| {
+        let text = get_string(&mut env, &text)?;
+        let hint = if hint.is_null() {
+            None
+        } else {
+            Some(get_string(&mut env, &hint)?)
+        };
+        let available_language_codes =
+            string_vec_from_array(&mut env, available_language_codes)?;
+        match detect_language_robust_code(&text, hint.as_deref(), &available_language_codes) {
+            Some(code) => env
+                .new_string(code)
+                .map(|value| value.into_raw())
+                .map_err(|e| e.to_string()),
+            None => Ok(std::ptr::null_mut()),
+        }
+    })();
+    match result {
+        Ok(result) => result,
+        Err(err) => {
+            throw_runtime_exception(&mut env, &err);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "system" fn Java_dev_davidv_translator_LanguageRoutingRuntime_planBatchTextTranslation(
+    mut env: JNIEnv,
+    _: JObject,
+    inputs: JObjectArray,
+    forced_source_code: JString,
+    target_code: JString,
+    available_language_codes: JObjectArray,
+) -> jni::sys::jobject {
+    let result: Result<jni::sys::jobject, String> = (|| {
+        let inputs = string_vec_from_array(&mut env, inputs)?;
+        let forced_source_code = if forced_source_code.is_null() {
+            None
+        } else {
+            Some(get_string(&mut env, &forced_source_code)?)
+        };
+        let target_code = get_string(&mut env, &target_code)?;
+        let available_language_codes =
+            string_vec_from_array(&mut env, available_language_codes)?;
+        let plan = plan_batch_text_translation(
+            &inputs,
+            forced_source_code.as_deref(),
+            &target_code,
+            &available_language_codes,
+        );
+        batch_text_routing_plan_object(&mut env, plan)
     })();
     match result {
         Ok(result) => result,

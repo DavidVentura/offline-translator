@@ -2187,6 +2187,7 @@ version = "0.1.0"
 dependencies = [
  "bergamot-sys",
  "cld2",
+ "regex 1.12.3",
  "serde",
  "serde_json",
 ]
