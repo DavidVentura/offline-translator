@@ -13,6 +13,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.StyledFragment
+import dev.davidv.translator.areEquivalentFragmentTexts
 import dev.davidv.translator.getOverlayColors
 import dev.davidv.translator.Rect as TranslatorRect
 
@@ -511,7 +512,7 @@ class OverlayInput(
         results
           .subList(childStartIndex, results.size)
           .joinToString(" ") { it.text }
-      if (areEquivalentTexts(text, childText)) return true
+      if (areEquivalentFragmentTexts(text, childText)) return true
       results.subList(childStartIndex, results.size).clear()
     }
 
@@ -643,18 +644,6 @@ class OverlayInput(
     if (previous in charArrayOf('(', '[', '{', '/', '-', '\n')) return false
     return true
   }
-
-  private fun areEquivalentTexts(
-    first: String,
-    second: String,
-  ): Boolean = normalizeTextForComparison(first) == normalizeTextForComparison(second)
-
-  private fun normalizeTextForComparison(text: String): String =
-    text
-      .replace(Regex("\\s+"), " ")
-      .replace(Regex("\\s+([.,;:!?])"), "$1")
-      .trim()
-      .lowercase()
 
   private fun hasVerticalOverlap(
     first: Rect,

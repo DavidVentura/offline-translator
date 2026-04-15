@@ -8,6 +8,8 @@ import android.graphics.RectF
 import android.view.View
 import dev.davidv.translator.StyledFragment
 import dev.davidv.translator.TextStyle
+import dev.davidv.translator.dedupeFragmentsByBoundsAndText
+import dev.davidv.translator.normalizeFragmentText
 import dev.davidv.translator.Rect as TranslatorRect
 
 class AssistStructureParser(
@@ -36,8 +38,12 @@ class AssistStructureParser(
       )
     }
 
-    val deduped = fragments.distinctBy { "${it.bounds.flattenToString()}|${normalizeText(it.text)}" }
-    val distinct = deduped.groupBy { it.bounds.flattenToString() }.values.map { it.first() }
+    val distinct =
+      dedupeFragmentsByBoundsAndText(
+        fragments = fragments,
+        boundsKey = { it.bounds.flattenToString() },
+        text = { it.text },
+      )
     var currentTransGroup = 0
     var lastBgColor: Int? = null
     var lastRecyclerItemId: Int = -1
@@ -121,8 +127,8 @@ class AssistStructureParser(
 
     if (childFragments.isNotEmpty()) {
       val childText = childFragments.joinToString(" ") { it.text }
-      val normalizedParent = normalizeText(text)
-      val normalizedChildren = normalizeText(childText)
+      val normalizedParent = normalizeFragmentText(text)
+      val normalizedChildren = normalizeFragmentText(childText)
       if (normalizedParent == normalizedChildren) {
         return true
       }
@@ -171,13 +177,6 @@ class AssistStructureParser(
     )
   }
 
-  fun normalizeText(text: String): String =
-    text
-      .replace(Regex("\\s+"), " ")
-      .replace(Regex("\\s+([.,;:!?])"), "$1")
-      .trim()
-      .lowercase()
-
   private fun isTransparentText(textColor: Int): Boolean = textColor == 0 || (textColor != 1 && Color.alpha(textColor) == 0)
 
   private fun shouldPreferChildren(
@@ -205,7 +204,7 @@ class AssistStructureParser(
         childArea >= parentArea / 4
     if (parentLooksLikeContainer) return true
 
-    val longestChildLength = childFragments.maxOf { normalizeText(it.text).length }
+    val longestChildLength = childFragments.maxOf { normalizeFragmentText(it.text).length }
     val parentLooksLikeSummary =
       normalizedParentText.length <= 80 &&
         longestChildLength > normalizedParentText.length * 2
