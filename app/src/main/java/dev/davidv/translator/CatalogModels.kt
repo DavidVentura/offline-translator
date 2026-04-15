@@ -124,6 +124,15 @@ class LanguageCatalog private constructor(
       DictionaryInfo(date = it.date, filename = it.filename, size = it.size.toLong(), type = it.typeName, wordCount = it.wordCount.toLong())
     }
 
+  fun lookupDictionary(
+    language: Language,
+    word: String,
+  ): WordWithTaggedEntries? = handle.lookupDictionary(language.code, word)
+
+  fun closeDictionaryCache(language: Language) {
+    handle.closeDictionaryCache(language.code)
+  }
+
   fun availabilityFor(language: Language?): LangAvailability? = language?.let { availabilityByCode[it.code] }
 
   fun hasTtsVoices(languageCode: String): Boolean = handle.hasTtsVoices(languageCode)
@@ -194,7 +203,7 @@ class LanguageCatalog private constructor(
     availableLanguages: List<Language>,
     screenshot: Bitmap?,
     backgroundMode: BackgroundMode,
-  ): StructuredFragmentTranslationResult {
+  ): uniffi.translator.StructuredTranslationResult {
     val screenshotInput =
       screenshot?.let { bitmap ->
         val buffer = ByteBuffer.allocate(bitmap.byteCount)
@@ -243,46 +252,7 @@ class LanguageCatalog private constructor(
       availableLanguages.map { it.code },
       screenshotInput,
       backgroundMode,
-    ).let { result ->
-      StructuredFragmentTranslationResult(
-        blocks =
-          result.blocks.map { block ->
-            TranslatedStyledBlock(
-              text = block.text,
-              bounds =
-                Rect(
-                  block.boundingBox.left.toInt(),
-                  block.boundingBox.top.toInt(),
-                  block.boundingBox.right.toInt(),
-                  block.boundingBox.bottom.toInt(),
-                ),
-              styleSpans =
-                block.styleSpans.map { span ->
-                  StyleSpan(
-                    start = span.start.toInt(),
-                    end = span.end.toInt(),
-                    style =
-                      span.style?.let { style ->
-                        TextStyle(
-                          textColor = style.textColor?.toInt(),
-                          bgColor = style.bgColor?.toInt(),
-                          textSize = style.textSize,
-                          bold = style.bold,
-                          italic = style.italic,
-                          underline = style.underline,
-                          strikethrough = style.strikethrough,
-                        )
-                      },
-                  )
-                },
-              backgroundArgb = block.backgroundArgb.toInt(),
-              foregroundArgb = block.foregroundArgb.toInt(),
-            )
-          },
-        nothingReason = result.nothingReason,
-        errorMessage = result.errorMessage,
-      )
-    }
+    )
   }
 
   fun translateImagePlan(
@@ -358,12 +328,6 @@ class LanguageCatalog private constructor(
     handle.close()
   }
 }
-
-data class StructuredFragmentTranslationResult(
-  val blocks: List<TranslatedStyledBlock>,
-  val nothingReason: NothingReason?,
-  val errorMessage: String?,
-)
 
 private fun uniffi.translator.DownloadTask.toDownloadTask(): DownloadTask =
   DownloadTask(

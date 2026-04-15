@@ -813,6 +813,10 @@ internal interface UniffiForeignFutureCompleteVoid : com.sun.jna.Callback {
 
 
 
+
+
+
+
 // For large crates we prevent `MethodTooLargeException` (see #2340)
 // N.B. the name of the extension is very misleading, since it is 
 // rather `InterfaceTooLargeException`, caused by too many methods 
@@ -834,6 +838,8 @@ fun uniffi_bindings_checksum_method_cataloghandle_can_swap_languages(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_can_translate(
 ): Short
+fun uniffi_bindings_checksum_method_cataloghandle_close_dictionary_cache(
+): Short
 fun uniffi_bindings_checksum_method_cataloghandle_default_tts_pack_id(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_dictionary_info(
@@ -847,6 +853,8 @@ fun uniffi_bindings_checksum_method_cataloghandle_generated_at(
 fun uniffi_bindings_checksum_method_cataloghandle_has_tts_voices(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_language_rows(
+): Short
+fun uniffi_bindings_checksum_method_cataloghandle_lookup_dictionary(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_plan_delete_dictionary(
 ): Short
@@ -942,6 +950,8 @@ fun uniffi_bindings_fn_method_cataloghandle_can_swap_languages(`ptr`: Pointer,`f
 ): Byte
 fun uniffi_bindings_fn_method_cataloghandle_can_translate(`ptr`: Pointer,`fromCode`: RustBuffer.ByValue,`toCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
+fun uniffi_bindings_fn_method_cataloghandle_close_dictionary_cache(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
 fun uniffi_bindings_fn_method_cataloghandle_default_tts_pack_id(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_dictionary_info(`ptr`: Pointer,`dictionaryCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -955,6 +965,8 @@ fun uniffi_bindings_fn_method_cataloghandle_generated_at(`ptr`: Pointer,uniffi_o
 fun uniffi_bindings_fn_method_cataloghandle_has_tts_voices(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
 fun uniffi_bindings_fn_method_cataloghandle_language_rows(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+fun uniffi_bindings_fn_method_cataloghandle_lookup_dictionary(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,`word`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_plan_delete_dictionary(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBufferDeletePlan.ByValue
@@ -1125,6 +1137,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_bindings_checksum_method_cataloghandle_can_translate() != 60654.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_close_dictionary_cache() != 28211.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_default_tts_pack_id() != 12955.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1144,6 +1159,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_language_rows() != 45031.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_lookup_dictionary() != 40341.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_dictionary() != 24171.toShort()) {
@@ -1636,6 +1654,8 @@ public interface CatalogHandleInterface {
     
     fun `canTranslate`(`fromCode`: kotlin.String, `toCode`: kotlin.String): kotlin.Boolean
     
+    fun `closeDictionaryCache`(`languageCode`: kotlin.String)
+    
     fun `defaultTtsPackId`(`languageCode`: kotlin.String): kotlin.String?
     
     fun `dictionaryInfo`(`dictionaryCode`: kotlin.String): DictionaryInfo?
@@ -1649,6 +1669,8 @@ public interface CatalogHandleInterface {
     fun `hasTtsVoices`(`languageCode`: kotlin.String): kotlin.Boolean
     
     fun `languageRows`(): List<LanguageAvailabilityRow>
+    
+    fun `lookupDictionary`(`languageCode`: kotlin.String, `word`: kotlin.String): DictionaryWordRecord?
     
     fun `planDeleteDictionary`(`languageCode`: kotlin.String): DeletePlan
     
@@ -1791,6 +1813,17 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
+    override fun `closeDictionaryCache`(`languageCode`: kotlin.String)
+        = 
+    callWithPointer {
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_close_dictionary_cache(
+        it, FfiConverterString.lower(`languageCode`),_status)
+}
+    }
+    
+    
+
     override fun `defaultTtsPackId`(`languageCode`: kotlin.String): kotlin.String? {
             return FfiConverterOptionalString.lift(
     callWithPointer {
@@ -1869,6 +1902,18 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     uniffiRustCall() { _status ->
     UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_language_rows(
         it, _status)
+}
+    }
+    )
+    }
+    
+
+    override fun `lookupDictionary`(`languageCode`: kotlin.String, `word`: kotlin.String): DictionaryWordRecord? {
+            return FfiConverterOptionalTypeDictionaryWordRecord.lift(
+    callWithPointer {
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_lookup_dictionary(
+        it, FfiConverterString.lower(`languageCode`),FfiConverterString.lower(`word`),_status)
 }
     }
     )
@@ -2117,6 +2162,142 @@ public object FfiConverterTypeCatalogHandle: FfiConverter<CatalogHandle, Pointer
 
 
 
+data class DictionaryGlossRecord (
+    var `glossLines`: List<kotlin.String>
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDictionaryGlossRecord: FfiConverterRustBuffer<DictionaryGlossRecord> {
+    override fun read(buf: ByteBuffer): DictionaryGlossRecord {
+        return DictionaryGlossRecord(
+            FfiConverterSequenceString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: DictionaryGlossRecord) = (
+            FfiConverterSequenceString.allocationSize(value.`glossLines`)
+    )
+
+    override fun write(value: DictionaryGlossRecord, buf: ByteBuffer) {
+            FfiConverterSequenceString.write(value.`glossLines`, buf)
+    }
+}
+
+
+
+data class DictionarySenseRecord (
+    var `pos`: kotlin.String, 
+    var `glosses`: List<DictionaryGlossRecord>
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDictionarySenseRecord: FfiConverterRustBuffer<DictionarySenseRecord> {
+    override fun read(buf: ByteBuffer): DictionarySenseRecord {
+        return DictionarySenseRecord(
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeDictionaryGlossRecord.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: DictionarySenseRecord) = (
+            FfiConverterString.allocationSize(value.`pos`) +
+            FfiConverterSequenceTypeDictionaryGlossRecord.allocationSize(value.`glosses`)
+    )
+
+    override fun write(value: DictionarySenseRecord, buf: ByteBuffer) {
+            FfiConverterString.write(value.`pos`, buf)
+            FfiConverterSequenceTypeDictionaryGlossRecord.write(value.`glosses`, buf)
+    }
+}
+
+
+
+data class DictionaryWordEntryRecord (
+    var `senses`: List<DictionarySenseRecord>
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDictionaryWordEntryRecord: FfiConverterRustBuffer<DictionaryWordEntryRecord> {
+    override fun read(buf: ByteBuffer): DictionaryWordEntryRecord {
+        return DictionaryWordEntryRecord(
+            FfiConverterSequenceTypeDictionarySenseRecord.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: DictionaryWordEntryRecord) = (
+            FfiConverterSequenceTypeDictionarySenseRecord.allocationSize(value.`senses`)
+    )
+
+    override fun write(value: DictionaryWordEntryRecord, buf: ByteBuffer) {
+            FfiConverterSequenceTypeDictionarySenseRecord.write(value.`senses`, buf)
+    }
+}
+
+
+
+data class DictionaryWordRecord (
+    var `word`: kotlin.String, 
+    var `tag`: kotlin.Int, 
+    var `entries`: List<DictionaryWordEntryRecord>, 
+    var `sounds`: kotlin.String?, 
+    var `hyphenations`: List<kotlin.String>, 
+    var `redirects`: List<kotlin.String>
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDictionaryWordRecord: FfiConverterRustBuffer<DictionaryWordRecord> {
+    override fun read(buf: ByteBuffer): DictionaryWordRecord {
+        return DictionaryWordRecord(
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterSequenceTypeDictionaryWordEntryRecord.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterSequenceString.read(buf),
+            FfiConverterSequenceString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: DictionaryWordRecord) = (
+            FfiConverterString.allocationSize(value.`word`) +
+            FfiConverterInt.allocationSize(value.`tag`) +
+            FfiConverterSequenceTypeDictionaryWordEntryRecord.allocationSize(value.`entries`) +
+            FfiConverterOptionalString.allocationSize(value.`sounds`) +
+            FfiConverterSequenceString.allocationSize(value.`hyphenations`) +
+            FfiConverterSequenceString.allocationSize(value.`redirects`)
+    )
+
+    override fun write(value: DictionaryWordRecord, buf: ByteBuffer) {
+            FfiConverterString.write(value.`word`, buf)
+            FfiConverterInt.write(value.`tag`, buf)
+            FfiConverterSequenceTypeDictionaryWordEntryRecord.write(value.`entries`, buf)
+            FfiConverterOptionalString.write(value.`sounds`, buf)
+            FfiConverterSequenceString.write(value.`hyphenations`, buf)
+            FfiConverterSequenceString.write(value.`redirects`, buf)
+    }
+}
+
+
+
 data class TtsVoiceFiles (
     var `engine`: kotlin.String, 
     var `modelPath`: kotlin.String, 
@@ -2272,6 +2453,38 @@ public object FfiConverterOptionalString: FfiConverterRustBuffer<kotlin.String?>
         } else {
             buf.put(1)
             FfiConverterString.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeDictionaryWordRecord: FfiConverterRustBuffer<DictionaryWordRecord?> {
+    override fun read(buf: ByteBuffer): DictionaryWordRecord? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeDictionaryWordRecord.read(buf)
+    }
+
+    override fun allocationSize(value: DictionaryWordRecord?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeDictionaryWordRecord.allocationSize(value)
+        }
+    }
+
+    override fun write(value: DictionaryWordRecord?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeDictionaryWordRecord.write(value, buf)
         }
     }
 }
@@ -2588,6 +2801,90 @@ public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.Str
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterString.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeDictionaryGlossRecord: FfiConverterRustBuffer<List<DictionaryGlossRecord>> {
+    override fun read(buf: ByteBuffer): List<DictionaryGlossRecord> {
+        val len = buf.getInt()
+        return List<DictionaryGlossRecord>(len) {
+            FfiConverterTypeDictionaryGlossRecord.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<DictionaryGlossRecord>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeDictionaryGlossRecord.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<DictionaryGlossRecord>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeDictionaryGlossRecord.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeDictionarySenseRecord: FfiConverterRustBuffer<List<DictionarySenseRecord>> {
+    override fun read(buf: ByteBuffer): List<DictionarySenseRecord> {
+        val len = buf.getInt()
+        return List<DictionarySenseRecord>(len) {
+            FfiConverterTypeDictionarySenseRecord.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<DictionarySenseRecord>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeDictionarySenseRecord.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<DictionarySenseRecord>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeDictionarySenseRecord.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeDictionaryWordEntryRecord: FfiConverterRustBuffer<List<DictionaryWordEntryRecord>> {
+    override fun read(buf: ByteBuffer): List<DictionaryWordEntryRecord> {
+        val len = buf.getInt()
+        return List<DictionaryWordEntryRecord>(len) {
+            FfiConverterTypeDictionaryWordEntryRecord.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<DictionaryWordEntryRecord>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeDictionaryWordEntryRecord.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<DictionaryWordEntryRecord>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeDictionaryWordEntryRecord.write(it, buf)
         }
     }
 }

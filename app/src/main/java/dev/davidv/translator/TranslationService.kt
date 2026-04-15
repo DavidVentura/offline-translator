@@ -270,7 +270,7 @@ sealed class BatchAlignedTranslationResult {
 
 sealed class StructuredFragmentTranslationOutput {
   data class Success(
-    val blocks: List<TranslatedStyledBlock>,
+    val blocks: List<uniffi.translator.TranslatedStyledBlock>,
   ) : StructuredFragmentTranslationOutput()
 
   data class NothingToTranslate(

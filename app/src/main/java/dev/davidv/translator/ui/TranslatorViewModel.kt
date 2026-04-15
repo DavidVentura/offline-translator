@@ -35,15 +35,12 @@ import dev.davidv.translator.PcmAudio
 import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.SpeechSynthesisResult
-import dev.davidv.translator.TarkkaBinding
 import dev.davidv.translator.TranslatedText
 import dev.davidv.translator.TranslationCoordinator
 import dev.davidv.translator.TranslationResult
 import dev.davidv.translator.TranslatorMessage
 import dev.davidv.translator.TtsVoiceOption
 import dev.davidv.translator.WordWithTaggedEntries
-import dev.davidv.translator.ui.screens.openDictionary
-import dev.davidv.translator.ui.screens.toggleFirstLetterCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -106,10 +103,6 @@ class TranslatorViewModel(
   private val _modalVisible = MutableStateFlow(initialLaunchMode == LaunchMode.Normal)
   val modalVisible: StateFlow<Boolean> = _modalVisible.asStateFlow()
 
-  // Dictionary state
-  private val _dictionaryBindings = MutableStateFlow<Map<Language, TarkkaBinding>>(emptyMap())
-  val dictionaryBindings: StateFlow<Map<Language, TarkkaBinding>> = _dictionaryBindings.asStateFlow()
-
   private val _dictionaryWord = MutableStateFlow<WordWithTaggedEntries?>(null)
   val dictionaryWord: StateFlow<WordWithTaggedEntries?> = _dictionaryWord.asStateFlow()
 
@@ -153,27 +146,6 @@ class TranslatorViewModel(
         if (_to.value != null) return@collect
         val settings = settingsManager.settings.value
         _to.value = catalog.languageByCode(settings.defaultTargetLanguageCode) ?: catalog.english
-      }
-    }
-
-    viewModelScope.launch {
-      languageStateManager.languageState.collect { languageState ->
-        languageState.availableLanguages.forEach { row ->
-          val language = row.language
-          if (row.availability.dictionaryFiles && !_dictionaryBindings.value.containsKey(language)) {
-            openDictionary(
-              language,
-              filePathManager,
-              onSuccess = { tarkkaBinding ->
-                _dictionaryBindings.value = _dictionaryBindings.value + (language to tarkkaBinding)
-                Log.d("DictionaryLookup", "Loaded existing dictionary for ${language.displayName}")
-              },
-              onError = { error ->
-                Log.w("DictionaryLookup", error)
-              },
-            )
-          }
-        }
       }
     }
 
@@ -566,32 +538,18 @@ class TranslatorViewModel(
     language: Language,
   ) {
     Log.i("DictionaryLookup", "Looking up $str for $language")
-    val tarkkaBinding = _dictionaryBindings.value[language]
-    if (tarkkaBinding != null) {
-      val res = tarkkaBinding.lookup(str.trim())
-      val foundWord =
-        if (res == null) {
-          val toggledWord = toggleFirstLetterCase(str)
-          tarkkaBinding.lookup(toggledWord.trim())
-        } else {
-          res
-        }
-
-      if (foundWord != null) {
-        _dictionaryWord.value = foundWord
-        _dictionaryLookupLanguage.value = language
-        _dictionaryStack.value = _dictionaryStack.value + foundWord
-      } else {
-        viewModelScope.launch {
-          _uiEvents.emit(UiEvent.ShowToast("'$str' not found in ${language.code} dictionary"))
-        }
-      }
+    val catalog = languageStateManager.catalog.value
+    val foundWord = catalog?.lookupDictionary(language, str)
+    if (foundWord != null) {
+      _dictionaryWord.value = foundWord
+      _dictionaryLookupLanguage.value = language
+      _dictionaryStack.value = _dictionaryStack.value + foundWord
       Log.d("DictionaryLookup", "From lookup got $foundWord")
     } else {
       viewModelScope.launch {
-        _uiEvents.emit(UiEvent.ShowToast("Dictionary for ${language.displayName} not available"))
+        _uiEvents.emit(UiEvent.ShowToast("'$str' not found in ${language.code} dictionary"))
       }
-      Log.w("DictionaryLookup", "No dictionary binding for ${language.displayName}")
+      Log.w("DictionaryLookup", "Lookup failed for ${language.displayName}")
     }
   }
 
@@ -624,24 +582,6 @@ class TranslatorViewModel(
         translationCoordinator.setMucabBinding(event.mucabBinding)
         Log.d("TranslatorViewModel", "Mucab file loaded and set in TranslationCoordinator")
       }
-      is FileEvent.DictionaryDeleted -> {
-        _dictionaryBindings.value[event.language]?.close()
-        _dictionaryBindings.value = _dictionaryBindings.value - event.language
-        Log.d("TranslatorViewModel", "Dictionary deleted for language: ${event.language}")
-      }
-      is FileEvent.DictionaryAvailable -> {
-        openDictionary(
-          event.language,
-          filePathManager,
-          onSuccess = { tarkkaBinding ->
-            _dictionaryBindings.value = _dictionaryBindings.value + (event.language to tarkkaBinding)
-            Log.d("DictionaryLookup", "Loaded dictionary for ${event.language.displayName}")
-          },
-          onError = { error ->
-            Log.e("DictionaryLookup", error)
-          },
-        )
-      }
       is FileEvent.Error -> {
         viewModelScope.launch {
           _uiEvents.emit(UiEvent.ShowToast(event.message))
@@ -653,8 +593,6 @@ class TranslatorViewModel(
 
   override fun onCleared() {
     super.onCleared()
-    // Close dictionary bindings (JNI resources)
-    _dictionaryBindings.value.values.forEach { it.close() }
     // Recycle bitmaps
     _displayImage.value?.let { if (!it.isRecycled) it.recycle() }
     originalImage.value?.let { if (!it.isRecycled) it.recycle() }

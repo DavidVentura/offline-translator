@@ -18,7 +18,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import dev.davidv.translator.SettingsManager
-import dev.davidv.translator.TranslatedStyledBlock
 
 class OverlayRenderer(
   private val context: Context,
@@ -31,7 +30,7 @@ class OverlayRenderer(
 
   fun renderStyledBlocks(
     container: FrameLayout,
-    blocks: List<TranslatedStyledBlock>,
+    blocks: List<uniffi.translator.TranslatedStyledBlock>,
     systemBarTop: Int,
   ) {
     if (debugLoggingEnabled) {
@@ -44,48 +43,53 @@ class OverlayRenderer(
     val screenHeight = context.resources.displayMetrics.heightPixels
     for (block in blocks) {
       if (block.text.isBlank()) continue
-      val adjustedTop = block.bounds.top - systemBarTop
-      val adjustedBottom = block.bounds.bottom - systemBarTop
+      val bounds = block.boundingBox
+      val adjustedTop = bounds.top.toInt() - systemBarTop
+      val adjustedBottom = bounds.bottom.toInt() - systemBarTop
       val visibleHeight = minOf(adjustedBottom, screenHeight) - maxOf(adjustedTop, 0)
-      if (visibleHeight < block.bounds.height() / 2) continue
+      val blockHeight = (bounds.bottom - bounds.top).toInt()
+      if (visibleHeight < blockHeight / 2) continue
       addStyledOverlay(container, block, systemBarTop)
     }
   }
 
   private fun addStyledOverlay(
     container: FrameLayout,
-    block: TranslatedStyledBlock,
+    block: uniffi.translator.TranslatedStyledBlock,
     systemBarTop: Int,
   ) {
     val screenWidth = context.resources.displayMetrics.widthPixels
     val screenHeight = context.resources.displayMetrics.heightPixels
-    val left = block.bounds.left.coerceIn(0, screenWidth - 1)
-    val top = (block.bounds.top - systemBarTop).coerceIn(0, screenHeight - 1)
-    val width = maxOf(dpToPx(48), minOf(block.bounds.width(), screenWidth - left))
-    val targetHeight = block.bounds.height().coerceAtLeast(1)
+    val bounds = block.boundingBox
+    val left = bounds.left.toInt().coerceIn(0, screenWidth - 1)
+    val top = (bounds.top.toInt() - systemBarTop).coerceIn(0, screenHeight - 1)
+    val blockWidth = (bounds.right - bounds.left).toInt()
+    val blockHeight = (bounds.bottom - bounds.top).toInt()
+    val width = maxOf(dpToPx(48), minOf(blockWidth, screenWidth - left))
+    val targetHeight = blockHeight.coerceAtLeast(1)
     if (width <= 0) return
 
     val colors =
       dev.davidv.translator.OverlayColors(
-        background = block.backgroundArgb,
-        foreground = block.foregroundArgb,
+        background = block.backgroundArgb.toInt(),
+        foreground = block.foregroundArgb.toInt(),
       )
     val ssb = SpannableStringBuilder(block.text)
 
     ssb.setSpan(ForegroundColorSpan(colors.foreground), 0, ssb.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
     for (span in block.styleSpans) {
-      val start = span.start.coerceIn(0, ssb.length)
-      val end = span.end.coerceIn(start, ssb.length)
+      val start = span.start.toInt().coerceIn(0, ssb.length)
+      val end = span.end.toInt().coerceIn(start, ssb.length)
       if (start == end) continue
       val style = span.style ?: continue
 
-      val fg = normalizeStyleColor(style.textColor)
+      val fg = normalizeStyleColor(style.textColor?.toInt())
       if (fg != null) {
         ssb.setSpan(ForegroundColorSpan(fg), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
       }
-      if (style.hasRealBackground()) {
-        ssb.setSpan(BackgroundColorSpan(style.bgColor!!), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+      if (hasRealBackground(style)) {
+        ssb.setSpan(BackgroundColorSpan(style.bgColor!!.toInt()), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
       }
       if (style.bold) {
         ssb.setSpan(StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -168,6 +172,13 @@ class OverlayRenderer(
     if (color == null) return null
     if (Color.alpha(color) == 0) return null
     return color
+  }
+
+  private fun hasRealBackground(style: uniffi.translator.TextStyle): Boolean {
+    val color = style.bgColor?.toInt() ?: return false
+    if (color == 0 || color == 1 || color == -1) return false
+    if (Color.alpha(color) == 0) return false
+    return true
   }
 
   private fun findFittingTextSizePx(

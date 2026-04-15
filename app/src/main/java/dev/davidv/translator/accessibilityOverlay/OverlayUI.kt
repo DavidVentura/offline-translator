@@ -32,7 +32,6 @@ import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.R
 import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
-import dev.davidv.translator.TranslatedStyledBlock
 import dev.davidv.translator.assistantOverlay.BorderWaveView
 import dev.davidv.translator.overlayChrome.OverlayChromeFactory
 import dev.davidv.translator.overlayChrome.OverlayMenuHost
@@ -403,34 +402,38 @@ class OverlayUI(
     showBitmapOverlay(croppedBitmap, visibleBounds)
   }
 
-  fun showStyledTranslationOverlays(blocks: List<TranslatedStyledBlock>) {
+  fun showStyledTranslationOverlays(blocks: List<uniffi.translator.TranslatedStyledBlock>) {
     val screenWidth = service.resources.displayMetrics.widthPixels
     val screenHeight = service.resources.displayMetrics.heightPixels
 
     for (block in blocks) {
       if (block.text.isBlank()) continue
-      val bounds = block.bounds
-      val overlayWidth = maxOf(bounds.width(), dpToPx(48))
-      val targetHeight = maxOf(bounds.height(), dpToPx(32))
+      val bounds = block.boundingBox
+      val boundsLeft = bounds.left.toInt()
+      val boundsTop = bounds.top.toInt()
+      val boundsRight = bounds.right.toInt()
+      val boundsBottom = bounds.bottom.toInt()
+      val overlayWidth = maxOf(boundsRight - boundsLeft, dpToPx(48))
+      val targetHeight = maxOf(boundsBottom - boundsTop, dpToPx(32))
 
-      val bgColor = block.backgroundArgb
-      val defaultFg = block.foregroundArgb
+      val bgColor = block.backgroundArgb.toInt()
+      val defaultFg = block.foregroundArgb.toInt()
 
       val ssb = SpannableStringBuilder(block.text)
       ssb.setSpan(ForegroundColorSpan(defaultFg), 0, ssb.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
       for (span in block.styleSpans) {
-        val start = span.start.coerceIn(0, ssb.length)
-        val end = span.end.coerceIn(start, ssb.length)
+        val start = span.start.toInt().coerceIn(0, ssb.length)
+        val end = span.end.toInt().coerceIn(start, ssb.length)
         if (start == end) continue
         val style = span.style ?: continue
 
-        val fg = style.textColor
+        val fg = style.textColor?.toInt()
         if (fg != null && Color.alpha(fg) > 0) {
           ssb.setSpan(ForegroundColorSpan(fg), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
-        if (style.hasRealBackground()) {
-          ssb.setSpan(BackgroundColorSpan(style.bgColor!!), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        if (hasRealBackground(style)) {
+          ssb.setSpan(BackgroundColorSpan(style.bgColor!!.toInt()), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         if (style.bold) {
           ssb.setSpan(StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -474,8 +477,8 @@ class OverlayUI(
         ),
       )
 
-      val visibleLeft = bounds.left.coerceIn(0, screenWidth - 1)
-      val visibleTop = bounds.top.coerceIn(0, screenHeight - 1)
+      val visibleLeft = boundsLeft.coerceIn(0, screenWidth - 1)
+      val visibleTop = boundsTop.coerceIn(0, screenHeight - 1)
       val visibleWidth = minOf(overlayWidth, screenWidth - visibleLeft)
       val visibleHeight = minOf(targetHeight, screenHeight - visibleTop)
       if (visibleWidth <= 0 || visibleHeight <= 0) continue
@@ -495,6 +498,13 @@ class OverlayUI(
       windowManager.addView(overlayFrame, params)
       translationOverlays.add(overlayFrame)
     }
+  }
+
+  private fun hasRealBackground(style: uniffi.translator.TextStyle): Boolean {
+    val color = style.bgColor?.toInt() ?: return false
+    if (color == 0 || color == 1 || color == -1) return false
+    if (Color.alpha(color) == 0) return false
+    return true
   }
 
   private fun renderTextOverlayBitmap(

@@ -73,7 +73,9 @@ import dev.davidv.translator.Language
 import dev.davidv.translator.R
 import dev.davidv.translator.Sense
 import dev.davidv.translator.WordEntryComplete
+import dev.davidv.translator.WordTag
 import dev.davidv.translator.WordWithTaggedEntries
+import dev.davidv.translator.wordTag
 
 @Composable
 fun DictionaryBottomSheet(
@@ -234,7 +236,7 @@ fun DictionaryEntry(
         )
 
         Spacer(Modifier.weight(1f))
-        if (dictionaryWord.wordTag == WordWithTaggedEntries.WordTag.BOTH) {
+        if (dictionaryWord.wordTag == WordTag.BOTH) {
           Row(
             modifier = Modifier.alignByBaseline(),
           ) {

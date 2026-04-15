@@ -2,6 +2,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock};
 
+#[cfg(feature = "dictionary")]
+use crate::tarkka::{close_dictionary, lookup_dictionary};
 #[cfg(feature = "tesseract")]
 use crate::tesseract::TesseractWrapper;
 use serde_json::Value;
@@ -100,6 +102,108 @@ pub struct TtsVoiceFiles {
     pub aux_path: String,
     pub language_code: String,
     pub speaker_id: Option<i32>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, uniffi::Record)]
+pub struct DictionaryGlossRecord {
+    pub gloss_lines: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, uniffi::Record)]
+pub struct DictionarySenseRecord {
+    pub pos: String,
+    pub glosses: Vec<DictionaryGlossRecord>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, uniffi::Record)]
+pub struct DictionaryWordEntryRecord {
+    pub senses: Vec<DictionarySenseRecord>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, uniffi::Record)]
+pub struct DictionaryWordRecord {
+    pub word: String,
+    pub tag: i32,
+    pub entries: Vec<DictionaryWordEntryRecord>,
+    pub sounds: Option<String>,
+    pub hyphenations: Vec<String>,
+    pub redirects: Vec<String>,
+}
+
+#[cfg(feature = "dictionary")]
+fn dictionary_path_for_language(snapshot: &CatalogSnapshot, language_code: &str) -> Option<String> {
+    let language = snapshot.catalog.language_by_code(language_code)?;
+    let path = Path::new(&snapshot.base_dir)
+        .join("dictionaries")
+        .join(format!("{}.dict", language.dictionary_code));
+    Some(path.to_string_lossy().into_owned())
+}
+
+#[cfg(feature = "dictionary")]
+fn map_dictionary_word(word: tarkka::WordWithTaggedEntries) -> DictionaryWordRecord {
+    DictionaryWordRecord {
+        word: word.word,
+        tag: word.tag as i32,
+        entries: word
+            .entries
+            .into_iter()
+            .map(|entry| DictionaryWordEntryRecord {
+                senses: entry
+                    .senses
+                    .into_iter()
+                    .map(|sense| DictionarySenseRecord {
+                        pos: sense.pos.to_string(),
+                        glosses: sense
+                            .glosses
+                            .into_iter()
+                            .map(|gloss| DictionaryGlossRecord {
+                                gloss_lines: gloss.gloss_lines,
+                            })
+                            .collect(),
+                    })
+                    .collect(),
+            })
+            .collect(),
+        sounds: word.sounds,
+        hyphenations: word.hyphenations,
+        redirects: word.redirects,
+    }
+}
+
+#[cfg(feature = "dictionary")]
+fn lookup_dictionary_in_snapshot(
+    snapshot: &CatalogSnapshot,
+    language_code: &str,
+    word: &str,
+) -> Option<DictionaryWordRecord> {
+    let path = dictionary_path_for_language(snapshot, language_code)?;
+    lookup_dictionary(&path, word).ok().flatten().map(map_dictionary_word)
+}
+
+#[cfg(not(feature = "dictionary"))]
+fn lookup_dictionary_in_snapshot(
+    _snapshot: &CatalogSnapshot,
+    _language_code: &str,
+    _word: &str,
+) -> Option<DictionaryWordRecord> {
+    None
+}
+
+#[cfg(feature = "dictionary")]
+fn close_dictionary_in_snapshot(
+    snapshot: &CatalogSnapshot,
+    language_code: &str,
+) {
+    if let Some(path) = dictionary_path_for_language(snapshot, language_code) {
+        let _ = close_dictionary(&path);
+    }
+}
+
+#[cfg(not(feature = "dictionary"))]
+fn close_dictionary_in_snapshot(
+    _snapshot: &CatalogSnapshot,
+    _language_code: &str,
+) {
 }
 
 #[cfg(feature = "tesseract")]
@@ -333,6 +437,22 @@ impl CatalogHandle {
 
     fn dictionary_info(&self, dictionary_code: String) -> Option<translator::DictionaryInfo> {
         self.snapshot.catalog.dictionary_info(&dictionary_code)
+    }
+
+    fn lookup_dictionary(
+        &self,
+        language_code: String,
+        word: String,
+    ) -> Option<DictionaryWordRecord> {
+        let normalized = word.trim();
+        if normalized.is_empty() {
+            return None;
+        }
+        lookup_dictionary_in_snapshot(&self.snapshot, &language_code, normalized)
+    }
+
+    fn close_dictionary_cache(&self, language_code: String) {
+        close_dictionary_in_snapshot(&self.snapshot, &language_code)
     }
 
     fn has_tts_voices(&self, language_code: String) -> bool {

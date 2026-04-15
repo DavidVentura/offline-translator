@@ -68,11 +68,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dev.davidv.translator.DownloadService
 import dev.davidv.translator.DownloadState
-import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.Language
 import dev.davidv.translator.LaunchMode
 import dev.davidv.translator.PcmAudioPlayer
-import dev.davidv.translator.TarkkaBinding
 import dev.davidv.translator.TranslatorMessage
 import dev.davidv.translator.TtsVoiceOption
 import dev.davidv.translator.ui.TranslatorViewModel
@@ -87,33 +85,9 @@ import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.math.roundToInt
 
-fun toggleFirstLetterCase(word: String): String {
-  if (word.isEmpty()) return word
-
-  val first = word.first()
-  val toggled = if (first.isUpperCase()) first.lowercaseChar() else first.uppercaseChar()
-  return toggled + word.drop(1)
-}
-
 private fun defaultVoiceNameForLanguage(voices: List<TtsVoiceOption>): String? = voices.firstOrNull()?.name
 
 private fun quantizePlaybackSpeed(speed: Float): Float = ((speed.coerceIn(0.5f, 2.0f) * 10.0f).roundToInt() / 10.0f)
-
-fun openDictionary(
-  language: Language,
-  filePathManager: FilePathManager,
-  onSuccess: (TarkkaBinding) -> Unit,
-  onError: (String) -> Unit,
-) {
-  val tarkkaBinding = TarkkaBinding()
-  val dictPath = filePathManager.getDictionaryFile(language).absolutePath
-  val result = tarkkaBinding.open(dictPath)
-  if (result) {
-    onSuccess(tarkkaBinding)
-  } else {
-    onError("Failed to load dictionary for ${language.displayName}")
-  }
-}
 
 fun shareImageUri(
   uri: Uri,

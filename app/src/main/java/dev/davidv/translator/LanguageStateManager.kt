@@ -59,16 +59,6 @@ data class LanguageAvailabilityState(
       .toList()
 }
 
-fun isDictionaryAvailable(
-  filePathManager: FilePathManager,
-  language: Language,
-): Boolean = filePathManager.getDictionaryFile(language).exists()
-
-fun isDictionaryAvailable(
-  dictFiles: Set<String>,
-  language: Language,
-): Boolean = "${language.dictionaryCode}.dict" in dictFiles
-
 class LanguageStateManager(
   private val scope: CoroutineScope,
   private val filePathManager: FilePathManager,
@@ -122,7 +112,6 @@ class LanguageStateManager(
             is DownloadEvent.NewDictionaryAvailable -> {
               setCatalog(withContext(Dispatchers.IO) { filePathManager.reloadCatalog() })
               refreshLanguageAvailability()
-              _fileEvents.emit(FileEvent.DictionaryAvailable(event.language))
             }
 
             is DownloadEvent.NewTtsAvailable -> {
@@ -168,10 +157,10 @@ class LanguageStateManager(
 
   fun deleteDict(language: Language) {
     val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
+    catalog.closeDictionaryCache(language)
     filePathManager.applyDeletePlan(catalog.planDeleteDictionary(language.code))
 
     refreshLanguageAvailability()
-    scope.launch { _fileEvents.emit(FileEvent.DictionaryDeleted(language)) }
     Log.i("LanguageStateManager", "Removed dictionary for language: ${language.displayName}")
   }
 

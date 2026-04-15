@@ -25,17 +25,3 @@ data class StyledFragment(
   val translationGroup: Int = 0,
   val clusterGroup: Int = 0,
 )
-
-data class StyleSpan(
-  val start: Int,
-  val end: Int,
-  val style: TextStyle?,
-)
-
-data class TranslatedStyledBlock(
-  val text: String,
-  val bounds: Rect,
-  val styleSpans: List<StyleSpan>,
-  val backgroundArgb: Int,
-  val foregroundArgb: Int,
-)
