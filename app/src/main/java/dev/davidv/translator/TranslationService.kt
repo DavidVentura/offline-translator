@@ -27,26 +27,10 @@ class TranslationService(
   private val filePathManager: FilePathManager,
 ) {
   companion object {
-    @Volatile
-    private var translationRuntimeInstance: TranslationRuntime? = null
-
-    private fun getTranslationRuntime(): TranslationRuntime =
-      translationRuntimeInstance ?: synchronized(this) {
-        translationRuntimeInstance ?: TranslationRuntime().also {
-          Log.d("TranslationService", "Initialized translation runtime")
-          translationRuntimeInstance = it
-        }
-      }
-
     fun cleanup() {
-      synchronized(this) {
-        translationRuntimeInstance?.cleanup()
-        translationRuntimeInstance = null
-      }
+      // cache now lives in the native catalog translation layer
     }
   }
-
-  private val translationRuntime = getTranslationRuntime()
 
   private var mucabBinding: MucabBinding? = null
 
@@ -62,8 +46,7 @@ class TranslationService(
     if (from == to) return@withContext
 
     val catalog = filePathManager.loadCatalog() ?: return@withContext
-    val plan = catalog.resolveTranslationPlan(from, to) ?: return@withContext
-    loadPlanIntoCache(plan)
+    catalog.translateTexts(from, to, emptyArray()) ?: return@withContext
   }
 
   suspend fun translateMultiple(
@@ -78,15 +61,12 @@ class TranslationService(
       val catalog =
         filePathManager.loadCatalog()
           ?: return@withContext BatchTranslationResult.Error("Catalog unavailable")
-      val plan =
-        catalog.resolveTranslationPlan(from, to)
+      val result =
+        catalog.translateTexts(from, to, texts)
           ?: return@withContext BatchTranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
-      loadPlanIntoCache(plan)
-
-      val result: Array<String>
       val elapsed =
         measureTimeMillis {
-          result = performTranslations(plan, texts)
+          // translation already executed in native layer
         }
       Log.d("TranslationService", "bulk translation took ${elapsed}ms")
       val translated =
@@ -100,6 +80,63 @@ class TranslationService(
           TranslatedText(translatedText, transliterated)
         }
       return@withContext BatchTranslationResult.Success(translated)
+    }
+
+  suspend fun translateMixedTexts(
+    inputs: List<String>,
+    forcedSourceLanguage: Language?,
+    targetLanguage: Language,
+    availableLanguages: List<Language>,
+  ): BatchTextTranslationOutput =
+    withContext(Dispatchers.IO) {
+      val catalog =
+        filePathManager.loadCatalog()
+          ?: return@withContext BatchTextTranslationOutput.NothingToTranslate(NothingReason.NO_TRANSLATABLE_TEXT)
+
+      val result =
+        catalog.translateMixedTexts(inputs, forcedSourceLanguage, targetLanguage, availableLanguages)
+
+      val nothingReason = result.nothingReason
+      if (nothingReason != null && result.translations.isEmpty()) {
+        return@withContext BatchTextTranslationOutput.NothingToTranslate(NothingReason.valueOf(nothingReason))
+      }
+
+      val translatedByText = linkedMapOf<String, String>()
+      result.translations.forEach { translation ->
+        translatedByText[translation.sourceText] = translation.translatedText
+      }
+      BatchTextTranslationOutput.Translated(translatedByText)
+    }
+
+  suspend fun translateStructuredFragments(
+    fragments: List<StyledFragment>,
+    forcedSourceLanguage: Language?,
+    targetLanguage: Language,
+    availableLanguages: List<Language>,
+    screenshot: android.graphics.Bitmap?,
+  ): StructuredFragmentTranslationOutput =
+    withContext(Dispatchers.IO) {
+      val catalog =
+        filePathManager.loadCatalog()
+          ?: return@withContext StructuredFragmentTranslationOutput.Error("Catalog unavailable")
+      val result =
+        catalog.translateStructuredFragments(
+          fragments = fragments,
+          forcedSourceLanguage = forcedSourceLanguage,
+          targetLanguage = targetLanguage,
+          availableLanguages = availableLanguages,
+          screenshot = screenshot,
+          backgroundMode = settingsManager.settings.value.backgroundMode,
+        )
+
+      result.errorMessage?.let { message ->
+        return@withContext StructuredFragmentTranslationOutput.Error(message)
+      }
+      val nothingReason = result.nothingReason
+      if (nothingReason != null && result.blocks.isEmpty()) {
+        return@withContext StructuredFragmentTranslationOutput.NothingToTranslate(nothingReason)
+      }
+      StructuredFragmentTranslationOutput.Success(result.blocks)
     }
 
   suspend fun translate(
@@ -123,18 +160,17 @@ class TranslationService(
       val catalog =
         filePathManager.loadCatalog()
           ?: return@withContext TranslationResult.Error("Catalog unavailable")
-      val plan =
-        catalog.resolveTranslationPlan(from, to)
+      val results =
+        catalog.translateTexts(from, to, arrayOf(text))
           ?: return@withContext TranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
-      loadPlanIntoCache(plan)
 
       try {
-        val result: String
         val elapsed =
           measureTimeMillis {
-            result = performTranslations(plan, arrayOf(text)).first()
+            // translation already executed in native layer
           }
         Log.d("TranslationService", "Translation took ${elapsed}ms")
+        val result = results.first()
         val transliterated =
           if (settingsManager.settings.value.enableOutputTransliteration) {
             transliterate(result, to)
@@ -162,18 +198,16 @@ class TranslationService(
       val catalog =
         filePathManager.loadCatalog()
           ?: return@withContext BatchAlignedTranslationResult.Error("Catalog unavailable")
-      val plan =
-        catalog.resolveTranslationPlan(from, to)
+      val results =
+        catalog.translateTextsWithAlignment(from, to, texts)
           ?: return@withContext BatchAlignedTranslationResult.Error(
             "Language pair ${from.code} -> ${to.code} not installed",
           )
-      loadPlanIntoCache(plan)
 
       try {
-        val results: Array<TranslationWithAlignment>
         val elapsed =
           measureTimeMillis {
-            results = performTranslationsWithAlignment(plan, texts)
+            // translation already executed in native layer
           }
         Log.d("TranslationService", "aligned translation took ${elapsed}ms")
         BatchAlignedTranslationResult.Success(results.toList())
@@ -182,38 +216,6 @@ class TranslationService(
         BatchAlignedTranslationResult.Error("Translation failed: ${e.message}")
       }
     }
-
-  private fun performTranslations(
-    plan: TranslationPlan,
-    texts: Array<String>,
-  ): Array<String> {
-    if (plan.steps.size == 1) {
-      return translationRuntime.translateMultiple(texts, plan.steps[0].cacheKey)
-    } else if (plan.steps.size == 2) {
-      return translationRuntime.pivotMultiple(plan.steps[0].cacheKey, plan.steps[1].cacheKey, texts)
-    }
-    return emptyArray()
-  }
-
-  private fun performTranslationsWithAlignment(
-    plan: TranslationPlan,
-    texts: Array<String>,
-  ): Array<TranslationWithAlignment> {
-    if (plan.steps.size == 1) {
-      return translationRuntime.translateMultipleWithAlignment(texts, plan.steps[0].cacheKey)
-    } else if (plan.steps.size == 2) {
-      return translationRuntime.pivotMultipleWithAlignment(plan.steps[0].cacheKey, plan.steps[1].cacheKey, texts)
-    }
-    return emptyArray()
-  }
-
-  private fun loadPlanIntoCache(plan: TranslationPlan) {
-    plan.steps.forEach { step ->
-      Log.d("TranslationService", "Preloading model with key: ${step.cacheKey}")
-      translationRuntime.loadModelIntoCache(step.config, step.cacheKey)
-      Log.d("TranslationService", "Preloaded model ${step.fromCode} -> ${step.toCode} with key: ${step.cacheKey}")
-    }
-  }
 
   fun transliterate(
     text: String,
@@ -255,4 +257,18 @@ sealed class BatchAlignedTranslationResult {
   data class Error(
     val message: String,
   ) : BatchAlignedTranslationResult()
+}
+
+sealed class StructuredFragmentTranslationOutput {
+  data class Success(
+    val blocks: List<TranslatedStyledBlock>,
+  ) : StructuredFragmentTranslationOutput()
+
+  data class NothingToTranslate(
+    val reason: NothingReason,
+  ) : StructuredFragmentTranslationOutput()
+
+  data class Error(
+    val message: String,
+  ) : StructuredFragmentTranslationOutput()
 }

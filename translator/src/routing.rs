@@ -3,7 +3,8 @@ use std::sync::OnceLock;
 
 use regex::Regex;
 
-use crate::detect_language;
+use crate::{BergamotEngine, CatalogSnapshot, detect_language};
+use crate::translate::{execute_translation_plan, resolve_translation_plan_in_snapshot};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum NothingReason {
@@ -32,6 +33,18 @@ pub struct SourceTextBatch {
 pub struct BatchTextRoutingPlan {
     pub passthrough_texts: Vec<String>,
     pub batches: Vec<SourceTextBatch>,
+    pub nothing_reason: Option<NothingReason>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TextTranslation {
+    pub source_text: String,
+    pub translated_text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct MixedTextTranslationResult {
+    pub translations: Vec<TextTranslation>,
     pub nothing_reason: Option<NothingReason>,
 }
 
@@ -163,6 +176,63 @@ pub fn plan_batch_text_translation(
         batches,
         nothing_reason,
     }
+}
+
+pub fn translate_mixed_texts_in_snapshot(
+    engine: &mut BergamotEngine,
+    snapshot: &CatalogSnapshot,
+    inputs: &[String],
+    forced_source_code: Option<&str>,
+    target_code: &str,
+    available_language_codes: &[String],
+) -> Result<MixedTextTranslationResult, String> {
+    let routing_plan = plan_batch_text_translation(
+        inputs,
+        forced_source_code,
+        target_code,
+        available_language_codes,
+    );
+
+    if routing_plan.batches.is_empty() && routing_plan.passthrough_texts.is_empty() {
+        return Ok(MixedTextTranslationResult {
+            translations: Vec::new(),
+            nothing_reason: routing_plan.nothing_reason,
+        });
+    }
+
+    let mut translations = routing_plan
+        .passthrough_texts
+        .into_iter()
+        .map(|text| TextTranslation {
+            source_text: text.clone(),
+            translated_text: text,
+        })
+        .collect::<Vec<_>>();
+
+    for batch in routing_plan.batches {
+        let Some(plan) = resolve_translation_plan_in_snapshot(
+            snapshot,
+            &batch.source_language_code,
+            target_code,
+        ) else {
+            continue;
+        };
+        let batch_results = execute_translation_plan(engine, &plan, &batch.texts)?;
+        translations.extend(
+            batch.texts
+                .into_iter()
+                .zip(batch_results)
+                .map(|(source_text, translated_text)| TextTranslation {
+                    source_text,
+                    translated_text,
+                }),
+        );
+    }
+
+    Ok(MixedTextTranslationResult {
+        translations,
+        nothing_reason: None,
+    })
 }
 
 #[cfg(test)]

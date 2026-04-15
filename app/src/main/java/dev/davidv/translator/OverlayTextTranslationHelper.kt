@@ -14,7 +14,7 @@ sealed class OverlayTextTranslationResult {
 
 class OverlayTextTranslationHelper(
   private val settingsManager: SettingsManager,
-  private val batchTextTranslator: BatchTextTranslator,
+  private val translationService: TranslationService,
   private val langStateManager: LanguageStateManager,
   private val languageMetadataManager: LanguageMetadataManager,
 ) {
@@ -31,7 +31,7 @@ class OverlayTextTranslationHelper(
     val availableLanguages = awaitTranslatorLanguages()
     return when (
       val result =
-        batchTextTranslator.translateTexts(
+        translationService.translateMixedTexts(
           inputs = inputs,
           forcedSourceLanguage = forcedSourceLanguage,
           targetLanguage = targetLanguage,

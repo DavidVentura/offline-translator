@@ -3,13 +3,11 @@ package dev.davidv.translator.assistantOverlay
 import android.os.Bundle
 import android.service.voice.VoiceInteractionSession
 import android.service.voice.VoiceInteractionSessionService
-import dev.davidv.translator.BatchTextTranslator
 import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.LanguageDetector
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
-import dev.davidv.translator.OCRService
 import dev.davidv.translator.OverlayTextTranslationHelper
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.SpeechService
@@ -26,7 +24,6 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
   private lateinit var settingsManager: SettingsManager
   private lateinit var filePathManager: FilePathManager
   private lateinit var languageMetadataManager: LanguageMetadataManager
-  private lateinit var ocrService: OCRService
   private lateinit var imageProcessor: ImageProcessor
   private lateinit var translationCoordinator: TranslationCoordinator
   private lateinit var overlayTextTranslationHelper: OverlayTextTranslationHelper
@@ -40,11 +37,11 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
     val catalog = filePathManager.loadCatalog()
     val languagesFlow = kotlinx.coroutines.flow.MutableStateFlow(catalog?.languageList ?: emptyList())
     languageMetadataManager = LanguageMetadataManager(this, languagesFlow)
-    ocrService = OCRService(filePathManager)
-    imageProcessor = ImageProcessor(this, ocrService)
+    imageProcessor = ImageProcessor(this, filePathManager)
+    val translationService = TranslationService(settingsManager, filePathManager)
     translationCoordinator =
       TranslationCoordinator(
-        translationService = TranslationService(settingsManager, filePathManager),
+        translationService = translationService,
         speechService = SpeechService(settingsManager, filePathManager),
         languageDetector = LanguageDetector(langStateManager::languageByCode),
         imageProcessor = imageProcessor,
@@ -53,7 +50,7 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
     overlayTextTranslationHelper =
       OverlayTextTranslationHelper(
         settingsManager = settingsManager,
-        batchTextTranslator = BatchTextTranslator(translationCoordinator),
+        translationService = translationService,
         langStateManager = langStateManager,
         languageMetadataManager = languageMetadataManager,
       )
@@ -70,9 +67,6 @@ class TranslatorVoiceInteractionSessionService : VoiceInteractionSessionService(
     )
 
   override fun onDestroy() {
-    if (this::ocrService.isInitialized) {
-      ocrService.cleanup()
-    }
     serviceScope.cancel()
     super.onDestroy()
   }

@@ -1,6 +1,8 @@
 uniffi::setup_scaffolding!();
 
+#[cfg(feature = "android")]
 pub mod bergamot;
+#[cfg(feature = "android")]
 pub mod logging;
 #[cfg(feature = "mucab")]
 pub mod mucab;

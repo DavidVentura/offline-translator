@@ -672,7 +672,7 @@ fn resolves_pivot_translation_plan_from_installed_catalog() {
     let plan = resolve_translation_plan(&catalog, "/tmp/base", "es", "fr", &mut resolver)
         .expect("pivot plan should resolve");
 
-    assert!(plan.is_pivot());
+    assert_eq!(plan.steps.len(), 2);
     assert_eq!(plan.steps.len(), 2);
     assert_eq!(plan.steps[0].cache_key, "esen");
     assert_eq!(plan.steps[1].cache_key, "enfr");

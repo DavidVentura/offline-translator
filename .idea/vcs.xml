@@ -2,6 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/bindings/bindings_tgt/debug/build/espeak-rs-sys-639bb556588df8f7/out/build/_deps/sonic-git-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/bindings/bindings_tgt/debug/build/espeak-rs-sys-639bb556588df8f7/out/espeak-ng" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/third_party/onnxruntime" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/third_party/onnxruntime/cmake/external/emsdk" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/third_party/onnxruntime/cmake/external/libprotobuf-mutator" vcs="Git" />

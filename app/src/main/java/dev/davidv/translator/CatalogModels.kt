@@ -1,8 +1,15 @@
 package dev.davidv.translator
 
+import android.graphics.Bitmap
 import uniffi.bindings.CatalogHandle
+import uniffi.bindings.ImageTranslationPlan
+import uniffi.bindings.MixedTextTranslationResult
+import uniffi.bindings.OcrBackgroundMode
+import uniffi.bindings.OcrReadingOrder
+import uniffi.bindings.sampleOverlayColorsRgba
 import java.io.Closeable
 import java.io.File
+import java.nio.ByteBuffer
 
 data class LanguageTtsRegionV2(
   val displayName: String,
@@ -25,17 +32,6 @@ data class TtsVoicePickerRegion(
   val code: String,
   val displayName: String,
   val voices: List<TtsVoicePackInfo>,
-)
-
-data class TranslationPlanStep(
-  val fromCode: String,
-  val toCode: String,
-  val cacheKey: String,
-  val config: String,
-)
-
-data class TranslationPlan(
-  val steps: List<TranslationPlanStep>,
 )
 
 data class DownloadTask(
@@ -158,13 +154,167 @@ class LanguageCatalog private constructor(
     to: Language,
   ): Boolean = handle.canTranslate(from.code, to.code)
 
-  fun resolveTranslationPlan(
+  fun translateTexts(
     from: Language,
     to: Language,
-  ): TranslationPlan? =
-    handle.resolveTranslationPlan(from.code, to.code)?.let { plan ->
-      TranslationPlan(plan.steps.map { TranslationPlanStep(it.fromCode, it.toCode, it.cacheKey, it.config) })
+    texts: Array<String>,
+  ): Array<String>? = handle.translateTexts(from.code, to.code, texts.toList())?.toTypedArray()
+
+  fun translateTextsWithAlignment(
+    from: Language,
+    to: Language,
+    texts: Array<String>,
+  ): Array<TranslationWithAlignment>? =
+    handle.translateTextsWithAlignment(from.code, to.code, texts.toList())?.map { value ->
+      TranslationWithAlignment(
+        source = value.sourceText,
+        target = value.translatedText,
+        alignments =
+          value.alignments.map { alignment ->
+            TokenAlignment(
+              srcBegin = alignment.srcBegin.toInt(),
+              srcEnd = alignment.srcEnd.toInt(),
+              tgtBegin = alignment.tgtBegin.toInt(),
+              tgtEnd = alignment.tgtEnd.toInt(),
+            )
+          }.toTypedArray(),
+      )
+    }?.toTypedArray()
+
+  fun translateMixedTexts(
+    inputs: List<String>,
+    forcedSourceLanguage: Language?,
+    targetLanguage: Language,
+    availableLanguages: List<Language>,
+  ): MixedTextTranslationResult =
+    handle.translateMixedTexts(
+      inputs,
+      forcedSourceLanguage?.code,
+      targetLanguage.code,
+      availableLanguages.map { it.code },
+    )
+
+  fun translateStructuredFragments(
+    fragments: List<StyledFragment>,
+    forcedSourceLanguage: Language?,
+    targetLanguage: Language,
+    availableLanguages: List<Language>,
+    screenshot: Bitmap?,
+    backgroundMode: BackgroundMode,
+  ): StructuredFragmentTranslationResult {
+    val screenshotInput =
+      screenshot?.let { bitmap ->
+        val buffer = ByteBuffer.allocate(bitmap.byteCount)
+        bitmap.copyPixelsToBuffer(buffer)
+        uniffi.bindings.OverlayScreenshot(buffer.array(), bitmap.width, bitmap.height)
+      }
+    return handle.translateStructuredFragments(
+      fragments.map { fragment ->
+        uniffi.bindings.StructuredFragment(
+          text = fragment.text,
+          boundingBox =
+            uniffi.bindings.OcrRect(
+              left = fragment.bounds.left.toLong(),
+              top = fragment.bounds.top.toLong(),
+              right = fragment.bounds.right.toLong(),
+              bottom = fragment.bounds.bottom.toLong(),
+            ),
+          style =
+            fragment.style?.let { style ->
+              uniffi.bindings.StructuredTextStyle(
+                textColor = style.textColor?.toLong(),
+                bgColor = style.bgColor?.toLong(),
+                textSize = style.textSize,
+                bold = style.bold,
+                italic = style.italic,
+                underline = style.underline,
+                strikethrough = style.strikethrough,
+              )
+            },
+          layoutGroup = fragment.layoutGroup,
+          translationGroup = fragment.translationGroup,
+          clusterGroup = fragment.clusterGroup,
+        )
+      },
+      forcedSourceLanguage?.code,
+      targetLanguage.code,
+      availableLanguages.map { it.code },
+      screenshotInput,
+      when (backgroundMode) {
+        BackgroundMode.WHITE_ON_BLACK -> OcrBackgroundMode.WHITE_ON_BLACK
+        BackgroundMode.BLACK_ON_WHITE -> OcrBackgroundMode.BLACK_ON_WHITE
+        BackgroundMode.AUTO_DETECT -> OcrBackgroundMode.AUTO_DETECT
+      },
+    ).let { result ->
+      StructuredFragmentTranslationResult(
+        blocks =
+          result.blocks.map { block ->
+            TranslatedStyledBlock(
+              text = block.text,
+              bounds =
+                Rect(
+                  block.boundingBox.left.toInt(),
+                  block.boundingBox.top.toInt(),
+                  block.boundingBox.right.toInt(),
+                  block.boundingBox.bottom.toInt(),
+                ),
+              styleSpans =
+                block.styleSpans.map { span ->
+                  StyleSpan(
+                    start = span.start,
+                    end = span.end,
+                    style =
+                      span.style?.let { style ->
+                        TextStyle(
+                          textColor = style.textColor?.toInt(),
+                          bgColor = style.bgColor?.toInt(),
+                          textSize = style.textSize,
+                          bold = style.bold,
+                          italic = style.italic,
+                          underline = style.underline,
+                          strikethrough = style.strikethrough,
+                        )
+                      },
+                  )
+                },
+              backgroundArgb = block.backgroundArgb.toInt(),
+              foregroundArgb = block.foregroundArgb.toInt(),
+            )
+          },
+        nothingReason = result.nothingReason?.let(NothingReason::valueOf),
+        errorMessage = result.errorMessage,
+      )
     }
+  }
+
+  fun translateImagePlan(
+    bitmap: Bitmap,
+    from: Language,
+    to: Language,
+    minConfidence: Int,
+    readingOrder: ReadingOrder,
+    backgroundMode: BackgroundMode,
+  ): ImageTranslationPlan? {
+    val buffer = ByteBuffer.allocate(bitmap.byteCount)
+    bitmap.copyPixelsToBuffer(buffer)
+    return handle.translateImagePlan(
+      buffer.array(),
+      bitmap.width,
+      bitmap.height,
+      from.code,
+      to.code,
+      minConfidence,
+      when (readingOrder) {
+        ReadingOrder.LEFT_TO_RIGHT -> OcrReadingOrder.LEFT_TO_RIGHT
+        ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT -> OcrReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT
+      },
+      when (backgroundMode) {
+        BackgroundMode.WHITE_ON_BLACK -> OcrBackgroundMode.WHITE_ON_BLACK
+        BackgroundMode.BLACK_ON_WHITE -> OcrBackgroundMode.BLACK_ON_WHITE
+        BackgroundMode.AUTO_DETECT -> OcrBackgroundMode.AUTO_DETECT
+      },
+    )
+  }
 
   fun planLanguageDownload(languageCode: String): DownloadPlan = handle.planLanguageDownload(languageCode).toDownloadPlan()
 
@@ -209,6 +359,12 @@ class LanguageCatalog private constructor(
   }
 }
 
+data class StructuredFragmentTranslationResult(
+  val blocks: List<TranslatedStyledBlock>,
+  val nothingReason: NothingReason?,
+  val errorMessage: String?,
+)
+
 private fun uniffi.bindings.DownloadTask.toDownloadTask(): DownloadTask =
   DownloadTask(
     packId = packId,
@@ -227,3 +383,32 @@ private fun uniffi.bindings.DownloadPlan.toDownloadPlan(): DownloadPlan =
   DownloadPlan(totalSize = totalSize, tasks = tasks.map { it.toDownloadTask() })
 
 private fun uniffi.bindings.DeletePlan.toDeletePlan(): DeletePlan = DeletePlan(filePaths = filePaths, directoryPaths = directoryPaths)
+
+fun sampleOverlayColors(
+  bitmap: Bitmap,
+  bounds: Rect,
+  backgroundMode: BackgroundMode,
+  wordRects: Array<Rect>? = null,
+): OverlayColors {
+  val buffer = ByteBuffer.allocate(bitmap.byteCount)
+  bitmap.copyPixelsToBuffer(buffer)
+  val colors =
+    sampleOverlayColorsRgba(
+      buffer.array(),
+      bitmap.width,
+      bitmap.height,
+      uniffi.bindings.OcrRect(bounds.left.toLong(), bounds.top.toLong(), bounds.right.toLong(), bounds.bottom.toLong()),
+      when (backgroundMode) {
+        BackgroundMode.WHITE_ON_BLACK -> OcrBackgroundMode.WHITE_ON_BLACK
+        BackgroundMode.BLACK_ON_WHITE -> OcrBackgroundMode.BLACK_ON_WHITE
+        BackgroundMode.AUTO_DETECT -> OcrBackgroundMode.AUTO_DETECT
+      },
+      wordRects?.map { rect ->
+        uniffi.bindings.OcrRect(rect.left.toLong(), rect.top.toLong(), rect.right.toLong(), rect.bottom.toLong())
+      },
+    )
+  return OverlayColors(
+    background = colors?.backgroundArgb?.toInt() ?: android.graphics.Color.WHITE,
+    foreground = colors?.foregroundArgb?.toInt() ?: android.graphics.Color.BLACK,
+  )
+}

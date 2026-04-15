@@ -275,6 +275,7 @@ val abiToBindingsTask =
             "cargo",
             "ndk",
             "build",
+            "--lib",
             "--target",
             cargoTarget,
             "--release",

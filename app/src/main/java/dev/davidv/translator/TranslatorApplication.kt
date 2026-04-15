@@ -24,7 +24,6 @@ class TranslatorApplication : Application() {
   lateinit var settingsManager: SettingsManager
   lateinit var languageMetadataManager: LanguageMetadataManager
   lateinit var filePathManager: FilePathManager
-  lateinit var ocrService: OCRService
   lateinit var imageProcessor: ImageProcessor
   lateinit var translationService: TranslationService
   lateinit var speechService: SpeechService
@@ -43,8 +42,7 @@ class TranslatorApplication : Application() {
     languageCatalog = filePathManager.loadCatalog()
     languagesFlow.value = languageCatalog?.languageList ?: emptyList()
     languageMetadataManager = LanguageMetadataManager(this, languagesFlow)
-    ocrService = OCRService(filePathManager)
-    imageProcessor = ImageProcessor(this, ocrService)
+    imageProcessor = ImageProcessor(this, filePathManager)
     translationService = TranslationService(settingsManager, filePathManager)
     speechService = SpeechService(settingsManager, filePathManager)
     languageDetector = LanguageDetector { code -> languageCatalog?.languageByCode(code) }

@@ -298,16 +298,16 @@ class TranslatorViewModel(
       }
 
       is TranslatorMessage.SetImageUri -> {
-        val bm = translationCoordinator.correctBitmap(message.uri, message.deleteAfterLoad)
-        originalImage.value = bm
-        _displayImage.value = bm
-        _inputType.value = InputType.IMAGE
-        _currentDetectedLanguage.value = null
-        _output.value = null
-        val fromLang = _from.value
-        val toLang = _to.value
-        if (fromLang != null && toLang != null) {
-          viewModelScope.launch {
+        viewModelScope.launch {
+          val bm = translationCoordinator.correctBitmap(message.uri, message.deleteAfterLoad)
+          originalImage.value = bm
+          _displayImage.value = bm
+          _inputType.value = InputType.IMAGE
+          _currentDetectedLanguage.value = null
+          _output.value = null
+          val fromLang = _from.value
+          val toLang = _to.value
+          if (fromLang != null && toLang != null) {
             val result =
               translationCoordinator.translateImageWithOverlay(
                 fromLang,

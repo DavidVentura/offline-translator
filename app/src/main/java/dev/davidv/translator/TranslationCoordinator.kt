@@ -20,9 +20,13 @@ package dev.davidv.translator
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
+import uniffi.bindings.ImageTranslationPlan
+import java.nio.ByteBuffer
 import kotlin.system.measureTimeMillis
 
 class TranslationCoordinator(
@@ -131,32 +135,66 @@ class TranslationCoordinator(
     availableLanguages: List<Language>,
   ): Language? = languageDetector.detectLanguageRobust(text, hint, availableLanguages)
 
-  fun correctBitmap(
+  suspend fun translateStructuredFragments(
+    fragments: List<StyledFragment>,
+    forcedSourceLanguage: Language?,
+    targetLanguage: Language,
+    availableLanguages: List<Language>,
+    screenshot: Bitmap?,
+  ): StructuredFragmentTranslationOutput {
+    if (fragments.isEmpty()) {
+      return StructuredFragmentTranslationOutput.NothingToTranslate(NothingReason.NO_TRANSLATABLE_TEXT)
+    }
+
+    _isTranslating.value = true
+    val result: StructuredFragmentTranslationOutput
+    try {
+      val elapsed =
+        measureTimeMillis {
+          result =
+            translationService.translateStructuredFragments(
+              fragments = fragments,
+              forcedSourceLanguage = forcedSourceLanguage,
+              targetLanguage = targetLanguage,
+              availableLanguages = availableLanguages,
+              screenshot = screenshot,
+            )
+        }
+      Log.d("TranslationCoordinator", "Structured fragment translation of ${fragments.size} fragments took ${elapsed}ms")
+    } finally {
+      lastTranslatedInput = fragments.lastOrNull()?.text ?: ""
+      _isTranslating.value = false
+    }
+    return result
+  }
+
+  suspend fun correctBitmap(
     uri: Uri,
     deleteAfterLoad: Boolean = false,
-  ): Bitmap {
-    try {
-      val originalBitmap = imageProcessor.loadBitmapFromUri(uri)
-      val correctedBitmap = imageProcessor.correctImageOrientation(uri, originalBitmap)
+  ): Bitmap =
+    withContext(Dispatchers.IO) {
+      try {
+        val originalBitmap = imageProcessor.loadBitmapFromUri(uri)
+        val correctedBitmap = imageProcessor.correctImageOrientation(uri, originalBitmap)
 
-      if (correctedBitmap !== originalBitmap && !originalBitmap.isRecycled) {
-        originalBitmap.recycle()
-      }
+        if (correctedBitmap !== originalBitmap && !originalBitmap.isRecycled) {
+          originalBitmap.recycle()
+        }
 
-      val maxImageSize = settingsManager.settings.value.maxImageSize
-      val finalBitmap = imageProcessor.downscaleImage(correctedBitmap, maxImageSize)
+        val maxImageSize = settingsManager.settings.value.maxImageSize
+        val finalBitmap = imageProcessor.downscaleImage(correctedBitmap, maxImageSize)
 
-      if (finalBitmap !== correctedBitmap && !correctedBitmap.isRecycled) {
-        correctedBitmap.recycle()
-      }
+        if (finalBitmap !== correctedBitmap && !correctedBitmap.isRecycled) {
+          correctedBitmap.recycle()
+        }
 
-      return finalBitmap
-    } finally {
-      if (deleteAfterLoad) {
-        imageProcessor.deleteTemporaryImageUri(uri)
+        finalBitmap
+      } finally {
+        if (deleteAfterLoad) {
+          imageProcessor.deleteTemporaryImageUri(uri)
+        }
       }
     }
-  }
 
   suspend fun translateImageWithOverlay(
     from: Language,
@@ -164,82 +202,51 @@ class TranslationCoordinator(
     finalBitmap: Bitmap,
     onMessage: (TranslatorMessage.ImageTextDetected) -> Unit,
     readingOrder: ReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
-  ): ProcessedImageResult? {
-    _isTranslating.value = true
-    return try {
-      _isOcrInProgress.value = true
-      val minConfidence = settingsManager.settings.value.minConfidence
-      val processedImage = imageProcessor.processImage(finalBitmap, from, minConfidence, readingOrder)
-      _isOcrInProgress.value = false
+  ): ProcessedImageResult? =
+    withContext(Dispatchers.IO) {
+      _isTranslating.value = true
+      try {
+        _isOcrInProgress.value = true
+        val catalog = imageProcessor.loadCatalog() ?: return@withContext null
+        val minConfidence = settingsManager.settings.value.minConfidence
+        val backgroundMode = settingsManager.settings.value.backgroundMode
+        val plan =
+          catalog.translateImagePlan(finalBitmap, from, to, minConfidence, readingOrder, backgroundMode)
+            ?: return@withContext null
+        _isOcrInProgress.value = false
 
-      Log.d("OCR", "complete, result ${processedImage.textBlocks}")
+        Log.d("OCR", "complete, blocks=${plan.blocks.size}")
 
-      val extractedText =
-        processedImage.textBlocks
-          .map { block ->
-            block.lines.map { line -> line.text }
-          }.flatten()
-          .joinToString("\n")
-
-      onMessage(TranslatorMessage.ImageTextDetected(extractedText))
-
-      val blockTexts = processedImage.textBlocks.map { it.lines.joinToString(" ") { line -> line.text } }
-      val translatedBlocks: List<String>
-      val totalTranslateMs =
-        measureTimeMillis {
-          when (val translationResult = translationService.translateMultiple(from, to, blockTexts.toTypedArray())) {
-            is BatchTranslationResult.Success -> {
-              translatedBlocks = translationResult.result.map { it.translated }
-            }
-
-            is BatchTranslationResult.Error -> {
-              return null
-            }
+        val extractedText = plan.extractedText
+        onMessage(TranslatorMessage.ImageTextDetected(extractedText))
+        val erasedBitmap = bitmapFromRgbaPlan(plan) ?: return@withContext null
+        lateinit var overlayBitmap: Bitmap
+        val translatePaint =
+          measureTimeMillis {
+            overlayBitmap =
+              when (readingOrder) {
+                ReadingOrder.LEFT_TO_RIGHT ->
+                  paintTranslatedTextOver(erasedBitmap, plan.blocks).first
+                ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT ->
+                  paintTranslatedTextOverVerticalBlocks(erasedBitmap, plan.blocks).first
+              }
           }
-        }
-      Log.i("TranslationCoordinator", "Bulk translation took ${totalTranslateMs}ms")
+        Log.i("TranslationCoordinator", "Overpainting took ${translatePaint}ms")
 
-      val overlayBitmap: Bitmap
-      val allTranslatedText: String
-      val translatePaint =
-        measureTimeMillis {
-          val pair =
-            when (readingOrder) {
-              ReadingOrder.LEFT_TO_RIGHT ->
-                paintTranslatedTextOver(
-                  processedImage.bitmap,
-                  processedImage.textBlocks,
-                  translatedBlocks,
-                  settingsManager.settings.value.backgroundMode,
-                )
-
-              ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT ->
-                paintTranslatedTextOverVerticalBlocks(
-                  processedImage.bitmap,
-                  processedImage.textBlocks,
-                  translatedBlocks,
-                  settingsManager.settings.value.backgroundMode,
-                )
-            }
-          overlayBitmap = pair.first
-          allTranslatedText = pair.second
-        }
-
-      Log.i("TranslationCoordinator", "Overpainting took ${translatePaint}ms")
-
-      ProcessedImageResult(
-        correctedBitmap = overlayBitmap,
-        extractedText = extractedText,
-        translatedText = allTranslatedText,
-      )
-    } catch (e: Exception) {
-      Log.e("TranslationCoordinator", "Exception ${e.stackTrace}")
-      null
-    } finally {
-      _isOcrInProgress.value = false
-      _isTranslating.value = false
+        ProcessedImageResult(
+          correctedBitmap = overlayBitmap,
+          extractedText = extractedText,
+          translatedText = plan.translatedText,
+          metadata = plan,
+        )
+      } catch (e: Exception) {
+        Log.e("TranslationCoordinator", "Exception ${e.stackTrace}")
+        null
+      } finally {
+        _isOcrInProgress.value = false
+        _isTranslating.value = false
+      }
     }
-  }
 
   fun transliterate(
     text: String,
@@ -252,10 +259,22 @@ class TranslationCoordinator(
   ): SpeechSynthesisResult = speechService.synthesizeSpeech(language, text)
 
   suspend fun availableTtsVoices(language: Language): List<TtsVoiceOption> = speechService.availableTtsVoices(language)
+
+  private fun bitmapFromRgbaPlan(plan: ImageTranslationPlan): Bitmap? {
+    return try {
+      Bitmap.createBitmap(plan.width, plan.height, Bitmap.Config.ARGB_8888).apply {
+        copyPixelsFromBuffer(ByteBuffer.wrap(plan.erasedRgbaBytes))
+      }
+    } catch (e: Exception) {
+      Log.e("TranslationCoordinator", "Failed to decode erased OCR bitmap", e)
+      null
+    }
+  }
 }
 
 data class ProcessedImageResult(
   val correctedBitmap: Bitmap,
   val extractedText: String,
   val translatedText: String,
+  val metadata: ImageTranslationPlan,
 )

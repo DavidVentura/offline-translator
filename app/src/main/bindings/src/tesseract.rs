@@ -1,12 +1,47 @@
 use tesseract::plumbing::{BoundingRect, PageIteratorLevel};
 use tesseract::{PageSegMode, Tesseract as TesseractEngine};
 
+#[cfg(feature = "android")]
 extern crate jni;
+#[cfg(feature = "android")]
 use self::jni::JNIEnv;
+#[cfg(feature = "android")]
 use self::jni::objects::{JByteArray, JClass, JObject, JString};
+#[cfg(feature = "android")]
 use self::jni::sys::{jbyteArray, jint, jlong, jobject};
 
+#[cfg(feature = "android")]
 use crate::logging::{android_log_debug, android_log_error, android_log_info};
+
+#[cfg(not(feature = "android"))]
+macro_rules! android_log_debug {
+    ($value:expr) => {
+        let _ = &$value;
+    };
+    ($fmt:literal $(, $arg:expr)*) => {
+        let _ = format!($fmt $(, $arg)*);
+    };
+}
+
+#[cfg(not(feature = "android"))]
+macro_rules! android_log_error {
+    ($value:expr) => {
+        let _ = &$value;
+    };
+    ($fmt:literal $(, $arg:expr)*) => {
+        let _ = format!($fmt $(, $arg)*);
+    };
+}
+
+#[cfg(not(feature = "android"))]
+macro_rules! android_log_info {
+    ($value:expr) => {
+        let _ = &$value;
+    };
+    ($fmt:literal $(, $arg:expr)*) => {
+        let _ = format!($fmt $(, $arg)*);
+    };
+}
 
 #[derive(Debug, Clone)]
 pub struct DetectedWord {
@@ -196,6 +231,7 @@ impl TesseractWrapper {
     }
 }
 
+#[cfg(feature = "android")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeCreate(
     mut env: JNIEnv,
@@ -262,6 +298,7 @@ pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeCreat
     }
 }
 
+#[cfg(feature = "android")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeSetFrame(
     env: JNIEnv,
@@ -319,6 +356,7 @@ pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeSetFr
     }
 }
 
+#[cfg(feature = "android")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeSetPageSegMode(
     _env: JNIEnv,
@@ -355,6 +393,7 @@ pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeSetPa
     }
 }
 
+#[cfg(feature = "android")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeGetWordBoxes(
     mut env: JNIEnv,
@@ -413,6 +452,7 @@ pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeGetWo
     }
 }
 
+#[cfg(feature = "android")]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeDestroy(
     _env: JNIEnv,
@@ -426,6 +466,7 @@ pub unsafe extern "C" fn Java_dev_davidv_translator_TesseractBinding_nativeDestr
     }
 }
 
+#[cfg(feature = "android")]
 fn create_detected_word_jobject(env: &mut JNIEnv, word: &DetectedWord) -> jobject {
     let text_string = env.new_string(&word.text).unwrap();
     let left = word.bounding_rect.left;

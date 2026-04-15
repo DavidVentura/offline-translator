@@ -403,13 +403,9 @@ class OverlayUI(
     showBitmapOverlay(croppedBitmap, visibleBounds)
   }
 
-  fun showStyledTranslationOverlays(
-    blocks: List<TranslatedStyledBlock>,
-    screenshot: Bitmap?,
-  ) {
+  fun showStyledTranslationOverlays(blocks: List<TranslatedStyledBlock>) {
     val screenWidth = service.resources.displayMetrics.widthPixels
     val screenHeight = service.resources.displayMetrics.heightPixels
-    val bgMode = settingsManager.settings.value.backgroundMode
 
     for (block in blocks) {
       if (block.text.isBlank()) continue
@@ -417,14 +413,8 @@ class OverlayUI(
       val overlayWidth = maxOf(bounds.width(), dpToPx(48))
       val targetHeight = maxOf(bounds.height(), dpToPx(32))
 
-      val sampledColors =
-        screenshot?.let {
-          val translatorRect =
-            dev.davidv.translator.Rect(bounds.left, bounds.top, bounds.right, bounds.bottom)
-          dev.davidv.translator.getOverlayColors(it, translatorRect, bgMode)
-        }
-      val bgColor = sampledColors?.background ?: Color.parseColor("#F0FFFFFF")
-      val defaultFg = sampledColors?.foreground ?: Color.BLACK
+      val bgColor = block.backgroundArgb
+      val defaultFg = block.foregroundArgb
 
       val ssb = SpannableStringBuilder(block.text)
       ssb.setSpan(ForegroundColorSpan(defaultFg), 0, ssb.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)

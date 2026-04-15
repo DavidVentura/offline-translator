@@ -8,8 +8,8 @@ name = "translator"
 path = "src/lib.rs"
 
 [dependencies]
-bergamot-sys = { path = "../../../git/bergamot-sys" }
-cld2 = { git = "https://github.com/davidVentura/rust-cld2" }
+bergamot-sys = { git = "https://github.com/DavidVentura/bergamot-sys" }
+cld2 = { git = "https://github.com/DavidVentura/rust-cld2" }
 regex = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

@@ -26,45 +26,6 @@ private object NativeBindingsLoader {
   }
 }
 
-class TranslationRuntime {
-  init {
-    NativeBindingsLoader
-    Log.d("TranslationRuntime", "Initializing translation runtime")
-    initializeService()
-  }
-
-  external fun loadModelIntoCache(
-    cfg: String,
-    key: String,
-  )
-
-  external fun translateMultiple(
-    inputs: Array<String>,
-    key: String,
-  ): Array<String>
-
-  external fun translateMultipleWithAlignment(
-    inputs: Array<String>,
-    key: String,
-  ): Array<TranslationWithAlignment>
-
-  external fun pivotMultiple(
-    firstKey: String,
-    secondKey: String,
-    inputs: Array<String>,
-  ): Array<String>
-
-  external fun pivotMultipleWithAlignment(
-    firstKey: String,
-    secondKey: String,
-    inputs: Array<String>,
-  ): Array<TranslationWithAlignment>
-
-  private external fun initializeService()
-
-  external fun cleanup()
-}
-
 data class TokenAlignment(
   val srcBegin: Int,
   val srcEnd: Int,
@@ -78,13 +39,13 @@ data class TranslationWithAlignment(
   val alignments: Array<TokenAlignment>,
 )
 
-data class DetectionResult(
+internal data class DetectionResult(
   val language: String,
   val isReliable: Boolean,
   val confidence: Int,
 )
 
-class NativeLanguageDetector {
+internal class NativeLanguageRuntime {
   init {
     NativeBindingsLoader
   }
@@ -93,34 +54,10 @@ class NativeLanguageDetector {
     text: String,
     langCode: String?,
   ): DetectionResult?
-}
-
-data class SourceTextBatch(
-  val sourceLanguageCode: String,
-  val texts: Array<String>,
-)
-
-data class BatchTextRoutingPlan(
-  val passthroughTexts: Array<String>,
-  val batches: Array<SourceTextBatch>,
-  val nothingReason: String?,
-)
-
-class LanguageRoutingRuntime {
-  init {
-    NativeBindingsLoader
-  }
 
   external fun detectLanguageRobustCode(
     text: String,
     hintCode: String?,
     availableLanguageCodes: Array<String>,
   ): String?
-
-  external fun planBatchTextTranslation(
-    inputs: Array<String>,
-    forcedSourceCode: String?,
-    targetCode: String,
-    availableLanguageCodes: Array<String>,
-  ): BatchTextRoutingPlan
 }

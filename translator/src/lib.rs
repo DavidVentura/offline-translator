@@ -5,6 +5,7 @@ pub mod language_detect;
 pub mod ocr;
 pub mod routing;
 pub mod settings;
+pub mod styled;
 pub mod translate;
 pub mod tts;
 
@@ -28,16 +29,24 @@ pub use catalog::{
 };
 pub use language::Language;
 pub use language_detect::{DetectionResult, detect_language};
-pub use ocr::{DetectedWord, ReadingOrder, Rect, TextBlock, TextLine};
+pub use ocr::{
+    DetectedWord, OverlayColors, PreparedImageOverlay, PreparedTextBlock, PreparedTextLine,
+    ReadingOrder, Rect, TextBlock, TextLine, build_text_blocks, prepare_overlay_image,
+    sample_overlay_colors,
+};
 pub use routing::{
-    BatchTextRoutingPlan, NothingReason, SourceTextBatch, detect_language_robust_code,
-    plan_batch_text_translation,
+    MixedTextTranslationResult, NothingReason, TextTranslation, detect_language_robust_code,
+    translate_mixed_texts_in_snapshot,
 };
 pub use settings::{AppSettings, BackgroundMode, DEFAULT_CATALOG_INDEX_URL};
+pub use styled::{
+    OverlayScreenshot, StyleSpan as StructuredStyleSpan,
+    StructuredTranslationResult, StyledFragment as StructuredStyledFragment, TextStyle,
+    TranslatedStyledBlock, TranslationSegment, translate_structured_fragments_in_snapshot,
+};
 pub use translate::{
-    TokenAlignment, TranslatedText, TranslationPlan, TranslationStep, TranslationWithAlignment,
-    resolve_translation_plan, resolve_translation_plan_in_snapshot,
-    resolve_translation_plan_with_checker,
+    TokenAlignment, TranslatedText, TranslationWithAlignment, translate_texts_in_snapshot,
+    translate_texts_with_alignment_in_snapshot,
 };
 pub use tts::{
     PcmAudio, PhonemeChunk, SpeechChunk, SpeechChunkBoundary, TtsVoiceOption, plan_speech_chunks,

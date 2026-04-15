@@ -22,7 +22,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import dev.davidv.translator.BatchAlignedTranslationResult
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageStateManager
@@ -30,13 +29,9 @@ import dev.davidv.translator.MainActivity
 import dev.davidv.translator.OverlayTextTranslationHelper
 import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
+import dev.davidv.translator.StructuredFragmentTranslationOutput
 import dev.davidv.translator.StyledFragment
-import dev.davidv.translator.TokenAlignment
-import dev.davidv.translator.TranslatedStyledBlock
 import dev.davidv.translator.TranslationCoordinator
-import dev.davidv.translator.TranslationSegment
-import dev.davidv.translator.clusterFragmentsIntoBlocks
-import dev.davidv.translator.mapStylesToSegmentedTranslation
 import dev.davidv.translator.overlayChrome.OverlayChromeFactory
 import dev.davidv.translator.overlayChrome.OverlayMenuHost
 import dev.davidv.translator.overlayChrome.OverlayMenuManager
@@ -478,94 +473,42 @@ class TranslatorVoiceInteractionSession(
   ) {
     translationJob =
       sessionScope.launch {
-        for ((idx, f) in fragments.withIndex()) {
-          Log.d(tag, "Fragment[$idx] text='${f.text.take(60)}' bounds=[${f.bounds.left},${f.bounds.top},${f.bounds.right},${f.bounds.bottom}]")
-        }
-        val blocks = clusterFragmentsIntoBlocks(fragments)
-        for ((idx, b) in blocks.withIndex()) {
-          Log.d(tag, "Block[$idx] bounds=[${b.bounds.left},${b.bounds.top},${b.bounds.right},${b.bounds.bottom}] ${b.bounds.width()}x${b.bounds.height()} text='${b.text.take(80)}'")
-        }
-        if (blocks.isEmpty()) {
-          processing = false
-          showLoading(false)
-          setOcrButtonVisible(screenshot != null)
-          showStatus("No visible structured text found. Try OCR.")
-          return@launch
-        }
-
         val targetLanguage = overlayTextTranslationHelper.awaitTargetLanguage(forcedTargetLanguage)
-        val combinedText = blocks.joinToString(" ") { it.text }
-        val sourceLanguage =
-          forcedSourceLanguage
-            ?: translationCoordinator.detectLanguageRobust(
-              combinedText,
-              null,
-              overlayTextTranslationHelper.availableLanguages(true),
+        when (
+          val result =
+            translationCoordinator.translateStructuredFragments(
+              fragments = fragments,
+              forcedSourceLanguage = forcedSourceLanguage,
+              targetLanguage = targetLanguage,
+              availableLanguages = overlayTextTranslationHelper.availableLanguages(true),
+              screenshot = screenshot,
             )
-
-        if (sourceLanguage == null) {
-          processing = false
-          showLoading(false)
-          setOcrButtonVisible(screenshot != null)
-          showStatus("Could not detect language — set source language manually")
-          return@launch
-        }
-        if (sourceLanguage == targetLanguage) {
-          processing = false
-          showLoading(false)
-          setOcrButtonVisible(screenshot != null)
-          showStatus("Already in ${targetLanguage.displayName}")
-          return@launch
-        }
-
-        val allSegmentTexts = mutableListOf<String>()
-
-        data class SegmentRef(
-          val blockIdx: Int,
-          val segment: TranslationSegment,
-        )
-        val segmentRefs = mutableListOf<SegmentRef>()
-        for ((blockIdx, block) in blocks.withIndex()) {
-          for (segment in block.segments) {
-            allSegmentTexts.add(block.text.substring(segment.start, segment.end))
-            segmentRefs.add(SegmentRef(blockIdx, segment))
-          }
-        }
-
-        when (val result = translationCoordinator.translateTextsWithAlignment(sourceLanguage, targetLanguage, allSegmentTexts.toTypedArray())) {
-          is BatchAlignedTranslationResult.Success -> {
-            val translatedBlocks =
-              blocks.mapIndexed { blockIdx, sourceBlock ->
-                val blockSegmentResults =
-                  result.results
-                    .zip(segmentRefs)
-                    .filter { it.second.blockIdx == blockIdx }
-
-                val translatedText = StringBuilder()
-                val segmentAlignments = mutableListOf<Pair<TranslationSegment, Array<TokenAlignment>>>()
-                val translatedSegments = mutableListOf<Pair<TranslationSegment, String>>()
-
-                for ((translation, ref) in blockSegmentResults) {
-                  translatedSegments.add(ref.segment to translation.target)
-                  segmentAlignments.add(ref.segment to translation.alignments)
-                  translatedText.append(translation.target)
-                }
-
-                val styleSpans = mapStylesToSegmentedTranslation(sourceBlock, segmentAlignments, translatedSegments)
-                TranslatedStyledBlock(translatedText.toString(), sourceBlock.bounds, styleSpans)
-              }
+        ) {
+          is StructuredFragmentTranslationOutput.Success -> {
             ensureActive()
-            overlayRenderer.renderStyledBlocks(overlayContainer, translatedBlocks, screenshot, systemBarTop)
+            overlayRenderer.renderStyledBlocks(overlayContainer, result.blocks, systemBarTop)
             processing = false
             showLoading(false)
             setOcrButtonVisible(true)
             hideStatus()
           }
-          is BatchAlignedTranslationResult.Error -> {
+          is StructuredFragmentTranslationOutput.NothingToTranslate -> {
             processing = false
             showLoading(false)
             setOcrButtonVisible(screenshot != null)
-            showStatus("Translation error")
+            showStatus(
+              when (result.reason) {
+                dev.davidv.translator.NothingReason.ALREADY_TARGET_LANGUAGE -> "Already in ${targetLanguage.displayName}"
+                dev.davidv.translator.NothingReason.COULD_NOT_DETECT -> "Could not detect language — set source language manually"
+                dev.davidv.translator.NothingReason.NO_TRANSLATABLE_TEXT -> "No visible structured text found. Try OCR."
+              },
+            )
+          }
+          is StructuredFragmentTranslationOutput.Error -> {
+            processing = false
+            showLoading(false)
+            setOcrButtonVisible(screenshot != null)
+            showStatus(result.message)
           }
         }
       }

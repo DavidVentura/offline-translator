@@ -1,8 +1,10 @@
 use std::path::Path;
 
+use crate::BergamotEngine;
+use crate::catalog::CatalogSnapshot;
+#[cfg(test)]
 use crate::catalog::{
-    CatalogSnapshot, LanguageCatalog, PackInstallChecker, PackResolver,
-    has_translation_direction_installed, is_pack_installed,
+    LanguageCatalog, PackInstallChecker, PackResolver, has_translation_direction_installed,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -27,7 +29,7 @@ pub struct TranslationWithAlignment {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TranslationStep {
+pub(crate) struct TranslationStep {
     pub from_code: String,
     pub to_code: String,
     pub cache_key: String,
@@ -35,14 +37,8 @@ pub struct TranslationStep {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct TranslationPlan {
+pub(crate) struct TranslationPlan {
     pub steps: Vec<TranslationStep>,
-}
-
-impl TranslationPlan {
-    pub fn is_pivot(&self) -> bool {
-        self.steps.len() == 2
-    }
 }
 
 fn absolute_install_path(base_dir: &str, install_path: &str) -> String {
@@ -79,7 +75,8 @@ fn cache_key(from_code: &str, to_code: &str) -> String {
     format!("{from_code}{to_code}")
 }
 
-pub fn resolve_translation_plan<C>(
+#[cfg(test)]
+pub(crate) fn resolve_translation_plan<C>(
     catalog: &LanguageCatalog,
     base_dir: &str,
     from_code: &str,
@@ -111,46 +108,7 @@ where
     Some(TranslationPlan { steps })
 }
 
-pub fn resolve_translation_plan_with_checker<C>(
-    catalog: &LanguageCatalog,
-    base_dir: &str,
-    from_code: &str,
-    to_code: &str,
-    install_checker: &C,
-) -> Option<TranslationPlan>
-where
-    C: PackInstallChecker,
-{
-    if from_code == to_code {
-        return Some(TranslationPlan::default());
-    }
-
-    let step = |from: &str, to: &str| {
-        let pack_id = catalog.translation_pack_id(from, to)?;
-        if !is_pack_installed(catalog, install_checker, &pack_id) {
-            return None;
-        }
-        let direction = catalog.translation_direction(from, to)?;
-        Some(TranslationStep {
-            from_code: from.to_string(),
-            to_code: to.to_string(),
-            cache_key: cache_key(from, to),
-            config: build_bergamot_config(base_dir, &direction),
-        })
-    };
-
-    let steps = if from_code == "en" {
-        vec![step("en", to_code)?]
-    } else if to_code == "en" {
-        vec![step(from_code, "en")?]
-    } else {
-        vec![step(from_code, "en")?, step("en", to_code)?]
-    };
-
-    Some(TranslationPlan { steps })
-}
-
-pub fn resolve_translation_plan_in_snapshot(
+pub(crate) fn resolve_translation_plan_in_snapshot(
     snapshot: &CatalogSnapshot,
     from_code: &str,
     to_code: &str,
@@ -185,6 +143,67 @@ pub fn resolve_translation_plan_in_snapshot(
     Some(TranslationPlan { steps })
 }
 
+pub(crate) fn execute_translation_plan(
+    engine: &mut BergamotEngine,
+    plan: &TranslationPlan,
+    texts: &[String],
+) -> Result<Vec<String>, String> {
+    ensure_plan_loaded(engine, plan)?;
+    match plan.steps.as_slice() {
+        [step] => engine.translate_multiple(texts, &step.cache_key),
+        [first, second] => engine.pivot_multiple(&first.cache_key, &second.cache_key, texts),
+        _ => Ok(Vec::new()),
+    }
+}
+
+pub(crate) fn execute_translation_plan_with_alignment(
+    engine: &mut BergamotEngine,
+    plan: &TranslationPlan,
+    texts: &[String],
+) -> Result<Vec<TranslationWithAlignment>, String> {
+    ensure_plan_loaded(engine, plan)?;
+    match plan.steps.as_slice() {
+        [step] => engine.translate_multiple_with_alignment(texts, &step.cache_key),
+        [first, second] => {
+            engine.pivot_multiple_with_alignment(&first.cache_key, &second.cache_key, texts)
+        }
+        _ => Ok(Vec::new()),
+    }
+}
+
+pub fn translate_texts_in_snapshot(
+    engine: &mut BergamotEngine,
+    snapshot: &CatalogSnapshot,
+    from_code: &str,
+    to_code: &str,
+    texts: &[String],
+) -> Option<Result<Vec<String>, String>> {
+    let plan = resolve_translation_plan_in_snapshot(snapshot, from_code, to_code)?;
+    Some(execute_translation_plan(engine, &plan, texts))
+}
+
+pub fn translate_texts_with_alignment_in_snapshot(
+    engine: &mut BergamotEngine,
+    snapshot: &CatalogSnapshot,
+    from_code: &str,
+    to_code: &str,
+    texts: &[String],
+) -> Option<Result<Vec<TranslationWithAlignment>, String>> {
+    let plan = resolve_translation_plan_in_snapshot(snapshot, from_code, to_code)?;
+    Some(execute_translation_plan_with_alignment(engine, &plan, texts))
+}
+
+fn ensure_plan_loaded(
+    engine: &mut BergamotEngine,
+    plan: &TranslationPlan,
+) -> Result<(), String> {
+    for step in &plan.steps {
+        engine.load_model_into_cache(&step.config, &step.cache_key)?;
+    }
+    Ok(())
+}
+
+#[cfg(test)]
 fn resolve_translation_step<C>(
     catalog: &LanguageCatalog,
     base_dir: &str,

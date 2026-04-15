@@ -24,29 +24,14 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.util.Log
 import androidx.exifinterface.media.ExifInterface
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.math.max
 
 class ImageProcessor(
   private val context: Context,
-  private val ocrService: OCRService,
+  private val filePathManager: FilePathManager,
 ) {
-  suspend fun processImage(
-    bitmap: Bitmap,
-    fromLang: Language,
-    minConfidence: Int = 75,
-    readingOrder: ReadingOrder = ReadingOrder.LEFT_TO_RIGHT,
-  ): ProcessedImage =
-    withContext(Dispatchers.IO) {
-      val textBlocks = ocrService.extractText(bitmap, fromLang, minConfidence, readingOrder)
-
-      ProcessedImage(
-        bitmap = bitmap,
-        textBlocks = textBlocks,
-      )
-    }
+  fun loadCatalog(): LanguageCatalog? = filePathManager.loadCatalog()
 
   fun loadBitmapFromUri(uri: Uri): Bitmap =
     context.contentResolver.openInputStream(uri)?.use { inputStream ->
@@ -123,8 +108,3 @@ class ImageProcessor(
     }
   }
 }
-
-data class ProcessedImage(
-  val bitmap: Bitmap,
-  val textBlocks: Array<TextBlock>,
-)

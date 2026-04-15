@@ -12,26 +12,19 @@ import android.util.Log
 import android.view.Display
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
-import dev.davidv.translator.BatchAlignedTranslationResult
-import dev.davidv.translator.BatchTextTranslator
 import dev.davidv.translator.FilePathManager
 import dev.davidv.translator.ImageProcessor
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageDetector
 import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.LanguageStateManager
-import dev.davidv.translator.OCRService
 import dev.davidv.translator.OverlayTextTranslationHelper
 import dev.davidv.translator.ReadingOrder
 import dev.davidv.translator.SettingsManager
 import dev.davidv.translator.SpeechService
-import dev.davidv.translator.TokenAlignment
-import dev.davidv.translator.TranslatedStyledBlock
+import dev.davidv.translator.StructuredFragmentTranslationOutput
 import dev.davidv.translator.TranslationCoordinator
-import dev.davidv.translator.TranslationSegment
 import dev.davidv.translator.TranslationService
-import dev.davidv.translator.clusterFragmentsIntoBlocks
-import dev.davidv.translator.mapStylesToSegmentedTranslation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -48,7 +41,6 @@ class TranslatorAccessibilityService : AccessibilityService() {
   private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
   private lateinit var settingsManager: SettingsManager
-  private lateinit var ocrService: OCRService
   private lateinit var imageProcessor: ImageProcessor
   private lateinit var translationCoordinator: TranslationCoordinator
   private var ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT
@@ -87,8 +79,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
     val filePathManager = FilePathManager(this, settingsManager.settings)
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
     val languageDetector = LanguageDetector(langStateManager::languageByCode)
-    ocrService = OCRService(filePathManager)
-    imageProcessor = ImageProcessor(this, ocrService)
+    imageProcessor = ImageProcessor(this, filePathManager)
 
     serviceScope.launch {
       langStateManager.catalog.collect { catalog ->
@@ -100,7 +91,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
         overlayTextTranslationHelper =
           OverlayTextTranslationHelper(
             settingsManager = settingsManager,
-            batchTextTranslator = BatchTextTranslator(translationCoordinator),
+            translationService = translationService,
             langStateManager = langStateManager,
             languageMetadataManager = LanguageMetadataManager(this@TranslatorAccessibilityService, languagesFlow),
           )
@@ -144,9 +135,6 @@ class TranslatorAccessibilityService : AccessibilityService() {
     ui.removeFloatingButton()
     ui.dismissMenu()
     ui.cleanup()
-    if (this::ocrService.isInitialized) {
-      ocrService.cleanup()
-    }
     serviceScope.cancel()
     super.onDestroy()
   }
@@ -267,10 +255,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
       return
     }
 
-    val blocks = clusterFragmentsIntoBlocks(fragments)
-    if (blocks.isEmpty()) return
-
-    withOptionalScreenshot { screenshot -> translateAndShowBlocks(blocks, screenshot) }
+    withOptionalScreenshot { screenshot -> translateAndShowBlocks(fragments, screenshot) }
   }
 
   fun handleRegionCapture(region: Rect) {
@@ -403,23 +388,11 @@ class TranslatorAccessibilityService : AccessibilityService() {
       return
     }
 
-    val blocks = clusterFragmentsIntoBlocks(fragments)
-    Log.d(tag, "Clustered into ${blocks.size} blocks")
-    for ((idx, b) in blocks.withIndex()) {
-      Log.d(tag, "  Block[$idx] ${b.bounds.width()}x${b.bounds.height()} text='${b.text.take(60)}'")
-    }
-    if (blocks.isEmpty()) return
-
-    val unionBounds = Rect(blocks.first().bounds.left, blocks.first().bounds.top, blocks.first().bounds.right, blocks.first().bounds.bottom)
-    for (block in blocks.drop(1)) {
-      unionBounds.union(block.bounds.left, block.bounds.top, block.bounds.right, block.bounds.bottom)
-    }
-
-    withOptionalScreenshot { screenshot -> translateAndShowBlocks(blocks, screenshot) }
+    withOptionalScreenshot { screenshot -> translateAndShowBlocks(fragments, screenshot) }
   }
 
   private fun translateAndShowBlocks(
-    blocks: List<dev.davidv.translator.TranslatableBlock>,
+    fragments: List<dev.davidv.translator.StyledFragment>,
     screenshot: Bitmap?,
   ) {
     ui.removeTranslationOverlays()
@@ -427,58 +400,35 @@ class TranslatorAccessibilityService : AccessibilityService() {
 
     serviceScope.launch {
       val targetLanguage = overlayTextTranslationHelper.awaitTargetLanguage(forcedTargetLanguage)
-      val combinedText = blocks.joinToString(" ") { it.text }
       val availableLanguages = overlayTextTranslationHelper.awaitAvailableLanguages(isSource = false)
-      val from = forcedSourceLanguage ?: translationCoordinator.detectLanguageRobust(combinedText, null, availableLanguages)
-      if (from == null) {
-        showOverlayTranslationMessage("Could not detect language — set source language manually")
-        return@launch
-      }
 
-      if (from == targetLanguage) {
-        showOverlayTranslationMessage("Already in ${targetLanguage.displayName}")
-        return@launch
-      }
-
-      val allSegmentTexts = mutableListOf<String>()
-
-      data class SegmentRef(val blockIdx: Int, val segment: TranslationSegment)
-      val segmentRefs = mutableListOf<SegmentRef>()
-      for ((blockIdx, block) in blocks.withIndex()) {
-        for (segment in block.segments) {
-          allSegmentTexts.add(block.text.substring(segment.start, segment.end))
-          segmentRefs.add(SegmentRef(blockIdx, segment))
-        }
-      }
-
-      when (val result = translationCoordinator.translateTextsWithAlignment(from, targetLanguage, allSegmentTexts.toTypedArray())) {
-        is BatchAlignedTranslationResult.Success -> {
-          val translatedBlocks =
-            blocks.mapIndexed { blockIdx, sourceBlock ->
-              val blockSegmentResults =
-                result.results
-                  .zip(segmentRefs)
-                  .filter { it.second.blockIdx == blockIdx }
-
-              val translatedText = StringBuilder()
-              val segmentAlignments = mutableListOf<Pair<TranslationSegment, Array<TokenAlignment>>>()
-              val translatedSegments = mutableListOf<Pair<TranslationSegment, String>>()
-
-              for ((translation, ref) in blockSegmentResults) {
-                translatedSegments.add(ref.segment to translation.target)
-                segmentAlignments.add(ref.segment to translation.alignments)
-                translatedText.append(translation.target)
-              }
-
-              val styleSpans = mapStylesToSegmentedTranslation(sourceBlock, segmentAlignments, translatedSegments)
-              TranslatedStyledBlock(translatedText.toString(), sourceBlock.bounds, styleSpans)
-            }
+      when (
+        val result =
+          translationCoordinator.translateStructuredFragments(
+            fragments = fragments,
+            forcedSourceLanguage = forcedSourceLanguage,
+            targetLanguage = targetLanguage,
+            availableLanguages = availableLanguages,
+            screenshot = screenshot,
+          )
+      ) {
+        is StructuredFragmentTranslationOutput.Success -> {
           ui.removeTranslationOverlays()
           ui.setOcrButtonVisible(true)
           ui.setOcrButtonActive(false)
-          ui.showStyledTranslationOverlays(translatedBlocks, screenshot)
+          ui.showStyledTranslationOverlays(result.blocks)
         }
-        is BatchAlignedTranslationResult.Error -> {
+
+        is StructuredFragmentTranslationOutput.NothingToTranslate ->
+          showOverlayTranslationMessage(
+            when (result.reason) {
+              dev.davidv.translator.NothingReason.ALREADY_TARGET_LANGUAGE -> "Already in ${targetLanguage.displayName}"
+              dev.davidv.translator.NothingReason.COULD_NOT_DETECT -> "Could not detect language — set source language manually"
+              dev.davidv.translator.NothingReason.NO_TRANSLATABLE_TEXT -> "No translatable visible text found"
+            },
+          )
+
+        is StructuredFragmentTranslationOutput.Error -> {
           Log.e(tag, "Translation error: ${result.message}")
           ui.removeTranslationOverlays()
           ui.setOcrButtonVisible(false)

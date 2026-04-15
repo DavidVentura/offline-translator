@@ -1,7 +1,6 @@
 package dev.davidv.translator.assistantOverlay
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -18,12 +17,8 @@ import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
-import dev.davidv.translator.OverlayColors
 import dev.davidv.translator.SettingsManager
-import dev.davidv.translator.TextStyle
 import dev.davidv.translator.TranslatedStyledBlock
-import dev.davidv.translator.getOverlayColors
-import dev.davidv.translator.Rect as TranslatorRect
 
 class OverlayRenderer(
   private val context: Context,
@@ -37,13 +32,12 @@ class OverlayRenderer(
   fun renderStyledBlocks(
     container: FrameLayout,
     blocks: List<TranslatedStyledBlock>,
-    screenshot: Bitmap?,
     systemBarTop: Int,
   ) {
     if (debugLoggingEnabled) {
       Log.d(
         tag,
-        "Rendering ${blocks.size} styled blocks with screenshot=${screenshot != null} backgroundMode=${settingsManager.settings.value.backgroundMode}",
+        "Rendering ${blocks.size} styled blocks with native colors",
       )
     }
     container.removeAllViews()
@@ -54,14 +48,13 @@ class OverlayRenderer(
       val adjustedBottom = block.bounds.bottom - systemBarTop
       val visibleHeight = minOf(adjustedBottom, screenHeight) - maxOf(adjustedTop, 0)
       if (visibleHeight < block.bounds.height() / 2) continue
-      addStyledOverlay(container, block, screenshot, systemBarTop)
+      addStyledOverlay(container, block, systemBarTop)
     }
   }
 
   private fun addStyledOverlay(
     container: FrameLayout,
     block: TranslatedStyledBlock,
-    screenshot: Bitmap?,
     systemBarTop: Int,
   ) {
     val screenWidth = context.resources.displayMetrics.widthPixels
@@ -72,7 +65,11 @@ class OverlayRenderer(
     val targetHeight = block.bounds.height().coerceAtLeast(1)
     if (width <= 0) return
 
-    val colors = resolveBlockColors(block.bounds, block.styleSpans.firstOrNull()?.style, screenshot)
+    val colors =
+      dev.davidv.translator.OverlayColors(
+        background = block.backgroundArgb,
+        foreground = block.foregroundArgb,
+      )
     val ssb = SpannableStringBuilder(block.text)
 
     ssb.setSpan(ForegroundColorSpan(colors.foreground), 0, ssb.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -165,32 +162,6 @@ class OverlayRenderer(
           topMargin = actualTop
         }
     container.addView(overlayFrame, params)
-  }
-
-  private fun resolveBlockColors(
-    bounds: TranslatorRect,
-    firstStyle: TextStyle?,
-    screenshot: Bitmap?,
-  ): OverlayColors {
-    val sampledColors =
-      screenshot?.let {
-        getOverlayColors(it, bounds, settingsManager.settings.value.backgroundMode)
-      }
-
-    val styleFg = normalizeStyleColor(firstStyle?.textColor)
-    val styleBg = if (firstStyle?.hasRealBackground() == true) firstStyle.bgColor else null
-    if (styleBg != null) {
-      return OverlayColors(styleBg, styleFg ?: sampledColors?.foreground ?: Color.BLACK)
-    }
-    if (sampledColors != null) {
-      return OverlayColors(sampledColors.background, styleFg ?: sampledColors.foreground)
-    }
-    if (styleFg != null) {
-      val lum = (Color.red(styleFg) * 299 + Color.green(styleFg) * 587 + Color.blue(styleFg) * 114) / 255000f
-      val bg = if (lum > 0.5f) Color.BLACK else Color.WHITE
-      return OverlayColors(bg, styleFg)
-    }
-    return OverlayColors(Color.WHITE, Color.BLACK)
   }
 
   private fun normalizeStyleColor(color: Int?): Int? {

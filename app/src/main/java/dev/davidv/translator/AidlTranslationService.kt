@@ -18,7 +18,6 @@ class AidlTranslationService : Service() {
   private lateinit var settingsManager: SettingsManager
   private lateinit var translationCoordinator: TranslationCoordinator
   private lateinit var langStateManager: LanguageStateManager
-  private lateinit var ocrService: OCRService
   private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
   override fun onCreate() {
@@ -27,8 +26,7 @@ class AidlTranslationService : Service() {
     val filePathManager = FilePathManager(this, settingsManager.settings)
     langStateManager = LanguageStateManager(serviceScope, filePathManager, null)
     val languageDetector = LanguageDetector(langStateManager::languageByCode)
-    ocrService = OCRService(filePathManager)
-    val imageProcessor = ImageProcessor(this, ocrService)
+    val imageProcessor = ImageProcessor(this, filePathManager)
 
     serviceScope.launch {
       langStateManager.catalog.collect { catalog ->
@@ -144,9 +142,6 @@ class AidlTranslationService : Service() {
 
   override fun onDestroy() {
     Log.d(tag, "onDestroy")
-    if (this::ocrService.isInitialized) {
-      ocrService.cleanup()
-    }
     serviceScope.cancel()
     super.onDestroy()
   }
