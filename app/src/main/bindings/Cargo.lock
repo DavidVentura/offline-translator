@@ -2156,6 +2156,7 @@ dependencies = [
 [[package]]
 name = "translator"
 version = "0.1.0"
+source = "git+https://github.com/DavidVentura/translator-rs.git#c7d6c3c09ba01e119fc6dc17f7168a2f234fa2b5"
 dependencies = [
  "bergamot-sys",
  "cld2",
