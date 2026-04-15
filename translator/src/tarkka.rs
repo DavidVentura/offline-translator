@@ -2,16 +2,8 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::sync::{Mutex, OnceLock};
 
-use tarkka::WordWithTaggedEntries;
 use tarkka::reader::DictionaryReader;
-
-use crate::logging::android_log_with_level;
-
-macro_rules! android_log {
-    ($msg:expr) => {
-        android_log_with_level(crate::logging::ANDROID_LOG_DEBUG, "TarkkaNative", &$msg);
-    };
-}
+pub use tarkka::WordWithTaggedEntries;
 
 static DICTIONARY_READERS: OnceLock<Mutex<HashMap<String, DictionaryReader<File>>>> =
     OnceLock::new();
@@ -27,7 +19,7 @@ where
     f(&mut readers)
 }
 
-pub(crate) fn lookup_dictionary(
+pub fn lookup_dictionary(
     path: &str,
     word: &str,
 ) -> Result<Option<WordWithTaggedEntries>, String> {
@@ -37,11 +29,11 @@ pub(crate) fn lookup_dictionary(
                 .map_err(|err| format!("failed to open dictionary file {path}: {err}"))?;
             let reader = DictionaryReader::open(file)
                 .map_err(|err| format!("failed to open dictionary reader {path}: {err}"))?;
-            android_log!(format!(
+            eprintln!(
                 "Dict version {}, timestamp {:?}",
                 reader.version(),
                 reader.created_at(),
-            ));
+            );
             readers.insert(path.to_string(), reader);
         }
         let reader = readers
@@ -53,7 +45,7 @@ pub(crate) fn lookup_dictionary(
     })
 }
 
-pub(crate) fn close_dictionary(path: &str) -> Result<(), String> {
+pub fn close_dictionary(path: &str) -> Result<(), String> {
     with_reader_cache(|readers| {
         readers.remove(path);
         Ok(())

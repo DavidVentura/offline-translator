@@ -16,7 +16,7 @@ where
     f(&mut cache)
 }
 
-pub(crate) fn transliterate_with_path(
+pub fn transliterate_with_path(
     path: &str,
     text: &str,
     spaced: bool,

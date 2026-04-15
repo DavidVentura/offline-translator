@@ -4,12 +4,11 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-default = ["android", "dictionary", "mucab", "tesseract", "tts"]
-android = ["dep:jni"]
-dictionary = ["dep:tarkka"]
-mucab = ["dep:mucab"]
-tesseract = ["dep:tesseract"]
-tts = ["dep:piper-rs"]
+default = ["dictionary", "mucab", "tesseract", "tts"]
+dictionary = ["translator/dictionary"]
+mucab = ["translator/mucab"]
+tesseract = ["translator/tesseract"]
+tts = ["translator/tts"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -17,28 +16,10 @@ name = "bindings"
 path = "src/lib.rs"
 
 [dependencies]
-translator = { path = "../../../../translator", features = ["uniffi"] }
+translator = { path = "../../../../translator", default-features = false, features = ["uniffi", "transliterate"] }
 uniffi = { version = "0.29", features = ["cli"] }
 serde_json = "1"
 thiserror = "2"
-jni = { version = "0.21.1", optional = true }
-tarkka = { git = "https://github.com/DavidVentura/tarkka", optional = true }
-tesseract = { git = "https://github.com/DavidVentura/tesseract-rs", optional = true }
-mucab = { git = "https://github.com/DavidVentura/mucab", optional = true }
-#piper-rs = { path = "~/git/piper-rs", optional = true, features = ["japanese"] }
-piper-rs = { git = "https://github.com/DavidVentura/piper-rs", optional = true, features = ["japanese", "fst-normalization"] }
-
-
-icu_experimental = { version = "0.4", features = ["compiled_data"] }
-icu = { version = "2.1" }
-
-[patch.crates-io]
-leptonica-sys = { git = "https://github.com/DavidVentura/leptonica-sys" }
-tesseract-sys = { git = "https://github.com/DavidVentura/tesseract-sys" }
-tesseract-plumbing = { git = "https://github.com/DavidVentura/tesseract-plumbing" }
-
-[patch."https://github.com/DavidVentura/tesseract-rs"]
-tesseract-sys = { git = "https://github.com/DavidVentura/tesseract-sys" }
 
 [[bin]]
 name = "uniffi-bindgen"

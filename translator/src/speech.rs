@@ -7,35 +7,21 @@ use piper_rs::{
     Backend, BoundaryAfter, CoquiVitsModel, KokoroModel, MmsModel,
     PhonemeChunk as PiperPhonemeChunk, PiperModel, SherpaVitsModel,
 };
-use translator::{SpeechChunk, plan_speech_chunks};
+use crate::{
+    PcmAudio, PhonemeChunk, SpeechChunk, SpeechChunkBoundary, TtsVoiceOption, plan_speech_chunks,
+};
 
-use crate::logging::{ANDROID_LOG_DEBUG, ANDROID_LOG_ERROR, android_log_with_level};
-
-const TAG: &str = "SpeechNative";
 const ESPEAK_DATA_ENV: &str = "PIPER_ESPEAKNG_DATA_DIRECTORY";
 
 fn log_debug(message: impl AsRef<str>) {
-    android_log_with_level(ANDROID_LOG_DEBUG, TAG, message.as_ref());
+    let _ = message.as_ref();
 }
 
 fn log_error(message: impl AsRef<str>) {
-    android_log_with_level(ANDROID_LOG_ERROR, TAG, message.as_ref());
+    eprintln!("{}", message.as_ref());
 }
 
-static ESPEAK_DATA_DIR: OnceLock<String> = OnceLock::new();
 static MODEL_CACHE: OnceLock<Mutex<Option<CachedSpeechModel>>> = OnceLock::new();
-
-pub struct PcmAudio {
-    pub sample_rate: i32,
-    pub pcm_samples: Vec<i16>,
-}
-
-#[derive(Clone)]
-pub struct TtsVoiceInfo {
-    pub name: String,
-    pub speaker_id: i64,
-    pub display_name: String,
-}
 
 fn audio_duration_ms(sample_count: usize, sample_rate: u32) -> u64 {
     if sample_rate == 0 {
@@ -84,14 +70,6 @@ fn summarize_phoneme_chunk_sizes(chunks: &[PiperPhonemeChunk]) -> String {
         format!("{preview}, ...")
     } else {
         preview
-    }
-}
-
-fn boundary_after_code(boundary_after: BoundaryAfter) -> i32 {
-    match boundary_after {
-        BoundaryAfter::None => 0,
-        BoundaryAfter::Sentence => 1,
-        BoundaryAfter::Paragraph => 2,
     }
 }
 
@@ -208,7 +186,7 @@ fn visible_voices(
     engine: &str,
     language_code: &str,
     voices: &[(String, i64)],
-) -> Vec<TtsVoiceInfo> {
+) -> Vec<TtsVoiceOption> {
     let filtered = if engine == "kokoro" {
         let prefixes = kokoro_voice_prefixes(language_code);
         let matching = voices
@@ -227,7 +205,7 @@ fn visible_voices(
 
     filtered
         .into_iter()
-        .map(|(name, speaker_id)| TtsVoiceInfo {
+        .map(|(name, speaker_id)| TtsVoiceOption {
             display_name: format_voice_display_name(&name),
             name,
             speaker_id,
@@ -457,22 +435,12 @@ fn configure_support_data_root(support_data_root: Option<&str>) {
         "eSpeak data probe root={support_data_root} direct_layout_ok={direct_layout_ok} nested_layout_ok={nested_layout_ok}"
     ));
 
-    match ESPEAK_DATA_DIR.set(support_data_root.to_owned()) {
-        Ok(()) => {
-            unsafe {
-                std::env::set_var(ESPEAK_DATA_ENV, support_data_root);
-            }
-            log_debug(format!(
-                "Configured eSpeak data directory at {support_data_root}"
-            ));
-        }
-        Err(existing) if existing == support_data_root => {}
-        Err(existing) => {
-            log_error(format!(
-                "Ignoring alternate eSpeak data directory {support_data_root}; already using {existing}"
-            ));
-        }
+    unsafe {
+        std::env::set_var(ESPEAK_DATA_ENV, support_data_root);
     }
+    log_debug(format!(
+        "Configured eSpeak data directory at {support_data_root}"
+    ));
 }
 
 fn phonemize(model: &mut SpeechModel, text: &str) -> Result<String, String> {
@@ -677,7 +645,7 @@ pub fn list_voices(
     aux_path: &str,
     support_data_root: Option<&str>,
     language_code: &str,
-) -> Result<Vec<TtsVoiceInfo>, String> {
+) -> Result<Vec<TtsVoiceOption>, String> {
     configure_support_data_root(support_data_root);
     let support_data_root = support_data_root.unwrap_or_default();
 
@@ -741,13 +709,13 @@ pub fn phonemize_chunks(
     )
 }
 
-fn to_translator_phoneme_chunk(chunk: PiperPhonemeChunk) -> translator::PhonemeChunk {
-    translator::PhonemeChunk {
+fn to_phoneme_chunk(chunk: PiperPhonemeChunk) -> PhonemeChunk {
+    PhonemeChunk {
         content: chunk.phonemes,
         boundary_after: match chunk.boundary_after {
-            BoundaryAfter::None => translator::SpeechChunkBoundary::None,
-            BoundaryAfter::Sentence => translator::SpeechChunkBoundary::Sentence,
-            BoundaryAfter::Paragraph => translator::SpeechChunkBoundary::Paragraph,
+            BoundaryAfter::None => SpeechChunkBoundary::None,
+            BoundaryAfter::Sentence => SpeechChunkBoundary::Sentence,
+            BoundaryAfter::Paragraph => SpeechChunkBoundary::Paragraph,
         },
     }
 }
@@ -772,7 +740,7 @@ pub fn plan_speech_chunks_for_text(
         .map(|chunks| {
             chunks
                 .into_iter()
-                .map(to_translator_phoneme_chunk)
+                .map(to_phoneme_chunk)
                 .collect::<Vec<_>>()
         })
     })

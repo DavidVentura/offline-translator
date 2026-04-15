@@ -1,37 +1,17 @@
 use tesseract::plumbing::{BoundingRect, PageIteratorLevel};
-use tesseract::{PageSegMode, Tesseract as TesseractEngine};
+pub use tesseract::PageSegMode;
+use tesseract::Tesseract as TesseractEngine;
 
-#[cfg(feature = "android")]
-use crate::logging::{android_log_debug, android_log_error, android_log_info};
-
-#[cfg(not(feature = "android"))]
-macro_rules! android_log_debug {
-    ($value:expr) => {
-        let _ = &$value;
-    };
-    ($fmt:literal $(, $arg:expr)*) => {
-        let _ = format!($fmt $(, $arg)*);
-    };
+fn log_debug(message: impl AsRef<str>) {
+    let _ = message.as_ref();
 }
 
-#[cfg(not(feature = "android"))]
-macro_rules! android_log_error {
-    ($value:expr) => {
-        let _ = &$value;
-    };
-    ($fmt:literal $(, $arg:expr)*) => {
-        let _ = format!($fmt $(, $arg)*);
-    };
+fn log_info(message: impl AsRef<str>) {
+    let _ = message.as_ref();
 }
 
-#[cfg(not(feature = "android"))]
-macro_rules! android_log_info {
-    ($value:expr) => {
-        let _ = &$value;
-    };
-    ($fmt:literal $(, $arg:expr)*) => {
-        let _ = format!($fmt $(, $arg)*);
-    };
+fn log_error(message: impl AsRef<str>) {
+    eprintln!("{}", message.as_ref());
 }
 
 #[derive(Debug, Clone)]
@@ -53,23 +33,23 @@ impl TesseractWrapper {
         datapath: Option<&str>,
         language: Option<&str>,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        android_log_info!(format!(
+        log_info(format!(
             "TesseractWrapper::new called with datapath: {:?}, language: {:?}",
             datapath, language
         ));
 
         if let Some(tessdata_path) = datapath {
-            android_log_info!(format!("Checking tessdata directory: {}", tessdata_path));
+            log_info(format!("Checking tessdata directory: {}", tessdata_path));
 
             match std::fs::read_dir(tessdata_path) {
                 Ok(entries) => {
-                    android_log_info!("tessdata directory contents:");
+                    log_info("tessdata directory contents:");
                     for entry in entries.flatten() {
-                        android_log_info!(format!("  - {}", entry.file_name().to_string_lossy()));
+                        log_info(format!("  - {}", entry.file_name().to_string_lossy()));
                     }
                 }
                 Err(e) => {
-                    android_log_error!(format!(
+                    log_error(format!(
                         "Failed to read tessdata directory {}: {:?}",
                         tessdata_path, e
                     ));
@@ -81,14 +61,14 @@ impl TesseractWrapper {
                     let traineddata_file = format!("{}/{}.traineddata", tessdata_path, language_code);
                     match std::fs::metadata(&traineddata_file) {
                         Ok(metadata) => {
-                            android_log_info!(format!(
+                            log_info(format!(
                                 "Found {}.traineddata, size: {} bytes",
                                 language_code,
                                 metadata.len()
                             ));
                         }
                         Err(e) => {
-                            android_log_error!(format!(
+                            log_error(format!(
                                 "Missing or inaccessible {}.traineddata: {:?}",
                                 language_code, e
                             ));
@@ -100,13 +80,13 @@ impl TesseractWrapper {
 
         match TesseractEngine::new(datapath, language) {
             Ok(engine) => {
-                android_log_info!("TesseractEngine created successfully");
+                log_info("TesseractEngine created successfully");
                 Ok(TesseractWrapper {
                     engine: Some(engine),
                 })
             }
             Err(e) => {
-                android_log_error!(format!("TesseractEngine::new failed: {:?}", e));
+                log_error(format!("TesseractEngine::new failed: {:?}", e));
                 Err(Box::new(e))
             }
         }
@@ -120,7 +100,7 @@ impl TesseractWrapper {
         bytes_per_pixel: i32,
         bytes_per_line: i32,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        android_log_debug!(format!(
+        log_debug(format!(
             "set_frame called: {}x{}, bpp={}, bpl={}, data_len={}",
             width,
             height,
@@ -132,16 +112,16 @@ impl TesseractWrapper {
         if let Some(engine) = self.engine.take() {
             match engine.set_frame(frame_data, width, height, bytes_per_pixel, bytes_per_line) {
                 Ok(new_engine) => {
-                    android_log_debug!("set_frame completed successfully");
+                    log_debug("set_frame completed successfully");
                     self.engine = Some(new_engine);
                 }
                 Err(e) => {
-                    android_log_error!(format!("set_frame failed: {:?}", e));
+                    log_error(format!("set_frame failed: {:?}", e));
                     return Err(Box::new(e));
                 }
             }
         } else {
-            android_log_error!("set_frame called but engine is None");
+            log_error("set_frame called but engine is None");
         }
         Ok(())
     }
@@ -153,24 +133,24 @@ impl TesseractWrapper {
     }
 
     pub fn get_word_boxes(&mut self) -> Result<Vec<DetectedWord>, Box<dyn std::error::Error>> {
-        android_log_debug!("get_word_boxes called");
+        log_debug("get_word_boxes called");
         let mut words = Vec::new();
 
         if let Some(engine) = self.engine.take() {
-            android_log_debug!("Starting OCR recognition...");
+            log_debug("Starting OCR recognition...");
             let mut recognized_engine = match engine.recognize() {
                 Ok(engine) => {
-                    android_log_debug!("OCR recognition completed successfully");
+                    log_debug("OCR recognition completed successfully");
                     engine
                 }
                 Err(e) => {
-                    android_log_error!(format!("OCR recognition failed: {:?}", e));
+                    log_error(format!("OCR recognition failed: {:?}", e));
                     return Err(Box::new(e));
                 }
             };
 
             if let Some(mut result_iter) = recognized_engine.get_iterator() {
-                android_log_debug!("Got result iterator, processing words...");
+                log_debug("Got result iterator, processing words...");
                 let mut word_iter = result_iter.words();
                 let mut word_count = 0;
 
@@ -194,17 +174,17 @@ impl TesseractWrapper {
                         word_count += 1;
                     }
                 }
-                android_log_debug!(format!("Processed {} words", word_count));
+                log_debug(format!("Processed {} words", word_count));
             } else {
-                android_log_error!("Failed to get result iterator from recognized engine");
+                log_error("Failed to get result iterator from recognized engine");
             }
 
             self.engine = Some(recognized_engine);
         } else {
-            android_log_error!("get_word_boxes called but engine is None");
+            log_error("get_word_boxes called but engine is None");
         }
 
-        android_log_debug!(format!("get_word_boxes returning {} words", words.len()));
+        log_debug(format!("get_word_boxes returning {} words", words.len()));
         Ok(words)
     }
 }

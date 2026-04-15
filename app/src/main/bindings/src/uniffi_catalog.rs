@@ -4,18 +4,18 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, OnceLock};
 
-#[cfg(feature = "dictionary")]
-use crate::tarkka::{close_dictionary, lookup_dictionary};
-#[cfg(feature = "tts")]
-use crate::speech::{clear_cached_model, list_voices, plan_speech_chunks_for_text, synthesize_pcm};
-#[cfg(feature = "tesseract")]
-use crate::tesseract::TesseractWrapper;
 use serde_json::Value;
 #[cfg(feature = "tesseract")]
-use tesseract::PageSegMode;
+use translator::PageSegMode;
 use thiserror::Error;
 #[cfg(feature = "tesseract")]
 use translator::build_text_blocks;
+#[cfg(feature = "dictionary")]
+use translator::{close_dictionary, lookup_dictionary};
+#[cfg(feature = "tts")]
+use translator::{clear_cached_model, list_voices, plan_speech_chunks_for_text, synthesize_pcm};
+#[cfg(feature = "tesseract")]
+use translator::TesseractWrapper;
 use translator::{
     BergamotEngine, CatalogSnapshot, PackInstallChecker, build_catalog_snapshot,
     can_translate_in_snapshot, language_rows_in_snapshot, parse_and_validate_catalog,
@@ -136,7 +136,7 @@ fn dictionary_path_for_language(snapshot: &CatalogSnapshot, language_code: &str)
 }
 
 #[cfg(feature = "dictionary")]
-fn map_dictionary_word(word: tarkka::WordWithTaggedEntries) -> DictionaryWordRecord {
+fn map_dictionary_word(word: translator::tarkka::WordWithTaggedEntries) -> DictionaryWordRecord {
     DictionaryWordRecord {
         word: word.word,
         tag: word.tag as i32,

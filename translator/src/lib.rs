@@ -5,10 +5,20 @@ pub mod bergamot;
 pub mod catalog;
 pub mod language;
 pub mod language_detect;
+#[cfg(feature = "mucab")]
+pub mod mucab;
 pub mod ocr;
 pub mod routing;
 pub mod settings;
+#[cfg(feature = "tts")]
+pub mod speech;
 pub mod styled;
+#[cfg(feature = "dictionary")]
+pub mod tarkka;
+#[cfg(feature = "tesseract")]
+pub mod tesseract;
+#[cfg(feature = "transliterate")]
+pub mod transliterate;
 pub mod translate;
 pub mod tts;
 
@@ -32,6 +42,14 @@ pub use catalog::{
 };
 pub use language::Language;
 pub use language_detect::{DetectionResult, detect_language};
+#[cfg(feature = "dictionary")]
+pub use tarkka::{close_dictionary, lookup_dictionary};
+#[cfg(feature = "tesseract")]
+pub use tesseract::{PageSegMode, TesseractWrapper};
+#[cfg(feature = "transliterate")]
+pub use transliterate::{
+    transliterate, transliterate_with_policy, transliterate_with_policy_for_language,
+};
 pub use ocr::{
     DetectedWord, OverlayColors, PreparedImageOverlay, PreparedTextBlock, PreparedTextLine,
     ReadingOrder, Rect, TextBlock, TextLine, build_text_blocks, prepare_overlay_image,
@@ -51,6 +69,8 @@ pub use translate::{
     TokenAlignment, TranslatedText, TranslationWithAlignment, translate_texts_in_snapshot,
     translate_texts_with_alignment_in_snapshot,
 };
+#[cfg(feature = "tts")]
+pub use speech::{clear_cached_model, list_voices, plan_speech_chunks_for_text, synthesize_pcm};
 pub use tts::{
     PcmAudio, PhonemeChunk, SpeechChunk, SpeechChunkBoundary, TtsVoiceOption, plan_speech_chunks,
 };
