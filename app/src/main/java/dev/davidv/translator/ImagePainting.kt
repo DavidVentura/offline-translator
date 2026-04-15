@@ -23,8 +23,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.text.TextPaint
 import android.util.Log
-import uniffi.bindings.ImageTranslationBlock
-import uniffi.bindings.OcrLine
+import uniffi.translator.PreparedTextBlock
+import uniffi.translator.PreparedTextLine
 import kotlin.math.floor
 
 data class OverlayColors(val background: Int, val foreground: Int)
@@ -53,7 +53,7 @@ data class TextLineBreak(
 
 fun doesTextFitInLines(
   text: String,
-  lines: List<OcrLine>,
+  lines: List<PreparedTextLine>,
   textPaint: TextPaint,
 ): TextFitResult {
   val translatedSpaceIndices =
@@ -99,7 +99,7 @@ fun doesTextFitInLines(
 
 fun doesTextFitInRect(
   text: String,
-  bounds: uniffi.bindings.OcrRect,
+  bounds: uniffi.translator.Rect,
   textPaint: TextPaint,
 ): TextFitResult {
   if (text.isEmpty()) return TextFitResult.Fits(emptyList())
@@ -162,7 +162,7 @@ fun doesTextFitInRect(
 
 fun paintTranslatedTextOver(
   originalBitmap: Bitmap,
-  blocks: List<ImageTranslationBlock>,
+  blocks: List<PreparedTextBlock>,
 ): Pair<Bitmap, String> {
   val mutableBitmap = originalBitmap.copy(originalBitmap.config, true)
   val canvas = Canvas(mutableBitmap)
@@ -244,7 +244,7 @@ fun paintTranslatedTextOver(
 
 fun paintTranslatedTextOverVerticalBlocks(
   originalBitmap: Bitmap,
-  blocks: List<ImageTranslationBlock>,
+  blocks: List<PreparedTextBlock>,
 ): Pair<Bitmap, String> {
   val mutableBitmap = originalBitmap.copy(originalBitmap.config, true)
   val canvas = Canvas(mutableBitmap)
@@ -307,18 +307,18 @@ private fun Rect.compactString(): String = "[$left,$top,$right,$bottom]"
 
 private fun Rect.toAndroidRect(): android.graphics.Rect = android.graphics.Rect(left, top, right, bottom)
 
-private fun uniffi.bindings.OcrRect.compactString(): String = "[$left,$top,$right,$bottom]"
+private fun uniffi.translator.Rect.compactString(): String = "[$left,$top,$right,$bottom]"
 
-private fun uniffi.bindings.OcrRect.toAndroidRect(): android.graphics.Rect =
+private fun uniffi.translator.Rect.toAndroidRect(): android.graphics.Rect =
   android.graphics.Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
 
-private fun uniffi.bindings.OcrRect.width(): Int = (right - left).toInt()
+private fun uniffi.translator.Rect.width(): Float = (right - left).toFloat()
 
-private fun uniffi.bindings.OcrRect.height(): Int = (bottom - top).toInt()
+private fun uniffi.translator.Rect.height(): Float = (bottom - top).toFloat()
 
 private fun debugRepaintBlock(
   blockIndex: Int,
-  block: ImageTranslationBlock,
+  block: PreparedTextBlock,
 ) {
   val blockBounds = block.boundingBox
   val sourceText = block.lines.joinToString(separator = " | ") { it.text }

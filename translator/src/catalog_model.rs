@@ -115,6 +115,7 @@ pub struct SupportPack {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct DictionaryInfo {
     pub date: i64,
     pub filename: String,
@@ -133,6 +134,7 @@ pub enum LanguageFeature {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct TtsVoicePackInfo {
     pub pack_id: String,
     pub display_name: String,
@@ -141,6 +143,7 @@ pub struct TtsVoicePackInfo {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct TtsVoicePickerRegion {
     pub code: String,
     pub display_name: String,
@@ -170,6 +173,7 @@ pub struct LanguageCatalog {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct DownloadTask {
     pub pack_id: String,
     pub install_path: String,
@@ -184,18 +188,21 @@ pub struct DownloadTask {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct DownloadPlan {
     pub total_size: u64,
     pub tasks: Vec<DownloadTask>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct DeletePlan {
     pub file_paths: Vec<String>,
     pub directory_paths: Vec<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct LangAvailability {
     pub has_from_english: bool,
     pub has_to_english: bool,

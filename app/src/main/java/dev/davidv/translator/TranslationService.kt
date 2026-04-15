@@ -98,7 +98,7 @@ class TranslationService(
 
       val nothingReason = result.nothingReason
       if (nothingReason != null && result.translations.isEmpty()) {
-        return@withContext BatchTextTranslationOutput.NothingToTranslate(NothingReason.valueOf(nothingReason))
+        return@withContext BatchTextTranslationOutput.NothingToTranslate(nothingReason)
       }
 
       val translatedByText = linkedMapOf<String, String>()

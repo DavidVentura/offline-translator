@@ -35,6 +35,7 @@ impl LanguageDirection {
 }
 
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct Language {
     pub code: String,
     pub display_name: String,

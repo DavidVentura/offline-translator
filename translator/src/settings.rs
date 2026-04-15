@@ -1,6 +1,7 @@
 pub const DEFAULT_CATALOG_INDEX_URL: &str = "https://offline-translator.davidv.dev/index.json";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Enum))]
 pub enum BackgroundMode {
     WhiteOnBlack,
     BlackOnWhite,

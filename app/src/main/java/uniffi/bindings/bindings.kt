@@ -31,6 +31,51 @@ import java.nio.charset.CodingErrorAction
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
+import uniffi.translator.BackgroundMode
+import uniffi.translator.DeletePlan
+import uniffi.translator.DictionaryInfo
+import uniffi.translator.DownloadPlan
+import uniffi.translator.FfiConverterTypeBackgroundMode
+import uniffi.translator.FfiConverterTypeDeletePlan
+import uniffi.translator.FfiConverterTypeDictionaryInfo
+import uniffi.translator.FfiConverterTypeDownloadPlan
+import uniffi.translator.FfiConverterTypeLanguageAvailabilityRow
+import uniffi.translator.FfiConverterTypeMixedTextTranslationResult
+import uniffi.translator.FfiConverterTypeOverlayColors
+import uniffi.translator.FfiConverterTypeOverlayScreenshot
+import uniffi.translator.FfiConverterTypePreparedImageOverlay
+import uniffi.translator.FfiConverterTypeReadingOrder
+import uniffi.translator.FfiConverterTypeRect
+import uniffi.translator.FfiConverterTypeStructuredTranslationResult
+import uniffi.translator.FfiConverterTypeStyledFragment
+import uniffi.translator.FfiConverterTypeTranslationWithAlignment
+import uniffi.translator.FfiConverterTypeTtsVoicePickerRegion
+import uniffi.translator.LanguageAvailabilityRow
+import uniffi.translator.MixedTextTranslationResult
+import uniffi.translator.OverlayColors
+import uniffi.translator.OverlayScreenshot
+import uniffi.translator.PreparedImageOverlay
+import uniffi.translator.ReadingOrder
+import uniffi.translator.Rect
+import uniffi.translator.StructuredTranslationResult
+import uniffi.translator.StyledFragment
+import uniffi.translator.TranslationWithAlignment
+import uniffi.translator.TtsVoicePickerRegion
+import uniffi.translator.RustBuffer as RustBufferBackgroundMode
+import uniffi.translator.RustBuffer as RustBufferDeletePlan
+import uniffi.translator.RustBuffer as RustBufferDictionaryInfo
+import uniffi.translator.RustBuffer as RustBufferDownloadPlan
+import uniffi.translator.RustBuffer as RustBufferLanguageAvailabilityRow
+import uniffi.translator.RustBuffer as RustBufferMixedTextTranslationResult
+import uniffi.translator.RustBuffer as RustBufferOverlayColors
+import uniffi.translator.RustBuffer as RustBufferOverlayScreenshot
+import uniffi.translator.RustBuffer as RustBufferPreparedImageOverlay
+import uniffi.translator.RustBuffer as RustBufferReadingOrder
+import uniffi.translator.RustBuffer as RustBufferRect
+import uniffi.translator.RustBuffer as RustBufferStructuredTranslationResult
+import uniffi.translator.RustBuffer as RustBufferStyledFragment
+import uniffi.translator.RustBuffer as RustBufferTranslationWithAlignment
+import uniffi.translator.RustBuffer as RustBufferTtsVoicePickerRegion
 
 // This is a helper for safely working with byte buffers returned from the Rust code.
 // A rust-owned buffer is represented by its capacity, its current length, and a
@@ -875,6 +920,7 @@ internal interface UniffiLib : Library {
             val lib = loadIndirect<UniffiLib>(componentName)
             // No need to check the contract version and checksums, since 
             // we already did that with `IntegrityCheckingUniffiLib` above.
+            uniffi.translator.uniffiEnsureInitialized()
             // Loading of library with integrity check done.
             lib
         }
@@ -911,27 +957,27 @@ fun uniffi_bindings_fn_method_cataloghandle_has_tts_voices(`ptr`: Pointer,`langu
 fun uniffi_bindings_fn_method_cataloghandle_language_rows(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_plan_delete_dictionary(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
+): RustBufferDeletePlan.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_plan_delete_language(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
+): RustBufferDeletePlan.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_plan_delete_superseded_tts(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,`selectedPackId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
+): RustBufferDeletePlan.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_plan_delete_tts(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
+): RustBufferDeletePlan.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_plan_dictionary_download(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_plan_language_download(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
+): RustBufferDownloadPlan.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_plan_tts_download(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,`selectedPackId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_resolve_tts_voice_files(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-fun uniffi_bindings_fn_method_cataloghandle_translate_image_plan(`ptr`: Pointer,`rgbaBytes`: RustBuffer.ByValue,`width`: Int,`height`: Int,`sourceCode`: RustBuffer.ByValue,`targetCode`: RustBuffer.ByValue,`minConfidence`: Int,`readingOrder`: RustBuffer.ByValue,`backgroundMode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+fun uniffi_bindings_fn_method_cataloghandle_translate_image_plan(`ptr`: Pointer,`rgbaBytes`: RustBuffer.ByValue,`width`: Int,`height`: Int,`sourceCode`: RustBuffer.ByValue,`targetCode`: RustBuffer.ByValue,`minConfidence`: Int,`readingOrder`: RustBufferReadingOrder.ByValue,`backgroundMode`: RustBufferBackgroundMode.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_translate_mixed_texts(`ptr`: Pointer,`inputs`: RustBuffer.ByValue,`forcedSourceCode`: RustBuffer.ByValue,`targetCode`: RustBuffer.ByValue,`availableLanguageCodes`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-fun uniffi_bindings_fn_method_cataloghandle_translate_structured_fragments(`ptr`: Pointer,`fragments`: RustBuffer.ByValue,`forcedSourceCode`: RustBuffer.ByValue,`targetCode`: RustBuffer.ByValue,`availableLanguageCodes`: RustBuffer.ByValue,`screenshot`: RustBuffer.ByValue,`backgroundMode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
+): RustBufferMixedTextTranslationResult.ByValue
+fun uniffi_bindings_fn_method_cataloghandle_translate_structured_fragments(`ptr`: Pointer,`fragments`: RustBuffer.ByValue,`forcedSourceCode`: RustBuffer.ByValue,`targetCode`: RustBuffer.ByValue,`availableLanguageCodes`: RustBuffer.ByValue,`screenshot`: RustBuffer.ByValue,`backgroundMode`: RustBufferBackgroundMode.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBufferStructuredTranslationResult.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_translate_texts(`ptr`: Pointer,`fromCode`: RustBuffer.ByValue,`toCode`: RustBuffer.ByValue,`texts`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_translate_texts_with_alignment(`ptr`: Pointer,`fromCode`: RustBuffer.ByValue,`toCode`: RustBuffer.ByValue,`texts`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -942,7 +988,7 @@ fun uniffi_bindings_fn_method_cataloghandle_tts_size_bytes(`ptr`: Pointer,`langu
 ): Long
 fun uniffi_bindings_fn_method_cataloghandle_tts_voice_picker_regions(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-fun uniffi_bindings_fn_func_sample_overlay_colors_rgba(`rgbaBytes`: RustBuffer.ByValue,`width`: Int,`height`: Int,`bounds`: RustBuffer.ByValue,`backgroundMode`: RustBuffer.ByValue,`wordRects`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+fun uniffi_bindings_fn_func_sample_overlay_colors_rgba(`rgbaBytes`: RustBuffer.ByValue,`width`: Int,`height`: Int,`bounds`: RustBufferRect.ByValue,`backgroundMode`: RustBufferBackgroundMode.ByValue,`wordRects`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun ffi_bindings_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -1070,7 +1116,7 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
-    if (lib.uniffi_bindings_checksum_func_sample_overlay_colors_rgba() != 46957.toShort()) {
+    if (lib.uniffi_bindings_checksum_func_sample_overlay_colors_rgba() != 4535.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_can_swap_languages() != 51048.toShort()) {
@@ -1082,7 +1128,7 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_bindings_checksum_method_cataloghandle_default_tts_pack_id() != 12955.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_dictionary_info() != 40045.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_dictionary_info() != 38449.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_dictionary_version() != 28592.toShort()) {
@@ -1097,55 +1143,55 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_bindings_checksum_method_cataloghandle_has_tts_voices() != 62763.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_language_rows() != 43539.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_language_rows() != 45031.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_dictionary() != 62985.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_dictionary() != 24171.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_language() != 58057.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_language() != 41833.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_superseded_tts() != 58671.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_superseded_tts() != 10431.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_tts() != 59174.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_delete_tts() != 46749.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_dictionary_download() != 63219.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_dictionary_download() != 14707.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_language_download() != 41508.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_language_download() != 44260.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_tts_download() != 59319.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_plan_tts_download() != 25659.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_resolve_tts_voice_files() != 40314.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_image_plan() != 22899.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_image_plan() != 46779.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_mixed_texts() != 560.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_mixed_texts() != 25431.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_structured_fragments() != 14724.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_structured_fragments() != 36379.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_texts() != 56327.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_texts_with_alignment() != 8338.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_texts_with_alignment() != 46825.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_translation_size_bytes() != 52553.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_translation_size_bytes() != 5179.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_tts_size_bytes() != 14893.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_tts_size_bytes() != 21983.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_tts_voice_picker_regions() != 20449.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_tts_voice_picker_regions() != 2470.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_constructor_cataloghandle_open() != 5436.toShort()) {
@@ -1297,6 +1343,29 @@ private class JavaLangRefCleanable(
 /**
  * @suppress
  */
+public object FfiConverterUInt: FfiConverter<UInt, Int> {
+    override fun lift(value: Int): UInt {
+        return value.toUInt()
+    }
+
+    override fun read(buf: ByteBuffer): UInt {
+        return lift(buf.getInt())
+    }
+
+    override fun lower(value: UInt): Int {
+        return value.toInt()
+    }
+
+    override fun allocationSize(value: UInt) = 4UL
+
+    override fun write(value: UInt, buf: ByteBuffer) {
+        buf.putInt(value.toInt())
+    }
+}
+
+/**
+ * @suppress
+ */
 public object FfiConverterInt: FfiConverter<Int, Int> {
     override fun lift(value: Int): Int {
         return value
@@ -1320,6 +1389,29 @@ public object FfiConverterInt: FfiConverter<Int, Int> {
 /**
  * @suppress
  */
+public object FfiConverterULong: FfiConverter<ULong, Long> {
+    override fun lift(value: Long): ULong {
+        return value.toULong()
+    }
+
+    override fun read(buf: ByteBuffer): ULong {
+        return lift(buf.getLong())
+    }
+
+    override fun lower(value: ULong): Long {
+        return value.toLong()
+    }
+
+    override fun allocationSize(value: ULong) = 8UL
+
+    override fun write(value: ULong, buf: ByteBuffer) {
+        buf.putLong(value.toLong())
+    }
+}
+
+/**
+ * @suppress
+ */
 public object FfiConverterLong: FfiConverter<Long, Long> {
     override fun lift(value: Long): Long {
         return value
@@ -1337,29 +1429,6 @@ public object FfiConverterLong: FfiConverter<Long, Long> {
 
     override fun write(value: Long, buf: ByteBuffer) {
         buf.putLong(value)
-    }
-}
-
-/**
- * @suppress
- */
-public object FfiConverterFloat: FfiConverter<Float, Float> {
-    override fun lift(value: Float): Float {
-        return value
-    }
-
-    override fun read(buf: ByteBuffer): Float {
-        return buf.getFloat()
-    }
-
-    override fun lower(value: Float): Float {
-        return value
-    }
-
-    override fun allocationSize(value: Float) = 4UL
-
-    override fun write(value: Float, buf: ByteBuffer) {
-        buf.putFloat(value)
     }
 }
 
@@ -1579,7 +1648,7 @@ public interface CatalogHandleInterface {
     
     fun `hasTtsVoices`(`languageCode`: kotlin.String): kotlin.Boolean
     
-    fun `languageRows`(): List<LanguageRow>
+    fun `languageRows`(): List<LanguageAvailabilityRow>
     
     fun `planDeleteDictionary`(`languageCode`: kotlin.String): DeletePlan
     
@@ -1597,19 +1666,19 @@ public interface CatalogHandleInterface {
     
     fun `resolveTtsVoiceFiles`(`languageCode`: kotlin.String): TtsVoiceFiles?
     
-    fun `translateImagePlan`(`rgbaBytes`: kotlin.ByteArray, `width`: kotlin.Int, `height`: kotlin.Int, `sourceCode`: kotlin.String, `targetCode`: kotlin.String, `minConfidence`: kotlin.Int, `readingOrder`: OcrReadingOrder, `backgroundMode`: OcrBackgroundMode): ImageTranslationPlan?
+    fun `translateImagePlan`(`rgbaBytes`: kotlin.ByteArray, `width`: kotlin.UInt, `height`: kotlin.UInt, `sourceCode`: kotlin.String, `targetCode`: kotlin.String, `minConfidence`: kotlin.UInt, `readingOrder`: ReadingOrder, `backgroundMode`: BackgroundMode): PreparedImageOverlay?
     
     fun `translateMixedTexts`(`inputs`: List<kotlin.String>, `forcedSourceCode`: kotlin.String?, `targetCode`: kotlin.String, `availableLanguageCodes`: List<kotlin.String>): MixedTextTranslationResult
     
-    fun `translateStructuredFragments`(`fragments`: List<StructuredFragment>, `forcedSourceCode`: kotlin.String?, `targetCode`: kotlin.String, `availableLanguageCodes`: List<kotlin.String>, `screenshot`: OverlayScreenshot?, `backgroundMode`: OcrBackgroundMode): StructuredTranslationResult
+    fun `translateStructuredFragments`(`fragments`: List<StyledFragment>, `forcedSourceCode`: kotlin.String?, `targetCode`: kotlin.String, `availableLanguageCodes`: List<kotlin.String>, `screenshot`: OverlayScreenshot?, `backgroundMode`: BackgroundMode): StructuredTranslationResult
     
     fun `translateTexts`(`fromCode`: kotlin.String, `toCode`: kotlin.String, `texts`: List<kotlin.String>): List<kotlin.String>?
     
     fun `translateTextsWithAlignment`(`fromCode`: kotlin.String, `toCode`: kotlin.String, `texts`: List<kotlin.String>): List<TranslationWithAlignment>?
     
-    fun `translationSizeBytes`(`languageCode`: kotlin.String): kotlin.Long
+    fun `translationSizeBytes`(`languageCode`: kotlin.String): kotlin.ULong
     
-    fun `ttsSizeBytes`(`languageCode`: kotlin.String): kotlin.Long
+    fun `ttsSizeBytes`(`languageCode`: kotlin.String): kotlin.ULong
     
     fun `ttsVoicePickerRegions`(`languageCode`: kotlin.String): List<TtsVoicePickerRegion>
     
@@ -1794,8 +1863,8 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
-    override fun `languageRows`(): List<LanguageRow> {
-            return FfiConverterSequenceTypeLanguageRow.lift(
+    override fun `languageRows`(): List<LanguageAvailabilityRow> {
+            return FfiConverterSequenceTypeLanguageAvailabilityRow.lift(
     callWithPointer {
     uniffiRustCall() { _status ->
     UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_language_rows(
@@ -1902,12 +1971,12 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
-    override fun `translateImagePlan`(`rgbaBytes`: kotlin.ByteArray, `width`: kotlin.Int, `height`: kotlin.Int, `sourceCode`: kotlin.String, `targetCode`: kotlin.String, `minConfidence`: kotlin.Int, `readingOrder`: OcrReadingOrder, `backgroundMode`: OcrBackgroundMode): ImageTranslationPlan? {
-            return FfiConverterOptionalTypeImageTranslationPlan.lift(
+    override fun `translateImagePlan`(`rgbaBytes`: kotlin.ByteArray, `width`: kotlin.UInt, `height`: kotlin.UInt, `sourceCode`: kotlin.String, `targetCode`: kotlin.String, `minConfidence`: kotlin.UInt, `readingOrder`: ReadingOrder, `backgroundMode`: BackgroundMode): PreparedImageOverlay? {
+            return FfiConverterOptionalTypePreparedImageOverlay.lift(
     callWithPointer {
     uniffiRustCall() { _status ->
     UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_translate_image_plan(
-        it, FfiConverterByteArray.lower(`rgbaBytes`),FfiConverterInt.lower(`width`),FfiConverterInt.lower(`height`),FfiConverterString.lower(`sourceCode`),FfiConverterString.lower(`targetCode`),FfiConverterInt.lower(`minConfidence`),FfiConverterTypeOcrReadingOrder.lower(`readingOrder`),FfiConverterTypeOcrBackgroundMode.lower(`backgroundMode`),_status)
+        it, FfiConverterByteArray.lower(`rgbaBytes`),FfiConverterUInt.lower(`width`),FfiConverterUInt.lower(`height`),FfiConverterString.lower(`sourceCode`),FfiConverterString.lower(`targetCode`),FfiConverterUInt.lower(`minConfidence`),FfiConverterTypeReadingOrder.lower(`readingOrder`),FfiConverterTypeBackgroundMode.lower(`backgroundMode`),_status)
 }
     }
     )
@@ -1926,12 +1995,12 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
-    override fun `translateStructuredFragments`(`fragments`: List<StructuredFragment>, `forcedSourceCode`: kotlin.String?, `targetCode`: kotlin.String, `availableLanguageCodes`: List<kotlin.String>, `screenshot`: OverlayScreenshot?, `backgroundMode`: OcrBackgroundMode): StructuredTranslationResult {
+    override fun `translateStructuredFragments`(`fragments`: List<StyledFragment>, `forcedSourceCode`: kotlin.String?, `targetCode`: kotlin.String, `availableLanguageCodes`: List<kotlin.String>, `screenshot`: OverlayScreenshot?, `backgroundMode`: BackgroundMode): StructuredTranslationResult {
             return FfiConverterTypeStructuredTranslationResult.lift(
     callWithPointer {
     uniffiRustCall() { _status ->
     UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_translate_structured_fragments(
-        it, FfiConverterSequenceTypeStructuredFragment.lower(`fragments`),FfiConverterOptionalString.lower(`forcedSourceCode`),FfiConverterString.lower(`targetCode`),FfiConverterSequenceString.lower(`availableLanguageCodes`),FfiConverterOptionalTypeOverlayScreenshot.lower(`screenshot`),FfiConverterTypeOcrBackgroundMode.lower(`backgroundMode`),_status)
+        it, FfiConverterSequenceTypeStyledFragment.lower(`fragments`),FfiConverterOptionalString.lower(`forcedSourceCode`),FfiConverterString.lower(`targetCode`),FfiConverterSequenceString.lower(`availableLanguageCodes`),FfiConverterOptionalTypeOverlayScreenshot.lower(`screenshot`),FfiConverterTypeBackgroundMode.lower(`backgroundMode`),_status)
 }
     }
     )
@@ -1962,8 +2031,8 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
-    override fun `translationSizeBytes`(`languageCode`: kotlin.String): kotlin.Long {
-            return FfiConverterLong.lift(
+    override fun `translationSizeBytes`(`languageCode`: kotlin.String): kotlin.ULong {
+            return FfiConverterULong.lift(
     callWithPointer {
     uniffiRustCall() { _status ->
     UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_translation_size_bytes(
@@ -1974,8 +2043,8 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
-    override fun `ttsSizeBytes`(`languageCode`: kotlin.String): kotlin.Long {
-            return FfiConverterLong.lift(
+    override fun `ttsSizeBytes`(`languageCode`: kotlin.String): kotlin.ULong {
+            return FfiConverterULong.lift(
     callWithPointer {
     uniffiRustCall() { _status ->
     UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_tts_size_bytes(
@@ -2048,910 +2117,6 @@ public object FfiConverterTypeCatalogHandle: FfiConverter<CatalogHandle, Pointer
 
 
 
-data class DeletePlan (
-    var `filePaths`: List<kotlin.String>, 
-    var `directoryPaths`: List<kotlin.String>
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeDeletePlan: FfiConverterRustBuffer<DeletePlan> {
-    override fun read(buf: ByteBuffer): DeletePlan {
-        return DeletePlan(
-            FfiConverterSequenceString.read(buf),
-            FfiConverterSequenceString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: DeletePlan) = (
-            FfiConverterSequenceString.allocationSize(value.`filePaths`) +
-            FfiConverterSequenceString.allocationSize(value.`directoryPaths`)
-    )
-
-    override fun write(value: DeletePlan, buf: ByteBuffer) {
-            FfiConverterSequenceString.write(value.`filePaths`, buf)
-            FfiConverterSequenceString.write(value.`directoryPaths`, buf)
-    }
-}
-
-
-
-data class DictionaryInfo (
-    var `date`: kotlin.Long, 
-    var `filename`: kotlin.String, 
-    var `size`: kotlin.Long, 
-    var `typeName`: kotlin.String, 
-    var `wordCount`: kotlin.Long
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeDictionaryInfo: FfiConverterRustBuffer<DictionaryInfo> {
-    override fun read(buf: ByteBuffer): DictionaryInfo {
-        return DictionaryInfo(
-            FfiConverterLong.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterLong.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: DictionaryInfo) = (
-            FfiConverterLong.allocationSize(value.`date`) +
-            FfiConverterString.allocationSize(value.`filename`) +
-            FfiConverterLong.allocationSize(value.`size`) +
-            FfiConverterString.allocationSize(value.`typeName`) +
-            FfiConverterLong.allocationSize(value.`wordCount`)
-    )
-
-    override fun write(value: DictionaryInfo, buf: ByteBuffer) {
-            FfiConverterLong.write(value.`date`, buf)
-            FfiConverterString.write(value.`filename`, buf)
-            FfiConverterLong.write(value.`size`, buf)
-            FfiConverterString.write(value.`typeName`, buf)
-            FfiConverterLong.write(value.`wordCount`, buf)
-    }
-}
-
-
-
-data class DownloadPlan (
-    var `totalSize`: kotlin.Long, 
-    var `tasks`: List<DownloadTask>
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeDownloadPlan: FfiConverterRustBuffer<DownloadPlan> {
-    override fun read(buf: ByteBuffer): DownloadPlan {
-        return DownloadPlan(
-            FfiConverterLong.read(buf),
-            FfiConverterSequenceTypeDownloadTask.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: DownloadPlan) = (
-            FfiConverterLong.allocationSize(value.`totalSize`) +
-            FfiConverterSequenceTypeDownloadTask.allocationSize(value.`tasks`)
-    )
-
-    override fun write(value: DownloadPlan, buf: ByteBuffer) {
-            FfiConverterLong.write(value.`totalSize`, buf)
-            FfiConverterSequenceTypeDownloadTask.write(value.`tasks`, buf)
-    }
-}
-
-
-
-data class DownloadTask (
-    var `packId`: kotlin.String, 
-    var `installPath`: kotlin.String, 
-    var `url`: kotlin.String, 
-    var `sizeBytes`: kotlin.Long, 
-    var `decompress`: kotlin.Boolean, 
-    var `archiveFormat`: kotlin.String?, 
-    var `extractTo`: kotlin.String?, 
-    var `deleteAfterExtract`: kotlin.Boolean, 
-    var `installMarkerPath`: kotlin.String?, 
-    var `installMarkerVersion`: kotlin.Int?
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeDownloadTask: FfiConverterRustBuffer<DownloadTask> {
-    override fun read(buf: ByteBuffer): DownloadTask {
-        return DownloadTask(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterLong.read(buf),
-            FfiConverterBoolean.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterBoolean.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalInt.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: DownloadTask) = (
-            FfiConverterString.allocationSize(value.`packId`) +
-            FfiConverterString.allocationSize(value.`installPath`) +
-            FfiConverterString.allocationSize(value.`url`) +
-            FfiConverterLong.allocationSize(value.`sizeBytes`) +
-            FfiConverterBoolean.allocationSize(value.`decompress`) +
-            FfiConverterOptionalString.allocationSize(value.`archiveFormat`) +
-            FfiConverterOptionalString.allocationSize(value.`extractTo`) +
-            FfiConverterBoolean.allocationSize(value.`deleteAfterExtract`) +
-            FfiConverterOptionalString.allocationSize(value.`installMarkerPath`) +
-            FfiConverterOptionalInt.allocationSize(value.`installMarkerVersion`)
-    )
-
-    override fun write(value: DownloadTask, buf: ByteBuffer) {
-            FfiConverterString.write(value.`packId`, buf)
-            FfiConverterString.write(value.`installPath`, buf)
-            FfiConverterString.write(value.`url`, buf)
-            FfiConverterLong.write(value.`sizeBytes`, buf)
-            FfiConverterBoolean.write(value.`decompress`, buf)
-            FfiConverterOptionalString.write(value.`archiveFormat`, buf)
-            FfiConverterOptionalString.write(value.`extractTo`, buf)
-            FfiConverterBoolean.write(value.`deleteAfterExtract`, buf)
-            FfiConverterOptionalString.write(value.`installMarkerPath`, buf)
-            FfiConverterOptionalInt.write(value.`installMarkerVersion`, buf)
-    }
-}
-
-
-
-data class ImageTranslationBlock (
-    var `sourceText`: kotlin.String, 
-    var `translatedText`: kotlin.String, 
-    var `boundingBox`: OcrRect, 
-    var `lines`: List<OcrLine>, 
-    var `backgroundArgb`: kotlin.Long, 
-    var `foregroundArgb`: kotlin.Long
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeImageTranslationBlock: FfiConverterRustBuffer<ImageTranslationBlock> {
-    override fun read(buf: ByteBuffer): ImageTranslationBlock {
-        return ImageTranslationBlock(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterTypeOcrRect.read(buf),
-            FfiConverterSequenceTypeOcrLine.read(buf),
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: ImageTranslationBlock) = (
-            FfiConverterString.allocationSize(value.`sourceText`) +
-            FfiConverterString.allocationSize(value.`translatedText`) +
-            FfiConverterTypeOcrRect.allocationSize(value.`boundingBox`) +
-            FfiConverterSequenceTypeOcrLine.allocationSize(value.`lines`) +
-            FfiConverterLong.allocationSize(value.`backgroundArgb`) +
-            FfiConverterLong.allocationSize(value.`foregroundArgb`)
-    )
-
-    override fun write(value: ImageTranslationBlock, buf: ByteBuffer) {
-            FfiConverterString.write(value.`sourceText`, buf)
-            FfiConverterString.write(value.`translatedText`, buf)
-            FfiConverterTypeOcrRect.write(value.`boundingBox`, buf)
-            FfiConverterSequenceTypeOcrLine.write(value.`lines`, buf)
-            FfiConverterLong.write(value.`backgroundArgb`, buf)
-            FfiConverterLong.write(value.`foregroundArgb`, buf)
-    }
-}
-
-
-
-data class ImageTranslationPlan (
-    var `extractedText`: kotlin.String, 
-    var `translatedText`: kotlin.String, 
-    var `erasedRgbaBytes`: kotlin.ByteArray, 
-    var `width`: kotlin.Int, 
-    var `height`: kotlin.Int, 
-    var `blocks`: List<ImageTranslationBlock>
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeImageTranslationPlan: FfiConverterRustBuffer<ImageTranslationPlan> {
-    override fun read(buf: ByteBuffer): ImageTranslationPlan {
-        return ImageTranslationPlan(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterByteArray.read(buf),
-            FfiConverterInt.read(buf),
-            FfiConverterInt.read(buf),
-            FfiConverterSequenceTypeImageTranslationBlock.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: ImageTranslationPlan) = (
-            FfiConverterString.allocationSize(value.`extractedText`) +
-            FfiConverterString.allocationSize(value.`translatedText`) +
-            FfiConverterByteArray.allocationSize(value.`erasedRgbaBytes`) +
-            FfiConverterInt.allocationSize(value.`width`) +
-            FfiConverterInt.allocationSize(value.`height`) +
-            FfiConverterSequenceTypeImageTranslationBlock.allocationSize(value.`blocks`)
-    )
-
-    override fun write(value: ImageTranslationPlan, buf: ByteBuffer) {
-            FfiConverterString.write(value.`extractedText`, buf)
-            FfiConverterString.write(value.`translatedText`, buf)
-            FfiConverterByteArray.write(value.`erasedRgbaBytes`, buf)
-            FfiConverterInt.write(value.`width`, buf)
-            FfiConverterInt.write(value.`height`, buf)
-            FfiConverterSequenceTypeImageTranslationBlock.write(value.`blocks`, buf)
-    }
-}
-
-
-
-data class LangAvailability (
-    var `hasFromEnglish`: kotlin.Boolean, 
-    var `hasToEnglish`: kotlin.Boolean, 
-    var `ocrFiles`: kotlin.Boolean, 
-    var `dictionaryFiles`: kotlin.Boolean, 
-    var `ttsFiles`: kotlin.Boolean
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeLangAvailability: FfiConverterRustBuffer<LangAvailability> {
-    override fun read(buf: ByteBuffer): LangAvailability {
-        return LangAvailability(
-            FfiConverterBoolean.read(buf),
-            FfiConverterBoolean.read(buf),
-            FfiConverterBoolean.read(buf),
-            FfiConverterBoolean.read(buf),
-            FfiConverterBoolean.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: LangAvailability) = (
-            FfiConverterBoolean.allocationSize(value.`hasFromEnglish`) +
-            FfiConverterBoolean.allocationSize(value.`hasToEnglish`) +
-            FfiConverterBoolean.allocationSize(value.`ocrFiles`) +
-            FfiConverterBoolean.allocationSize(value.`dictionaryFiles`) +
-            FfiConverterBoolean.allocationSize(value.`ttsFiles`)
-    )
-
-    override fun write(value: LangAvailability, buf: ByteBuffer) {
-            FfiConverterBoolean.write(value.`hasFromEnglish`, buf)
-            FfiConverterBoolean.write(value.`hasToEnglish`, buf)
-            FfiConverterBoolean.write(value.`ocrFiles`, buf)
-            FfiConverterBoolean.write(value.`dictionaryFiles`, buf)
-            FfiConverterBoolean.write(value.`ttsFiles`, buf)
-    }
-}
-
-
-
-data class LanguageInfo (
-    var `code`: kotlin.String, 
-    var `displayName`: kotlin.String, 
-    var `shortDisplayName`: kotlin.String, 
-    var `tessName`: kotlin.String, 
-    var `script`: kotlin.String, 
-    var `dictionaryCode`: kotlin.String, 
-    var `tessdataSizeBytes`: kotlin.Long
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeLanguageInfo: FfiConverterRustBuffer<LanguageInfo> {
-    override fun read(buf: ByteBuffer): LanguageInfo {
-        return LanguageInfo(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: LanguageInfo) = (
-            FfiConverterString.allocationSize(value.`code`) +
-            FfiConverterString.allocationSize(value.`displayName`) +
-            FfiConverterString.allocationSize(value.`shortDisplayName`) +
-            FfiConverterString.allocationSize(value.`tessName`) +
-            FfiConverterString.allocationSize(value.`script`) +
-            FfiConverterString.allocationSize(value.`dictionaryCode`) +
-            FfiConverterLong.allocationSize(value.`tessdataSizeBytes`)
-    )
-
-    override fun write(value: LanguageInfo, buf: ByteBuffer) {
-            FfiConverterString.write(value.`code`, buf)
-            FfiConverterString.write(value.`displayName`, buf)
-            FfiConverterString.write(value.`shortDisplayName`, buf)
-            FfiConverterString.write(value.`tessName`, buf)
-            FfiConverterString.write(value.`script`, buf)
-            FfiConverterString.write(value.`dictionaryCode`, buf)
-            FfiConverterLong.write(value.`tessdataSizeBytes`, buf)
-    }
-}
-
-
-
-data class LanguageRow (
-    var `language`: LanguageInfo, 
-    var `availability`: LangAvailability
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeLanguageRow: FfiConverterRustBuffer<LanguageRow> {
-    override fun read(buf: ByteBuffer): LanguageRow {
-        return LanguageRow(
-            FfiConverterTypeLanguageInfo.read(buf),
-            FfiConverterTypeLangAvailability.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: LanguageRow) = (
-            FfiConverterTypeLanguageInfo.allocationSize(value.`language`) +
-            FfiConverterTypeLangAvailability.allocationSize(value.`availability`)
-    )
-
-    override fun write(value: LanguageRow, buf: ByteBuffer) {
-            FfiConverterTypeLanguageInfo.write(value.`language`, buf)
-            FfiConverterTypeLangAvailability.write(value.`availability`, buf)
-    }
-}
-
-
-
-data class MixedTextTranslationResult (
-    var `translations`: List<TextTranslation>, 
-    var `nothingReason`: kotlin.String?
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeMixedTextTranslationResult: FfiConverterRustBuffer<MixedTextTranslationResult> {
-    override fun read(buf: ByteBuffer): MixedTextTranslationResult {
-        return MixedTextTranslationResult(
-            FfiConverterSequenceTypeTextTranslation.read(buf),
-            FfiConverterOptionalString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: MixedTextTranslationResult) = (
-            FfiConverterSequenceTypeTextTranslation.allocationSize(value.`translations`) +
-            FfiConverterOptionalString.allocationSize(value.`nothingReason`)
-    )
-
-    override fun write(value: MixedTextTranslationResult, buf: ByteBuffer) {
-            FfiConverterSequenceTypeTextTranslation.write(value.`translations`, buf)
-            FfiConverterOptionalString.write(value.`nothingReason`, buf)
-    }
-}
-
-
-
-data class OcrLine (
-    var `text`: kotlin.String, 
-    var `boundingBox`: OcrRect, 
-    var `wordRects`: List<OcrRect>, 
-    var `backgroundArgb`: kotlin.Long, 
-    var `foregroundArgb`: kotlin.Long
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeOcrLine: FfiConverterRustBuffer<OcrLine> {
-    override fun read(buf: ByteBuffer): OcrLine {
-        return OcrLine(
-            FfiConverterString.read(buf),
-            FfiConverterTypeOcrRect.read(buf),
-            FfiConverterSequenceTypeOcrRect.read(buf),
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: OcrLine) = (
-            FfiConverterString.allocationSize(value.`text`) +
-            FfiConverterTypeOcrRect.allocationSize(value.`boundingBox`) +
-            FfiConverterSequenceTypeOcrRect.allocationSize(value.`wordRects`) +
-            FfiConverterLong.allocationSize(value.`backgroundArgb`) +
-            FfiConverterLong.allocationSize(value.`foregroundArgb`)
-    )
-
-    override fun write(value: OcrLine, buf: ByteBuffer) {
-            FfiConverterString.write(value.`text`, buf)
-            FfiConverterTypeOcrRect.write(value.`boundingBox`, buf)
-            FfiConverterSequenceTypeOcrRect.write(value.`wordRects`, buf)
-            FfiConverterLong.write(value.`backgroundArgb`, buf)
-            FfiConverterLong.write(value.`foregroundArgb`, buf)
-    }
-}
-
-
-
-data class OcrRect (
-    var `left`: kotlin.Long, 
-    var `top`: kotlin.Long, 
-    var `right`: kotlin.Long, 
-    var `bottom`: kotlin.Long
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeOcrRect: FfiConverterRustBuffer<OcrRect> {
-    override fun read(buf: ByteBuffer): OcrRect {
-        return OcrRect(
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: OcrRect) = (
-            FfiConverterLong.allocationSize(value.`left`) +
-            FfiConverterLong.allocationSize(value.`top`) +
-            FfiConverterLong.allocationSize(value.`right`) +
-            FfiConverterLong.allocationSize(value.`bottom`)
-    )
-
-    override fun write(value: OcrRect, buf: ByteBuffer) {
-            FfiConverterLong.write(value.`left`, buf)
-            FfiConverterLong.write(value.`top`, buf)
-            FfiConverterLong.write(value.`right`, buf)
-            FfiConverterLong.write(value.`bottom`, buf)
-    }
-}
-
-
-
-data class OverlayColorsRecord (
-    var `backgroundArgb`: kotlin.Long, 
-    var `foregroundArgb`: kotlin.Long
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeOverlayColorsRecord: FfiConverterRustBuffer<OverlayColorsRecord> {
-    override fun read(buf: ByteBuffer): OverlayColorsRecord {
-        return OverlayColorsRecord(
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: OverlayColorsRecord) = (
-            FfiConverterLong.allocationSize(value.`backgroundArgb`) +
-            FfiConverterLong.allocationSize(value.`foregroundArgb`)
-    )
-
-    override fun write(value: OverlayColorsRecord, buf: ByteBuffer) {
-            FfiConverterLong.write(value.`backgroundArgb`, buf)
-            FfiConverterLong.write(value.`foregroundArgb`, buf)
-    }
-}
-
-
-
-data class OverlayScreenshot (
-    var `rgbaBytes`: kotlin.ByteArray, 
-    var `width`: kotlin.Int, 
-    var `height`: kotlin.Int
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeOverlayScreenshot: FfiConverterRustBuffer<OverlayScreenshot> {
-    override fun read(buf: ByteBuffer): OverlayScreenshot {
-        return OverlayScreenshot(
-            FfiConverterByteArray.read(buf),
-            FfiConverterInt.read(buf),
-            FfiConverterInt.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: OverlayScreenshot) = (
-            FfiConverterByteArray.allocationSize(value.`rgbaBytes`) +
-            FfiConverterInt.allocationSize(value.`width`) +
-            FfiConverterInt.allocationSize(value.`height`)
-    )
-
-    override fun write(value: OverlayScreenshot, buf: ByteBuffer) {
-            FfiConverterByteArray.write(value.`rgbaBytes`, buf)
-            FfiConverterInt.write(value.`width`, buf)
-            FfiConverterInt.write(value.`height`, buf)
-    }
-}
-
-
-
-data class StructuredFragment (
-    var `text`: kotlin.String, 
-    var `boundingBox`: OcrRect, 
-    var `style`: StructuredTextStyle?, 
-    var `layoutGroup`: kotlin.Int, 
-    var `translationGroup`: kotlin.Int, 
-    var `clusterGroup`: kotlin.Int
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeStructuredFragment: FfiConverterRustBuffer<StructuredFragment> {
-    override fun read(buf: ByteBuffer): StructuredFragment {
-        return StructuredFragment(
-            FfiConverterString.read(buf),
-            FfiConverterTypeOcrRect.read(buf),
-            FfiConverterOptionalTypeStructuredTextStyle.read(buf),
-            FfiConverterInt.read(buf),
-            FfiConverterInt.read(buf),
-            FfiConverterInt.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: StructuredFragment) = (
-            FfiConverterString.allocationSize(value.`text`) +
-            FfiConverterTypeOcrRect.allocationSize(value.`boundingBox`) +
-            FfiConverterOptionalTypeStructuredTextStyle.allocationSize(value.`style`) +
-            FfiConverterInt.allocationSize(value.`layoutGroup`) +
-            FfiConverterInt.allocationSize(value.`translationGroup`) +
-            FfiConverterInt.allocationSize(value.`clusterGroup`)
-    )
-
-    override fun write(value: StructuredFragment, buf: ByteBuffer) {
-            FfiConverterString.write(value.`text`, buf)
-            FfiConverterTypeOcrRect.write(value.`boundingBox`, buf)
-            FfiConverterOptionalTypeStructuredTextStyle.write(value.`style`, buf)
-            FfiConverterInt.write(value.`layoutGroup`, buf)
-            FfiConverterInt.write(value.`translationGroup`, buf)
-            FfiConverterInt.write(value.`clusterGroup`, buf)
-    }
-}
-
-
-
-data class StructuredStyleSpan (
-    var `start`: kotlin.Int, 
-    var `end`: kotlin.Int, 
-    var `style`: StructuredTextStyle?
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeStructuredStyleSpan: FfiConverterRustBuffer<StructuredStyleSpan> {
-    override fun read(buf: ByteBuffer): StructuredStyleSpan {
-        return StructuredStyleSpan(
-            FfiConverterInt.read(buf),
-            FfiConverterInt.read(buf),
-            FfiConverterOptionalTypeStructuredTextStyle.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: StructuredStyleSpan) = (
-            FfiConverterInt.allocationSize(value.`start`) +
-            FfiConverterInt.allocationSize(value.`end`) +
-            FfiConverterOptionalTypeStructuredTextStyle.allocationSize(value.`style`)
-    )
-
-    override fun write(value: StructuredStyleSpan, buf: ByteBuffer) {
-            FfiConverterInt.write(value.`start`, buf)
-            FfiConverterInt.write(value.`end`, buf)
-            FfiConverterOptionalTypeStructuredTextStyle.write(value.`style`, buf)
-    }
-}
-
-
-
-data class StructuredTextStyle (
-    var `textColor`: kotlin.Long?, 
-    var `bgColor`: kotlin.Long?, 
-    var `textSize`: kotlin.Float?, 
-    var `bold`: kotlin.Boolean, 
-    var `italic`: kotlin.Boolean, 
-    var `underline`: kotlin.Boolean, 
-    var `strikethrough`: kotlin.Boolean
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeStructuredTextStyle: FfiConverterRustBuffer<StructuredTextStyle> {
-    override fun read(buf: ByteBuffer): StructuredTextStyle {
-        return StructuredTextStyle(
-            FfiConverterOptionalLong.read(buf),
-            FfiConverterOptionalLong.read(buf),
-            FfiConverterOptionalFloat.read(buf),
-            FfiConverterBoolean.read(buf),
-            FfiConverterBoolean.read(buf),
-            FfiConverterBoolean.read(buf),
-            FfiConverterBoolean.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: StructuredTextStyle) = (
-            FfiConverterOptionalLong.allocationSize(value.`textColor`) +
-            FfiConverterOptionalLong.allocationSize(value.`bgColor`) +
-            FfiConverterOptionalFloat.allocationSize(value.`textSize`) +
-            FfiConverterBoolean.allocationSize(value.`bold`) +
-            FfiConverterBoolean.allocationSize(value.`italic`) +
-            FfiConverterBoolean.allocationSize(value.`underline`) +
-            FfiConverterBoolean.allocationSize(value.`strikethrough`)
-    )
-
-    override fun write(value: StructuredTextStyle, buf: ByteBuffer) {
-            FfiConverterOptionalLong.write(value.`textColor`, buf)
-            FfiConverterOptionalLong.write(value.`bgColor`, buf)
-            FfiConverterOptionalFloat.write(value.`textSize`, buf)
-            FfiConverterBoolean.write(value.`bold`, buf)
-            FfiConverterBoolean.write(value.`italic`, buf)
-            FfiConverterBoolean.write(value.`underline`, buf)
-            FfiConverterBoolean.write(value.`strikethrough`, buf)
-    }
-}
-
-
-
-data class StructuredTranslatedBlock (
-    var `text`: kotlin.String, 
-    var `boundingBox`: OcrRect, 
-    var `styleSpans`: List<StructuredStyleSpan>, 
-    var `backgroundArgb`: kotlin.Long, 
-    var `foregroundArgb`: kotlin.Long
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeStructuredTranslatedBlock: FfiConverterRustBuffer<StructuredTranslatedBlock> {
-    override fun read(buf: ByteBuffer): StructuredTranslatedBlock {
-        return StructuredTranslatedBlock(
-            FfiConverterString.read(buf),
-            FfiConverterTypeOcrRect.read(buf),
-            FfiConverterSequenceTypeStructuredStyleSpan.read(buf),
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: StructuredTranslatedBlock) = (
-            FfiConverterString.allocationSize(value.`text`) +
-            FfiConverterTypeOcrRect.allocationSize(value.`boundingBox`) +
-            FfiConverterSequenceTypeStructuredStyleSpan.allocationSize(value.`styleSpans`) +
-            FfiConverterLong.allocationSize(value.`backgroundArgb`) +
-            FfiConverterLong.allocationSize(value.`foregroundArgb`)
-    )
-
-    override fun write(value: StructuredTranslatedBlock, buf: ByteBuffer) {
-            FfiConverterString.write(value.`text`, buf)
-            FfiConverterTypeOcrRect.write(value.`boundingBox`, buf)
-            FfiConverterSequenceTypeStructuredStyleSpan.write(value.`styleSpans`, buf)
-            FfiConverterLong.write(value.`backgroundArgb`, buf)
-            FfiConverterLong.write(value.`foregroundArgb`, buf)
-    }
-}
-
-
-
-data class StructuredTranslationResult (
-    var `blocks`: List<StructuredTranslatedBlock>, 
-    var `nothingReason`: kotlin.String?, 
-    var `errorMessage`: kotlin.String?
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeStructuredTranslationResult: FfiConverterRustBuffer<StructuredTranslationResult> {
-    override fun read(buf: ByteBuffer): StructuredTranslationResult {
-        return StructuredTranslationResult(
-            FfiConverterSequenceTypeStructuredTranslatedBlock.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: StructuredTranslationResult) = (
-            FfiConverterSequenceTypeStructuredTranslatedBlock.allocationSize(value.`blocks`) +
-            FfiConverterOptionalString.allocationSize(value.`nothingReason`) +
-            FfiConverterOptionalString.allocationSize(value.`errorMessage`)
-    )
-
-    override fun write(value: StructuredTranslationResult, buf: ByteBuffer) {
-            FfiConverterSequenceTypeStructuredTranslatedBlock.write(value.`blocks`, buf)
-            FfiConverterOptionalString.write(value.`nothingReason`, buf)
-            FfiConverterOptionalString.write(value.`errorMessage`, buf)
-    }
-}
-
-
-
-data class TextTranslation (
-    var `sourceText`: kotlin.String, 
-    var `translatedText`: kotlin.String
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeTextTranslation: FfiConverterRustBuffer<TextTranslation> {
-    override fun read(buf: ByteBuffer): TextTranslation {
-        return TextTranslation(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: TextTranslation) = (
-            FfiConverterString.allocationSize(value.`sourceText`) +
-            FfiConverterString.allocationSize(value.`translatedText`)
-    )
-
-    override fun write(value: TextTranslation, buf: ByteBuffer) {
-            FfiConverterString.write(value.`sourceText`, buf)
-            FfiConverterString.write(value.`translatedText`, buf)
-    }
-}
-
-
-
-data class TokenAlignment (
-    var `srcBegin`: kotlin.Long, 
-    var `srcEnd`: kotlin.Long, 
-    var `tgtBegin`: kotlin.Long, 
-    var `tgtEnd`: kotlin.Long
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeTokenAlignment: FfiConverterRustBuffer<TokenAlignment> {
-    override fun read(buf: ByteBuffer): TokenAlignment {
-        return TokenAlignment(
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: TokenAlignment) = (
-            FfiConverterLong.allocationSize(value.`srcBegin`) +
-            FfiConverterLong.allocationSize(value.`srcEnd`) +
-            FfiConverterLong.allocationSize(value.`tgtBegin`) +
-            FfiConverterLong.allocationSize(value.`tgtEnd`)
-    )
-
-    override fun write(value: TokenAlignment, buf: ByteBuffer) {
-            FfiConverterLong.write(value.`srcBegin`, buf)
-            FfiConverterLong.write(value.`srcEnd`, buf)
-            FfiConverterLong.write(value.`tgtBegin`, buf)
-            FfiConverterLong.write(value.`tgtEnd`, buf)
-    }
-}
-
-
-
-data class TranslationWithAlignment (
-    var `sourceText`: kotlin.String, 
-    var `translatedText`: kotlin.String, 
-    var `alignments`: List<TokenAlignment>
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeTranslationWithAlignment: FfiConverterRustBuffer<TranslationWithAlignment> {
-    override fun read(buf: ByteBuffer): TranslationWithAlignment {
-        return TranslationWithAlignment(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterSequenceTypeTokenAlignment.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: TranslationWithAlignment) = (
-            FfiConverterString.allocationSize(value.`sourceText`) +
-            FfiConverterString.allocationSize(value.`translatedText`) +
-            FfiConverterSequenceTypeTokenAlignment.allocationSize(value.`alignments`)
-    )
-
-    override fun write(value: TranslationWithAlignment, buf: ByteBuffer) {
-            FfiConverterString.write(value.`sourceText`, buf)
-            FfiConverterString.write(value.`translatedText`, buf)
-            FfiConverterSequenceTypeTokenAlignment.write(value.`alignments`, buf)
-    }
-}
-
-
-
 data class TtsVoiceFiles (
     var `engine`: kotlin.String, 
     var `modelPath`: kotlin.String, 
@@ -2991,82 +2156,6 @@ public object FfiConverterTypeTtsVoiceFiles: FfiConverterRustBuffer<TtsVoiceFile
             FfiConverterString.write(value.`auxPath`, buf)
             FfiConverterString.write(value.`languageCode`, buf)
             FfiConverterOptionalInt.write(value.`speakerId`, buf)
-    }
-}
-
-
-
-data class TtsVoicePackInfo (
-    var `packId`: kotlin.String, 
-    var `displayName`: kotlin.String, 
-    var `quality`: kotlin.String?, 
-    var `sizeBytes`: kotlin.Long
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeTtsVoicePackInfo: FfiConverterRustBuffer<TtsVoicePackInfo> {
-    override fun read(buf: ByteBuffer): TtsVoicePackInfo {
-        return TtsVoicePackInfo(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: TtsVoicePackInfo) = (
-            FfiConverterString.allocationSize(value.`packId`) +
-            FfiConverterString.allocationSize(value.`displayName`) +
-            FfiConverterOptionalString.allocationSize(value.`quality`) +
-            FfiConverterLong.allocationSize(value.`sizeBytes`)
-    )
-
-    override fun write(value: TtsVoicePackInfo, buf: ByteBuffer) {
-            FfiConverterString.write(value.`packId`, buf)
-            FfiConverterString.write(value.`displayName`, buf)
-            FfiConverterOptionalString.write(value.`quality`, buf)
-            FfiConverterLong.write(value.`sizeBytes`, buf)
-    }
-}
-
-
-
-data class TtsVoicePickerRegion (
-    var `code`: kotlin.String, 
-    var `displayName`: kotlin.String, 
-    var `voices`: List<TtsVoicePackInfo>
-) {
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeTtsVoicePickerRegion: FfiConverterRustBuffer<TtsVoicePickerRegion> {
-    override fun read(buf: ByteBuffer): TtsVoicePickerRegion {
-        return TtsVoicePickerRegion(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterSequenceTypeTtsVoicePackInfo.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: TtsVoicePickerRegion) = (
-            FfiConverterString.allocationSize(value.`code`) +
-            FfiConverterString.allocationSize(value.`displayName`) +
-            FfiConverterSequenceTypeTtsVoicePackInfo.allocationSize(value.`voices`)
-    )
-
-    override fun write(value: TtsVoicePickerRegion, buf: ByteBuffer) {
-            FfiConverterString.write(value.`code`, buf)
-            FfiConverterString.write(value.`displayName`, buf)
-            FfiConverterSequenceTypeTtsVoicePackInfo.write(value.`voices`, buf)
     }
 }
 
@@ -3126,67 +2215,6 @@ public object FfiConverterTypeCatalogOpenError : FfiConverterRustBuffer<CatalogO
 
 
 
-enum class OcrBackgroundMode {
-    
-    WHITE_ON_BLACK,
-    BLACK_ON_WHITE,
-    AUTO_DETECT;
-    companion object
-}
-
-
-/**
- * @suppress
- */
-public object FfiConverterTypeOcrBackgroundMode: FfiConverterRustBuffer<OcrBackgroundMode> {
-    override fun read(buf: ByteBuffer) = try {
-        OcrBackgroundMode.values()[buf.getInt() - 1]
-    } catch (e: IndexOutOfBoundsException) {
-        throw RuntimeException("invalid enum value, something is very wrong!!", e)
-    }
-
-    override fun allocationSize(value: OcrBackgroundMode) = 4UL
-
-    override fun write(value: OcrBackgroundMode, buf: ByteBuffer) {
-        buf.putInt(value.ordinal + 1)
-    }
-}
-
-
-
-
-
-
-enum class OcrReadingOrder {
-    
-    LEFT_TO_RIGHT,
-    TOP_TO_BOTTOM_LEFT_TO_RIGHT;
-    companion object
-}
-
-
-/**
- * @suppress
- */
-public object FfiConverterTypeOcrReadingOrder: FfiConverterRustBuffer<OcrReadingOrder> {
-    override fun read(buf: ByteBuffer) = try {
-        OcrReadingOrder.values()[buf.getInt() - 1]
-    } catch (e: IndexOutOfBoundsException) {
-        throw RuntimeException("invalid enum value, something is very wrong!!", e)
-    }
-
-    override fun allocationSize(value: OcrReadingOrder) = 4UL
-
-    override fun write(value: OcrReadingOrder, buf: ByteBuffer) {
-        buf.putInt(value.ordinal + 1)
-    }
-}
-
-
-
-
-
-
 /**
  * @suppress
  */
@@ -3222,70 +2250,6 @@ public object FfiConverterOptionalInt: FfiConverterRustBuffer<kotlin.Int?> {
 /**
  * @suppress
  */
-public object FfiConverterOptionalLong: FfiConverterRustBuffer<kotlin.Long?> {
-    override fun read(buf: ByteBuffer): kotlin.Long? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterLong.read(buf)
-    }
-
-    override fun allocationSize(value: kotlin.Long?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterLong.allocationSize(value)
-        }
-    }
-
-    override fun write(value: kotlin.Long?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterLong.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterOptionalFloat: FfiConverterRustBuffer<kotlin.Float?> {
-    override fun read(buf: ByteBuffer): kotlin.Float? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterFloat.read(buf)
-    }
-
-    override fun allocationSize(value: kotlin.Float?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterFloat.allocationSize(value)
-        }
-    }
-
-    override fun write(value: kotlin.Float?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterFloat.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
 public object FfiConverterOptionalString: FfiConverterRustBuffer<kotlin.String?> {
     override fun read(buf: ByteBuffer): kotlin.String? {
         if (buf.get().toInt() == 0) {
@@ -3308,6 +2272,38 @@ public object FfiConverterOptionalString: FfiConverterRustBuffer<kotlin.String?>
         } else {
             buf.put(1)
             FfiConverterString.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeTtsVoiceFiles: FfiConverterRustBuffer<TtsVoiceFiles?> {
+    override fun read(buf: ByteBuffer): TtsVoiceFiles? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeTtsVoiceFiles.read(buf)
+    }
+
+    override fun allocationSize(value: TtsVoiceFiles?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeTtsVoiceFiles.allocationSize(value)
+        }
+    }
+
+    override fun write(value: TtsVoiceFiles?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeTtsVoiceFiles.write(value, buf)
         }
     }
 }
@@ -3382,60 +2378,28 @@ public object FfiConverterOptionalTypeDownloadPlan: FfiConverterRustBuffer<Downl
 /**
  * @suppress
  */
-public object FfiConverterOptionalTypeImageTranslationPlan: FfiConverterRustBuffer<ImageTranslationPlan?> {
-    override fun read(buf: ByteBuffer): ImageTranslationPlan? {
+public object FfiConverterOptionalTypeOverlayColors: FfiConverterRustBuffer<OverlayColors?> {
+    override fun read(buf: ByteBuffer): OverlayColors? {
         if (buf.get().toInt() == 0) {
             return null
         }
-        return FfiConverterTypeImageTranslationPlan.read(buf)
+        return FfiConverterTypeOverlayColors.read(buf)
     }
 
-    override fun allocationSize(value: ImageTranslationPlan?): ULong {
+    override fun allocationSize(value: OverlayColors?): ULong {
         if (value == null) {
             return 1UL
         } else {
-            return 1UL + FfiConverterTypeImageTranslationPlan.allocationSize(value)
+            return 1UL + FfiConverterTypeOverlayColors.allocationSize(value)
         }
     }
 
-    override fun write(value: ImageTranslationPlan?, buf: ByteBuffer) {
+    override fun write(value: OverlayColors?, buf: ByteBuffer) {
         if (value == null) {
             buf.put(0)
         } else {
             buf.put(1)
-            FfiConverterTypeImageTranslationPlan.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterOptionalTypeOverlayColorsRecord: FfiConverterRustBuffer<OverlayColorsRecord?> {
-    override fun read(buf: ByteBuffer): OverlayColorsRecord? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterTypeOverlayColorsRecord.read(buf)
-    }
-
-    override fun allocationSize(value: OverlayColorsRecord?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterTypeOverlayColorsRecord.allocationSize(value)
-        }
-    }
-
-    override fun write(value: OverlayColorsRecord?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterTypeOverlayColorsRecord.write(value, buf)
+            FfiConverterTypeOverlayColors.write(value, buf)
         }
     }
 }
@@ -3478,60 +2442,28 @@ public object FfiConverterOptionalTypeOverlayScreenshot: FfiConverterRustBuffer<
 /**
  * @suppress
  */
-public object FfiConverterOptionalTypeStructuredTextStyle: FfiConverterRustBuffer<StructuredTextStyle?> {
-    override fun read(buf: ByteBuffer): StructuredTextStyle? {
+public object FfiConverterOptionalTypePreparedImageOverlay: FfiConverterRustBuffer<PreparedImageOverlay?> {
+    override fun read(buf: ByteBuffer): PreparedImageOverlay? {
         if (buf.get().toInt() == 0) {
             return null
         }
-        return FfiConverterTypeStructuredTextStyle.read(buf)
+        return FfiConverterTypePreparedImageOverlay.read(buf)
     }
 
-    override fun allocationSize(value: StructuredTextStyle?): ULong {
+    override fun allocationSize(value: PreparedImageOverlay?): ULong {
         if (value == null) {
             return 1UL
         } else {
-            return 1UL + FfiConverterTypeStructuredTextStyle.allocationSize(value)
+            return 1UL + FfiConverterTypePreparedImageOverlay.allocationSize(value)
         }
     }
 
-    override fun write(value: StructuredTextStyle?, buf: ByteBuffer) {
+    override fun write(value: PreparedImageOverlay?, buf: ByteBuffer) {
         if (value == null) {
             buf.put(0)
         } else {
             buf.put(1)
-            FfiConverterTypeStructuredTextStyle.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterOptionalTypeTtsVoiceFiles: FfiConverterRustBuffer<TtsVoiceFiles?> {
-    override fun read(buf: ByteBuffer): TtsVoiceFiles? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterTypeTtsVoiceFiles.read(buf)
-    }
-
-    override fun allocationSize(value: TtsVoiceFiles?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterTypeTtsVoiceFiles.allocationSize(value)
-        }
-    }
-
-    override fun write(value: TtsVoiceFiles?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterTypeTtsVoiceFiles.write(value, buf)
+            FfiConverterTypePreparedImageOverlay.write(value, buf)
         }
     }
 }
@@ -3574,28 +2506,28 @@ public object FfiConverterOptionalSequenceString: FfiConverterRustBuffer<List<ko
 /**
  * @suppress
  */
-public object FfiConverterOptionalSequenceTypeOcrRect: FfiConverterRustBuffer<List<OcrRect>?> {
-    override fun read(buf: ByteBuffer): List<OcrRect>? {
+public object FfiConverterOptionalSequenceTypeRect: FfiConverterRustBuffer<List<Rect>?> {
+    override fun read(buf: ByteBuffer): List<Rect>? {
         if (buf.get().toInt() == 0) {
             return null
         }
-        return FfiConverterSequenceTypeOcrRect.read(buf)
+        return FfiConverterSequenceTypeRect.read(buf)
     }
 
-    override fun allocationSize(value: List<OcrRect>?): ULong {
+    override fun allocationSize(value: List<Rect>?): ULong {
         if (value == null) {
             return 1UL
         } else {
-            return 1UL + FfiConverterSequenceTypeOcrRect.allocationSize(value)
+            return 1UL + FfiConverterSequenceTypeRect.allocationSize(value)
         }
     }
 
-    override fun write(value: List<OcrRect>?, buf: ByteBuffer) {
+    override fun write(value: List<Rect>?, buf: ByteBuffer) {
         if (value == null) {
             buf.put(0)
         } else {
             buf.put(1)
-            FfiConverterSequenceTypeOcrRect.write(value, buf)
+            FfiConverterSequenceTypeRect.write(value, buf)
         }
     }
 }
@@ -3666,24 +2598,24 @@ public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.Str
 /**
  * @suppress
  */
-public object FfiConverterSequenceTypeDownloadTask: FfiConverterRustBuffer<List<DownloadTask>> {
-    override fun read(buf: ByteBuffer): List<DownloadTask> {
+public object FfiConverterSequenceTypeLanguageAvailabilityRow: FfiConverterRustBuffer<List<LanguageAvailabilityRow>> {
+    override fun read(buf: ByteBuffer): List<LanguageAvailabilityRow> {
         val len = buf.getInt()
-        return List<DownloadTask>(len) {
-            FfiConverterTypeDownloadTask.read(buf)
+        return List<LanguageAvailabilityRow>(len) {
+            FfiConverterTypeLanguageAvailabilityRow.read(buf)
         }
     }
 
-    override fun allocationSize(value: List<DownloadTask>): ULong {
+    override fun allocationSize(value: List<LanguageAvailabilityRow>): ULong {
         val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeDownloadTask.allocationSize(it) }.sum()
+        val sizeForItems = value.map { FfiConverterTypeLanguageAvailabilityRow.allocationSize(it) }.sum()
         return sizeForLength + sizeForItems
     }
 
-    override fun write(value: List<DownloadTask>, buf: ByteBuffer) {
+    override fun write(value: List<LanguageAvailabilityRow>, buf: ByteBuffer) {
         buf.putInt(value.size)
         value.iterator().forEach {
-            FfiConverterTypeDownloadTask.write(it, buf)
+            FfiConverterTypeLanguageAvailabilityRow.write(it, buf)
         }
     }
 }
@@ -3694,24 +2626,24 @@ public object FfiConverterSequenceTypeDownloadTask: FfiConverterRustBuffer<List<
 /**
  * @suppress
  */
-public object FfiConverterSequenceTypeImageTranslationBlock: FfiConverterRustBuffer<List<ImageTranslationBlock>> {
-    override fun read(buf: ByteBuffer): List<ImageTranslationBlock> {
+public object FfiConverterSequenceTypeRect: FfiConverterRustBuffer<List<Rect>> {
+    override fun read(buf: ByteBuffer): List<Rect> {
         val len = buf.getInt()
-        return List<ImageTranslationBlock>(len) {
-            FfiConverterTypeImageTranslationBlock.read(buf)
+        return List<Rect>(len) {
+            FfiConverterTypeRect.read(buf)
         }
     }
 
-    override fun allocationSize(value: List<ImageTranslationBlock>): ULong {
+    override fun allocationSize(value: List<Rect>): ULong {
         val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeImageTranslationBlock.allocationSize(it) }.sum()
+        val sizeForItems = value.map { FfiConverterTypeRect.allocationSize(it) }.sum()
         return sizeForLength + sizeForItems
     }
 
-    override fun write(value: List<ImageTranslationBlock>, buf: ByteBuffer) {
+    override fun write(value: List<Rect>, buf: ByteBuffer) {
         buf.putInt(value.size)
         value.iterator().forEach {
-            FfiConverterTypeImageTranslationBlock.write(it, buf)
+            FfiConverterTypeRect.write(it, buf)
         }
     }
 }
@@ -3722,220 +2654,24 @@ public object FfiConverterSequenceTypeImageTranslationBlock: FfiConverterRustBuf
 /**
  * @suppress
  */
-public object FfiConverterSequenceTypeLanguageRow: FfiConverterRustBuffer<List<LanguageRow>> {
-    override fun read(buf: ByteBuffer): List<LanguageRow> {
+public object FfiConverterSequenceTypeStyledFragment: FfiConverterRustBuffer<List<StyledFragment>> {
+    override fun read(buf: ByteBuffer): List<StyledFragment> {
         val len = buf.getInt()
-        return List<LanguageRow>(len) {
-            FfiConverterTypeLanguageRow.read(buf)
+        return List<StyledFragment>(len) {
+            FfiConverterTypeStyledFragment.read(buf)
         }
     }
 
-    override fun allocationSize(value: List<LanguageRow>): ULong {
+    override fun allocationSize(value: List<StyledFragment>): ULong {
         val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeLanguageRow.allocationSize(it) }.sum()
+        val sizeForItems = value.map { FfiConverterTypeStyledFragment.allocationSize(it) }.sum()
         return sizeForLength + sizeForItems
     }
 
-    override fun write(value: List<LanguageRow>, buf: ByteBuffer) {
+    override fun write(value: List<StyledFragment>, buf: ByteBuffer) {
         buf.putInt(value.size)
         value.iterator().forEach {
-            FfiConverterTypeLanguageRow.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeOcrLine: FfiConverterRustBuffer<List<OcrLine>> {
-    override fun read(buf: ByteBuffer): List<OcrLine> {
-        val len = buf.getInt()
-        return List<OcrLine>(len) {
-            FfiConverterTypeOcrLine.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<OcrLine>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeOcrLine.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<OcrLine>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeOcrLine.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeOcrRect: FfiConverterRustBuffer<List<OcrRect>> {
-    override fun read(buf: ByteBuffer): List<OcrRect> {
-        val len = buf.getInt()
-        return List<OcrRect>(len) {
-            FfiConverterTypeOcrRect.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<OcrRect>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeOcrRect.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<OcrRect>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeOcrRect.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeStructuredFragment: FfiConverterRustBuffer<List<StructuredFragment>> {
-    override fun read(buf: ByteBuffer): List<StructuredFragment> {
-        val len = buf.getInt()
-        return List<StructuredFragment>(len) {
-            FfiConverterTypeStructuredFragment.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<StructuredFragment>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeStructuredFragment.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<StructuredFragment>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeStructuredFragment.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeStructuredStyleSpan: FfiConverterRustBuffer<List<StructuredStyleSpan>> {
-    override fun read(buf: ByteBuffer): List<StructuredStyleSpan> {
-        val len = buf.getInt()
-        return List<StructuredStyleSpan>(len) {
-            FfiConverterTypeStructuredStyleSpan.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<StructuredStyleSpan>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeStructuredStyleSpan.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<StructuredStyleSpan>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeStructuredStyleSpan.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeStructuredTranslatedBlock: FfiConverterRustBuffer<List<StructuredTranslatedBlock>> {
-    override fun read(buf: ByteBuffer): List<StructuredTranslatedBlock> {
-        val len = buf.getInt()
-        return List<StructuredTranslatedBlock>(len) {
-            FfiConverterTypeStructuredTranslatedBlock.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<StructuredTranslatedBlock>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeStructuredTranslatedBlock.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<StructuredTranslatedBlock>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeStructuredTranslatedBlock.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeTextTranslation: FfiConverterRustBuffer<List<TextTranslation>> {
-    override fun read(buf: ByteBuffer): List<TextTranslation> {
-        val len = buf.getInt()
-        return List<TextTranslation>(len) {
-            FfiConverterTypeTextTranslation.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<TextTranslation>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeTextTranslation.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<TextTranslation>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeTextTranslation.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeTokenAlignment: FfiConverterRustBuffer<List<TokenAlignment>> {
-    override fun read(buf: ByteBuffer): List<TokenAlignment> {
-        val len = buf.getInt()
-        return List<TokenAlignment>(len) {
-            FfiConverterTypeTokenAlignment.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<TokenAlignment>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeTokenAlignment.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<TokenAlignment>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeTokenAlignment.write(it, buf)
+            FfiConverterTypeStyledFragment.write(it, buf)
         }
     }
 }
@@ -3974,34 +2710,6 @@ public object FfiConverterSequenceTypeTranslationWithAlignment: FfiConverterRust
 /**
  * @suppress
  */
-public object FfiConverterSequenceTypeTtsVoicePackInfo: FfiConverterRustBuffer<List<TtsVoicePackInfo>> {
-    override fun read(buf: ByteBuffer): List<TtsVoicePackInfo> {
-        val len = buf.getInt()
-        return List<TtsVoicePackInfo>(len) {
-            FfiConverterTypeTtsVoicePackInfo.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<TtsVoicePackInfo>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeTtsVoicePackInfo.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<TtsVoicePackInfo>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeTtsVoicePackInfo.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
 public object FfiConverterSequenceTypeTtsVoicePickerRegion: FfiConverterRustBuffer<List<TtsVoicePickerRegion>> {
     override fun read(buf: ByteBuffer): List<TtsVoicePickerRegion> {
         val len = buf.getInt()
@@ -4022,11 +2730,41 @@ public object FfiConverterSequenceTypeTtsVoicePickerRegion: FfiConverterRustBuff
             FfiConverterTypeTtsVoicePickerRegion.write(it, buf)
         }
     }
-} fun `sampleOverlayColorsRgba`(`rgbaBytes`: kotlin.ByteArray, `width`: kotlin.Int, `height`: kotlin.Int, `bounds`: OcrRect, `backgroundMode`: OcrBackgroundMode, `wordRects`: List<OcrRect>?): OverlayColorsRecord? {
-            return FfiConverterOptionalTypeOverlayColorsRecord.lift(
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ fun `sampleOverlayColorsRgba`(`rgbaBytes`: kotlin.ByteArray, `width`: kotlin.UInt, `height`: kotlin.UInt, `bounds`: Rect, `backgroundMode`: BackgroundMode, `wordRects`: List<Rect>?): OverlayColors? {
+            return FfiConverterOptionalTypeOverlayColors.lift(
     uniffiRustCall() { _status ->
     UniffiLib.INSTANCE.uniffi_bindings_fn_func_sample_overlay_colors_rgba(
-        FfiConverterByteArray.lower(`rgbaBytes`),FfiConverterInt.lower(`width`),FfiConverterInt.lower(`height`),FfiConverterTypeOcrRect.lower(`bounds`),FfiConverterTypeOcrBackgroundMode.lower(`backgroundMode`),FfiConverterOptionalSequenceTypeOcrRect.lower(`wordRects`),_status)
+        FfiConverterByteArray.lower(`rgbaBytes`),FfiConverterUInt.lower(`width`),FfiConverterUInt.lower(`height`),FfiConverterTypeRect.lower(`bounds`),FfiConverterTypeBackgroundMode.lower(`backgroundMode`),FfiConverterOptionalSequenceTypeRect.lower(`wordRects`),_status)
 }
     )
     }

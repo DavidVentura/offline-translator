@@ -2239,6 +2239,7 @@ dependencies = [
  "regex 1.12.3",
  "serde",
  "serde_json",
+ "uniffi",
 ]
 
 [[package]]

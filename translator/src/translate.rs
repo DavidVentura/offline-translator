@@ -14,14 +14,16 @@ pub struct TranslatedText {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct TokenAlignment {
-    pub src_begin: usize,
-    pub src_end: usize,
-    pub tgt_begin: usize,
-    pub tgt_end: usize,
+    pub src_begin: u64,
+    pub src_end: u64,
+    pub tgt_begin: u64,
+    pub tgt_end: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct TranslationWithAlignment {
     pub source_text: String,
     pub translated_text: String,

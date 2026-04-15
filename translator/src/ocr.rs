@@ -1,21 +1,22 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct Rect {
-    pub left: i32,
-    pub top: i32,
-    pub right: i32,
-    pub bottom: i32,
+    pub left: u32,
+    pub top: u32,
+    pub right: u32,
+    pub bottom: u32,
 }
 
 impl Rect {
-    pub fn width(&self) -> i32 {
-        self.right - self.left
+    pub fn width(&self) -> u32 {
+        self.right.saturating_sub(self.left)
     }
 
-    pub fn height(&self) -> i32 {
-        self.bottom - self.top
+    pub fn height(&self) -> u32 {
+        self.bottom.saturating_sub(self.top)
     }
 
-    pub fn center_y(&self) -> i32 {
+    pub fn center_y(&self) -> u32 {
         (self.top + self.bottom) / 2
     }
 
@@ -37,6 +38,7 @@ impl Rect {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Enum))]
 pub enum ReadingOrder {
     #[default]
     LeftToRight,
@@ -66,12 +68,14 @@ pub struct TextBlock {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct OverlayColors {
     pub background_argb: u32,
     pub foreground_argb: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct PreparedTextLine {
     pub text: String,
     pub bounding_box: Rect,
@@ -81,6 +85,7 @@ pub struct PreparedTextLine {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct PreparedTextBlock {
     pub source_text: String,
     pub translated_text: String,
@@ -91,10 +96,11 @@ pub struct PreparedTextBlock {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct PreparedImageOverlay {
     pub rgba_bytes: Vec<u8>,
-    pub width: i32,
-    pub height: i32,
+    pub width: u32,
+    pub height: u32,
     pub extracted_text: String,
     pub translated_text: String,
     pub blocks: Vec<PreparedTextBlock>,
@@ -142,19 +148,19 @@ impl TextBlock {
 }
 
 struct RasterImage<'a> {
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
     rgba: &'a [u8],
 }
 
 struct RasterImageMut {
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
     rgba: Vec<u8>,
 }
 
 impl<'a> RasterImage<'a> {
-    fn new(rgba: &'a [u8], width: i32, height: i32) -> Result<Self, String> {
+    fn new(rgba: &'a [u8], width: u32, height: u32) -> Result<Self, String> {
         let expected_len = width
             .checked_mul(height)
             .and_then(|pixels| pixels.checked_mul(4))
@@ -172,7 +178,7 @@ impl<'a> RasterImage<'a> {
         })
     }
 
-    fn pixel_argb(&self, x: i32, y: i32) -> u32 {
+    fn pixel_argb(&self, x: u32, y: u32) -> u32 {
         let index = ((y * self.width + x) * 4) as usize;
         u32::from_ne_bytes([
             self.rgba[index],
@@ -184,7 +190,7 @@ impl<'a> RasterImage<'a> {
 }
 
 impl RasterImageMut {
-    fn new(rgba: &[u8], width: i32, height: i32) -> Result<Self, String> {
+    fn new(rgba: &[u8], width: u32, height: u32) -> Result<Self, String> {
         let image = RasterImage::new(rgba, width, height)?;
         Ok(Self {
             width: image.width,
@@ -235,12 +241,12 @@ fn quantized_rgb(color: u32) -> u32 {
     argb(channel_r(color) & 0xF0, channel_g(color) & 0xF0, channel_b(color) & 0xF0)
 }
 
-fn clamp_rect(rect: Rect, width: i32, height: i32) -> Option<Rect> {
-    if width <= 0 || height <= 0 {
+fn clamp_rect(rect: Rect, width: u32, height: u32) -> Option<Rect> {
+    if width == 0 || height == 0 {
         return None;
     }
-    let left = rect.left.clamp(0, width - 1);
-    let top = rect.top.clamp(0, height - 1);
+    let left = rect.left.min(width - 1);
+    let top = rect.top.min(height - 1);
     let right = rect.right.clamp(left + 1, width);
     let bottom = rect.bottom.clamp(top + 1, height);
     let clamped = Rect {
@@ -261,13 +267,13 @@ fn sample_dominant_color(image: &RasterImage<'_>, bounds: Rect) -> u32 {
         return argb(255, 255, 255);
     };
     let area = bounds.width() * bounds.height();
-    if area <= 0 {
+    if area == 0 {
         return argb(255, 255, 255);
     }
 
     #[derive(Default)]
     struct Bucket {
-        count: i32,
+        count: u32,
         r_sum: u64,
         g_sum: u64,
         b_sum: u64,
@@ -322,7 +328,7 @@ fn get_surrounding_average_color(image: &RasterImage<'_>, text_bounds: Rect) -> 
     let margin = 4;
     let sample_regions = [
         Rect {
-            left: (text_bounds.left - margin).max(0),
+            left: text_bounds.left.saturating_sub(margin),
             top: text_bounds.top,
             right: text_bounds.left,
             bottom: text_bounds.bottom,
@@ -335,7 +341,7 @@ fn get_surrounding_average_color(image: &RasterImage<'_>, text_bounds: Rect) -> 
         },
         Rect {
             left: text_bounds.left,
-            top: (text_bounds.top - margin).max(0),
+            top: text_bounds.top.saturating_sub(margin),
             right: text_bounds.right,
             bottom: text_bounds.top,
         },
@@ -388,7 +394,7 @@ fn get_background_color_excluding_words(
     };
     let width = text_bounds.width();
     let height = text_bounds.height();
-    if width <= 0 || height <= 0 {
+    if width == 0 || height == 0 {
         return get_surrounding_average_color(image, text_bounds);
     }
 
@@ -456,12 +462,12 @@ fn get_foreground_color_by_contrast(
     };
     let width = bounds.width();
     let height = bounds.height();
-    if width <= 0 || height <= 0 {
+    if width == 0 || height == 0 {
         return best_naive_color;
     }
 
     let step = (width.min(height) / 5).max(1);
-    let mut color_data = std::collections::HashMap::<u32, (i32, f32, u32)>::new();
+    let mut color_data = std::collections::HashMap::<u32, (u32, f32, u32)>::new();
 
     let mut index = 0usize;
     for y in bounds.top..bounds.bottom {
@@ -539,8 +545,8 @@ fn get_overlay_colors(
 
 pub fn sample_overlay_colors(
     rgba_bytes: &[u8],
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
     bounds: Rect,
     background_mode: crate::BackgroundMode,
     word_rects: Option<&[Rect]>,
@@ -549,10 +555,10 @@ pub fn sample_overlay_colors(
     Ok(get_overlay_colors(&image, bounds, background_mode, word_rects))
 }
 
-fn expand_rect(rect: Rect, amount: i32) -> Rect {
+fn expand_rect(rect: Rect, amount: u32) -> Rect {
     Rect {
-        left: rect.left - amount,
-        top: rect.top - amount,
+        left: rect.left.saturating_sub(amount),
+        top: rect.top.saturating_sub(amount),
         right: rect.right + amount,
         bottom: rect.bottom + amount,
     }
@@ -576,8 +582,8 @@ fn erase_text_region(
 
 pub fn prepare_overlay_image(
     rgba_bytes: &[u8],
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
     blocks: &[TextBlock],
     translated_blocks: &[String],
     background_mode: crate::BackgroundMode,
@@ -735,12 +741,12 @@ fn merge_hyphenated_words(words: Vec<WordInfo>) -> Vec<WordInfo> {
 
 pub fn build_text_blocks(
     detected_words: &[DetectedWord],
-    min_confidence: i32,
+    min_confidence: u32,
     join_without_spaces: bool,
     relax_single_char_confidence: bool,
 ) -> Vec<TextBlock> {
     let effective_min_confidence = if relax_single_char_confidence {
-        min_confidence.min(60) as f32
+        (min_confidence.min(60)) as f32
     } else {
         min_confidence as f32
     };
@@ -794,7 +800,7 @@ pub fn build_text_blocks(
     let mut blocks = Vec::new();
     let mut lines = Vec::new();
     let mut current_line: Option<TextLine> = None;
-    let mut last_right = 0;
+    let mut last_right = 0u32;
 
     for word in filtered_words {
         if word.text.trim().is_empty() {
@@ -816,7 +822,7 @@ pub fn build_text_blocks(
                 word_rects: vec![word.bounding_box],
             });
         } else if let Some(line) = current_line.as_mut() {
-            let delta = word.bounding_box.left - last_right;
+            let delta = word.bounding_box.left.saturating_sub(last_right);
             let char_width = real_bbox.width() as f32 / word.text.chars().count().max(1) as f32;
             let delta_in_chars = if char_width > 0.0 {
                 delta as f32 / char_width
@@ -886,10 +892,10 @@ mod tests {
 
     fn word(
         text: &str,
-        left: i32,
-        top: i32,
-        right: i32,
-        bottom: i32,
+        left: u32,
+        top: u32,
+        right: u32,
+        bottom: u32,
         is_first_in_line: bool,
         is_last_in_line: bool,
         is_last_in_para: bool,

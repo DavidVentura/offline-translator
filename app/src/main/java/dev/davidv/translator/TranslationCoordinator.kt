@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import uniffi.bindings.ImageTranslationPlan
+import uniffi.translator.PreparedImageOverlay
 import java.nio.ByteBuffer
 import kotlin.system.measureTimeMillis
 
@@ -260,10 +260,10 @@ class TranslationCoordinator(
 
   suspend fun availableTtsVoices(language: Language): List<TtsVoiceOption> = speechService.availableTtsVoices(language)
 
-  private fun bitmapFromRgbaPlan(plan: ImageTranslationPlan): Bitmap? {
+  private fun bitmapFromRgbaPlan(plan: PreparedImageOverlay): Bitmap? {
     return try {
-      Bitmap.createBitmap(plan.width, plan.height, Bitmap.Config.ARGB_8888).apply {
-        copyPixelsFromBuffer(ByteBuffer.wrap(plan.erasedRgbaBytes))
+      Bitmap.createBitmap(plan.width.toInt(), plan.height.toInt(), Bitmap.Config.ARGB_8888).apply {
+        copyPixelsFromBuffer(ByteBuffer.wrap(plan.rgbaBytes))
       }
     } catch (e: Exception) {
       Log.e("TranslationCoordinator", "Failed to decode erased OCR bitmap", e)
@@ -276,5 +276,5 @@ data class ProcessedImageResult(
   val correctedBitmap: Bitmap,
   val extractedText: String,
   val translatedText: String,
-  val metadata: ImageTranslationPlan,
+  val metadata: PreparedImageOverlay,
 )

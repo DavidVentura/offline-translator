@@ -7,6 +7,7 @@ use crate::{BergamotEngine, CatalogSnapshot, detect_language};
 use crate::translate::{execute_translation_plan, resolve_translation_plan_in_snapshot};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Enum))]
 pub enum NothingReason {
     AlreadyTargetLanguage,
     CouldNotDetect,
@@ -37,12 +38,14 @@ pub struct BatchTextRoutingPlan {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct TextTranslation {
     pub source_text: String,
     pub translated_text: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct MixedTextTranslationResult {
     pub translations: Vec<TextTranslation>,
     pub nothing_reason: Option<NothingReason>,

@@ -2,10 +2,6 @@ package dev.davidv.translator
 
 import android.graphics.Bitmap
 import uniffi.bindings.CatalogHandle
-import uniffi.bindings.ImageTranslationPlan
-import uniffi.bindings.MixedTextTranslationResult
-import uniffi.bindings.OcrBackgroundMode
-import uniffi.bindings.OcrReadingOrder
 import uniffi.bindings.sampleOverlayColorsRgba
 import java.io.Closeable
 import java.io.File
@@ -77,29 +73,26 @@ class LanguageCatalog private constructor(
       val rows = handle.languageRows()
       val languageRows =
         rows.map { row ->
-          row.language.let {
-            val language =
+          LanguageAvailabilityEntry(
+            language =
               Language(
-                code = it.code,
-                displayName = it.displayName,
-                shortDisplayName = it.shortDisplayName,
-                tessName = it.tessName,
-                script = it.script,
-                dictionaryCode = it.dictionaryCode,
-                tessdataSizeBytes = it.tessdataSizeBytes,
-              )
-            LanguageAvailabilityEntry(
-              language = language,
-              availability =
-                LangAvailability(
-                  hasFromEnglish = row.availability.hasFromEnglish,
-                  hasToEnglish = row.availability.hasToEnglish,
-                  ocrFiles = row.availability.ocrFiles,
-                  dictionaryFiles = row.availability.dictionaryFiles,
-                  ttsFiles = row.availability.ttsFiles,
-                ),
-            )
-          }
+                code = row.language.code,
+                displayName = row.language.displayName,
+                shortDisplayName = row.language.shortDisplayName,
+                tessName = row.language.tessName,
+                script = row.language.script,
+                dictionaryCode = row.language.dictionaryCode,
+                tessdataSizeBytes = row.language.tessdataSizeBytes.toLong(),
+              ),
+            availability =
+              LangAvailability(
+                hasFromEnglish = row.availability.hasFromEnglish,
+                hasToEnglish = row.availability.hasToEnglish,
+                ocrFiles = row.availability.ocrFiles,
+                dictionaryFiles = row.availability.dictionaryFiles,
+                ttsFiles = row.availability.ttsFiles,
+              ),
+          )
         }
       val languageList = languageRows.map { it.language }
       val languagesByCode = languageList.associateBy { it.code }
@@ -128,7 +121,7 @@ class LanguageCatalog private constructor(
 
   fun dictionaryInfo(dictionaryCode: String): DictionaryInfo? =
     handle.dictionaryInfo(dictionaryCode)?.let {
-      DictionaryInfo(date = it.date, filename = it.filename, size = it.size, type = it.typeName, wordCount = it.wordCount)
+      DictionaryInfo(date = it.date, filename = it.filename, size = it.size.toLong(), type = it.typeName, wordCount = it.wordCount.toLong())
     }
 
   fun availabilityFor(language: Language?): LangAvailability? = language?.let { availabilityByCode[it.code] }
@@ -140,7 +133,7 @@ class LanguageCatalog private constructor(
       TtsVoicePickerRegion(
         code = region.code,
         displayName = region.displayName,
-        voices = region.voices.map { TtsVoicePackInfo(it.packId, it.displayName, it.quality, it.sizeBytes) },
+        voices = region.voices.map { TtsVoicePackInfo(it.packId, it.displayName, it.quality, it.sizeBytes.toLong()) },
       )
     }
 
@@ -186,7 +179,7 @@ class LanguageCatalog private constructor(
     forcedSourceLanguage: Language?,
     targetLanguage: Language,
     availableLanguages: List<Language>,
-  ): MixedTextTranslationResult =
+  ): uniffi.translator.MixedTextTranslationResult =
     handle.translateMixedTexts(
       inputs,
       forcedSourceLanguage?.code,
@@ -206,24 +199,24 @@ class LanguageCatalog private constructor(
       screenshot?.let { bitmap ->
         val buffer = ByteBuffer.allocate(bitmap.byteCount)
         bitmap.copyPixelsToBuffer(buffer)
-        uniffi.bindings.OverlayScreenshot(buffer.array(), bitmap.width, bitmap.height)
+        uniffi.translator.OverlayScreenshot(buffer.array(), bitmap.width.toUInt(), bitmap.height.toUInt())
       }
     return handle.translateStructuredFragments(
       fragments.map { fragment ->
-        uniffi.bindings.StructuredFragment(
+        uniffi.translator.StyledFragment(
           text = fragment.text,
           boundingBox =
-            uniffi.bindings.OcrRect(
-              left = fragment.bounds.left.toLong(),
-              top = fragment.bounds.top.toLong(),
-              right = fragment.bounds.right.toLong(),
-              bottom = fragment.bounds.bottom.toLong(),
+            uniffi.translator.Rect(
+              left = fragment.bounds.left.toUInt(),
+              top = fragment.bounds.top.toUInt(),
+              right = fragment.bounds.right.toUInt(),
+              bottom = fragment.bounds.bottom.toUInt(),
             ),
           style =
             fragment.style?.let { style ->
-              uniffi.bindings.StructuredTextStyle(
-                textColor = style.textColor?.toLong(),
-                bgColor = style.bgColor?.toLong(),
+              uniffi.translator.TextStyle(
+                textColor = style.textColor?.toUInt(),
+                bgColor = style.bgColor?.toUInt(),
                 textSize = style.textSize,
                 bold = style.bold,
                 italic = style.italic,
@@ -231,20 +224,16 @@ class LanguageCatalog private constructor(
                 strikethrough = style.strikethrough,
               )
             },
-          layoutGroup = fragment.layoutGroup,
-          translationGroup = fragment.translationGroup,
-          clusterGroup = fragment.clusterGroup,
+          layoutGroup = fragment.layoutGroup.toUInt(),
+          translationGroup = fragment.translationGroup.toUInt(),
+          clusterGroup = fragment.clusterGroup.toUInt(),
         )
       },
       forcedSourceLanguage?.code,
       targetLanguage.code,
       availableLanguages.map { it.code },
       screenshotInput,
-      when (backgroundMode) {
-        BackgroundMode.WHITE_ON_BLACK -> OcrBackgroundMode.WHITE_ON_BLACK
-        BackgroundMode.BLACK_ON_WHITE -> OcrBackgroundMode.BLACK_ON_WHITE
-        BackgroundMode.AUTO_DETECT -> OcrBackgroundMode.AUTO_DETECT
-      },
+      backgroundMode,
     ).let { result ->
       StructuredFragmentTranslationResult(
         blocks =
@@ -261,8 +250,8 @@ class LanguageCatalog private constructor(
               styleSpans =
                 block.styleSpans.map { span ->
                   StyleSpan(
-                    start = span.start,
-                    end = span.end,
+                    start = span.start.toInt(),
+                    end = span.end.toInt(),
                     style =
                       span.style?.let { style ->
                         TextStyle(
@@ -281,7 +270,7 @@ class LanguageCatalog private constructor(
               foregroundArgb = block.foregroundArgb.toInt(),
             )
           },
-        nothingReason = result.nothingReason?.let(NothingReason::valueOf),
+        nothingReason = result.nothingReason,
         errorMessage = result.errorMessage,
       )
     }
@@ -294,25 +283,18 @@ class LanguageCatalog private constructor(
     minConfidence: Int,
     readingOrder: ReadingOrder,
     backgroundMode: BackgroundMode,
-  ): ImageTranslationPlan? {
+  ): uniffi.translator.PreparedImageOverlay? {
     val buffer = ByteBuffer.allocate(bitmap.byteCount)
     bitmap.copyPixelsToBuffer(buffer)
     return handle.translateImagePlan(
       buffer.array(),
-      bitmap.width,
-      bitmap.height,
+      bitmap.width.toUInt(),
+      bitmap.height.toUInt(),
       from.code,
       to.code,
-      minConfidence,
-      when (readingOrder) {
-        ReadingOrder.LEFT_TO_RIGHT -> OcrReadingOrder.LEFT_TO_RIGHT
-        ReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT -> OcrReadingOrder.TOP_TO_BOTTOM_LEFT_TO_RIGHT
-      },
-      when (backgroundMode) {
-        BackgroundMode.WHITE_ON_BLACK -> OcrBackgroundMode.WHITE_ON_BLACK
-        BackgroundMode.BLACK_ON_WHITE -> OcrBackgroundMode.BLACK_ON_WHITE
-        BackgroundMode.AUTO_DETECT -> OcrBackgroundMode.AUTO_DETECT
-      },
+      minConfidence.toUInt(),
+      readingOrder,
+      backgroundMode,
     )
   }
 
@@ -325,22 +307,31 @@ class LanguageCatalog private constructor(
     selectedPackId: String? = null,
   ): DownloadPlan? = handle.planTtsDownload(languageCode, selectedPackId)?.toDownloadPlan()
 
-  fun planDeleteLanguage(languageCode: String): DeletePlan = handle.planDeleteLanguage(languageCode).toDeletePlan()
+  fun planDeleteLanguage(languageCode: String): DeletePlan =
+    handle.planDeleteLanguage(languageCode).let {
+      DeletePlan(it.filePaths, it.directoryPaths)
+    }
 
-  fun planDeleteDictionary(languageCode: String): DeletePlan = handle.planDeleteDictionary(languageCode).toDeletePlan()
+  fun planDeleteDictionary(languageCode: String): DeletePlan =
+    handle.planDeleteDictionary(languageCode).let {
+      DeletePlan(it.filePaths, it.directoryPaths)
+    }
 
-  fun planDeleteTts(languageCode: String): DeletePlan = handle.planDeleteTts(languageCode).toDeletePlan()
+  fun planDeleteTts(languageCode: String): DeletePlan =
+    handle.planDeleteTts(
+      languageCode,
+    ).let { DeletePlan(it.filePaths, it.directoryPaths) }
 
   fun planDeleteSupersededTts(
     languageCode: String,
     selectedPackId: String,
-  ): DeletePlan = handle.planDeleteSupersededTts(languageCode, selectedPackId).toDeletePlan()
+  ): DeletePlan = handle.planDeleteSupersededTts(languageCode, selectedPackId).let { DeletePlan(it.filePaths, it.directoryPaths) }
 
   fun defaultTtsPackIdForLanguage(languageCode: String): String? = handle.defaultTtsPackId(languageCode)
 
-  fun ttsSizeBytesForLanguage(languageCode: String): Long = handle.ttsSizeBytes(languageCode)
+  fun ttsSizeBytesForLanguage(languageCode: String): Long = handle.ttsSizeBytes(languageCode).toLong()
 
-  fun translationSizeBytesForLanguage(languageCode: String): Long = handle.translationSizeBytes(languageCode)
+  fun translationSizeBytesForLanguage(languageCode: String): Long = handle.translationSizeBytes(languageCode).toLong()
 
   fun resolveTtsVoiceFiles(languageCode: String): TtsVoiceFiles? =
     handle.resolveTtsVoiceFiles(languageCode)?.let { files ->
@@ -365,12 +356,12 @@ data class StructuredFragmentTranslationResult(
   val errorMessage: String?,
 )
 
-private fun uniffi.bindings.DownloadTask.toDownloadTask(): DownloadTask =
+private fun uniffi.translator.DownloadTask.toDownloadTask(): DownloadTask =
   DownloadTask(
     packId = packId,
     installPath = installPath,
     url = url,
-    sizeBytes = sizeBytes,
+    sizeBytes = sizeBytes.toLong(),
     decompress = decompress,
     archiveFormat = archiveFormat,
     extractTo = extractTo,
@@ -379,10 +370,8 @@ private fun uniffi.bindings.DownloadTask.toDownloadTask(): DownloadTask =
     installMarkerVersion = installMarkerVersion,
   )
 
-private fun uniffi.bindings.DownloadPlan.toDownloadPlan(): DownloadPlan =
-  DownloadPlan(totalSize = totalSize, tasks = tasks.map { it.toDownloadTask() })
-
-private fun uniffi.bindings.DeletePlan.toDeletePlan(): DeletePlan = DeletePlan(filePaths = filePaths, directoryPaths = directoryPaths)
+private fun uniffi.translator.DownloadPlan.toDownloadPlan(): DownloadPlan =
+  DownloadPlan(totalSize = totalSize.toLong(), tasks = tasks.map { it.toDownloadTask() })
 
 fun sampleOverlayColors(
   bitmap: Bitmap,
@@ -395,16 +384,12 @@ fun sampleOverlayColors(
   val colors =
     sampleOverlayColorsRgba(
       buffer.array(),
-      bitmap.width,
-      bitmap.height,
-      uniffi.bindings.OcrRect(bounds.left.toLong(), bounds.top.toLong(), bounds.right.toLong(), bounds.bottom.toLong()),
-      when (backgroundMode) {
-        BackgroundMode.WHITE_ON_BLACK -> OcrBackgroundMode.WHITE_ON_BLACK
-        BackgroundMode.BLACK_ON_WHITE -> OcrBackgroundMode.BLACK_ON_WHITE
-        BackgroundMode.AUTO_DETECT -> OcrBackgroundMode.AUTO_DETECT
-      },
+      bitmap.width.toUInt(),
+      bitmap.height.toUInt(),
+      uniffi.translator.Rect(bounds.left.toUInt(), bounds.top.toUInt(), bounds.right.toUInt(), bounds.bottom.toUInt()),
+      backgroundMode,
       wordRects?.map { rect ->
-        uniffi.bindings.OcrRect(rect.left.toLong(), rect.top.toLong(), rect.right.toLong(), rect.bottom.toLong())
+        uniffi.translator.Rect(rect.left.toUInt(), rect.top.toUInt(), rect.right.toUInt(), rect.bottom.toUInt())
       },
     )
   return OverlayColors(

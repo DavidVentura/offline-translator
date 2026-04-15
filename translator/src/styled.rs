@@ -5,9 +5,10 @@ use crate::translate::{TokenAlignment, translate_texts_with_alignment_in_snapsho
 use crate::{BackgroundMode, BergamotEngine};
 
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct TextStyle {
-    pub text_color: Option<i32>,
-    pub bg_color: Option<i32>,
+    pub text_color: Option<u32>,
+    pub bg_color: Option<u32>,
     pub text_size: Option<f32>,
     pub bold: bool,
     pub italic: bool,
@@ -20,44 +21,46 @@ impl TextStyle {
         let Some(color) = self.bg_color else {
             return false;
         };
-        if color == 0 || color == 1 || color == -1 {
+        if color == 0 || color == 1 || color == 0xFFFF_FFFF {
             return false;
         }
-        ((color as u32) >> 24) != 0
+        (color >> 24) != 0
     }
 
     fn normalized_text_color(&self) -> Option<u32> {
         let color = self.text_color?;
-        if ((color as u32) >> 24) == 0 {
+        if (color >> 24) == 0 {
             None
         } else {
-            Some(color as u32)
+            Some(color)
         }
     }
 }
 
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct StyledFragment {
     pub text: String,
-    pub bounds: Rect,
+    pub bounding_box: Rect,
     pub style: Option<TextStyle>,
-    pub layout_group: i32,
-    pub translation_group: i32,
-    pub cluster_group: i32,
+    pub layout_group: u32,
+    pub translation_group: u32,
+    pub cluster_group: u32,
 }
 
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct StyleSpan {
-    pub start: i32,
-    pub end: i32,
+    pub start: u32,
+    pub end: u32,
     pub style: Option<TextStyle>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TranslationSegment {
-    pub start: i32,
-    pub end: i32,
-    pub translation_group: i32,
+    pub start: u32,
+    pub end: u32,
+    pub translation_group: u32,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -69,15 +72,17 @@ struct TranslatableBlock {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct TranslatedStyledBlock {
     pub text: String,
-    pub bounds: Rect,
+    pub bounding_box: Rect,
     pub style_spans: Vec<StyleSpan>,
     pub background_argb: u32,
     pub foreground_argb: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct StructuredTranslationResult {
     pub blocks: Vec<TranslatedStyledBlock>,
     pub nothing_reason: Option<NothingReason>,
@@ -85,10 +90,11 @@ pub struct StructuredTranslationResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct OverlayScreenshot {
     pub rgba_bytes: Vec<u8>,
-    pub width: i32,
-    pub height: i32,
+    pub width: u32,
+    pub height: u32,
 }
 
 pub fn translate_structured_fragments_in_snapshot(
@@ -212,7 +218,7 @@ pub fn translate_structured_fragments_in_snapshot(
 
             Ok(TranslatedStyledBlock {
                 text: translated_text,
-                bounds: source_block.bounds,
+                bounding_box: source_block.bounds,
                 style_spans,
                 background_argb: colors.background_argb,
                 foreground_argb: colors.foreground_argb,
@@ -233,7 +239,7 @@ fn cluster_fragments_into_blocks(fragments: &[StyledFragment]) -> Vec<Translatab
     }
 
     let line_height = lower_quartile_height(fragments);
-    let block_gap_threshold = ((line_height as f32) * 0.5) as i32;
+    let block_gap_threshold = ((line_height as f32) * 0.5) as u32;
 
     let mut block_groups: Vec<Vec<StyledFragment>> = Vec::new();
     let mut block_bounds: Vec<Rect> = Vec::new();
@@ -250,28 +256,28 @@ fn cluster_fragments_into_blocks(fragments: &[StyledFragment]) -> Vec<Translatab
                 continue;
             }
             let bb: Rect = block_bounds[i];
-            let vertical_overlap =
-                bb.bottom.min(fragment.bounds.bottom) - bb.top.max(fragment.bounds.top);
-            let vertical_gap = fragment.bounds.top - bb.bottom;
-            let horizontal_overlap =
-                bb.right.min(fragment.bounds.right) - bb.left.max(fragment.bounds.left);
-            let horizontal_gap =
-                bb.left.max(fragment.bounds.left) - bb.right.min(fragment.bounds.right);
+            let vertical_overlap = bb.bottom.min(fragment.bounding_box.bottom)
+                .saturating_sub(bb.top.max(fragment.bounding_box.top));
+            let vertical_gap = fragment.bounding_box.top.saturating_sub(bb.bottom);
+            let horizontal_overlap = bb.right.min(fragment.bounding_box.right)
+                .saturating_sub(bb.left.max(fragment.bounding_box.left));
+            let horizontal_gap = bb.left.max(fragment.bounding_box.left)
+                .saturating_sub(bb.right.min(fragment.bounding_box.right));
             let horizontal_nearby = horizontal_gap <= line_height;
 
             if (vertical_overlap > 0 && horizontal_nearby)
-                || ((0..=block_gap_threshold).contains(&vertical_gap)
+                || (vertical_gap <= block_gap_threshold
                     && horizontal_overlap > 0)
             {
                 block_groups[i].push(fragment.clone());
-                block_bounds[i].union(fragment.bounds);
+                block_bounds[i].union(fragment.bounding_box);
                 merged = true;
                 break;
             }
         }
         if !merged {
             block_groups.push(vec![fragment.clone()]);
-            block_bounds.push(fragment.bounds);
+            block_bounds.push(fragment.bounding_box);
             block_layout_group_ids.push(fragment.layout_group);
             block_cluster_group_ids.push(fragment.cluster_group);
         }
@@ -293,7 +299,7 @@ fn build_block(fragments: &[StyledFragment], bounds: Rect) -> TranslatableBlock 
         .first()
         .map(|fragment| fragment.translation_group)
         .unwrap_or_default();
-    let mut segment_start = 0i32;
+    let mut segment_start = 0u32;
 
     for (line_index, line) in lines.iter().enumerate() {
         if line_index > 0 {
@@ -301,15 +307,15 @@ fn build_block(fragments: &[StyledFragment], bounds: Rect) -> TranslatableBlock 
         }
         for (fragment_index, fragment) in line.iter().enumerate() {
             if fragment.translation_group != current_trans_group {
-                if (text.len() as i32) > segment_start {
+                if (text.len() as u32) > segment_start {
                     segments.push(TranslationSegment {
                         start: segment_start,
-                        end: text.len() as i32,
+                        end: text.len() as u32,
                         translation_group: current_trans_group,
                     });
                 }
                 current_trans_group = fragment.translation_group;
-                segment_start = text.len() as i32;
+                segment_start = text.len() as u32;
             }
             if fragment_index > 0
                 && !text.is_empty()
@@ -317,22 +323,22 @@ fn build_block(fragments: &[StyledFragment], bounds: Rect) -> TranslatableBlock 
             {
                 text.push(' ');
             }
-            let start = text.len() as i32;
+            let start = text.len() as u32;
             text.push_str(&fragment.text);
             if fragment.style.is_some() {
                 spans.push(StyleSpan {
                     start,
-                    end: text.len() as i32,
+                    end: text.len() as u32,
                     style: fragment.style.clone(),
                 });
             }
         }
     }
 
-    if (text.len() as i32) > segment_start {
+    if (text.len() as u32) > segment_start {
         segments.push(TranslationSegment {
             start: segment_start,
-            end: text.len() as i32,
+            end: text.len() as u32,
             translation_group: current_trans_group,
         });
     }
@@ -351,21 +357,20 @@ fn cluster_into_lines(fragments: &[StyledFragment]) -> Vec<Vec<StyledFragment>> 
     }
 
     let median_height = median_fragment_height(fragments);
-    let line_threshold = ((median_height as f32) * 0.35) as i32;
+    let line_threshold = ((median_height as f32) * 0.35) as u32;
     let line_threshold = line_threshold.max(1);
 
     let mut lines: Vec<Vec<StyledFragment>> = Vec::new();
-    let mut line_tops: Vec<i32> = Vec::new();
-    let mut line_bottoms: Vec<i32> = Vec::new();
+    let mut line_tops: Vec<u32> = Vec::new();
+    let mut line_bottoms: Vec<u32> = Vec::new();
 
     for fragment in fragments {
         let mut best_line = None;
         for i in 0..lines.len() {
-            let center_delta = (fragment.bounds.center_y()
-                - ((line_tops[i] + line_bottoms[i]) / 2))
-                .abs();
-            let vertical_overlap =
-                line_bottoms[i].min(fragment.bounds.bottom) - line_tops[i].max(fragment.bounds.top);
+            let center_delta = fragment.bounding_box.center_y()
+                .abs_diff((line_tops[i] + line_bottoms[i]) / 2);
+            let vertical_overlap = line_bottoms[i].min(fragment.bounding_box.bottom)
+                .saturating_sub(line_tops[i].max(fragment.bounding_box.top));
             if vertical_overlap > 0 || center_delta <= line_threshold {
                 best_line = Some(i);
                 break;
@@ -374,12 +379,12 @@ fn cluster_into_lines(fragments: &[StyledFragment]) -> Vec<Vec<StyledFragment>> 
 
         if let Some(i) = best_line {
             lines[i].push(fragment.clone());
-            line_tops[i] = line_tops[i].min(fragment.bounds.top);
-            line_bottoms[i] = line_bottoms[i].max(fragment.bounds.bottom);
+            line_tops[i] = line_tops[i].min(fragment.bounding_box.top);
+            line_bottoms[i] = line_bottoms[i].max(fragment.bounding_box.bottom);
         } else {
             lines.push(vec![fragment.clone()]);
-            line_tops.push(fragment.bounds.top);
-            line_bottoms.push(fragment.bounds.bottom);
+            line_tops.push(fragment.bounding_box.top);
+            line_bottoms.push(fragment.bounding_box.bottom);
         }
     }
 
@@ -397,7 +402,7 @@ fn map_styles_to_segmented_translation(
     translated_segments: &[(TranslationSegment, String)],
 ) -> Vec<StyleSpan> {
     let mut result = Vec::new();
-    let mut target_offset = 0i32;
+    let mut target_offset = 0u32;
 
     for (segment, translated) in translated_segments {
         let alignments = segment_alignments
@@ -407,7 +412,7 @@ fn map_styles_to_segmented_translation(
             .unwrap_or(&[]);
 
         for alignment in alignments {
-            let src_mid = segment.start + ((alignment.src_begin + alignment.src_end) / 2) as i32;
+            let src_mid = segment.start + ((alignment.src_begin + alignment.src_end) / 2) as u32;
             let Some(matching_span) = source_block
                 .style_spans
                 .iter()
@@ -416,13 +421,13 @@ fn map_styles_to_segmented_translation(
                 continue;
             };
             result.push(StyleSpan {
-                start: target_offset + alignment.tgt_begin as i32,
-                end: target_offset + alignment.tgt_end as i32,
+                start: target_offset + alignment.tgt_begin as u32,
+                end: target_offset + alignment.tgt_end as u32,
                 style: matching_span.style.clone(),
             });
         }
 
-        target_offset += translated.len() as i32;
+        target_offset += translated.len() as u32;
     }
 
     merge_style_spans(result)
@@ -466,8 +471,7 @@ fn resolve_block_colors(
     let style_fg = first_style.and_then(TextStyle::normalized_text_color);
     let style_bg = first_style
         .filter(|style| style.has_real_background())
-        .and_then(|style| style.bg_color)
-        .map(|color| color as u32);
+        .and_then(|style| style.bg_color);
 
     if let Some(background_argb) = style_bg {
         return Ok(OverlayColors {
@@ -504,19 +508,19 @@ fn resolve_block_colors(
     })
 }
 
-fn median_fragment_height(fragments: &[StyledFragment]) -> i32 {
+fn median_fragment_height(fragments: &[StyledFragment]) -> u32 {
     let mut heights = fragments
         .iter()
-        .map(|fragment| fragment.bounds.height())
+        .map(|fragment| fragment.bounding_box.height())
         .collect::<Vec<_>>();
     heights.sort_unstable();
     heights[heights.len() / 2].max(1)
 }
 
-fn lower_quartile_height(fragments: &[StyledFragment]) -> i32 {
+fn lower_quartile_height(fragments: &[StyledFragment]) -> u32 {
     let mut heights = fragments
         .iter()
-        .map(|fragment| fragment.bounds.height())
+        .map(|fragment| fragment.bounding_box.height())
         .collect::<Vec<_>>();
     heights.sort_unstable();
     heights[heights.len() / 4].max(1)
@@ -531,7 +535,7 @@ mod tests {
         let fragments = vec![
             StyledFragment {
                 text: "Hello".into(),
-                bounds: Rect {
+                bounding_box: Rect {
                     left: 0,
                     top: 0,
                     right: 40,
@@ -552,7 +556,7 @@ mod tests {
             },
             StyledFragment {
                 text: "world".into(),
-                bounds: Rect {
+                bounding_box: Rect {
                     left: 48,
                     top: 0,
                     right: 92,
@@ -565,7 +569,7 @@ mod tests {
             },
             StyledFragment {
                 text: "again".into(),
-                bounds: Rect {
+                bounding_box: Rect {
                     left: 0,
                     top: 28,
                     right: 48,

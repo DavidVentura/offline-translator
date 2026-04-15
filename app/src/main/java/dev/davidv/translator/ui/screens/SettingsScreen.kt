@@ -69,6 +69,7 @@ import dev.davidv.translator.LanguageMetadataManager
 import dev.davidv.translator.PermissionHelper
 import dev.davidv.translator.R
 import dev.davidv.translator.ReadonlyModalOutputAlignment
+import dev.davidv.translator.displayName
 import dev.davidv.translator.ui.theme.TranslatorTheme
 import kotlinx.coroutines.delay
 

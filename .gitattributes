@@ -1,2 +1,3 @@
 app/src/main/assets/index.json linguist-generated=true
 app/src/main/java/uniffi/bindings/bindings.kt linguist-generated=true
+app/src/main/java/uniffi/translator/translator.kt linguist-generated=true

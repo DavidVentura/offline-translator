@@ -9,9 +9,3 @@ sealed class BatchTextTranslationOutput {
     val reason: NothingReason,
   ) : BatchTextTranslationOutput()
 }
-
-enum class NothingReason {
-  ALREADY_TARGET_LANGUAGE,
-  COULD_NOT_DETECT,
-  NO_TRANSLATABLE_TEXT,
-}

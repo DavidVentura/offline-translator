@@ -126,10 +126,10 @@ fn map_alignment_result(result: BergamotTranslationWithAlignment) -> Translation
 
 fn map_alignment(alignment: BergamotTokenAlignment) -> TokenAlignment {
     TokenAlignment {
-        src_begin: alignment.src_begin,
-        src_end: alignment.src_end,
-        tgt_begin: alignment.tgt_begin,
-        tgt_end: alignment.tgt_end,
+        src_begin: alignment.src_begin as u64,
+        src_end: alignment.src_end as u64,
+        tgt_begin: alignment.tgt_begin as u64,
+        tgt_end: alignment.tgt_end as u64,
     }
 }
 

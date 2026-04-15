@@ -42,6 +42,7 @@ pub struct CatalogSnapshot {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct LanguageAvailabilityRow {
     pub language: Language,
     pub availability: LangAvailability,
