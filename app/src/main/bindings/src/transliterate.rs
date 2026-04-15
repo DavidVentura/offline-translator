@@ -22,31 +22,99 @@ pub fn transliterate(text: &str, source_script: &str) -> Option<String> {
     }
 }
 
+pub fn transliterate_with_policy(
+    text: &str,
+    language_code: &str,
+    source_script: &str,
+    target_script: &str,
+    japanese_preprocessed: Option<&str>,
+) -> Option<String> {
+    if source_script == target_script {
+        return None;
+    }
+
+    let input = match language_code {
+        "ja" => japanese_preprocessed.unwrap_or(text),
+        _ => text,
+    };
+
+    transliterate(input, source_script)
+}
+
 #[cfg(feature = "android")]
 mod jni_bridge {
     use super::*;
     use jni::JNIEnv;
     use jni::objects::{JClass, JString};
-    use jni::sys::jstring;
+    use jni::sys::{jlong, jstring};
+
+    #[cfg(feature = "mucab")]
+    fn preprocess_japanese(
+        text: &str,
+        dict_ptr: jlong,
+        japanese_spaced: bool,
+    ) -> Option<String> {
+        if dict_ptr == 0 {
+            return None;
+        }
+
+        let dict = unsafe { &mut *(dict_ptr as *mut mucab::Dictionary) };
+        Some(mucab::transliterate(text, dict, japanese_spaced))
+    }
+
+    #[cfg(not(feature = "mucab"))]
+    fn preprocess_japanese(
+        _text: &str,
+        _dict_ptr: jlong,
+        _japanese_spaced: bool,
+    ) -> Option<String> {
+        None
+    }
 
     #[unsafe(no_mangle)]
-    pub unsafe extern "C" fn Java_dev_davidv_translator_TransliterateBinding_nativeTransliterate(
+    pub unsafe extern "C" fn Java_dev_davidv_translator_TransliterateBinding_nativeTransliterateWithPolicy(
         mut env: JNIEnv,
         _: JClass,
         java_text: JString,
-        java_script: JString,
+        java_language_code: JString,
+        java_source_script: JString,
+        java_target_script: JString,
+        japanese_dict_ptr: jlong,
+        japanese_spaced: bool,
     ) -> jstring {
         let text: String = match env.get_string(&java_text) {
             Ok(s) => s.into(),
             Err(_) => return std::ptr::null_mut(),
         };
 
-        let script: String = match env.get_string(&java_script) {
+        let language_code: String = match env.get_string(&java_language_code) {
             Ok(s) => s.into(),
             Err(_) => return std::ptr::null_mut(),
         };
 
-        match transliterate(&text, &script) {
+        let source_script: String = match env.get_string(&java_source_script) {
+            Ok(s) => s.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let target_script: String = match env.get_string(&java_target_script) {
+            Ok(s) => s.into(),
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let japanese_preprocessed = if language_code == "ja" {
+            preprocess_japanese(&text, japanese_dict_ptr, japanese_spaced)
+        } else {
+            None
+        };
+
+        match transliterate_with_policy(
+            &text,
+            &language_code,
+            &source_script,
+            &target_script,
+            japanese_preprocessed.as_deref(),
+        ) {
             Some(result) => match env.new_string(&result) {
                 Ok(jstring) => jstring.into_raw(),
                 Err(_) => std::ptr::null_mut(),
@@ -154,5 +222,19 @@ mod tests {
     #[test]
     fn test_latin_is_none() {
         assert!(transliterate("Hello", "Latn").is_none());
+    }
+
+    #[test]
+    fn test_policy_skips_same_script() {
+        assert!(transliterate_with_policy("Hello", "en", "Latn", "Latn", None).is_none());
+    }
+
+    #[test]
+    fn test_policy_uses_japanese_preprocessed_text() {
+        assert_eq!(
+            transliterate_with_policy("東京タワー", "ja", "Jpan", "Latn", Some("とうきょう タワー"))
+                .unwrap(),
+            "toukyou tawā"
+        );
     }
 }

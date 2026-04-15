@@ -9,11 +9,27 @@ class TransliterateBinding {
 
   fun transliterate(
     text: String,
+    languageCode: String,
     sourceScript: String,
-  ): String? = nativeTransliterate(text, sourceScript)
+    targetScript: String = "Latn",
+    japaneseDictPtr: Long = 0L,
+    japaneseSpaced: Boolean = true,
+  ): String? =
+    nativeTransliterateWithPolicy(
+      text,
+      languageCode,
+      sourceScript,
+      targetScript,
+      japaneseDictPtr,
+      japaneseSpaced,
+    )
 
-  private external fun nativeTransliterate(
+  private external fun nativeTransliterateWithPolicy(
     text: String,
+    languageCode: String,
     sourceScript: String,
+    targetScript: String,
+    japaneseDictPtr: Long,
+    japaneseSpaced: Boolean,
   ): String?
 }

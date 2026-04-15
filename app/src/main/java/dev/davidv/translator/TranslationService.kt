@@ -33,6 +33,7 @@ class TranslationService(
   }
 
   private var mucabBinding: MucabBinding? = null
+  private val transliterateBinding = TransliterateBinding()
 
   fun setMucabBinding(binding: MucabBinding?) {
     mucabBinding = binding
@@ -220,13 +221,21 @@ class TranslationService(
   fun transliterate(
     text: String,
     from: Language,
-  ): String? =
-    TransliterationService.transliterate(
-      text,
-      from,
-      mucabBinding = mucabBinding,
-      japaneseSpaced = settingsManager.settings.value.addSpacesForJapaneseTransliteration,
-    )
+  ): String? {
+    val settings = settingsManager.settings.value
+    return try {
+      transliterateBinding.transliterate(
+        text = text,
+        languageCode = from.code,
+        sourceScript = from.script,
+        japaneseDictPtr = mucabBinding?.dictionaryHandle() ?: 0L,
+        japaneseSpaced = settings.addSpacesForJapaneseTransliteration,
+      )
+    } catch (e: Exception) {
+      Log.w("TranslationService", "Failed to transliterate text for $from", e)
+      null
+    }
+  }
 }
 
 sealed class TranslationResult {

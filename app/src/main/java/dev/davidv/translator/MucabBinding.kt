@@ -50,6 +50,11 @@ class MucabBinding {
 
   fun isOpen(): Boolean = dictPtr != 0L
 
+  internal fun dictionaryHandle(): Long =
+    synchronized(lock) {
+      dictPtr
+    }
+
   private external fun nativeOpen(path: String): Long
 
   private external fun nativeTransliterateJP(
