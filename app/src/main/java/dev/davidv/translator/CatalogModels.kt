@@ -203,14 +203,23 @@ class LanguageCatalog private constructor(
       }
     return handle.translateStructuredFragments(
       fragments.map { fragment ->
+        val clampedLeft = fragment.bounds.left.coerceAtLeast(0)
+        val clampedTop = fragment.bounds.top.coerceAtLeast(0)
+        val clampedBounds =
+          Rect(
+            left = clampedLeft,
+            top = clampedTop,
+            right = fragment.bounds.right.coerceAtLeast(clampedLeft),
+            bottom = fragment.bounds.bottom.coerceAtLeast(clampedTop),
+          )
         uniffi.translator.StyledFragment(
           text = fragment.text,
           boundingBox =
             uniffi.translator.Rect(
-              left = fragment.bounds.left.toUInt(),
-              top = fragment.bounds.top.toUInt(),
-              right = fragment.bounds.right.toUInt(),
-              bottom = fragment.bounds.bottom.toUInt(),
+              left = clampedBounds.left.toUInt(),
+              top = clampedBounds.top.toUInt(),
+              right = clampedBounds.right.toUInt(),
+              bottom = clampedBounds.bottom.toUInt(),
             ),
           style =
             fragment.style?.let { style ->
@@ -379,19 +388,57 @@ fun sampleOverlayColors(
   backgroundMode: BackgroundMode,
   wordRects: Array<Rect>? = null,
 ): OverlayColors {
-  val buffer = ByteBuffer.allocate(bitmap.byteCount)
-  bitmap.copyPixelsToBuffer(buffer)
+  val sampleMargin = 4
+  val cropLeft = (bounds.left - sampleMargin).coerceAtLeast(0)
+  val cropTop = (bounds.top - sampleMargin).coerceAtLeast(0)
+  val cropRight = (bounds.right + sampleMargin).coerceAtMost(bitmap.width)
+  val cropBottom = (bounds.bottom + sampleMargin).coerceAtMost(bitmap.height)
+  val cropWidth = cropRight - cropLeft
+  val cropHeight = cropBottom - cropTop
+  if (cropWidth <= 0 || cropHeight <= 0) {
+    return OverlayColors(
+      background = android.graphics.Color.WHITE,
+      foreground = android.graphics.Color.BLACK,
+    )
+  }
+
+  val croppedBitmap = Bitmap.createBitmap(bitmap, cropLeft, cropTop, cropWidth, cropHeight)
+  val buffer = ByteBuffer.allocate(croppedBitmap.byteCount)
+  croppedBitmap.copyPixelsToBuffer(buffer)
+  val localBounds =
+    uniffi.translator.Rect(
+      left = (bounds.left - cropLeft).coerceIn(0, cropWidth).toUInt(),
+      top = (bounds.top - cropTop).coerceIn(0, cropHeight).toUInt(),
+      right = (bounds.right - cropLeft).coerceIn(0, cropWidth).toUInt(),
+      bottom = (bounds.bottom - cropTop).coerceIn(0, cropHeight).toUInt(),
+    )
+  val localWordRects =
+    wordRects?.mapNotNull { rect ->
+      val left = (rect.left - cropLeft).coerceIn(0, cropWidth)
+      val top = (rect.top - cropTop).coerceIn(0, cropHeight)
+      val right = (rect.right - cropLeft).coerceIn(0, cropWidth)
+      val bottom = (rect.bottom - cropTop).coerceIn(0, cropHeight)
+      if (right <= left || bottom <= top) {
+        null
+      } else {
+        uniffi.translator.Rect(
+          left = left.toUInt(),
+          top = top.toUInt(),
+          right = right.toUInt(),
+          bottom = bottom.toUInt(),
+        )
+      }
+    }
   val colors =
     sampleOverlayColorsRgba(
       buffer.array(),
-      bitmap.width.toUInt(),
-      bitmap.height.toUInt(),
-      uniffi.translator.Rect(bounds.left.toUInt(), bounds.top.toUInt(), bounds.right.toUInt(), bounds.bottom.toUInt()),
+      croppedBitmap.width.toUInt(),
+      croppedBitmap.height.toUInt(),
+      localBounds,
       backgroundMode,
-      wordRects?.map { rect ->
-        uniffi.translator.Rect(rect.left.toUInt(), rect.top.toUInt(), rect.right.toUInt(), rect.bottom.toUInt())
-      },
+      localWordRects,
     )
+  croppedBitmap.recycle()
   return OverlayColors(
     background = colors?.backgroundArgb?.toInt() ?: android.graphics.Color.WHITE,
     foreground = colors?.foregroundArgb?.toInt() ?: android.graphics.Color.BLACK,
