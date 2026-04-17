@@ -1,6 +1,4 @@
 use std::fs;
-#[cfg(any(feature = "dictionary", feature = "tesseract", feature = "tts"))]
-use std::path::Path;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, OnceLock};
 
@@ -10,22 +8,20 @@ use thiserror::Error;
 use translator::translate_image_rgba_in_snapshot;
 use translator::{
     BergamotEngine, CatalogSnapshot, PackInstallChecker, build_catalog_snapshot,
-    can_translate_in_snapshot, language_rows_in_snapshot, parse_and_validate_catalog,
-    plan_delete_dictionary_in_snapshot, plan_delete_language_in_snapshot,
-    plan_delete_superseded_tts_in_snapshot, plan_delete_tts_in_snapshot,
-    plan_dictionary_download_in_snapshot, plan_language_download_in_snapshot,
-    plan_tts_download_in_snapshot, sample_overlay_colors, select_best_catalog,
-    translate_mixed_texts_in_snapshot, translate_structured_fragments_in_snapshot,
-    translate_texts_in_snapshot, translate_texts_with_alignment_in_snapshot,
+    can_translate_in_snapshot, close_dictionary_in_snapshot, language_rows_in_snapshot,
+    lookup_dictionary_in_snapshot, parse_and_validate_catalog, plan_delete_dictionary_in_snapshot,
+    plan_delete_language_in_snapshot, plan_delete_superseded_tts_in_snapshot,
+    plan_delete_tts_in_snapshot, plan_dictionary_download_in_snapshot,
+    plan_language_download_in_snapshot, plan_tts_download_in_snapshot, sample_overlay_colors,
+    select_best_catalog, translate_mixed_texts_in_snapshot,
+    translate_structured_fragments_in_snapshot, translate_texts_in_snapshot,
+    translate_texts_with_alignment_in_snapshot,
 };
 #[cfg(feature = "tts")]
 use translator::{
     available_tts_voices_in_snapshot, clear_cached_model, plan_speech_chunks_for_text_in_snapshot,
     synthesize_pcm_in_snapshot,
 };
-#[cfg(feature = "dictionary")]
-use translator::{close_dictionary, lookup_dictionary};
-
 struct FsInstallChecker {
     base_dir: PathBuf,
 }
@@ -122,15 +118,6 @@ pub struct DictionaryWordRecord {
 }
 
 #[cfg(feature = "dictionary")]
-fn dictionary_path_for_language(snapshot: &CatalogSnapshot, language_code: &str) -> Option<String> {
-    let language = snapshot.catalog.language_by_code(language_code)?;
-    let path = Path::new(&snapshot.base_dir)
-        .join("dictionaries")
-        .join(format!("{}.dict", language.dictionary_code));
-    Some(path.to_string_lossy().into_owned())
-}
-
-#[cfg(feature = "dictionary")]
 fn map_dictionary_word(word: translator::tarkka::WordWithTaggedEntries) -> DictionaryWordRecord {
     DictionaryWordRecord {
         word: word.word,
@@ -160,38 +147,6 @@ fn map_dictionary_word(word: translator::tarkka::WordWithTaggedEntries) -> Dicti
         redirects: word.redirects,
     }
 }
-
-#[cfg(feature = "dictionary")]
-fn lookup_dictionary_in_snapshot(
-    snapshot: &CatalogSnapshot,
-    language_code: &str,
-    word: &str,
-) -> Option<DictionaryWordRecord> {
-    let path = dictionary_path_for_language(snapshot, language_code)?;
-    lookup_dictionary(&path, word)
-        .ok()
-        .flatten()
-        .map(map_dictionary_word)
-}
-
-#[cfg(not(feature = "dictionary"))]
-fn lookup_dictionary_in_snapshot(
-    _snapshot: &CatalogSnapshot,
-    _language_code: &str,
-    _word: &str,
-) -> Option<DictionaryWordRecord> {
-    None
-}
-
-#[cfg(feature = "dictionary")]
-fn close_dictionary_in_snapshot(snapshot: &CatalogSnapshot, language_code: &str) {
-    if let Some(path) = dictionary_path_for_language(snapshot, language_code) {
-        let _ = close_dictionary(&path);
-    }
-}
-
-#[cfg(not(feature = "dictionary"))]
-fn close_dictionary_in_snapshot(_snapshot: &CatalogSnapshot, _language_code: &str) {}
 
 #[cfg(feature = "tesseract")]
 fn translate_image_plan_in_snapshot(
@@ -303,11 +258,10 @@ impl CatalogHandle {
         language_code: String,
         word: String,
     ) -> Option<DictionaryWordRecord> {
-        let normalized = word.trim();
-        if normalized.is_empty() {
-            return None;
-        }
-        lookup_dictionary_in_snapshot(&self.snapshot, &language_code, normalized)
+        lookup_dictionary_in_snapshot(&self.snapshot, &language_code, &word)
+            .ok()
+            .flatten()
+            .map(map_dictionary_word)
     }
 
     fn has_tts_voices(&self, language_code: String) -> bool {
@@ -457,14 +411,14 @@ impl CatalogHandle {
     }
 
     fn plan_delete_language(&self, language_code: String) -> translator::DeletePlan {
-        close_dictionary_in_snapshot(&self.snapshot, &language_code);
+        let _ = close_dictionary_in_snapshot(&self.snapshot, &language_code);
         #[cfg(feature = "tts")]
         clear_cached_model();
         plan_delete_language_in_snapshot(&self.snapshot, &language_code)
     }
 
     fn plan_delete_dictionary(&self, language_code: String) -> translator::DeletePlan {
-        close_dictionary_in_snapshot(&self.snapshot, &language_code);
+        let _ = close_dictionary_in_snapshot(&self.snapshot, &language_code);
         plan_delete_dictionary_in_snapshot(&self.snapshot, &language_code)
     }
 
