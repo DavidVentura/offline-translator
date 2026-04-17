@@ -1,13 +1,13 @@
 #[uniffi::export]
 pub fn transliterate_with_policy_record(
     text: String,
-    language_code: String,
-    source_script: String,
-    target_script: String,
+    language_code: translator::LanguageCode,
+    source_script: translator::ScriptCode,
+    target_script: translator::ScriptCode,
     japanese_dict_path: Option<String>,
     japanese_spaced: bool,
 ) -> Option<String> {
-    translator::transliterate_with_policy_for_language(
+    translator::transliterate::transliterate_with_policy_for_language(
         &text,
         &language_code,
         &source_script,

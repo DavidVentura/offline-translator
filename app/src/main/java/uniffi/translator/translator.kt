@@ -1283,6 +1283,34 @@ public object FfiConverterTypeDetectionResult: FfiConverterRustBuffer<DetectionR
 
 
 
+data class DictionaryCode (
+    var `code`: kotlin.String
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDictionaryCode: FfiConverterRustBuffer<DictionaryCode> {
+    override fun read(buf: ByteBuffer): DictionaryCode {
+        return DictionaryCode(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: DictionaryCode) = (
+            FfiConverterString.allocationSize(value.`code`)
+    )
+
+    override fun write(value: DictionaryCode, buf: ByteBuffer) {
+            FfiConverterString.write(value.`code`, buf)
+    }
+}
+
+
+
 data class DictionaryInfo (
     var `date`: kotlin.Long, 
     var `filename`: kotlin.String, 
@@ -1546,6 +1574,34 @@ public object FfiConverterTypeLanguageAvailabilityRow: FfiConverterRustBuffer<La
     override fun write(value: LanguageAvailabilityRow, buf: ByteBuffer) {
             FfiConverterTypeLanguage.write(value.`language`, buf)
             FfiConverterTypeLangAvailability.write(value.`availability`, buf)
+    }
+}
+
+
+
+data class LanguageCode (
+    var `code`: kotlin.String
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeLanguageCode: FfiConverterRustBuffer<LanguageCode> {
+    override fun read(buf: ByteBuffer): LanguageCode {
+        return LanguageCode(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: LanguageCode) = (
+            FfiConverterString.allocationSize(value.`code`)
+    )
+
+    override fun write(value: LanguageCode, buf: ByteBuffer) {
+            FfiConverterString.write(value.`code`, buf)
     }
 }
 
@@ -1926,6 +1982,34 @@ public object FfiConverterTypeRect: FfiConverterRustBuffer<Rect> {
             FfiConverterUInt.write(value.`top`, buf)
             FfiConverterUInt.write(value.`right`, buf)
             FfiConverterUInt.write(value.`bottom`, buf)
+    }
+}
+
+
+
+data class ScriptCode (
+    var `code`: kotlin.String
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeScriptCode: FfiConverterRustBuffer<ScriptCode> {
+    override fun read(buf: ByteBuffer): ScriptCode {
+        return ScriptCode(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ScriptCode) = (
+            FfiConverterString.allocationSize(value.`code`)
+    )
+
+    override fun write(value: ScriptCode, buf: ByteBuffer) {
+            FfiConverterString.write(value.`code`, buf)
     }
 }
 
@@ -2398,6 +2482,34 @@ public object FfiConverterTypeTtsVoicePickerRegion: FfiConverterRustBuffer<TtsVo
             FfiConverterString.write(value.`code`, buf)
             FfiConverterString.write(value.`displayName`, buf)
             FfiConverterSequenceTypeTtsVoicePackInfo.write(value.`voices`, buf)
+    }
+}
+
+
+
+data class VoiceName (
+    var `name`: kotlin.String
+) {
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeVoiceName: FfiConverterRustBuffer<VoiceName> {
+    override fun read(buf: ByteBuffer): VoiceName {
+        return VoiceName(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: VoiceName) = (
+            FfiConverterString.allocationSize(value.`name`)
+    )
+
+    override fun write(value: VoiceName, buf: ByteBuffer) {
+            FfiConverterString.write(value.`name`, buf)
     }
 }
 

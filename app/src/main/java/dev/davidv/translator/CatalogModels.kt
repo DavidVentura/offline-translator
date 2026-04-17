@@ -10,6 +10,12 @@ private fun rgbaBytes(bitmap: Bitmap): ByteArray =
     bitmap.copyPixelsToBuffer(ByteBuffer.wrap(bytes))
   }
 
+private fun languageCode(code: String) = uniffi.translator.LanguageCode(code = code)
+
+private fun dictionaryCode(code: String) = uniffi.translator.DictionaryCode(code = code)
+
+private fun voiceName(name: String) = uniffi.translator.VoiceName(name = name)
+
 private data class CroppedOverlayScreenshot(
   val screenshot: uniffi.translator.OverlayScreenshot,
   val left: Int,
@@ -224,21 +230,21 @@ class LanguageCatalog private constructor(
   fun dictionaryInfoFor(language: Language): DictionaryInfo? = dictionaryInfo(language.dictionaryCode)
 
   fun dictionaryInfo(dictionaryCode: String): DictionaryInfo? =
-    handle.dictionaryInfo(dictionaryCode)?.let {
+    handle.dictionaryInfo(dictionaryCode(dictionaryCode))?.let {
       DictionaryInfo(date = it.date, filename = it.filename, size = it.size.toLong(), type = it.typeName, wordCount = it.wordCount.toLong())
     }
 
   fun lookupDictionary(
     language: Language,
     word: String,
-  ): WordWithTaggedEntries? = handle.lookupDictionary(language.code, word)
+  ): WordWithTaggedEntries? = handle.lookupDictionary(languageCode(language.code), word)
 
   fun availabilityFor(language: Language?): LangAvailability? = language?.let { availabilityByCode[it.code] }
 
-  fun hasTtsVoices(languageCode: String): Boolean = handle.hasTtsVoices(languageCode)
+  fun hasTtsVoices(languageCode: String): Boolean = handle.hasTtsVoices(languageCode(languageCode))
 
   fun ttsVoicePickerRegions(languageCode: String): List<TtsVoicePickerRegion> =
-    handle.ttsVoicePickerRegions(languageCode).map { region ->
+    handle.ttsVoicePickerRegions(languageCode(languageCode)).map { region ->
       TtsVoicePickerRegion(
         code = region.code,
         displayName = region.displayName,
@@ -249,23 +255,23 @@ class LanguageCatalog private constructor(
   fun canSwapLanguages(
     from: Language,
     to: Language,
-  ): Boolean = handle.canSwapLanguages(from.code, to.code)
+  ): Boolean = handle.canSwapLanguages(languageCode(from.code), languageCode(to.code))
 
   fun canTranslate(
     from: Language,
     to: Language,
-  ): Boolean = handle.canTranslate(from.code, to.code)
+  ): Boolean = handle.canTranslate(languageCode(from.code), languageCode(to.code))
 
   fun warmTranslationModels(
     from: Language,
     to: Language,
-  ): Boolean = handle.warmTranslationModels(from.code, to.code)
+  ): Boolean = handle.warmTranslationModels(languageCode(from.code), languageCode(to.code))
 
   fun translateText(
     from: Language,
     to: Language,
     text: String,
-  ): String? = handle.translateText(from.code, to.code, text)
+  ): String? = handle.translateText(languageCode(from.code), languageCode(to.code), text)
 
   fun translateMixedTexts(
     inputs: List<String>,
@@ -275,9 +281,9 @@ class LanguageCatalog private constructor(
   ): uniffi.translator.MixedTextTranslationResult =
     handle.translateMixedTexts(
       inputs,
-      forcedSourceLanguage?.code,
-      targetLanguage.code,
-      availableLanguages.map { it.code },
+      forcedSourceLanguage?.code?.let(::languageCode),
+      languageCode(targetLanguage.code),
+      availableLanguages.map { languageCode(it.code) },
     )
 
   fun translateStructuredFragments(
@@ -301,9 +307,9 @@ class LanguageCatalog private constructor(
     val result =
       handle.translateStructuredFragments(
         nativeFragments,
-        forcedSourceLanguage?.code,
-        targetLanguage.code,
-        availableLanguages.map { it.code },
+        forcedSourceLanguage?.code?.let(::languageCode),
+        languageCode(targetLanguage.code),
+        availableLanguages.map { languageCode(it.code) },
         croppedScreenshot?.screenshot,
         backgroundMode,
       )
@@ -326,51 +332,57 @@ class LanguageCatalog private constructor(
       rgbaBytes(bitmap),
       bitmap.width.toUInt(),
       bitmap.height.toUInt(),
-      from.code,
-      to.code,
+      languageCode(from.code),
+      languageCode(to.code),
       minConfidence.toUInt(),
       readingOrder,
       backgroundMode,
     )
   }
 
-  fun planLanguageDownload(languageCode: String): DownloadPlan = handle.planLanguageDownload(languageCode).toDownloadPlan()
+  fun planLanguageDownload(languageCode: String): DownloadPlan = handle.planLanguageDownload(languageCode(languageCode)).toDownloadPlan()
 
-  fun planDictionaryDownload(languageCode: String): DownloadPlan? = handle.planDictionaryDownload(languageCode)?.toDownloadPlan()
+  fun planDictionaryDownload(languageCode: String): DownloadPlan? =
+    handle.planDictionaryDownload(
+      languageCode(languageCode),
+    )?.toDownloadPlan()
 
   fun planTtsDownload(
     languageCode: String,
     selectedPackId: String? = null,
-  ): DownloadPlan? = handle.planTtsDownload(languageCode, selectedPackId)?.toDownloadPlan()
+  ): DownloadPlan? = handle.planTtsDownload(languageCode(languageCode), selectedPackId)?.toDownloadPlan()
 
   fun planDeleteLanguage(languageCode: String): DeletePlan =
-    handle.planDeleteLanguage(languageCode).let {
+    handle.planDeleteLanguage(languageCode(languageCode)).let {
       DeletePlan(it.filePaths, it.directoryPaths)
     }
 
   fun planDeleteDictionary(languageCode: String): DeletePlan =
-    handle.planDeleteDictionary(languageCode).let {
+    handle.planDeleteDictionary(languageCode(languageCode)).let {
       DeletePlan(it.filePaths, it.directoryPaths)
     }
 
   fun planDeleteTts(languageCode: String): DeletePlan =
     handle.planDeleteTts(
-      languageCode,
+      languageCode(languageCode),
     ).let { DeletePlan(it.filePaths, it.directoryPaths) }
 
   fun planDeleteSupersededTts(
     languageCode: String,
     selectedPackId: String,
-  ): DeletePlan = handle.planDeleteSupersededTts(languageCode, selectedPackId).let { DeletePlan(it.filePaths, it.directoryPaths) }
+  ): DeletePlan =
+    handle.planDeleteSupersededTts(languageCode(languageCode), selectedPackId).let {
+      DeletePlan(it.filePaths, it.directoryPaths)
+    }
 
-  fun defaultTtsPackIdForLanguage(languageCode: String): String? = handle.defaultTtsPackId(languageCode)
+  fun defaultTtsPackIdForLanguage(languageCode: String): String? = handle.defaultTtsPackId(languageCode(languageCode))
 
-  fun ttsSizeBytesForLanguage(languageCode: String): Long = handle.ttsSizeBytes(languageCode).toLong()
+  fun ttsSizeBytesForLanguage(languageCode: String): Long = handle.ttsSizeBytes(languageCode(languageCode)).toLong()
 
-  fun translationSizeBytesForLanguage(languageCode: String): Long = handle.translationSizeBytes(languageCode).toLong()
+  fun translationSizeBytesForLanguage(languageCode: String): Long = handle.translationSizeBytes(languageCode(languageCode)).toLong()
 
   fun availableTtsVoices(languageCode: String): List<TtsVoiceOption> =
-    handle.availableTtsVoices(languageCode).map { voice ->
+    handle.availableTtsVoices(languageCode(languageCode)).map { voice ->
       TtsVoiceOption(
         name = voice.name,
         speakerId = voice.speakerId.toInt(),
@@ -382,7 +394,7 @@ class LanguageCatalog private constructor(
     languageCode: String,
     text: String,
   ): List<SpeechChunkPlan> =
-    handle.planSpeechChunks(languageCode, text).map { chunk ->
+    handle.planSpeechChunks(languageCode(languageCode), text).map { chunk ->
       SpeechChunkPlan(
         content = chunk.content,
         isPhonemes = chunk.isPhonemes,
@@ -397,7 +409,7 @@ class LanguageCatalog private constructor(
     voiceName: String?,
     isPhonemes: Boolean,
   ): PcmAudio? =
-    handle.synthesizeSpeechPcm(languageCode, text, speechSpeed, voiceName, isPhonemes)?.let { audio ->
+    handle.synthesizeSpeechPcm(languageCode(languageCode), text, speechSpeed, voiceName?.let(::voiceName), isPhonemes)?.let { audio ->
       PcmAudio(sampleRate = audio.sampleRate, pcmSamples = audio.pcmSamples.toShortArray())
     }
 }

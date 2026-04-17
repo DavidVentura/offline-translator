@@ -1,6 +1,8 @@
 package dev.davidv.translator
 
 import uniffi.bindings.transliterateWithPolicyRecord
+import uniffi.translator.LanguageCode
+import uniffi.translator.ScriptCode
 
 class TransliterateBinding {
   fun transliterate(
@@ -13,9 +15,9 @@ class TransliterateBinding {
   ): String? =
     transliterateWithPolicyRecord(
       text,
-      languageCode,
-      sourceScript,
-      targetScript,
+      LanguageCode(code = languageCode),
+      ScriptCode(code = sourceScript),
+      ScriptCode(code = targetScript),
       japaneseDictPath,
       japaneseSpaced,
     )
