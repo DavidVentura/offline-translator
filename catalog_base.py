@@ -75,9 +75,7 @@ OCR_PRIMARY_TRAINEDDATA_OVERRIDES = {
     }
 }
 
-DICTIONARY_DEPENDENCY_OVERRIDES = {
-    "ja": ["support-ja-mucab"],
-}
+DICTIONARY_DEPENDENCY_OVERRIDES = {}
 
 
 def language_meta_entry(lang: dict) -> dict:
@@ -211,8 +209,7 @@ def convert_v1_to_v2(language_index: dict, dictionary_index: dict) -> dict:
                 ],
                 "dependsOn": [],
             }
-            if extra_file != "mucab.bin":
-                add_language_asset_ref(language_entry, "support", support_pack_id)
+            add_language_asset_ref(language_entry, "support", support_pack_id)
 
     for dictionary_code, consumer_codes in sorted(dictionary_consumers.items()):
         dict_info = dictionary_index["dictionaries"].get(dictionary_code)

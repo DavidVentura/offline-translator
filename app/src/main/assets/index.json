@@ -1,10 +1,10 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1776031931,
+  "generatedAt": 1776430186,
   "dictionaryVersion": 1,
   "sources": {
     "languageIndexVersion": 1,
-    "languageIndexUpdatedAt": 1776031931,
+    "languageIndexUpdatedAt": 1776430186,
     "dictionaryIndexVersion": 1,
     "dictionaryIndexUpdatedAt": 1774864382,
     "gcsModelsUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
@@ -892,6 +892,9 @@
         "ocr": {
           "tesseract": "ocr-tesseract-ja"
         },
+        "support": [
+          "support-ja-mucab"
+        ],
         "dictionary": "dict-ja"
       },
       "tts": {
@@ -2233,9 +2236,7 @@
           "url": "https://offline-translator.davidv.dev/dictionaries/1/ja.dict"
         }
       ],
-      "dependsOn": [
-        "support-ja-mucab"
-      ],
+      "dependsOn": [],
       "metadata": {
         "date": 1758204389,
         "type": "bilingual",
@@ -8713,8 +8714,7 @@
       "files": [],
       "dependsOn": [
         "tts-espeak-dict-ja",
-        "tts-kokoro-v1.0-core",
-        "support-ja-mucab"
+        "tts-kokoro-v1.0-core"
       ]
     },
     "tts-mms-kn-in-standard-mms": {

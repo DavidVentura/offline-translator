@@ -339,7 +339,6 @@ EXTRA_TTS_VOICES = {
     "ja_JP-jf_alpha-kokoro-v1.0": {
         "engine": "kokoro",
         "shared_pack": KOKORO_SHARED_PACK_ID,
-        "depends_on": ["support-ja-mucab"],
         "key": "ja_JP-jf_alpha-kokoro-v1.0",
         "name": "jf_alpha",
         "language": {
