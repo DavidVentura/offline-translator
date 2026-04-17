@@ -52,7 +52,6 @@ import uniffi.translator.FfiConverterTypeRect
 import uniffi.translator.FfiConverterTypeSpeechChunk
 import uniffi.translator.FfiConverterTypeStructuredTranslationResult
 import uniffi.translator.FfiConverterTypeStyledFragment
-import uniffi.translator.FfiConverterTypeTranslationWithAlignment
 import uniffi.translator.FfiConverterTypeTtsVoiceOption
 import uniffi.translator.FfiConverterTypeTtsVoicePickerRegion
 import uniffi.translator.ImageTranslationOutcome
@@ -66,7 +65,6 @@ import uniffi.translator.Rect
 import uniffi.translator.SpeechChunk
 import uniffi.translator.StructuredTranslationResult
 import uniffi.translator.StyledFragment
-import uniffi.translator.TranslationWithAlignment
 import uniffi.translator.TtsVoiceOption
 import uniffi.translator.TtsVoicePickerRegion
 import uniffi.translator.RustBuffer as RustBufferBackgroundMode
@@ -85,7 +83,6 @@ import uniffi.translator.RustBuffer as RustBufferRect
 import uniffi.translator.RustBuffer as RustBufferSpeechChunk
 import uniffi.translator.RustBuffer as RustBufferStructuredTranslationResult
 import uniffi.translator.RustBuffer as RustBufferStyledFragment
-import uniffi.translator.RustBuffer as RustBufferTranslationWithAlignment
 import uniffi.translator.RustBuffer as RustBufferTtsVoiceOption
 import uniffi.translator.RustBuffer as RustBufferTtsVoicePickerRegion
 
@@ -906,15 +903,15 @@ fun uniffi_bindings_checksum_method_cataloghandle_translate_mixed_texts(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_translate_structured_fragments(
 ): Short
-fun uniffi_bindings_checksum_method_cataloghandle_translate_texts(
-): Short
-fun uniffi_bindings_checksum_method_cataloghandle_translate_texts_with_alignment(
+fun uniffi_bindings_checksum_method_cataloghandle_translate_text(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_translation_size_bytes(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_tts_size_bytes(
 ): Short
 fun uniffi_bindings_checksum_method_cataloghandle_tts_voice_picker_regions(
+): Short
+fun uniffi_bindings_checksum_method_cataloghandle_warm_translation_models(
 ): Short
 fun uniffi_bindings_checksum_constructor_cataloghandle_open(
 ): Short
@@ -1020,9 +1017,7 @@ fun uniffi_bindings_fn_method_cataloghandle_translate_mixed_texts(`ptr`: Pointer
 ): RustBufferMixedTextTranslationResult.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_translate_structured_fragments(`ptr`: Pointer,`fragments`: RustBuffer.ByValue,`forcedSourceCode`: RustBuffer.ByValue,`targetCode`: RustBuffer.ByValue,`availableLanguageCodes`: RustBuffer.ByValue,`screenshot`: RustBuffer.ByValue,`backgroundMode`: RustBufferBackgroundMode.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBufferStructuredTranslationResult.ByValue
-fun uniffi_bindings_fn_method_cataloghandle_translate_texts(`ptr`: Pointer,`fromCode`: RustBuffer.ByValue,`toCode`: RustBuffer.ByValue,`texts`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-fun uniffi_bindings_fn_method_cataloghandle_translate_texts_with_alignment(`ptr`: Pointer,`fromCode`: RustBuffer.ByValue,`toCode`: RustBuffer.ByValue,`texts`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+fun uniffi_bindings_fn_method_cataloghandle_translate_text(`ptr`: Pointer,`fromCode`: RustBuffer.ByValue,`toCode`: RustBuffer.ByValue,`text`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_method_cataloghandle_translation_size_bytes(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
@@ -1030,6 +1025,8 @@ fun uniffi_bindings_fn_method_cataloghandle_tts_size_bytes(`ptr`: Pointer,`langu
 ): Long
 fun uniffi_bindings_fn_method_cataloghandle_tts_voice_picker_regions(`ptr`: Pointer,`languageCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
+fun uniffi_bindings_fn_method_cataloghandle_warm_translation_models(`ptr`: Pointer,`fromCode`: RustBuffer.ByValue,`toCode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
 fun uniffi_bindings_fn_func_detect_language_record(`text`: RustBuffer.ByValue,`hint`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 fun uniffi_bindings_fn_func_detect_language_robust_code_record(`text`: RustBuffer.ByValue,`hint`: RustBuffer.ByValue,`availableLanguageCodes`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -1245,10 +1242,7 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_structured_fragments() != 36379.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_texts() != 56327.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_texts_with_alignment() != 46825.toShort()) {
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_translate_text() != 50478.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_translation_size_bytes() != 5179.toShort()) {
@@ -1258,6 +1252,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_method_cataloghandle_tts_voice_picker_regions() != 2470.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_bindings_checksum_method_cataloghandle_warm_translation_models() != 14884.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_bindings_checksum_constructor_cataloghandle_open() != 5436.toShort()) {
@@ -1767,15 +1764,15 @@ public interface CatalogHandleInterface {
     
     fun `translateStructuredFragments`(`fragments`: List<StyledFragment>, `forcedSourceCode`: kotlin.String?, `targetCode`: kotlin.String, `availableLanguageCodes`: List<kotlin.String>, `screenshot`: OverlayScreenshot?, `backgroundMode`: BackgroundMode): StructuredTranslationResult
     
-    fun `translateTexts`(`fromCode`: kotlin.String, `toCode`: kotlin.String, `texts`: List<kotlin.String>): List<kotlin.String>?
-    
-    fun `translateTextsWithAlignment`(`fromCode`: kotlin.String, `toCode`: kotlin.String, `texts`: List<kotlin.String>): List<TranslationWithAlignment>?
+    fun `translateText`(`fromCode`: kotlin.String, `toCode`: kotlin.String, `text`: kotlin.String): kotlin.String?
     
     fun `translationSizeBytes`(`languageCode`: kotlin.String): kotlin.ULong
     
     fun `ttsSizeBytes`(`languageCode`: kotlin.String): kotlin.ULong
     
     fun `ttsVoicePickerRegions`(`languageCode`: kotlin.String): List<TtsVoicePickerRegion>
+    
+    fun `warmTranslationModels`(`fromCode`: kotlin.String, `toCode`: kotlin.String): kotlin.Boolean
     
     companion object
 }
@@ -2138,24 +2135,12 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     }
     
 
-    override fun `translateTexts`(`fromCode`: kotlin.String, `toCode`: kotlin.String, `texts`: List<kotlin.String>): List<kotlin.String>? {
-            return FfiConverterOptionalSequenceString.lift(
+    override fun `translateText`(`fromCode`: kotlin.String, `toCode`: kotlin.String, `text`: kotlin.String): kotlin.String? {
+            return FfiConverterOptionalString.lift(
     callWithPointer {
     uniffiRustCall() { _status ->
-    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_translate_texts(
-        it, FfiConverterString.lower(`fromCode`),FfiConverterString.lower(`toCode`),FfiConverterSequenceString.lower(`texts`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `translateTextsWithAlignment`(`fromCode`: kotlin.String, `toCode`: kotlin.String, `texts`: List<kotlin.String>): List<TranslationWithAlignment>? {
-            return FfiConverterOptionalSequenceTypeTranslationWithAlignment.lift(
-    callWithPointer {
-    uniffiRustCall() { _status ->
-    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_translate_texts_with_alignment(
-        it, FfiConverterString.lower(`fromCode`),FfiConverterString.lower(`toCode`),FfiConverterSequenceString.lower(`texts`),_status)
+    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_translate_text(
+        it, FfiConverterString.lower(`fromCode`),FfiConverterString.lower(`toCode`),FfiConverterString.lower(`text`),_status)
 }
     }
     )
@@ -2192,6 +2177,18 @@ open class CatalogHandle: Disposable, AutoCloseable, CatalogHandleInterface
     uniffiRustCall() { _status ->
     UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_tts_voice_picker_regions(
         it, FfiConverterString.lower(`languageCode`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `warmTranslationModels`(`fromCode`: kotlin.String, `toCode`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithPointer {
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_bindings_fn_method_cataloghandle_warm_translation_models(
+        it, FfiConverterString.lower(`fromCode`),FfiConverterString.lower(`toCode`),_status)
 }
     }
     )
@@ -2697,38 +2694,6 @@ public object FfiConverterOptionalTypePcmAudio: FfiConverterRustBuffer<PcmAudio?
 /**
  * @suppress
  */
-public object FfiConverterOptionalSequenceString: FfiConverterRustBuffer<List<kotlin.String>?> {
-    override fun read(buf: ByteBuffer): List<kotlin.String>? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterSequenceString.read(buf)
-    }
-
-    override fun allocationSize(value: List<kotlin.String>?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterSequenceString.allocationSize(value)
-        }
-    }
-
-    override fun write(value: List<kotlin.String>?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterSequenceString.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
 public object FfiConverterOptionalSequenceTypeRect: FfiConverterRustBuffer<List<Rect>?> {
     override fun read(buf: ByteBuffer): List<Rect>? {
         if (buf.get().toInt() == 0) {
@@ -2751,38 +2716,6 @@ public object FfiConverterOptionalSequenceTypeRect: FfiConverterRustBuffer<List<
         } else {
             buf.put(1)
             FfiConverterSequenceTypeRect.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterOptionalSequenceTypeTranslationWithAlignment: FfiConverterRustBuffer<List<TranslationWithAlignment>?> {
-    override fun read(buf: ByteBuffer): List<TranslationWithAlignment>? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterSequenceTypeTranslationWithAlignment.read(buf)
-    }
-
-    override fun allocationSize(value: List<TranslationWithAlignment>?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterSequenceTypeTranslationWithAlignment.allocationSize(value)
-        }
-    }
-
-    override fun write(value: List<TranslationWithAlignment>?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterSequenceTypeTranslationWithAlignment.write(value, buf)
         }
     }
 }
@@ -3017,34 +2950,6 @@ public object FfiConverterSequenceTypeStyledFragment: FfiConverterRustBuffer<Lis
 /**
  * @suppress
  */
-public object FfiConverterSequenceTypeTranslationWithAlignment: FfiConverterRustBuffer<List<TranslationWithAlignment>> {
-    override fun read(buf: ByteBuffer): List<TranslationWithAlignment> {
-        val len = buf.getInt()
-        return List<TranslationWithAlignment>(len) {
-            FfiConverterTypeTranslationWithAlignment.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<TranslationWithAlignment>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeTranslationWithAlignment.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<TranslationWithAlignment>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeTranslationWithAlignment.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
 public object FfiConverterSequenceTypeTtsVoiceOption: FfiConverterRustBuffer<List<TtsVoiceOption>> {
     override fun read(buf: ByteBuffer): List<TtsVoiceOption> {
         val len = buf.getInt()
@@ -3094,8 +2999,6 @@ public object FfiConverterSequenceTypeTtsVoicePickerRegion: FfiConverterRustBuff
         }
     }
 }
-
-
 
 
 

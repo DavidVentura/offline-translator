@@ -77,28 +77,6 @@ class TranslationCoordinator(
     return result
   }
 
-  suspend fun translateTexts(
-    from: Language,
-    to: Language,
-    texts: Array<String>,
-  ): BatchTranslationResult {
-    if (texts.isEmpty()) return BatchTranslationResult.Success(emptyList())
-
-    _isTranslating.value = true
-    val result: BatchTranslationResult
-    try {
-      val elapsed =
-        measureTimeMillis {
-          result = translationService.translateMultiple(from, to, texts)
-        }
-      Log.d("TranslationCoordinator", "Translating ${texts.size} texts from ${from.displayName} to ${to.displayName} took ${elapsed}ms")
-    } finally {
-      lastTranslatedInput = texts.lastOrNull() ?: ""
-      _isTranslating.value = false
-    }
-    return result
-  }
-
   suspend fun detectLanguage(
     text: String,
     hint: Language?,

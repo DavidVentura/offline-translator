@@ -42,41 +42,8 @@ class TranslationService(
     if (from == to) return@withContext
 
     val catalog = filePathManager.loadCatalog() ?: return@withContext
-    catalog.translateTexts(from, to, emptyArray()) ?: return@withContext
+    catalog.warmTranslationModels(from, to)
   }
-
-  suspend fun translateMultiple(
-    from: Language,
-    to: Language,
-    texts: Array<String>,
-  ): BatchTranslationResult =
-    withContext(Dispatchers.IO) {
-      if (from == to) {
-        return@withContext BatchTranslationResult.Success(texts.map { TranslatedText(it, null) })
-      }
-      val catalog =
-        filePathManager.loadCatalog()
-          ?: return@withContext BatchTranslationResult.Error("Catalog unavailable")
-      val result =
-        catalog.translateTexts(from, to, texts)
-          ?: return@withContext BatchTranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
-      val elapsed =
-        measureTimeMillis {
-          // translation already executed in native layer
-        }
-      Log.d("TranslationService", "bulk translation took ${elapsed}ms")
-      val translated =
-        result.map { translatedText ->
-          val transliterated =
-            if (settingsManager.settings.value.enableOutputTransliteration) {
-              transliterate(translatedText, to)
-            } else {
-              null
-            }
-          TranslatedText(translatedText, transliterated)
-        }
-      return@withContext BatchTranslationResult.Success(translated)
-    }
 
   suspend fun translateMixedTexts(
     inputs: List<String>,
@@ -141,23 +108,11 @@ class TranslationService(
     text: String,
   ): TranslationResult =
     withContext(Dispatchers.IO) {
-      if (from == to) {
-        return@withContext TranslationResult.Success(TranslatedText(text, null))
-      }
-      // numbers don't translate :^)
-      if (text.trim().toFloatOrNull() != null) {
-        return@withContext TranslationResult.Success(TranslatedText(text, null))
-      }
-
-      if (text.isBlank()) {
-        return@withContext TranslationResult.Success(TranslatedText("", null))
-      }
-
       val catalog =
         filePathManager.loadCatalog()
           ?: return@withContext TranslationResult.Error("Catalog unavailable")
-      val results =
-        catalog.translateTexts(from, to, arrayOf(text))
+      val result =
+        catalog.translateText(from, to, text)
           ?: return@withContext TranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
 
       try {
@@ -166,7 +121,6 @@ class TranslationService(
             // translation already executed in native layer
           }
         Log.d("TranslationService", "Translation took ${elapsed}ms")
-        val result = results.first()
         val transliterated =
           if (settingsManager.settings.value.enableOutputTransliteration) {
             transliterate(result, to)
@@ -209,16 +163,6 @@ sealed class TranslationResult {
   data class Error(
     val message: String,
   ) : TranslationResult()
-}
-
-sealed class BatchTranslationResult {
-  data class Success(
-    val result: List<TranslatedText>,
-  ) : BatchTranslationResult()
-
-  data class Error(
-    val message: String,
-  ) : BatchTranslationResult()
 }
 
 sealed class StructuredFragmentTranslationOutput {

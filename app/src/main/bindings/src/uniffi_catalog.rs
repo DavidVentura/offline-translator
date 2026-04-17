@@ -4,24 +4,21 @@ use std::sync::{Arc, Mutex, OnceLock};
 
 use serde_json::Value;
 use thiserror::Error;
-#[cfg(feature = "tesseract")]
-use translator::translate_image_rgba_in_snapshot;
 use translator::{
-    BergamotEngine, CatalogSnapshot, PackInstallChecker, build_catalog_snapshot,
-    can_translate_in_snapshot, close_dictionary_in_snapshot, language_rows_in_snapshot,
-    lookup_dictionary_in_snapshot, parse_and_validate_catalog, plan_delete_dictionary_in_snapshot,
+    BergamotEngine, CatalogSnapshot, PackInstallChecker, Translator, build_catalog_snapshot,
+    language_rows_in_snapshot, parse_and_validate_catalog, plan_delete_dictionary_in_snapshot,
     plan_delete_language_in_snapshot, plan_delete_superseded_tts_in_snapshot,
     plan_delete_tts_in_snapshot, plan_dictionary_download_in_snapshot,
     plan_language_download_in_snapshot, plan_tts_download_in_snapshot, sample_overlay_colors,
-    select_best_catalog, translate_mixed_texts_in_snapshot,
-    translate_structured_fragments_in_snapshot, translate_texts_in_snapshot,
-    translate_texts_with_alignment_in_snapshot,
+    select_best_catalog,
 };
 #[cfg(feature = "tts")]
 use translator::{
     available_tts_voices_in_snapshot, clear_cached_model, plan_speech_chunks_for_text_in_snapshot,
     synthesize_pcm_in_snapshot,
 };
+#[cfg(feature = "dictionary")]
+use translator::{close_dictionary_in_snapshot, lookup_dictionary_in_snapshot};
 struct FsInstallChecker {
     base_dir: PathBuf,
 }
@@ -161,9 +158,7 @@ fn translate_image_plan_in_snapshot(
     background_mode: translator::BackgroundMode,
 ) -> Result<translator::ImageTranslationOutcome, String> {
     with_engine(|engine| {
-        translate_image_rgba_in_snapshot(
-            engine,
-            snapshot,
+        Translator::new(engine, snapshot).translate_image_rgba(
             rgba_bytes,
             width,
             height,
@@ -258,6 +253,13 @@ impl CatalogHandle {
         language_code: String,
         word: String,
     ) -> Option<DictionaryWordRecord> {
+        #[cfg(not(feature = "dictionary"))]
+        {
+            let _ = (language_code, word);
+            return None;
+        }
+
+        #[cfg(feature = "dictionary")]
         lookup_dictionary_in_snapshot(&self.snapshot, &language_code, &word)
             .ok()
             .flatten()
@@ -284,38 +286,17 @@ impl CatalogHandle {
     }
 
     fn can_translate(&self, from_code: String, to_code: String) -> bool {
-        can_translate_in_snapshot(&self.snapshot, &from_code, &to_code)
+        self.snapshot.can_translate(&from_code, &to_code)
     }
 
-    fn translate_texts(
-        &self,
-        from_code: String,
-        to_code: String,
-        texts: Vec<String>,
-    ) -> Option<Vec<String>> {
-        with_engine(|engine| {
-            translate_texts_in_snapshot(engine, &self.snapshot, &from_code, &to_code, &texts)
-                .transpose()
-        })
-        .ok()
-        .flatten()
+    fn warm_translation_models(&self, from_code: String, to_code: String) -> bool {
+        with_engine(|engine| Translator::new(engine, &self.snapshot).warm(&from_code, &to_code))
+            .unwrap_or(false)
     }
 
-    fn translate_texts_with_alignment(
-        &self,
-        from_code: String,
-        to_code: String,
-        texts: Vec<String>,
-    ) -> Option<Vec<translator::TranslationWithAlignment>> {
+    fn translate_text(&self, from_code: String, to_code: String, text: String) -> Option<String> {
         with_engine(|engine| {
-            translate_texts_with_alignment_in_snapshot(
-                engine,
-                &self.snapshot,
-                &from_code,
-                &to_code,
-                &texts,
-            )
-            .transpose()
+            Translator::new(engine, &self.snapshot).translate_text(&from_code, &to_code, &text)
         })
         .ok()
         .flatten()
@@ -329,9 +310,7 @@ impl CatalogHandle {
         available_language_codes: Vec<String>,
     ) -> translator::MixedTextTranslationResult {
         with_engine(|engine| {
-            translate_mixed_texts_in_snapshot(
-                engine,
-                &self.snapshot,
+            Translator::new(engine, &self.snapshot).translate_mixed_texts(
                 &inputs,
                 forced_source_code.as_deref(),
                 &target_code,
@@ -351,9 +330,7 @@ impl CatalogHandle {
         background_mode: translator::BackgroundMode,
     ) -> translator::StructuredTranslationResult {
         with_engine(|engine| {
-            translate_structured_fragments_in_snapshot(
-                engine,
-                &self.snapshot,
+            Translator::new(engine, &self.snapshot).translate_structured_fragments(
                 &fragments,
                 forced_source_code.as_deref(),
                 &target_code,
@@ -411,6 +388,7 @@ impl CatalogHandle {
     }
 
     fn plan_delete_language(&self, language_code: String) -> translator::DeletePlan {
+        #[cfg(feature = "dictionary")]
         let _ = close_dictionary_in_snapshot(&self.snapshot, &language_code);
         #[cfg(feature = "tts")]
         clear_cached_model();
@@ -418,6 +396,7 @@ impl CatalogHandle {
     }
 
     fn plan_delete_dictionary(&self, language_code: String) -> translator::DeletePlan {
+        #[cfg(feature = "dictionary")]
         let _ = close_dictionary_in_snapshot(&self.snapshot, &language_code);
         plan_delete_dictionary_in_snapshot(&self.snapshot, &language_code)
     }

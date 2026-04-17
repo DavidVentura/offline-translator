@@ -256,11 +256,16 @@ class LanguageCatalog private constructor(
     to: Language,
   ): Boolean = handle.canTranslate(from.code, to.code)
 
-  fun translateTexts(
+  fun warmTranslationModels(
     from: Language,
     to: Language,
-    texts: Array<String>,
-  ): Array<String>? = handle.translateTexts(from.code, to.code, texts.toList())?.toTypedArray()
+  ): Boolean = handle.warmTranslationModels(from.code, to.code)
+
+  fun translateText(
+    from: Language,
+    to: Language,
+    text: String,
+  ): String? = handle.translateText(from.code, to.code, text)
 
   fun translateMixedTexts(
     inputs: List<String>,
