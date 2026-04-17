@@ -20,7 +20,7 @@ package dev.davidv.translator
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.system.measureTimeMillis
+import uniffi.bindings.CatalogException
 
 class TranslationService(
   private val settingsManager: SettingsManager,
@@ -112,26 +112,22 @@ class TranslationService(
         filePathManager.loadCatalog()
           ?: return@withContext TranslationResult.Error("Catalog unavailable")
       val result =
-        catalog.translateText(from, to, text)
-          ?: return@withContext TranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
+        try {
+          catalog.translateText(from, to, text)
+        } catch (e: CatalogException.MissingAsset) {
+          return@withContext TranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
+        } catch (e: CatalogException.Other) {
+          Log.e("TranslationService", "Translation failed", e)
+          return@withContext TranslationResult.Error("Translation failed: ${e.message}")
+        }
 
-      try {
-        val elapsed =
-          measureTimeMillis {
-            // translation already executed in native layer
-          }
-        Log.d("TranslationService", "Translation took ${elapsed}ms")
-        val transliterated =
-          if (settingsManager.settings.value.enableOutputTransliteration) {
-            transliterate(result, to)
-          } else {
-            null
-          }
-        TranslationResult.Success(TranslatedText(result, transliterated))
-      } catch (e: Exception) {
-        Log.e("TranslationService", "Translation failed", e)
-        TranslationResult.Error("Translation failed: ${e.message}")
-      }
+      val transliterated =
+        if (settingsManager.settings.value.enableOutputTransliteration) {
+          transliterate(result, to)
+        } else {
+          null
+        }
+      TranslationResult.Success(TranslatedText(result, transliterated))
     }
 
   fun transliterate(

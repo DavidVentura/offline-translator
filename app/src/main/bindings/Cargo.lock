@@ -194,7 +194,6 @@ dependencies = [
 name = "bindings"
 version = "0.1.0"
 dependencies = [
- "serde_json",
  "thiserror 2.0.18",
  "translator",
  "uniffi",
@@ -336,9 +335,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.6.0"
+version = "4.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b193af5b67834b676abd72466a96c1024e6a6ad978a1f484bd90b85c94041351"
+checksum = "1ddb117e43bbf7dacf0a4190fef4d345b9bad68dfc649cb349e7d17d28428e51"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -357,9 +356,9 @@ dependencies = [
 
 [[package]]
 name = "clap_derive"
-version = "4.6.0"
+version = "4.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1110bd8a634a1ab8cb04345d8d878267d57c3cf1b38d91b71af6686408bbca6a"
+checksum = "f2ce8604710f6733aa641a2b3731eaa1e8b3d9973d5e3565da11800813f997a9"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -523,7 +522,7 @@ dependencies = [
 [[package]]
 name = "espeak-rs"
 version = "0.1.9"
-source = "git+https://github.com/DavidVentura/piper-rs#3ce98f2f15bad4361e3e27ceea675ec26a9b8b62"
+source = "git+https://github.com/DavidVentura/piper-rs#d8dd4db1a3434d63f2ad5bb8add3c8a5d74feead"
 dependencies = [
  "espeak-rs-sys",
 ]
@@ -531,7 +530,7 @@ dependencies = [
 [[package]]
 name = "espeak-rs-sys"
 version = "0.1.9"
-source = "git+https://github.com/DavidVentura/piper-rs#3ce98f2f15bad4361e3e27ceea675ec26a9b8b62"
+source = "git+https://github.com/DavidVentura/piper-rs#d8dd4db1a3434d63f2ad5bb8add3c8a5d74feead"
 dependencies = [
  "bindgen 0.69.5",
  "cmake",
@@ -1338,7 +1337,7 @@ dependencies = [
  "num-complex",
  "num-traits",
  "py_literal",
- "zip",
+ "zip 2.4.2",
 ]
 
 [[package]]
@@ -1508,7 +1507,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 [[package]]
 name = "piper-rs"
 version = "0.1.9"
-source = "git+https://github.com/DavidVentura/piper-rs#3ce98f2f15bad4361e3e27ceea675ec26a9b8b62"
+source = "git+https://github.com/DavidVentura/piper-rs#d8dd4db1a3434d63f2ad5bb8add3c8a5d74feead"
 dependencies = [
  "espeak-rs",
  "mucab",
@@ -1519,6 +1518,7 @@ dependencies = [
  "serde",
  "serde_json",
  "unicode-normalization",
+ "zip 0.6.6",
 ]
 
 [[package]]
@@ -1541,9 +1541,9 @@ checksum = "c33a9471896f1c69cecef8d20cbe2f7accd12527ce60845ff44c153bb2a21b49"
 
 [[package]]
 name = "portable-atomic-util"
-version = "0.2.6"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "091397be61a01d4be58e7841595bd4bfedb15f1cd54977d79b8271e94ed799a3"
+checksum = "c2a106d1259c23fac8e543272398ae0e3c0b8d33c88ed73d0cc71b0f1d902618"
 dependencies = [
  "portable-atomic",
 ]
@@ -2156,6 +2156,7 @@ dependencies = [
 [[package]]
 name = "translator"
 version = "0.1.0"
+source = "git+https://github.com/DavidVentura/translator-rs.git#040e3a44aa03503c24d6f6bde55b97fdf152de7a"
 dependencies = [
  "bergamot-sys",
  "cld2",
@@ -2752,6 +2753,18 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.117",
+]
+
+[[package]]
+name = "zip"
+version = "0.6.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "760394e246e4c28189f19d488c058bf16f564016aefac5d32bb1f3b51d5e9261"
+dependencies = [
+ "byteorder",
+ "crc32fast",
+ "crossbeam-utils",
+ "flate2",
 ]
 
 [[package]]

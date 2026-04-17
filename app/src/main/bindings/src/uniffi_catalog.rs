@@ -1,56 +1,36 @@
-use std::fs;
-use std::path::PathBuf;
 use std::sync::Arc;
 
-use serde_json::Value;
 use thiserror::Error;
 use translator::{
-    CatalogSnapshot, Feature, PackInstallChecker, TextTranslationOutcome,
-    TranslationWarmOutcome, TranslatorSession, language_rows_in_snapshot, sample_overlay_colors,
+    CatalogSnapshot, Feature, FsPackInstallChecker, TranslatorError, TranslatorErrorKind,
+    TranslatorSession, language_rows_in_snapshot, sample_overlay_colors,
 };
-#[cfg(feature = "dictionary")]
-use translator::DictionaryLookupOutcome;
-#[cfg(feature = "tts")]
-use translator::{PcmSynthesisOutcome, SpeechChunkPlanningOutcome, TtsVoicesOutcome};
-
-struct FsInstallChecker {
-    base_dir: PathBuf,
-}
-
-impl FsInstallChecker {
-    fn resolve(&self, relative_path: &str) -> PathBuf {
-        self.base_dir.join(relative_path)
-    }
-}
-
-impl PackInstallChecker for FsInstallChecker {
-    fn file_exists(&self, install_path: &str) -> bool {
-        self.resolve(install_path).exists()
-    }
-
-    fn install_marker_exists(&self, marker_path: &str, expected_version: i32) -> bool {
-        let marker_file = self.resolve(marker_path);
-        if !marker_file.exists() {
-            return false;
-        }
-
-        let Ok(contents) = fs::read_to_string(marker_file) else {
-            return false;
-        };
-        let Ok(json) = serde_json::from_str::<Value>(&contents) else {
-            return false;
-        };
-        json.get("version")
-            .and_then(Value::as_i64)
-            .and_then(|value| i32::try_from(value).ok())
-            == Some(expected_version)
-    }
-}
 
 #[derive(Debug, Error, uniffi::Error)]
 pub enum CatalogOpenError {
     #[error("failed to parse any catalog")]
     ParseFailed,
+}
+
+#[derive(Debug, Error, uniffi::Error)]
+pub enum CatalogError {
+    #[error("{reason}")]
+    MissingAsset { reason: String },
+    #[error("{reason}")]
+    Other { reason: String },
+}
+
+impl From<TranslatorError> for CatalogError {
+    fn from(err: TranslatorError) -> Self {
+        match err.kind {
+            TranslatorErrorKind::MissingAsset => Self::MissingAsset {
+                reason: err.message,
+            },
+            _ => Self::Other {
+                reason: err.message,
+            },
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, uniffi::Record)]
@@ -149,9 +129,7 @@ impl CatalogHandle {
         disk_json: Option<String>,
         base_dir: String,
     ) -> Result<Arc<Self>, CatalogOpenError> {
-        let checker = FsInstallChecker {
-            base_dir: PathBuf::from(&base_dir),
-        };
+        let checker = FsPackInstallChecker::new(&base_dir);
         let session =
             TranslatorSession::open(&bundled_json, disk_json.as_deref(), base_dir, &checker)
                 .map_err(|_| CatalogOpenError::ParseFailed)?;
@@ -174,105 +152,93 @@ impl CatalogHandle {
         language_rows_in_snapshot(&self.snapshot())
     }
 
-    fn dictionary_info(
-        &self,
-        dictionary_code: translator::DictionaryCode,
-    ) -> Option<translator::DictionaryInfo> {
-        self.snapshot().catalog.dictionary_info(&dictionary_code)
+    fn dictionary_info(&self, dictionary_code: String) -> Option<translator::DictionaryInfo> {
+        self.snapshot()
+            .catalog
+            .dictionary_info(&translator::DictionaryCode::from(dictionary_code))
     }
 
     fn lookup_dictionary(
         &self,
-        language_code: translator::LanguageCode,
+        language_code: String,
         word: String,
-    ) -> Option<DictionaryWordRecord> {
+    ) -> Result<Option<DictionaryWordRecord>, CatalogError> {
         #[cfg(not(feature = "dictionary"))]
         {
             let _ = (language_code, word);
-            return None;
+            return Ok(None);
         }
 
         #[cfg(feature = "dictionary")]
-        match self.session.lookup_dictionary(language_code.as_str(), &word) {
-            Ok(DictionaryLookupOutcome::Found(word)) => Some(map_dictionary_word(word)),
-            Ok(DictionaryLookupOutcome::NotFound | DictionaryLookupOutcome::MissingDictionary) => {
-                None
-            }
-            Err(_) => None,
+        {
+            self.session
+                .lookup_dictionary(&language_code, &word)
+                .map(|opt| opt.map(map_dictionary_word))
+                .map_err(CatalogError::from)
         }
     }
 
-    fn has_tts_voices(&self, language_code: translator::LanguageCode) -> bool {
-        self.snapshot().catalog.has_tts_voices(&language_code)
+    fn has_tts_voices(&self, language_code: String) -> bool {
+        self.snapshot()
+            .catalog
+            .has_tts_voices(&translator::LanguageCode::from(language_code))
     }
 
     fn tts_voice_picker_regions(
         &self,
-        language_code: translator::LanguageCode,
+        language_code: String,
     ) -> Vec<translator::TtsVoicePickerRegion> {
         self.snapshot()
             .catalog
-            .tts_voice_picker_regions(&language_code)
+            .tts_voice_picker_regions(&translator::LanguageCode::from(language_code))
     }
 
-    fn can_swap_languages(
-        &self,
-        from_code: translator::LanguageCode,
-        to_code: translator::LanguageCode,
-    ) -> bool {
-        self.snapshot()
-            .catalog
-            .can_swap_languages(&from_code, &to_code)
+    fn can_swap_languages(&self, from_code: String, to_code: String) -> bool {
+        self.snapshot().catalog.can_swap_languages(
+            &translator::LanguageCode::from(from_code),
+            &translator::LanguageCode::from(to_code),
+        )
     }
 
-    fn can_translate(
-        &self,
-        from_code: translator::LanguageCode,
-        to_code: translator::LanguageCode,
-    ) -> bool {
-        self.snapshot().can_translate(&from_code, &to_code)
+    fn can_translate(&self, from_code: String, to_code: String) -> bool {
+        self.snapshot().can_translate(
+            &translator::LanguageCode::from(from_code),
+            &translator::LanguageCode::from(to_code),
+        )
     }
 
-    fn warm_translation_models(
-        &self,
-        from_code: translator::LanguageCode,
-        to_code: translator::LanguageCode,
-    ) -> bool {
-        self.session
-            .warm(from_code.as_str(), to_code.as_str())
-            .map(|outcome| matches!(outcome, TranslationWarmOutcome::Warmed))
-            .unwrap_or(false)
+    fn warm_translation_models(&self, from_code: String, to_code: String) -> bool {
+        self.session.warm(&from_code, &to_code).is_ok()
     }
 
     fn translate_text(
         &self,
-        from_code: translator::LanguageCode,
-        to_code: translator::LanguageCode,
+        from_code: String,
+        to_code: String,
         text: String,
-    ) -> Option<String> {
+    ) -> Result<String, CatalogError> {
         self.session
-            .translate_text(from_code.as_str(), to_code.as_str(), &text)
-            .ok()
-            .and_then(|outcome| match outcome {
-                TextTranslationOutcome::Translated(value)
-                | TextTranslationOutcome::Passthrough(value) => Some(value),
-                TextTranslationOutcome::MissingLanguagePair => None,
-            })
+            .translate_text(&from_code, &to_code, &text)
+            .map_err(CatalogError::from)
     }
 
     fn translate_mixed_texts(
         &self,
         inputs: Vec<String>,
-        forced_source_code: Option<translator::LanguageCode>,
-        target_code: translator::LanguageCode,
-        available_language_codes: Vec<translator::LanguageCode>,
+        forced_source_code: Option<String>,
+        target_code: String,
+        available_language_codes: Vec<String>,
     ) -> translator::MixedTextTranslationResult {
+        let available = available_language_codes
+            .into_iter()
+            .map(translator::LanguageCode::from)
+            .collect::<Vec<_>>();
         self.session
             .translate_mixed_texts(
                 &inputs,
-                forced_source_code.as_ref().map(translator::LanguageCode::as_str),
-                target_code.as_str(),
-                &available_language_codes,
+                forced_source_code.as_deref(),
+                &target_code,
+                &available,
             )
             .unwrap_or_else(|_| translator::MixedTextTranslationResult::default())
     }
@@ -280,18 +246,22 @@ impl CatalogHandle {
     fn translate_structured_fragments(
         &self,
         fragments: Vec<translator::StructuredStyledFragment>,
-        forced_source_code: Option<translator::LanguageCode>,
-        target_code: translator::LanguageCode,
-        available_language_codes: Vec<translator::LanguageCode>,
+        forced_source_code: Option<String>,
+        target_code: String,
+        available_language_codes: Vec<String>,
         screenshot: Option<translator::OverlayScreenshot>,
         background_mode: translator::BackgroundMode,
     ) -> translator::StructuredTranslationResult {
+        let available = available_language_codes
+            .into_iter()
+            .map(translator::LanguageCode::from)
+            .collect::<Vec<_>>();
         self.session
             .translate_structured_fragments(
                 &fragments,
-                forced_source_code.as_ref().map(translator::LanguageCode::as_str),
-                target_code.as_str(),
-                &available_language_codes,
+                forced_source_code.as_deref(),
+                &target_code,
+                &available,
                 screenshot.as_ref(),
                 background_mode,
             )
@@ -307,12 +277,12 @@ impl CatalogHandle {
         rgba_bytes: Vec<u8>,
         width: u32,
         height: u32,
-        source_code: translator::LanguageCode,
-        target_code: translator::LanguageCode,
+        source_code: String,
+        target_code: String,
         min_confidence: u32,
         reading_order: translator::ReadingOrder,
         background_mode: translator::BackgroundMode,
-    ) -> translator::ImageTranslationOutcome {
+    ) -> Result<translator::PreparedImageOverlay, CatalogError> {
         #[cfg(feature = "tesseract")]
         {
             return self
@@ -321,13 +291,13 @@ impl CatalogHandle {
                     &rgba_bytes,
                     width,
                     height,
-                    source_code.as_str(),
-                    target_code.as_str(),
+                    &source_code,
+                    &target_code,
                     min_confidence,
                     reading_order,
                     background_mode,
                 )
-                .unwrap_or(translator::ImageTranslationOutcome::MissingLanguagePair);
+                .map_err(CatalogError::from);
         }
         #[cfg(not(feature = "tesseract"))]
         {
@@ -341,97 +311,52 @@ impl CatalogHandle {
                 reading_order,
                 background_mode,
             );
-            translator::ImageTranslationOutcome::MissingLanguagePair
+            Err(CatalogError::Other {
+                reason: "tesseract feature disabled".to_string(),
+            })
         }
     }
 
-    fn plan_language_download(
+    fn plan_download(
         &self,
-        language_code: translator::LanguageCode,
-    ) -> translator::DownloadPlan {
-        self.session
-            .plan_download(language_code.as_str(), Feature::Core, None)
-            .unwrap_or_else(|| translator::DownloadPlan {
-                total_size: 0,
-                tasks: Vec::new(),
-            })
-    }
-
-    fn plan_dictionary_download(
-        &self,
-        language_code: translator::LanguageCode,
+        language_code: String,
+        feature: Feature,
+        selected_tts_pack_id: Option<String>,
     ) -> Option<translator::DownloadPlan> {
         self.session
-            .plan_download(language_code.as_str(), Feature::Dictionary, None)
+            .plan_download(&language_code, feature, selected_tts_pack_id.as_deref())
     }
 
-    fn plan_tts_download(
+    fn prepare_delete(&self, language_code: String, feature: Feature) -> translator::DeletePlan {
+        self.session.prepare_delete(&language_code, feature)
+    }
+
+    fn prepare_delete_superseded_tts(
         &self,
-        language_code: translator::LanguageCode,
-        selected_pack_id: Option<String>,
-    ) -> Option<translator::DownloadPlan> {
-        self.session.plan_download(
-            language_code.as_str(),
-            Feature::Tts,
-            selected_pack_id.as_deref(),
-        )
-    }
-
-    fn plan_delete_language(
-        &self,
-        language_code: translator::LanguageCode,
-    ) -> translator::DeletePlan {
-        self.session
-            .prepare_delete(language_code.as_str(), Feature::Core)
-    }
-
-    fn plan_delete_dictionary(
-        &self,
-        language_code: translator::LanguageCode,
-    ) -> translator::DeletePlan {
-        self.session
-            .prepare_delete(language_code.as_str(), Feature::Dictionary)
-    }
-
-    fn plan_delete_tts(&self, language_code: translator::LanguageCode) -> translator::DeletePlan {
-        self.session
-            .prepare_delete(language_code.as_str(), Feature::Tts)
-    }
-
-    fn plan_delete_superseded_tts(
-        &self,
-        language_code: translator::LanguageCode,
+        language_code: String,
         selected_pack_id: String,
     ) -> translator::DeletePlan {
         self.session
-            .prepare_delete_superseded_tts(language_code.as_str(), &selected_pack_id)
+            .prepare_delete_superseded_tts(&language_code, &selected_pack_id)
     }
 
-    fn tts_size_bytes(&self, language_code: translator::LanguageCode) -> u64 {
-        self.session.size_bytes(language_code.as_str(), Feature::Tts)
+    fn size_bytes(&self, language_code: String, feature: Feature) -> u64 {
+        self.session.size_bytes(&language_code, feature)
     }
 
-    fn translation_size_bytes(&self, language_code: translator::LanguageCode) -> u64 {
-        self.session
-            .size_bytes(language_code.as_str(), Feature::Core)
-    }
-
-    fn default_tts_pack_id(&self, language_code: translator::LanguageCode) -> Option<String> {
+    fn default_tts_pack_id(&self, language_code: String) -> Option<String> {
         self.snapshot()
             .catalog
-            .default_tts_pack_id_for_language(&language_code)
+            .default_tts_pack_id_for_language(&translator::LanguageCode::from(language_code))
     }
 
-    fn available_tts_voices(
-        &self,
-        language_code: translator::LanguageCode,
-    ) -> Vec<translator::TtsVoiceOption> {
+    fn available_tts_voices(&self, language_code: String) -> Vec<translator::TtsVoiceOption> {
         #[cfg(feature = "tts")]
         {
-            return match self.session.available_tts_voices(language_code.as_str()) {
-                Ok(TtsVoicesOutcome::Available(voices)) => voices,
-                Ok(TtsVoicesOutcome::MissingLanguage) | Err(_) => Vec::new(),
-            };
+            return self
+                .session
+                .available_tts_voices(&language_code)
+                .unwrap_or_default();
         }
 
         #[cfg(not(feature = "tts"))]
@@ -443,15 +368,15 @@ impl CatalogHandle {
 
     fn plan_speech_chunks(
         &self,
-        language_code: translator::LanguageCode,
+        language_code: String,
         text: String,
     ) -> Vec<translator::SpeechChunk> {
         #[cfg(feature = "tts")]
         {
-            return match self.session.plan_speech_chunks(language_code.as_str(), &text) {
-                Ok(SpeechChunkPlanningOutcome::Planned(chunks)) => chunks,
-                Ok(SpeechChunkPlanningOutcome::MissingLanguage) | Err(_) => Vec::new(),
-            };
+            return self
+                .session
+                .plan_speech_chunks(&language_code, &text)
+                .unwrap_or_default();
         }
 
         #[cfg(not(feature = "tts"))]
@@ -463,30 +388,32 @@ impl CatalogHandle {
 
     fn synthesize_speech_pcm(
         &self,
-        language_code: translator::LanguageCode,
+        language_code: String,
         text: String,
         speech_speed: f32,
-        voice_name: Option<translator::VoiceName>,
+        voice_name: Option<String>,
         is_phonemes: bool,
-    ) -> Option<translator::PcmAudio> {
+    ) -> Result<translator::PcmAudio, CatalogError> {
         #[cfg(feature = "tts")]
         {
-            return match self.session.synthesize_pcm(
-                language_code.as_str(),
-                &text,
-                speech_speed,
-                voice_name.as_ref().map(translator::VoiceName::as_str),
-                is_phonemes,
-            ) {
-                Ok(PcmSynthesisOutcome::Ready(audio)) => Some(audio),
-                Ok(PcmSynthesisOutcome::MissingLanguage) | Err(_) => None,
-            };
+            return self
+                .session
+                .synthesize_pcm(
+                    &language_code,
+                    &text,
+                    speech_speed,
+                    voice_name.as_deref(),
+                    is_phonemes,
+                )
+                .map_err(CatalogError::from);
         }
 
         #[cfg(not(feature = "tts"))]
         {
             let _ = (language_code, text, speech_speed, voice_name, is_phonemes);
-            None
+            Err(CatalogError::Other {
+                reason: "tts feature disabled".to_string(),
+            })
         }
     }
 }

@@ -296,7 +296,7 @@ class DownloadService : Service() {
               it.copy(
                 isDownloading = true,
                 downloaded = 1,
-                totalSize = downloadPlan.totalSize,
+                totalSize = downloadPlan.totalSize.toLong(),
               )
             }
             Log.i("DownloadService", "Starting $actionLabel for ${language.displayName}")
@@ -336,7 +336,9 @@ class DownloadService : Service() {
       language = language,
       actionLabel = "download",
       failureLabel = "download",
-      planProvider = { catalog -> catalog.planLanguageDownload(language.code) },
+      planProvider = { catalog ->
+        catalog.planDownload(language.code, Feature.CORE) ?: DownloadPlan(0UL, emptyList())
+      },
     )
   }
 
@@ -356,9 +358,9 @@ class DownloadService : Service() {
     val job =
       serviceScope.launch {
         val catalog = getCatalog() ?: return@launch
-        val downloadPlan = catalog.planDictionaryDownload(language.code) ?: return@launch
+        val downloadPlan = catalog.planDownload(language.code, Feature.DICTIONARY) ?: return@launch
         val downloadTasks = mutableListOf<suspend () -> Boolean>()
-        val toDownload = if (downloadPlan.tasks.isNotEmpty()) downloadPlan.totalSize else dictionarySize
+        val toDownload = if (downloadPlan.tasks.isNotEmpty()) downloadPlan.totalSize.toLong() else dictionarySize
 
         downloadPlan.tasks.forEach { task ->
           downloadTasks.add {
@@ -433,12 +435,12 @@ class DownloadService : Service() {
           val catalog = getCatalog() ?: return@launch
           val ttsPackId = requestedPackId ?: catalog.defaultTtsPackIdForLanguage(language.code) ?: return@launch
           val downloadPlan =
-            catalog.planTtsDownload(language.code, ttsPackId) ?: run {
+            catalog.planDownload(language.code, Feature.TTS, ttsPackId) ?: run {
               Log.w("DownloadService", "Ignoring invalid TTS pack $ttsPackId for ${language.code}")
               return@launch
             }
           val downloadTasks = mutableListOf<suspend () -> Boolean>()
-          val toDownload = downloadPlan.totalSize
+          val toDownload = downloadPlan.totalSize.toLong()
 
           downloadPlan.tasks.forEach { task ->
             downloadTasks.add {
@@ -500,7 +502,7 @@ class DownloadService : Service() {
     language: Language,
     selectedPackId: String,
   ) {
-    val deletePlan = catalog.planDeleteSupersededTts(language.code, selectedPackId)
+    val deletePlan = catalog.prepareDeleteSupersededTts(language.code, selectedPackId)
     if (deletePlan.filePaths.isNotEmpty() || deletePlan.directoryPaths.isNotEmpty()) {
       filePathManager.applyDeletePlan(deletePlan)
     }
@@ -629,15 +631,18 @@ class DownloadService : Service() {
   ): Boolean {
     val outputFile = filePathManager.resolveInstallPath(task.installPath)
     val url = task.url
+    val extractTo = task.extractTo
+    val installMarkerPath = task.installMarkerPath
+    val installMarkerVersion = task.installMarkerVersion
     return try {
       val success =
-        if (task.archiveFormat == "zip" && task.extractTo != null) {
+        if (task.archiveFormat == "zip" && extractTo != null) {
           downloadAndExtractZip(
             url = url,
             archiveFile = outputFile,
-            extractTo = filePathManager.resolveInstallPath(task.extractTo),
+            extractTo = filePathManager.resolveInstallPath(extractTo),
             deleteAfterExtract = task.deleteAfterExtract,
-            installMarkerPath = task.installMarkerPath,
+            installMarkerPath = installMarkerPath,
           ) { incrementalProgress ->
             if (incrementDictionary) {
               incrementDictionaryDownloadBytes(targetLanguage, incrementalProgress)
@@ -647,8 +652,8 @@ class DownloadService : Service() {
               incrementDownloadBytes(targetLanguage, incrementalProgress)
             }
           }.also { extracted ->
-            if (extracted && task.installMarkerPath != null && task.installMarkerVersion != null) {
-              filePathManager.writeInstallMarker(task.installMarkerPath, task.installMarkerVersion)
+            if (extracted && installMarkerPath != null && installMarkerVersion != null) {
+              filePathManager.writeInstallMarker(installMarkerPath, installMarkerVersion)
             }
           }
         } else {

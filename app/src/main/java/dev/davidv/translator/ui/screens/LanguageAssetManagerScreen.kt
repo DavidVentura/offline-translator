@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import dev.davidv.translator.DictionaryInfo
 import dev.davidv.translator.DownloadService
 import dev.davidv.translator.DownloadState
+import dev.davidv.translator.Feature
 import dev.davidv.translator.LangAvailability
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageAvailabilityState
@@ -212,8 +213,8 @@ fun LanguageAssetManagerScreen(
                   translationVisible = translationVisible,
                   dictionaryVisible = dictionaryVisible,
                   ttsVisible = ttsVisible,
-                  translationSizeBytes = loadedCatalog.translationSizeBytesForLanguage(language.code),
-                  ttsSizeBytes = loadedCatalog.ttsSizeBytesForLanguage(language.code),
+                  translationSizeBytes = loadedCatalog.sizeBytesForFeature(language.code, Feature.CORE),
+                  ttsSizeBytes = loadedCatalog.sizeBytesForFeature(language.code, Feature.TTS),
                 )
               }
             }.filter { row ->
@@ -480,7 +481,7 @@ fun LanguageAssetManagerScreen(
                         style = MaterialTheme.typography.bodyMedium,
                       )
                       Text(
-                        text = "${formatSize(pack.sizeBytes)}, ${formatQualityLabel(pack.quality)} quality",
+                        text = "${formatSize(pack.sizeBytes.toLong())}, ${formatQualityLabel(pack.quality)} quality",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
                       )

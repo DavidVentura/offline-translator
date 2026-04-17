@@ -2546,63 +2546,30 @@ public object FfiConverterTypeBackgroundMode: FfiConverterRustBuffer<BackgroundM
 
 
 
-sealed class ImageTranslationOutcome {
-    
-    data class Ready(
-        val v1: PreparedImageOverlay) : ImageTranslationOutcome() {
-        companion object
-    }
-    
-    object MissingLanguagePair : ImageTranslationOutcome()
-    
-    
 
+enum class Feature {
     
+    CORE,
+    DICTIONARY,
+    TTS;
     companion object
 }
+
 
 /**
  * @suppress
  */
-public object FfiConverterTypeImageTranslationOutcome : FfiConverterRustBuffer<ImageTranslationOutcome>{
-    override fun read(buf: ByteBuffer): ImageTranslationOutcome {
-        return when(buf.getInt()) {
-            1 -> ImageTranslationOutcome.Ready(
-                FfiConverterTypePreparedImageOverlay.read(buf),
-                )
-            2 -> ImageTranslationOutcome.MissingLanguagePair
-            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
-        }
+public object FfiConverterTypeFeature: FfiConverterRustBuffer<Feature> {
+    override fun read(buf: ByteBuffer) = try {
+        Feature.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
     }
 
-    override fun allocationSize(value: ImageTranslationOutcome) = when(value) {
-        is ImageTranslationOutcome.Ready -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-                + FfiConverterTypePreparedImageOverlay.allocationSize(value.v1)
-            )
-        }
-        is ImageTranslationOutcome.MissingLanguagePair -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-    }
+    override fun allocationSize(value: Feature) = 4UL
 
-    override fun write(value: ImageTranslationOutcome, buf: ByteBuffer) {
-        when(value) {
-            is ImageTranslationOutcome.Ready -> {
-                buf.putInt(1)
-                FfiConverterTypePreparedImageOverlay.write(value.v1, buf)
-                Unit
-            }
-            is ImageTranslationOutcome.MissingLanguagePair -> {
-                buf.putInt(2)
-                Unit
-            }
-        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    override fun write(value: Feature, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
     }
 }
 
@@ -2724,6 +2691,42 @@ public object FfiConverterTypeSpeechChunkBoundary: FfiConverterRustBuffer<Speech
     override fun allocationSize(value: SpeechChunkBoundary) = 4UL
 
     override fun write(value: SpeechChunkBoundary, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+
+enum class TranslatorErrorKind {
+    
+    TRANSLATION,
+    OCR,
+    TTS,
+    DICTIONARY,
+    TRANSLITERATE,
+    INVALID_INPUT,
+    INTERNAL,
+    MISSING_ASSET;
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeTranslatorErrorKind: FfiConverterRustBuffer<TranslatorErrorKind> {
+    override fun read(buf: ByteBuffer) = try {
+        TranslatorErrorKind.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: TranslatorErrorKind) = 4UL
+
+    override fun write(value: TranslatorErrorKind, buf: ByteBuffer) {
         buf.putInt(value.ordinal + 1)
     }
 }

@@ -1,20 +1,17 @@
 package dev.davidv.translator
 
 import android.graphics.Bitmap
+import uniffi.bindings.CatalogException
 import uniffi.bindings.CatalogHandle
 import uniffi.bindings.sampleOverlayColorsRgba
 import java.nio.ByteBuffer
+
+typealias CatalogError = CatalogException
 
 private fun rgbaBytes(bitmap: Bitmap): ByteArray =
   ByteArray(bitmap.byteCount).also { bytes ->
     bitmap.copyPixelsToBuffer(ByteBuffer.wrap(bytes))
   }
-
-private fun languageCode(code: String) = uniffi.translator.LanguageCode(code = code)
-
-private fun dictionaryCode(code: String) = uniffi.translator.DictionaryCode(code = code)
-
-private fun voiceName(name: String) = uniffi.translator.VoiceName(name = name)
 
 private data class CroppedOverlayScreenshot(
   val screenshot: uniffi.translator.OverlayScreenshot,
@@ -127,42 +124,6 @@ data class LanguageAvailabilityEntry(
   val availability: LangAvailability,
 )
 
-data class TtsVoicePackInfo(
-  val packId: String,
-  val displayName: String,
-  val quality: String? = null,
-  val sizeBytes: Long,
-)
-
-data class TtsVoicePickerRegion(
-  val code: String,
-  val displayName: String,
-  val voices: List<TtsVoicePackInfo>,
-)
-
-data class DownloadTask(
-  val packId: String,
-  val installPath: String,
-  val url: String,
-  val sizeBytes: Long,
-  val decompress: Boolean,
-  val archiveFormat: String? = null,
-  val extractTo: String? = null,
-  val deleteAfterExtract: Boolean = false,
-  val installMarkerPath: String? = null,
-  val installMarkerVersion: Int? = null,
-)
-
-data class DownloadPlan(
-  val totalSize: Long,
-  val tasks: List<DownloadTask>,
-)
-
-data class DeletePlan(
-  val filePaths: List<String>,
-  val directoryPaths: List<String>,
-)
-
 class LanguageCatalog private constructor(
   private val handle: CatalogHandle,
   val formatVersion: Int,
@@ -230,48 +191,43 @@ class LanguageCatalog private constructor(
   fun dictionaryInfoFor(language: Language): DictionaryInfo? = dictionaryInfo(language.dictionaryCode)
 
   fun dictionaryInfo(dictionaryCode: String): DictionaryInfo? =
-    handle.dictionaryInfo(dictionaryCode(dictionaryCode))?.let {
+    handle.dictionaryInfo(dictionaryCode)?.let {
       DictionaryInfo(date = it.date, filename = it.filename, size = it.size.toLong(), type = it.typeName, wordCount = it.wordCount.toLong())
     }
 
+  @Throws(CatalogException::class)
   fun lookupDictionary(
     language: Language,
     word: String,
-  ): WordWithTaggedEntries? = handle.lookupDictionary(languageCode(language.code), word)
+  ): WordWithTaggedEntries? = handle.lookupDictionary(language.code, word)
 
   fun availabilityFor(language: Language?): LangAvailability? = language?.let { availabilityByCode[it.code] }
 
-  fun hasTtsVoices(languageCode: String): Boolean = handle.hasTtsVoices(languageCode(languageCode))
+  fun hasTtsVoices(languageCode: String): Boolean = handle.hasTtsVoices(languageCode)
 
-  fun ttsVoicePickerRegions(languageCode: String): List<TtsVoicePickerRegion> =
-    handle.ttsVoicePickerRegions(languageCode(languageCode)).map { region ->
-      TtsVoicePickerRegion(
-        code = region.code,
-        displayName = region.displayName,
-        voices = region.voices.map { TtsVoicePackInfo(it.packId, it.displayName, it.quality, it.sizeBytes.toLong()) },
-      )
-    }
+  fun ttsVoicePickerRegions(languageCode: String): List<TtsVoicePickerRegion> = handle.ttsVoicePickerRegions(languageCode)
 
   fun canSwapLanguages(
     from: Language,
     to: Language,
-  ): Boolean = handle.canSwapLanguages(languageCode(from.code), languageCode(to.code))
+  ): Boolean = handle.canSwapLanguages(from.code, to.code)
 
   fun canTranslate(
     from: Language,
     to: Language,
-  ): Boolean = handle.canTranslate(languageCode(from.code), languageCode(to.code))
+  ): Boolean = handle.canTranslate(from.code, to.code)
 
   fun warmTranslationModels(
     from: Language,
     to: Language,
-  ): Boolean = handle.warmTranslationModels(languageCode(from.code), languageCode(to.code))
+  ): Boolean = handle.warmTranslationModels(from.code, to.code)
 
+  @Throws(CatalogException::class)
   fun translateText(
     from: Language,
     to: Language,
     text: String,
-  ): String? = handle.translateText(languageCode(from.code), languageCode(to.code), text)
+  ): String = handle.translateText(from.code, to.code, text)
 
   fun translateMixedTexts(
     inputs: List<String>,
@@ -281,9 +237,9 @@ class LanguageCatalog private constructor(
   ): uniffi.translator.MixedTextTranslationResult =
     handle.translateMixedTexts(
       inputs,
-      forcedSourceLanguage?.code?.let(::languageCode),
-      languageCode(targetLanguage.code),
-      availableLanguages.map { languageCode(it.code) },
+      forcedSourceLanguage?.code,
+      targetLanguage.code,
+      availableLanguages.map { it.code },
     )
 
   fun translateStructuredFragments(
@@ -307,9 +263,9 @@ class LanguageCatalog private constructor(
     val result =
       handle.translateStructuredFragments(
         nativeFragments,
-        forcedSourceLanguage?.code?.let(::languageCode),
-        languageCode(targetLanguage.code),
-        availableLanguages.map { languageCode(it.code) },
+        forcedSourceLanguage?.code,
+        targetLanguage.code,
+        availableLanguages.map { it.code },
         croppedScreenshot?.screenshot,
         backgroundMode,
       )
@@ -320,6 +276,7 @@ class LanguageCatalog private constructor(
     }
   }
 
+  @Throws(CatalogException::class)
   fun translateImagePlan(
     bitmap: Bitmap,
     from: Language,
@@ -327,62 +284,43 @@ class LanguageCatalog private constructor(
     minConfidence: Int,
     readingOrder: ReadingOrder,
     backgroundMode: BackgroundMode,
-  ): uniffi.translator.ImageTranslationOutcome {
-    return handle.translateImagePlan(
+  ): uniffi.translator.PreparedImageOverlay =
+    handle.translateImagePlan(
       rgbaBytes(bitmap),
       bitmap.width.toUInt(),
       bitmap.height.toUInt(),
-      languageCode(from.code),
-      languageCode(to.code),
+      from.code,
+      to.code,
       minConfidence.toUInt(),
       readingOrder,
       backgroundMode,
     )
-  }
 
-  fun planLanguageDownload(languageCode: String): DownloadPlan = handle.planLanguageDownload(languageCode(languageCode)).toDownloadPlan()
-
-  fun planDictionaryDownload(languageCode: String): DownloadPlan? =
-    handle.planDictionaryDownload(
-      languageCode(languageCode),
-    )?.toDownloadPlan()
-
-  fun planTtsDownload(
+  fun planDownload(
     languageCode: String,
-    selectedPackId: String? = null,
-  ): DownloadPlan? = handle.planTtsDownload(languageCode(languageCode), selectedPackId)?.toDownloadPlan()
+    feature: Feature,
+    selectedTtsPackId: String? = null,
+  ): DownloadPlan? = handle.planDownload(languageCode, feature, selectedTtsPackId)
 
-  fun planDeleteLanguage(languageCode: String): DeletePlan =
-    handle.planDeleteLanguage(languageCode(languageCode)).let {
-      DeletePlan(it.filePaths, it.directoryPaths)
-    }
+  fun prepareDelete(
+    languageCode: String,
+    feature: Feature,
+  ): DeletePlan = handle.prepareDelete(languageCode, feature)
 
-  fun planDeleteDictionary(languageCode: String): DeletePlan =
-    handle.planDeleteDictionary(languageCode(languageCode)).let {
-      DeletePlan(it.filePaths, it.directoryPaths)
-    }
-
-  fun planDeleteTts(languageCode: String): DeletePlan =
-    handle.planDeleteTts(
-      languageCode(languageCode),
-    ).let { DeletePlan(it.filePaths, it.directoryPaths) }
-
-  fun planDeleteSupersededTts(
+  fun prepareDeleteSupersededTts(
     languageCode: String,
     selectedPackId: String,
-  ): DeletePlan =
-    handle.planDeleteSupersededTts(languageCode(languageCode), selectedPackId).let {
-      DeletePlan(it.filePaths, it.directoryPaths)
-    }
+  ): DeletePlan = handle.prepareDeleteSupersededTts(languageCode, selectedPackId)
 
-  fun defaultTtsPackIdForLanguage(languageCode: String): String? = handle.defaultTtsPackId(languageCode(languageCode))
+  fun defaultTtsPackIdForLanguage(languageCode: String): String? = handle.defaultTtsPackId(languageCode)
 
-  fun ttsSizeBytesForLanguage(languageCode: String): Long = handle.ttsSizeBytes(languageCode(languageCode)).toLong()
-
-  fun translationSizeBytesForLanguage(languageCode: String): Long = handle.translationSizeBytes(languageCode(languageCode)).toLong()
+  fun sizeBytesForFeature(
+    languageCode: String,
+    feature: Feature,
+  ): Long = handle.sizeBytes(languageCode, feature).toLong()
 
   fun availableTtsVoices(languageCode: String): List<TtsVoiceOption> =
-    handle.availableTtsVoices(languageCode(languageCode)).map { voice ->
+    handle.availableTtsVoices(languageCode).map { voice ->
       TtsVoiceOption(
         name = voice.name,
         speakerId = voice.speakerId.toInt(),
@@ -394,7 +332,7 @@ class LanguageCatalog private constructor(
     languageCode: String,
     text: String,
   ): List<SpeechChunkPlan> =
-    handle.planSpeechChunks(languageCode(languageCode), text).map { chunk ->
+    handle.planSpeechChunks(languageCode, text).map { chunk ->
       SpeechChunkPlan(
         content = chunk.content,
         isPhonemes = chunk.isPhonemes,
@@ -402,34 +340,18 @@ class LanguageCatalog private constructor(
       )
     }
 
+  @Throws(CatalogException::class)
   fun synthesizeSpeechPcm(
     languageCode: String,
     text: String,
     speechSpeed: Float,
     voiceName: String?,
     isPhonemes: Boolean,
-  ): PcmAudio? =
-    handle.synthesizeSpeechPcm(languageCode(languageCode), text, speechSpeed, voiceName?.let(::voiceName), isPhonemes)?.let { audio ->
-      PcmAudio(sampleRate = audio.sampleRate, pcmSamples = audio.pcmSamples.toShortArray())
-    }
+  ): PcmAudio {
+    val audio = handle.synthesizeSpeechPcm(languageCode, text, speechSpeed, voiceName, isPhonemes)
+    return PcmAudio(sampleRate = audio.sampleRate, pcmSamples = audio.pcmSamples.toShortArray())
+  }
 }
-
-private fun uniffi.translator.DownloadTask.toDownloadTask(): DownloadTask =
-  DownloadTask(
-    packId = packId,
-    installPath = installPath,
-    url = url,
-    sizeBytes = sizeBytes.toLong(),
-    decompress = decompress,
-    archiveFormat = archiveFormat,
-    extractTo = extractTo,
-    deleteAfterExtract = deleteAfterExtract,
-    installMarkerPath = installMarkerPath,
-    installMarkerVersion = installMarkerVersion,
-  )
-
-private fun uniffi.translator.DownloadPlan.toDownloadPlan(): DownloadPlan =
-  DownloadPlan(totalSize = totalSize.toLong(), tasks = tasks.map { it.toDownloadTask() })
 
 fun sampleOverlayColors(
   bitmap: Bitmap,

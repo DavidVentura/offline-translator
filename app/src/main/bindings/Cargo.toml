@@ -19,7 +19,6 @@ path = "src/lib.rs"
 translator = { git = "https://github.com/DavidVentura/translator-rs.git", default-features = false, features = ["uniffi", "transliterate"] }
 # translator = { path = "/home/david/git/translator-rs", default-features = false, features = ["uniffi", "transliterate"] }
 uniffi = { version = "0.29", features = ["cli"] }
-serde_json = "1"
 thiserror = "2"
 
 [[bin]]

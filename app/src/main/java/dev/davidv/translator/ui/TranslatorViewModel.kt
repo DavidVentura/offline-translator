@@ -539,7 +539,18 @@ class TranslatorViewModel(
   ) {
     Log.i("DictionaryLookup", "Looking up $str for $language")
     val catalog = languageStateManager.catalog.value
-    val foundWord = catalog?.lookupDictionary(language, str)
+    val foundWord =
+      try {
+        catalog?.lookupDictionary(language, str)
+      } catch (e: uniffi.bindings.CatalogException.MissingAsset) {
+        viewModelScope.launch {
+          _uiEvents.emit(UiEvent.ShowToast("No ${language.displayName} dictionary installed"))
+        }
+        return
+      } catch (e: uniffi.bindings.CatalogException.Other) {
+        Log.w("DictionaryLookup", "Lookup failed for ${language.displayName}", e)
+        null
+      }
     if (foundWord != null) {
       _dictionaryWord.value = foundWord
       _dictionaryLookupLanguage.value = language

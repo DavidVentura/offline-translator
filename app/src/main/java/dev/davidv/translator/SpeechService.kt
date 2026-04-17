@@ -73,15 +73,20 @@ class SpeechService(
               "Speech chunk ${index + 1}/${chunkRequests.size}: synth start isPhonemes=${chunkRequest.isPhonemes} textLen=${chunkRequest.content.length} pauseAfterMs=${chunkRequest.pauseAfterMs}",
             )
             val pcmAudio =
-              catalog.synthesizeSpeechPcm(
-                languageCode = language.code,
-                text = chunkRequest.content,
-                speechSpeed = speechSpeed,
-                voiceName = selectedVoiceName,
-                isPhonemes = chunkRequest.isPhonemes,
-              ) ?: throw IllegalStateException(
-                "Speech synthesis failed for ${language.displayName}",
-              )
+              try {
+                catalog.synthesizeSpeechPcm(
+                  languageCode = language.code,
+                  text = chunkRequest.content,
+                  speechSpeed = speechSpeed,
+                  voiceName = selectedVoiceName,
+                  isPhonemes = chunkRequest.isPhonemes,
+                )
+              } catch (e: uniffi.bindings.CatalogException) {
+                throw IllegalStateException(
+                  "Speech synthesis failed for ${language.displayName}",
+                  e,
+                )
+              }
             val audioDurationMs = (pcmAudio.pcmSamples.size * 1000L) / pcmAudio.sampleRate
             Log.d(
               "SpeechService",

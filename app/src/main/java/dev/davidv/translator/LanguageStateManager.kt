@@ -155,7 +155,7 @@ class LanguageStateManager(
 
   fun deleteDict(language: Language) {
     val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
-    filePathManager.applyDeletePlan(catalog.planDeleteDictionary(language.code))
+    filePathManager.applyDeletePlan(catalog.prepareDelete(language.code, Feature.DICTIONARY))
 
     refreshLanguageAvailability()
     Log.i("LanguageStateManager", "Removed dictionary for language: ${language.displayName}")
@@ -163,7 +163,7 @@ class LanguageStateManager(
 
   fun deleteLanguage(language: Language) {
     val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
-    filePathManager.applyDeletePlan(catalog.planDeleteLanguage(language.code))
+    filePathManager.applyDeletePlan(catalog.prepareDelete(language.code, Feature.CORE))
     refreshLanguageAvailability()
     scope.launch { _fileEvents.emit(FileEvent.LanguageDeleted(language)) }
     Log.i("LanguageStateManager", "Removed language: ${language.displayName}")
@@ -171,7 +171,7 @@ class LanguageStateManager(
 
   fun deleteTts(language: Language) {
     val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
-    filePathManager.applyDeletePlan(catalog.planDeleteTts(language.code))
+    filePathManager.applyDeletePlan(catalog.prepareDelete(language.code, Feature.TTS))
     refreshLanguageAvailability()
     Log.i("LanguageStateManager", "Removed TTS for language: ${language.displayName}")
   }
