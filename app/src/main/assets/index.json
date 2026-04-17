@@ -1,10 +1,10 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1776430186,
+  "generatedAt": 1776448551,
   "dictionaryVersion": 1,
   "sources": {
     "languageIndexVersion": 1,
-    "languageIndexUpdatedAt": 1776430186,
+    "languageIndexUpdatedAt": 1776448551,
     "dictionaryIndexVersion": 1,
     "dictionaryIndexUpdatedAt": 1774864382,
     "gcsModelsUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
@@ -687,8 +687,6 @@
           "IL": {
             "displayName": "Israel",
             "voices": [
-              "tts-piper-he-il-community-female-medium",
-              "tts-piper-he-il-community-male-medium",
               "tts-mms-he-il-standard-mms"
             ]
           }
@@ -1671,8 +1669,6 @@
             "displayName": "China",
             "voices": [
               "tts-piper-zh-cn-huayan-medium",
-              "tts-piper-zh-cn-chaowen-medium",
-              "tts-piper-zh-cn-xiao-ya-medium",
               "tts-piper-zh-cn-huayan-x-low"
             ]
           }
@@ -6530,21 +6526,6 @@
         "tts-espeak-core-v1"
       ]
     },
-    "tts-espeak-dict-he": {
-      "feature": "support",
-      "kind": "tts-espeak-dict",
-      "files": [
-        {
-          "name": "he_dict",
-          "sizeBytes": 10665,
-          "installPath": "bin/espeak-ng-data/he_dict",
-          "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/he_dict"
-        }
-      ],
-      "dependsOn": [
-        "tts-espeak-core-v1"
-      ]
-    },
     "tts-espeak-dict-hi": {
       "feature": "support",
       "kind": "tts-espeak-dict",
@@ -8200,62 +8181,6 @@
         }
       ],
       "dependsOn": []
-    },
-    "tts-piper-he-il-community-female-medium": {
-      "feature": "tts",
-      "engine": "piper",
-      "language": "he",
-      "locale": "he_IL",
-      "region": "IL",
-      "voice": "community_female",
-      "quality": "medium",
-      "numSpeakers": 1,
-      "aliases": [],
-      "files": [
-        {
-          "name": "he_IL-community_female-medium.onnx",
-          "sizeBytes": 63461522,
-          "installPath": "bin/piper/he/he_IL/community_female/medium/he_IL-community_female-medium.onnx",
-          "url": "https://offline-translator.davidv.dev/tts/1/he/he_IL/community_female/medium/he_IL-community_female-medium.onnx"
-        },
-        {
-          "name": "he_IL-community_female-medium.onnx.json",
-          "sizeBytes": 8276,
-          "installPath": "bin/piper/he/he_IL/community_female/medium/he_IL-community_female-medium.onnx.json",
-          "url": "https://offline-translator.davidv.dev/tts/1/he/he_IL/community_female/medium/he_IL-community_female-medium.onnx.json"
-        }
-      ],
-      "dependsOn": [
-        "tts-espeak-dict-he"
-      ]
-    },
-    "tts-piper-he-il-community-male-medium": {
-      "feature": "tts",
-      "engine": "piper",
-      "language": "he",
-      "locale": "he_IL",
-      "region": "IL",
-      "voice": "community_male",
-      "quality": "medium",
-      "numSpeakers": 1,
-      "aliases": [],
-      "files": [
-        {
-          "name": "he_IL-community_male-medium.onnx",
-          "sizeBytes": 63461522,
-          "installPath": "bin/piper/he/he_IL/community_male/medium/he_IL-community_male-medium.onnx",
-          "url": "https://offline-translator.davidv.dev/tts/1/he/he_IL/community_male/medium/he_IL-community_male-medium.onnx"
-        },
-        {
-          "name": "he_IL-community_male-medium.onnx.json",
-          "sizeBytes": 8276,
-          "installPath": "bin/piper/he/he_IL/community_male/medium/he_IL-community_male-medium.onnx.json",
-          "url": "https://offline-translator.davidv.dev/tts/1/he/he_IL/community_male/medium/he_IL-community_male-medium.onnx.json"
-        }
-      ],
-      "dependsOn": [
-        "tts-espeak-dict-he"
-      ]
     },
     "tts-mms-he-il-standard-mms": {
       "feature": "tts",
@@ -10135,62 +10060,6 @@
           "sizeBytes": 4822,
           "installPath": "bin/piper/zh/zh_CN/huayan/medium/zh_CN-huayan-medium.onnx.json",
           "url": "https://offline-translator.davidv.dev/tts/1/zh/zh_CN/huayan/medium/zh_CN-huayan-medium.onnx.json"
-        }
-      ],
-      "dependsOn": [
-        "tts-espeak-dict-cmn"
-      ]
-    },
-    "tts-piper-zh-cn-chaowen-medium": {
-      "feature": "tts",
-      "engine": "piper",
-      "language": "zh",
-      "locale": "zh_CN",
-      "region": "CN",
-      "voice": "chaowen",
-      "quality": "medium",
-      "numSpeakers": 1,
-      "aliases": [],
-      "files": [
-        {
-          "name": "zh_CN-chaowen-medium.onnx",
-          "sizeBytes": 63221984,
-          "installPath": "bin/piper/zh/zh_CN/chaowen/medium/zh_CN-chaowen-medium.onnx",
-          "url": "https://offline-translator.davidv.dev/tts/1/zh/zh_CN/chaowen/medium/zh_CN-chaowen-medium.onnx"
-        },
-        {
-          "name": "zh_CN-chaowen-medium.onnx.json",
-          "sizeBytes": 2927,
-          "installPath": "bin/piper/zh/zh_CN/chaowen/medium/zh_CN-chaowen-medium.onnx.json",
-          "url": "https://offline-translator.davidv.dev/tts/1/zh/zh_CN/chaowen/medium/zh_CN-chaowen-medium.onnx.json"
-        }
-      ],
-      "dependsOn": [
-        "tts-espeak-dict-cmn"
-      ]
-    },
-    "tts-piper-zh-cn-xiao-ya-medium": {
-      "feature": "tts",
-      "engine": "piper",
-      "language": "zh",
-      "locale": "zh_CN",
-      "region": "CN",
-      "voice": "xiao_ya",
-      "quality": "medium",
-      "numSpeakers": 1,
-      "aliases": [],
-      "files": [
-        {
-          "name": "zh_CN-xiao_ya-medium.onnx",
-          "sizeBytes": 63221984,
-          "installPath": "bin/piper/zh/zh_CN/xiao_ya/medium/zh_CN-xiao_ya-medium.onnx",
-          "url": "https://offline-translator.davidv.dev/tts/1/zh/zh_CN/xiao_ya/medium/zh_CN-xiao_ya-medium.onnx"
-        },
-        {
-          "name": "zh_CN-xiao_ya-medium.onnx.json",
-          "sizeBytes": 2927,
-          "installPath": "bin/piper/zh/zh_CN/xiao_ya/medium/zh_CN-xiao_ya-medium.onnx.json",
-          "url": "https://offline-translator.davidv.dev/tts/1/zh/zh_CN/xiao_ya/medium/zh_CN-xiao_ya-medium.onnx.json"
         }
       ],
       "dependsOn": [
