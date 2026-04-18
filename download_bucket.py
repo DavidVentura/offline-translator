@@ -23,7 +23,7 @@ import catalog_mirror
 
 
 DEFAULT_MANIFEST = SCRIPT_DIR / "catalog_sources/source_catalog.json"
-DEFAULT_OUTPUT_DIR = Path("bucket")
+DEFAULT_OUTPUT_DIR = Path("../bucket")
 USER_AGENT = "download_bucket/1.0"
 
 

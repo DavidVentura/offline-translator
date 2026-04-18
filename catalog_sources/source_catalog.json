@@ -1,13 +1,13 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1776448551,
+  "generatedAt": 1776533655,
   "translationModelsBaseUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
   "tesseractModelsBaseUrl": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main",
   "dictionaryBaseUrl": "https://offline-translator.davidv.dev/dictionaries",
   "dictionaryVersion": 1,
   "sources": {
     "languageIndexVersion": 1,
-    "languageIndexUpdatedAt": 1776448551,
+    "languageIndexUpdatedAt": 1776533655,
     "dictionaryIndexVersion": 1,
     "dictionaryIndexUpdatedAt": 1774864382,
     "gcsModelsUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
@@ -462,10 +462,10 @@
           "US": {
             "displayName": "United States",
             "voices": [
-              "tts-piper-en-us-sam-medium",
               "tts-piper-en-us-amy-medium",
               "tts-piper-en-us-hfc-female-medium",
-              "tts-piper-en-us-hfc-male-medium"
+              "tts-piper-en-us-hfc-male-medium",
+              "tts-piper-en-us-joe-medium"
             ]
           }
         }
@@ -8463,36 +8463,6 @@
         "tts-espeak-dict-en"
       ]
     },
-    "tts-piper-en-us-sam-medium": {
-      "feature": "tts",
-      "engine": "piper",
-      "language": "en",
-      "locale": "en_US",
-      "region": "US",
-      "voice": "sam",
-      "quality": "medium",
-      "numSpeakers": 1,
-      "aliases": [],
-      "files": [
-        {
-          "name": "en_US-sam-medium.onnx",
-          "sizeBytes": 62950044,
-          "installPath": "bin/piper/en/en_US/sam/medium/en_US-sam-medium.onnx",
-          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/sam/medium/en_US-sam-medium.onnx",
-          "mirrorPath": "tts/1/en/en_US/sam/medium/en_US-sam-medium.onnx"
-        },
-        {
-          "name": "en_US-sam-medium.onnx.json",
-          "sizeBytes": 5040,
-          "installPath": "bin/piper/en/en_US/sam/medium/en_US-sam-medium.onnx.json",
-          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/sam/medium/en_US-sam-medium.onnx.json",
-          "mirrorPath": "tts/1/en/en_US/sam/medium/en_US-sam-medium.onnx.json"
-        }
-      ],
-      "dependsOn": [
-        "tts-espeak-dict-en"
-      ]
-    },
     "tts-piper-en-us-amy-medium": {
       "feature": "tts",
       "engine": "piper",
@@ -8577,6 +8547,36 @@
           "installPath": "bin/piper/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx.json",
           "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx.json",
           "mirrorPath": "tts/1/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx.json"
+        }
+      ],
+      "dependsOn": [
+        "tts-espeak-dict-en"
+      ]
+    },
+    "tts-piper-en-us-joe-medium": {
+      "feature": "tts",
+      "engine": "piper",
+      "language": "en",
+      "locale": "en_US",
+      "region": "US",
+      "voice": "joe",
+      "quality": "medium",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [
+        {
+          "name": "en_US-joe-medium.onnx",
+          "sizeBytes": 63201294,
+          "installPath": "bin/piper/en/en_US/joe/medium/en_US-joe-medium.onnx",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/joe/medium/en_US-joe-medium.onnx",
+          "mirrorPath": "tts/1/en/en_US/joe/medium/en_US-joe-medium.onnx"
+        },
+        {
+          "name": "en_US-joe-medium.onnx.json",
+          "sizeBytes": 4794,
+          "installPath": "bin/piper/en/en_US/joe/medium/en_US-joe-medium.onnx.json",
+          "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/joe/medium/en_US-joe-medium.onnx.json",
+          "mirrorPath": "tts/1/en/en_US/joe/medium/en_US-joe-medium.onnx.json"
         }
       ],
       "dependsOn": [

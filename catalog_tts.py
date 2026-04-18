@@ -55,6 +55,16 @@ BANNED_TTS_VOICES = {
     "zh_CN-chaowen-medium",
     "zh_CN-xiao_ya-medium",
 }
+
+# Human-curated per-voice rank nudges. Applied as the highest-priority component
+# of voice_sort_key, so they win over quality/engine/size heuristics within a
+# region. Negative values uprank (earlier in the list -> becomes the default);
+# positive values downrank (may fall out of the top 4). Keys are voice keys
+# (locale_code-name-quality); add one line per voice you want to move.
+VOICE_RANK_PREFERENCES: dict[str, int] = {
+    "en_US-amy-medium": -1,
+    "en_US-sam-medium": 1,
+}
 EXTRA_TTS_VOICES = {
     # External Polish Piper voice metadata source:
     # https://huggingface.co/WitoldG/polish_piper_models/resolve/main/pl_PL-jarvis_wg_glos-medium.onnx.json
@@ -676,8 +686,9 @@ def espeak_dict_code(app_language: str, locale_code: str) -> str:
     return ESPEAK_DICT_OVERRIDES.get(app_language, app_language)
 
 
-def voice_sort_key(item: tuple[str, dict]) -> tuple[int, int, int, int, str]:
+def voice_sort_key(item: tuple[str, dict]) -> tuple[int, int, int, int, int, str]:
     key, voice = item
+    preference = VOICE_RANK_PREFERENCES.get(key, 0)
     quality_rank = QUALITY_PRIORITY.get(voice.get("quality"), 99)
     engine_rank = ENGINE_PRIORITY.get(voice.get("engine", "piper"), 99)
     speaker_rank = 0 if voice.get("num_speakers", 1) == 1 else 1
@@ -689,7 +700,7 @@ def voice_sort_key(item: tuple[str, dict]) -> tuple[int, int, int, int, str]:
         ),
         default=0,
     )
-    return quality_rank, engine_rank, speaker_rank, model_size, key
+    return preference, quality_rank, engine_rank, speaker_rank, model_size, key
 
 
 def region_display_name(voice: dict) -> str:
