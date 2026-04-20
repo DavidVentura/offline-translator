@@ -107,7 +107,7 @@ dependencies = [
 [[package]]
 name = "bergamot-sys"
 version = "0.1.0"
-source = "git+https://github.com/DavidVentura/bergamot-sys#a610826011938b94d1b67b806a5a2b0365d1dfde"
+source = "git+https://github.com/DavidVentura/bergamot-sys#7ab9c71340fc7603d1a915758035b482ea65527e"
 dependencies = [
  "cmake",
 ]
@@ -522,7 +522,7 @@ dependencies = [
 [[package]]
 name = "espeak-rs"
 version = "0.1.9"
-source = "git+https://github.com/DavidVentura/piper-rs#d8dd4db1a3434d63f2ad5bb8add3c8a5d74feead"
+source = "git+https://github.com/DavidVentura/piper-rs#8736f8d16240749ee780ffaff92c8134756fda2b"
 dependencies = [
  "espeak-rs-sys",
 ]
@@ -530,7 +530,7 @@ dependencies = [
 [[package]]
 name = "espeak-rs-sys"
 version = "0.1.9"
-source = "git+https://github.com/DavidVentura/piper-rs#d8dd4db1a3434d63f2ad5bb8add3c8a5d74feead"
+source = "git+https://github.com/DavidVentura/piper-rs#8736f8d16240749ee780ffaff92c8134756fda2b"
 dependencies = [
  "bindgen 0.69.5",
  "cmake",
@@ -1507,7 +1507,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 [[package]]
 name = "piper-rs"
 version = "0.1.9"
-source = "git+https://github.com/DavidVentura/piper-rs#d8dd4db1a3434d63f2ad5bb8add3c8a5d74feead"
+source = "git+https://github.com/DavidVentura/piper-rs#8736f8d16240749ee780ffaff92c8134756fda2b"
 dependencies = [
  "espeak-rs",
  "mucab",
@@ -2156,7 +2156,7 @@ dependencies = [
 [[package]]
 name = "translator"
 version = "0.1.0"
-source = "git+https://github.com/DavidVentura/translator-rs.git#7b924eb8bc5eaf2dc448328be2d5e1db01f5e0a6"
+source = "git+https://github.com/DavidVentura/translator-rs.git#9374c06f85414040bae5c4c96c36530bd991114b"
 dependencies = [
  "bergamot-sys",
  "cld2",
