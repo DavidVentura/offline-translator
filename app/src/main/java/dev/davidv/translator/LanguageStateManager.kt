@@ -134,10 +134,13 @@ class LanguageStateManager(
   }
 
   fun refreshLanguageAvailability() {
+    _languageState.value = _languageState.value.copy(isChecking = true)
     scope.launch {
-      _languageState.value = _languageState.value.copy(isChecking = true)
-
-      val catalog = withContext(Dispatchers.IO) { filePathManager.reloadCatalog() } ?: return@launch
+      val catalog =
+        withContext(Dispatchers.IO) { filePathManager.reloadCatalog() } ?: run {
+          _languageState.value = _languageState.value.copy(isChecking = false)
+          return@launch
+        }
       setCatalog(catalog)
 
       Log.i("LanguageStateManager", "Refreshing language availability")

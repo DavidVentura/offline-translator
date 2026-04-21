@@ -186,17 +186,20 @@ class TranslatorAccessibilityService : AccessibilityService() {
   }
 
   fun showLanguagePicker(isSource: Boolean) {
-    val availableLangs = overlayTextTranslationHelper.availableLanguages(isSource)
-    ui.showLanguagePicker(isSource, availableLangs) { lang ->
-      if (isSource) {
-        forcedSourceLanguage = lang
-        syncReadingOrderForSource()
-      } else {
-        forcedTargetLanguage = lang
-      }
-      ui.updateToolbarState(forcedSourceLanguage, forcedTargetLanguage, currentReadingOrderFor(forcedSourceLanguage))
-      if (active) {
-        retranslate()
+    serviceScope.launch {
+      langStateManager.refreshLanguageAvailability()
+      val availableLangs = overlayTextTranslationHelper.awaitAvailableLanguages(isSource)
+      ui.showLanguagePicker(isSource, availableLangs) { lang ->
+        if (isSource) {
+          forcedSourceLanguage = lang
+          syncReadingOrderForSource()
+        } else {
+          forcedTargetLanguage = lang
+        }
+        ui.updateToolbarState(forcedSourceLanguage, forcedTargetLanguage, currentReadingOrderFor(forcedSourceLanguage))
+        if (active) {
+          retranslate()
+        }
       }
     }
   }

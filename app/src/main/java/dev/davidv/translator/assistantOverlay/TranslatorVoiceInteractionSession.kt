@@ -983,18 +983,22 @@ class TranslatorVoiceInteractionSession(
   }
 
   private fun showLanguagePicker(isSource: Boolean) {
-    menuManager?.showLanguagePicker(
-      isSource = isSource,
-      availableLangs = overlayTextTranslationHelper.availableLanguages(isSource),
-    ) { language ->
-      if (isSource) {
-        forcedSourceLanguage = language
-        syncReadingOrderForSource()
-      } else {
-        forcedTargetLanguage = language
+    sessionScope.launch {
+      langStateManager.refreshLanguageAvailability()
+      val availableLangs = overlayTextTranslationHelper.awaitAvailableLanguages(isSource)
+      menuManager?.showLanguagePicker(
+        isSource = isSource,
+        availableLangs = availableLangs,
+      ) { language ->
+        if (isSource) {
+          forcedSourceLanguage = language
+          syncReadingOrderForSource()
+        } else {
+          forcedTargetLanguage = language
+        }
+        updateToolbarLabels()
+        retranslate()
       }
-      updateToolbarLabels()
-      retranslate()
     }
   }
 
