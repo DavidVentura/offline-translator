@@ -17,11 +17,14 @@
 
 package dev.davidv.translator.ui.components
 
+import android.content.Context
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +43,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import dev.davidv.translator.ui.theme.TranslatorTheme
 
+class StyledTextFieldFocusController {
+  internal var editText: EditText? = null
+
+  fun focus() {
+    val target = editText ?: return
+    target.requestFocus()
+    val end = target.text?.length ?: 0
+    target.setSelection(end)
+    val imm = target.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    imm?.showSoftInput(target, 0)
+  }
+}
+
 @Composable
 fun StyledTextField(
   text: String,
@@ -48,6 +64,7 @@ fun StyledTextField(
   modifier: Modifier = Modifier,
   placeholder: String? = null,
   textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+  focusController: StyledTextFieldFocusController? = null,
 ) {
   val context = LocalContext.current
   val lifecycleOwner = LocalLifecycleOwner.current
@@ -83,6 +100,18 @@ fun StyledTextField(
           this.customInsertionActionModeCallback = actionModeCallback
           this.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
           this.background = null
+          this.setOnTouchListener { v, event ->
+            if (v.canScrollVertically(1) || v.canScrollVertically(-1)) {
+              v.parent?.requestDisallowInterceptTouchEvent(true)
+              if (event.actionMasked == MotionEvent.ACTION_UP ||
+                event.actionMasked == MotionEvent.ACTION_CANCEL
+              ) {
+                v.parent?.requestDisallowInterceptTouchEvent(false)
+              }
+            }
+            false
+          }
+          focusController?.editText = this
           actionModeCallback.setTextView(this)
           this.addTextChangedListener(
             object : TextWatcher {
@@ -123,6 +152,7 @@ fun StyledTextField(
         editText.isFocusable = true
         editText.isFocusableInTouchMode = true
         editText.customSelectionActionModeCallback = actionModeCallback
+        focusController?.editText = editText
         actionModeCallback.setTextView(editText)
       },
     )

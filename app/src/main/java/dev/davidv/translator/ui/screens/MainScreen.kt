@@ -25,6 +25,8 @@ import android.util.Log
 import android.widget.TextView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -92,6 +94,7 @@ import dev.davidv.translator.ui.components.ImageDisplaySection
 import dev.davidv.translator.ui.components.LanguageEvent
 import dev.davidv.translator.ui.components.LanguageSelectionRow
 import dev.davidv.translator.ui.components.StyledTextField
+import dev.davidv.translator.ui.components.StyledTextFieldFocusController
 import dev.davidv.translator.ui.components.TranslationField
 import dev.davidv.translator.ui.components.ZoomableImageViewer
 import dev.davidv.translator.ui.theme.TranslatorTheme
@@ -136,6 +139,7 @@ fun MainScreen(
 ) {
   var showFullScreenImage by remember { mutableStateOf(false) }
   var showImageSourceSheet by remember { mutableStateOf(false) }
+  val inputFocusController = remember { StyledTextFieldFocusController() }
   val extraTopPadding = if (launchMode == LaunchMode.Normal) 0.dp else 8.dp
   val context = LocalContext.current
   val showOnlyOutputInReadonlyModal =
@@ -291,7 +295,11 @@ fun MainScreen(
                   modifier =
                     Modifier
                       .fillMaxWidth()
-                      .weight(3f, fill = false),
+                      .weight(3f, fill = true)
+                      .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                      ) { inputFocusController.focus() },
                 ) {
                   StyledTextField(
                     text = input,
@@ -311,6 +319,7 @@ fun MainScreen(
                         fontSize = (MaterialTheme.typography.bodyLarge.fontSize * settings.fontFactor),
                         lineHeight = (MaterialTheme.typography.bodyLarge.lineHeight * settings.fontFactor),
                       ),
+                    focusController = inputFocusController,
                   )
                   if (displayImage == null) {
                     Row(modifier = Modifier.align(Alignment.TopEnd)) {
@@ -331,7 +340,8 @@ fun MainScreen(
                     modifier =
                       Modifier
                         .fillMaxWidth()
-                        .weight(1f, fill = true),
+                        .weight(1f, fill = true)
+                        .clickable { inputFocusController.focus() },
                   ) {
                     AndroidView(
                       factory = { context ->
@@ -339,10 +349,12 @@ fun MainScreen(
                           this.text = inputTransliteration
                           this.textSize = smallerFontSize
                           this.setTextColor(textColor)
-                          this.setTextIsSelectable(true)
                           this.movementMethod =
                             android.text.method.ScrollingMovementMethod
                               .getInstance()
+                          this.isClickable = false
+                          this.isLongClickable = false
+                          this.isFocusable = false
                         }
                       },
                       update = { textView ->
@@ -561,7 +573,7 @@ private fun ActionPillButton(
       Icon(
         painterResource(id = iconRes),
         contentDescription = contentDescription,
-        tint = Color.White,
+        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
       )
     }
   }
