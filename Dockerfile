@@ -36,6 +36,7 @@ RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-1107
     rm -rf $ANDROID_SDK_ROOT/cmdline-tools-temp && \
     rm cmdtools.zip
 
+RUN echo '' > /.bump
 # Accept licenses and install Android SDK components
 RUN yes | sdkmanager --licenses && \
     sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" && \
