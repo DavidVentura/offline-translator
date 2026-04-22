@@ -13,7 +13,7 @@ val defaultDevAbis = listOf("arm64-v8a", "x86_64")
 android {
   namespace = "dev.davidv.translator"
   compileSdk = 34
-  ndkVersion = "28.0.12674087"
+  ndkVersion = "28.1.13356709"
   buildToolsVersion = "34.0.0"
 
   sourceSets {
@@ -102,7 +102,7 @@ val androidSdkRoot =
   System.getenv("ANDROID_SDK_ROOT")
     ?: System.getenv("ANDROID_HOME")
     ?: throw GradleException("ANDROID_SDK_ROOT or ANDROID_HOME must be set")
-val ndk = "$androidSdkRoot/ndk/28.0.12674087"
+val ndk = "$androidSdkRoot/ndk/28.1.13356709"
 val bindingsAndroidApi = 28
 val onnxRuntimeRootDir = file("../third_party/onnxruntime")
 val onnxRuntimeSourceFingerprint =
