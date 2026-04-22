@@ -152,6 +152,10 @@ fun cargoEncodedRustflags(abi: String? = null): String {
       "-C",
       "link-arg=-Wl,--threads=1",
       "-C",
+      "link-arg=-Wl,--sort-section=name",
+      "-C",
+      "link-arg=-Wl,--sort-common",
+      "-C",
       "link-arg=-Wl,--exclude-libs,ALL",
     )
   if (abi == null) return base.joinToString("\u001f")
