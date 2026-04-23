@@ -349,7 +349,7 @@ dependencies = [
 [[package]]
 name = "cld2"
 version = "1.0.2"
-source = "git+https://github.com/DavidVentura/rust-cld2#aac626c180e0c78295659ee07599a8d1faa08443"
+source = "git+https://github.com/DavidVentura/rust-cld2#4ce5167d0c51b0e2dd8553b7e69c0dbfb1406dbe"
 dependencies = [
  "cld2-sys",
  "libc",
@@ -358,7 +358,7 @@ dependencies = [
 [[package]]
 name = "cld2-sys"
 version = "1.0.2"
-source = "git+https://github.com/DavidVentura/rust-cld2#aac626c180e0c78295659ee07599a8d1faa08443"
+source = "git+https://github.com/DavidVentura/rust-cld2#4ce5167d0c51b0e2dd8553b7e69c0dbfb1406dbe"
 dependencies = [
  "cc",
  "libc",
@@ -2133,7 +2133,7 @@ dependencies = [
 [[package]]
 name = "translator"
 version = "0.1.0"
-source = "git+https://github.com/DavidVentura/translator-rs.git#eb6c67620a22e9b41828df775d3dde4cfc5a7194"
+source = "git+https://github.com/DavidVentura/translator-rs.git#233adbd4585e6323aed5851c76c97cf61918d301"
 dependencies = [
  "bergamot-sys",
  "cld2",
