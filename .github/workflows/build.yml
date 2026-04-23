@@ -61,7 +61,7 @@ jobs:
     - name: Build ${{ matrix.label }}
       run: |
         docker run --rm \
-          -v ${{ github.workspace }}:/home/vagrant/build/dev.davidv.translator/ \
+          -v ${{ github.workspace }}:/build/build/dev.davidv.translator/ \
           --user $(id -u):$(id -g) \
           translator-app:latest \
           ./gradlew assembleRelease -PtargetAbi=${{ matrix.abi }}
