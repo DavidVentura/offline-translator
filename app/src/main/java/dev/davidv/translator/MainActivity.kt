@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
     handleIntent(intent)
+    if (isFinishing) return
 
     val app = application as TranslatorApplication
 
@@ -129,6 +130,16 @@ class MainActivity : ComponentActivity() {
           }
 
         if (text != null) {
+          val url = firstUrlInText(text)
+          if (url != null) {
+            val browserIntent =
+              Intent(this, dev.davidv.translator.browser.BrowserActivity::class.java).apply {
+                putExtra(dev.davidv.translator.browser.BrowserActivity.EXTRA_URL, url)
+              }
+            startActivity(browserIntent)
+            finish()
+            return
+          }
           textToTranslate = text
         } else if (imageUri != null) {
           sharedImageUri = imageUri
@@ -136,5 +147,12 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
+  }
+
+  private fun firstUrlInText(text: String): String? {
+    for (token in text.trim().split(Regex("\\s+"))) {
+      if (token.startsWith("http://") || token.startsWith("https://")) return token
+    }
+    return null
   }
 }

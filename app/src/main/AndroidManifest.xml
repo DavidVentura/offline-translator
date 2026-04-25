@@ -100,6 +100,11 @@
       </activity>
 
       <activity
+        android:name=".browser.BrowserActivity"
+        android:exported="false"
+        android:label="@string/app_name" />
+
+      <activity
         android:name="com.canhub.cropper.CropImageActivity"
         android:theme="@style/Theme.Translator.CropImage" />
 

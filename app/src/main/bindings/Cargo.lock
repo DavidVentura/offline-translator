@@ -118,7 +118,6 @@ dependencies = [
 [[package]]
 name = "bergamot-sys"
 version = "0.1.0"
-source = "git+https://github.com/DavidVentura/bergamot-sys#c6a3fde4e39645d93958fe935c75a4189b4b90bc"
 dependencies = [
  "cmake",
 ]
@@ -2133,7 +2132,6 @@ dependencies = [
 [[package]]
 name = "translator"
 version = "0.1.0"
-source = "git+https://github.com/DavidVentura/translator-rs.git#62702f59e6fee79f6abaf60e1e16f073ad259c02"
 dependencies = [
  "bergamot-sys",
  "cld2",

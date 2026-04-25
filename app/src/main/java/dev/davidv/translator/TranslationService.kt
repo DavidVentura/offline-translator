@@ -45,6 +45,22 @@ class TranslationService(
     catalog.warmTranslationModels(from, to)
   }
 
+  suspend fun translateHtmlFragments(
+    from: Language,
+    to: Language,
+    fragments: List<String>,
+  ): List<String> =
+    withContext(Dispatchers.IO) {
+      if (fragments.isEmpty() || from == to) return@withContext fragments
+      val catalog = filePathManager.loadCatalog() ?: return@withContext fragments
+      try {
+        catalog.translateHtmlFragments(from, to, fragments)
+      } catch (e: CatalogException) {
+        Log.w("TranslationService", "translateHtmlFragments failed", e)
+        fragments
+      }
+    }
+
   suspend fun translateMixedTexts(
     inputs: List<String>,
     forcedSourceLanguage: Language?,
