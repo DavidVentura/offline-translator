@@ -114,6 +114,8 @@ class BrowserActivity : ComponentActivity() {
     val contentScript = assets.open("translator.js").bufferedReader().use { it.readText() }
     val readabilityScript = assets.open("Readability.js").bufferedReader().use { it.readText() }
     val readerModeScript = assets.open("reader-mode.js").bufferedReader().use { it.readText() }
+    val adblockCosmeticScript =
+      assets.open("adblock-cosmetic.js").bufferedReader().use { it.readText() }
 
     setContent {
       TranslatorTheme {
@@ -126,6 +128,7 @@ class BrowserActivity : ComponentActivity() {
             contentScript = contentScript,
             readabilityScript = readabilityScript,
             readerModeScript = readerModeScript,
+            adblockCosmeticScript = adblockCosmeticScript,
             translationService = app.translationService,
             adblockManager = app.adblockManager,
             onFinish = { finish() },
@@ -168,6 +171,7 @@ private fun BrowserScreen(
   contentScript: String,
   readabilityScript: String,
   readerModeScript: String,
+  adblockCosmeticScript: String,
   translationService: TranslationService,
   adblockManager: AdblockManager,
   onFinish: () -> Unit,
@@ -214,6 +218,7 @@ private fun BrowserScreen(
       sourceLang = from!!,
       targetLang = to!!,
       contentScript = contentScript,
+      adblockCosmeticScript = adblockCosmeticScript,
       translationService = translationService,
       adblockManager = adblockManager,
       darkTheme = darkTheme,
@@ -327,6 +332,7 @@ private fun BrowserWebView(
   sourceLang: Language,
   targetLang: Language,
   contentScript: String,
+  adblockCosmeticScript: String,
   translationService: TranslationService,
   adblockManager: AdblockManager,
   darkTheme: Boolean,
@@ -338,6 +344,7 @@ private fun BrowserWebView(
   val scope = androidx.compose.runtime.rememberCoroutineScope()
   val bridgeRef = remember { arrayOfNulls<TranslatorJsBridge>(1) }
   val currentPageUrlRef = remember { java.util.concurrent.atomic.AtomicReference<String?>(null) }
+  val currentPageSerialRef = remember { java.util.concurrent.atomic.AtomicInteger(0) }
   val bridgeToken = remember { UUID.randomUUID().toString() }
   val translatorBridgeName = remember { "__translatorBridge_${bridgeToken.filter { it != '-' }}" }
   val adblockBridgeName = remember { "__adblockBridge_${bridgeToken.filter { it != '-' }}" }
@@ -393,14 +400,18 @@ private fun BrowserWebView(
               Log.i("AdblockManager", "onPageStarted view=$view url=$url")
               onPageStarted()
               currentPageUrlRef.set(url)
+              val pageSerial = currentPageSerialRef.incrementAndGet()
               if (view != null && url != null) {
                 applyCosmeticFiltersAsync(
                   scope,
                   view,
                   adblockManager,
                   url,
+                  pageSerial,
+                  currentPageSerialRef,
                   adblockBridgeName,
                   bridgeToken,
+                  adblockCosmeticScript,
                 )
               }
             }
@@ -413,6 +424,20 @@ private fun BrowserWebView(
                 buildTranslatorContentJs(contentScript, translatorBridgeName, bridgeToken),
                 null,
               )
+              val pageSerial = currentPageSerialRef.get()
+              if (view != null && url != null) {
+                applyCosmeticFiltersAsync(
+                  scope,
+                  view,
+                  adblockManager,
+                  url,
+                  pageSerial,
+                  currentPageSerialRef,
+                  adblockBridgeName,
+                  bridgeToken,
+                  adblockCosmeticScript,
+                )
+              }
               if (view != null) onPageFinished(view)
             }
 
@@ -483,10 +508,13 @@ private fun applyCosmeticFiltersAsync(
   webView: WebView,
   adblockManager: AdblockManager,
   url: String,
+  pageSerial: Int,
+  currentPageSerialRef: java.util.concurrent.atomic.AtomicInteger,
   adblockBridgeName: String,
   bridgeToken: String,
+  adblockCosmeticScript: String,
 ) {
-  Log.i("AdblockManager", "onPageStarted url=$url scheduling lookup")
+  Log.i("AdblockManager", "url=$url scheduling cosmetic lookup")
   scope.launch {
     val tFetch = System.currentTimeMillis()
     val cosmetic = withContext(Dispatchers.IO) { adblockManager.cosmeticResources(url) }
@@ -513,12 +541,19 @@ private fun applyCosmeticFiltersAsync(
         cosmetic.injectedScript,
         adblockBridgeName,
         bridgeToken,
+        adblockCosmeticScript,
       )
     if (js.isEmpty()) {
       Log.i("AdblockManager", "url=$url empty cosmetic, skipping")
       return@launch
     }
-    webView.evaluateJavascript(js, null)
+    withContext(Dispatchers.Main) {
+      if (currentPageSerialRef.get() != pageSerial) {
+        Log.i("AdblockManager", "url=$url stale cosmetic result, skipping")
+        return@withContext
+      }
+      webView.evaluateJavascript(js, null)
+    }
   }
 }
 
@@ -531,6 +566,7 @@ private fun buildCosmeticJs(
   injectedScript: String,
   adblockBridgeName: String,
   bridgeToken: String,
+  adblockCosmeticScript: String,
 ): String {
   if (hideSelectors.isEmpty() && styleRules.isEmpty() &&
     proceduralFilters.isEmpty() && injectedScript.isBlank() && generichide
@@ -544,295 +580,19 @@ private fun buildCosmeticJs(
   if (styleRules.isNotEmpty()) {
     cssParts.addAll(styleRules)
   }
-  val css = cssParts.joinToString("\n")
-  val hideSelectorsLiteral =
-    org.json.JSONArray().apply { hideSelectors.forEach { put(it) } }.toString()
-  val cssLiteral = JSONObject.quote(css)
-  val proceduralLiteral =
-    org.json.JSONArray().apply { proceduralFilters.forEach { put(it) } }.toString()
-  val exceptionsLiteral =
-    org.json.JSONArray().apply { exceptions.forEach { put(it) } }.toString()
-  val scriptLiteral = JSONObject.quote(injectedScript)
-  val adblockBridgeNameLiteral = JSONObject.quote(adblockBridgeName)
-  val bridgeTokenLiteral = JSONObject.quote(bridgeToken)
-  val generichideLiteral = if (generichide) "true" else "false"
-  return """
-    (function(){
-      var baseCss = $cssLiteral;
-      var hideSelectors = $hideSelectorsLiteral;
-      var js = $scriptLiteral;
-      var procedurals = $proceduralLiteral;
-      var exceptions = $exceptionsLiteral;
-      var generichide = $generichideLiteral;
-      var adblockBridgeName = $adblockBridgeNameLiteral;
-      var bridgeToken = $bridgeTokenLiteral;
-
-      var jsInjected = false;
-      var validatedHideCss = null;
-
-      function isValidSelector(selector) {
-        try {
-          document.querySelector(selector);
-          return true;
-        } catch (e) {
-          return false;
-        }
-      }
-
-      function buildCssText() {
-        if (validatedHideCss === null) {
-          var valid = [];
-          var invalid = 0;
-          for (var i = 0; i < hideSelectors.length; i++) {
-            if (isValidSelector(hideSelectors[i])) valid.push(hideSelectors[i]);
-            else invalid++;
-          }
-          validatedHideCss = valid.length
-            ? valid.join(',\n') + ' { display: none !important; min-height: 0 !important; min-width: 0 !important; height: 0 !important; }\n'
-            : '';
-          if (invalid) console.log('[adblock] skipped invalid cosmetic selectors: ' + invalid);
-        }
-        return validatedHideCss + baseCss;
-      }
-
-      function applyCss() {
-        var root = document.head || document.documentElement || document.body;
-        if (!root) return false;
-        try {
-          var css = buildCssText();
-          if (css) {
-            var existing = document.querySelector('style[data-adblock="1"]');
-            if (!existing || !existing.isConnected || existing.parentNode !== root) {
-              if (existing && !existing.isConnected) existing.remove();
-              var s = document.createElement('style');
-              s.setAttribute('data-adblock','1');
-              s.textContent = css;
-              root.appendChild(s);
-            } else if (existing.textContent !== css) {
-              existing.textContent = css;
-            }
-          }
-          if (js && !jsInjected) {
-            var sc = document.createElement('script');
-            sc.setAttribute('data-adblock','1');
-            sc.textContent = js;
-            root.appendChild(sc);
-            sc.remove();
-            jsInjected = true;
-          }
-          return true;
-        } catch (e) {
-          console.warn('[adblock] cosmetic apply failed', e);
-          return true;
-        }
-      }
-
-      function guardCss() {
-        try {
-          var target = document.documentElement;
-          if (!target) return;
-          var mo = new MutationObserver(function(){
-            var existing = document.querySelector('style[data-adblock="1"]');
-            if (!existing || !existing.isConnected) applyCss();
-          });
-          mo.observe(target, { childList: true, subtree: true });
-        } catch (e) {}
-      }
-
-      // ---- procedural filter pipeline (uBO-style) ----
-      function opTask(op) {
-        var arg = op.arg;
-        switch (op.type) {
-          case 'CssSelector':
-            return function(nodes) {
-              if (nodes === null) {
-                try { return Array.prototype.slice.call(document.querySelectorAll(arg)); }
-                catch (e) { return []; }
-              }
-              var out = [];
-              for (var i = 0; i < nodes.length; i++) {
-                try { out.push.apply(out, nodes[i].querySelectorAll(arg)); } catch (e) {}
-              }
-              return out;
-            };
-          case 'HasText':
-            var re;
-            if (arg && arg.length > 1 && arg.charAt(0) === '/' &&
-                arg.lastIndexOf('/') > 0) {
-              var slash = arg.lastIndexOf('/');
-              try { re = new RegExp(arg.slice(1, slash), arg.slice(slash + 1)); } catch (e) {}
-            }
-            var literal = arg;
-            return function(nodes) {
-              return nodes.filter(function(n){
-                var t = (n.textContent || '');
-                return re ? re.test(t) : t.indexOf(literal) >= 0;
-              });
-            };
-          case 'MatchesCss':
-          case 'MatchesCssBefore':
-          case 'MatchesCssAfter':
-            // arg shape: "prop: value" possibly more complex
-            var idx = arg.indexOf(':');
-            if (idx < 0) return function(nodes){ return []; };
-            var prop = arg.slice(0, idx).trim();
-            var val = arg.slice(idx + 1).trim();
-            var pseudo = op.type === 'MatchesCssBefore' ? '::before'
-                       : op.type === 'MatchesCssAfter' ? '::after' : null;
-            return function(nodes) {
-              return nodes.filter(function(n){
-                try {
-                  var cs = window.getComputedStyle(n, pseudo);
-                  return cs && cs.getPropertyValue(prop).trim() === val;
-                } catch (e) { return false; }
-              });
-            };
-          case 'Upward':
-            // arg: integer N, or selector
-            var n = parseInt(arg, 10);
-            if (!isNaN(n) && /^-?\d+$/.test(String(arg))) {
-              return function(nodes) {
-                var out = [];
-                for (var i = 0; i < nodes.length; i++) {
-                  var p = nodes[i];
-                  for (var k = 0; k < n && p; k++) p = p.parentElement;
-                  if (p) out.push(p);
-                }
-                return out;
-              };
-            }
-            return function(nodes) {
-              var out = [];
-              for (var i = 0; i < nodes.length; i++) {
-                try {
-                  var anc = nodes[i].parentElement && nodes[i].parentElement.closest(arg);
-                  if (anc) out.push(anc);
-                } catch (e) {}
-              }
-              return out;
-            };
-          default:
-            return null; // unsupported -> drop entire filter
-        }
-      }
-
-      function compileFilter(filter) {
-        var tasks = [];
-        for (var i = 0; i < filter.selector.length; i++) {
-          var t = opTask(filter.selector[i]);
-          if (!t) return null;
-          tasks.push(t);
-        }
-        return tasks;
-      }
-
-      function runFilter(filter) {
-        var tasks = compileFilter(filter);
-        if (!tasks) return;
-        var nodes = null;
-        for (var i = 0; i < tasks.length; i++) nodes = tasks[i](nodes);
-        if (!nodes || nodes.length === 0) return;
-        var action = filter.action;
-        if (!action) {
-          for (var j = 0; j < nodes.length; j++) nodes[j].setAttribute('data-adblock-hide', '1');
-          return;
-        }
-        switch (action.type) {
-          case 'Style':
-            for (var j2 = 0; j2 < nodes.length; j2++) {
-              try { nodes[j2].style.cssText += ';' + action.arg; } catch (e) {}
-            }
-            return;
-          case 'Remove':
-            for (var j3 = 0; j3 < nodes.length; j3++) {
-              try { nodes[j3].remove(); } catch (e) {}
-            }
-            return;
-          case 'RemoveAttr':
-            for (var j4 = 0; j4 < nodes.length; j4++) {
-              try { nodes[j4].removeAttribute(action.arg); } catch (e) {}
-            }
-            return;
-          case 'RemoveClass':
-            for (var j5 = 0; j5 < nodes.length; j5++) {
-              try { nodes[j5].classList.remove(action.arg); } catch (e) {}
-            }
-            return;
-        }
-      }
-
-      function runProcedurals() {
-        if (!procedurals || procedurals.length === 0) return;
-        var hits = 0;
-        for (var i = 0; i < procedurals.length; i++) {
-          var f;
-          try { f = JSON.parse(procedurals[i]); } catch (e) { continue; }
-          try { runFilter(f); hits++; } catch (e) {}
-        }
-      }
-
-
-      function ready(fn) {
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', fn, { once: true });
-        } else {
-          fn();
-        }
-      }
-
-      function applyGeneric() {
-        if (generichide) return;
-        var adblockBridge = window[adblockBridgeName];
-        if (!adblockBridge) return;
-        var classes = new Set();
-        var ids = new Set();
-        var els = document.getElementsByTagName('*');
-        for (var i = 0; i < els.length; i++) {
-          var el = els[i];
-          if (el.id) ids.add(el.id);
-          var cls = el.getAttribute && el.getAttribute('class');
-          if (cls) {
-            var parts = cls.split(/\s+/);
-            for (var j = 0; j < parts.length; j++) {
-              if (parts[j]) classes.add(parts[j]);
-            }
-          }
-        }
-        var classArr = JSON.stringify(Array.from(classes));
-        var idArr = JSON.stringify(Array.from(ids));
-        var exArr = JSON.stringify(exceptions || []);
-        var resultJson;
-        try {
-          resultJson = adblockBridge.lookupGenericSelectors(classArr, idArr, exArr, bridgeToken);
-        } catch (e) {
-          console.warn('[adblock] generic lookup failed', e);
-          return;
-        }
-        var selectors;
-        try { selectors = JSON.parse(resultJson); } catch (e) { return; }
-        if (!selectors || selectors.length === 0) return;
-        var style = document.createElement('style');
-        style.setAttribute('data-adblock-generic', '1');
-        style.textContent =
-          selectors.join(',\n') +
-          ' { display: none !important; min-height: 0 !important; min-width: 0 !important; height: 0 !important; }';
-        (document.head || document.documentElement).appendChild(style);
-        console.log('[adblock] generic selectors applied: ' + selectors.length);
-      }
-
-      if (!applyCss()) {
-        var tries = 0;
-        var iv = setInterval(function(){
-          tries++;
-          if (applyCss() || tries > 50) clearInterval(iv);
-        }, 20);
-      }
-      ready(function(){
-        applyCss(); // re-assert in case the framework rebuilt <head>
-        guardCss();
-        runProcedurals();
-        applyGeneric();
-      });
-    })();
-    """.trimIndent()
+  val config =
+    JSONObject()
+      .put("baseCss", cssParts.joinToString("\n"))
+      .put("hideSelectors", org.json.JSONArray().apply { hideSelectors.forEach { put(it) } })
+      .put(
+        "proceduralFilters",
+        org.json.JSONArray().apply { proceduralFilters.forEach { put(it) } },
+      )
+      .put("exceptions", org.json.JSONArray().apply { exceptions.forEach { put(it) } })
+      .put("generichide", generichide)
+      .put("injectedScript", injectedScript)
+      .put("adblockBridgeName", adblockBridgeName)
+      .put("bridgeToken", bridgeToken)
+      .toString()
+  return "window.__translatorAdblockConfig = $config;\n$adblockCosmeticScript"
 }
