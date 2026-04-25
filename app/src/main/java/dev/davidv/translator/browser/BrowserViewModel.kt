@@ -99,7 +99,7 @@ class BrowserViewModel(
       is TranslatorMessage.SwapLanguages -> {
         val prevFrom = _from.value
         val prevTo = _to.value
-        if (prevFrom != null && prevTo != null) {
+        if (prevFrom != null && prevTo != null && canSwapLanguages(prevFrom, prevTo)) {
           _from.value = prevTo
           _to.value = prevFrom
         }
@@ -123,6 +123,11 @@ class BrowserViewModel(
       }
     _url.value = normalized
   }
+
+  fun canSwapLanguages(
+    from: Language,
+    to: Language,
+  ): Boolean = languageStateManager.canSwapLanguages(from, to)
 }
 
 class BrowserViewModelFactory(

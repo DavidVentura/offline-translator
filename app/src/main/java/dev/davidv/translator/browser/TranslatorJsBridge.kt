@@ -33,17 +33,30 @@ class TranslatorJsBridge(
   private val scope: CoroutineScope,
   private val webView: WebView,
   private val translationService: TranslationService,
+  private val bridgeToken: String,
   @Volatile var sourceLanguage: Language,
   @Volatile var targetLanguage: Language,
 ) {
+  companion object {
+    private const val MAX_BATCH_ITEMS = 50
+    private const val MAX_TOTAL_CHARS = 100_000
+    private const val MAX_ITEM_CHARS = 20_000
+  }
+
   @JavascriptInterface
   fun translateHtmlFragments(
     requestId: Int,
     fragmentsJson: String,
+    token: String,
     nonce: String,
   ) {
+    if (token != bridgeToken) return
     scope.launch {
       val fragments = decodeStringArray(fragmentsJson)
+      if (fragments == null) {
+        resolveOnJs(requestId, emptyList(), nonce)
+        return@launch
+      }
       val translated =
         try {
           translationService.translateHtmlFragments(sourceLanguage, targetLanguage, fragments)
@@ -59,10 +72,16 @@ class TranslatorJsBridge(
   fun translateTexts(
     requestId: Int,
     textsJson: String,
+    token: String,
     nonce: String,
   ) {
+    if (token != bridgeToken) return
     scope.launch {
       val texts = decodeStringArray(textsJson)
+      if (texts == null) {
+        resolveOnJs(requestId, emptyList(), nonce)
+        return@launch
+      }
       val translated =
         try {
           val result =
@@ -106,9 +125,21 @@ class TranslatorJsBridge(
     }
   }
 
-  private fun decodeStringArray(json: String): List<String> {
-    val arr = JSONArray(json)
-    return List(arr.length()) { arr.getString(it) }
+  private fun decodeStringArray(json: String): List<String>? {
+    if (json.length > MAX_TOTAL_CHARS + 4096) return null
+    val arr = runCatching { JSONArray(json) }.getOrNull() ?: return null
+    if (arr.length() > MAX_BATCH_ITEMS) return null
+    val values = ArrayList<String>(arr.length())
+    var totalChars = 0
+    for (i in 0 until arr.length()) {
+      if (arr.isNull(i)) return null
+      val value = arr.getString(i)
+      if (value.length > MAX_ITEM_CHARS) return null
+      totalChars += value.length
+      if (totalChars > MAX_TOTAL_CHARS) return null
+      values += value
+    }
+    return values
   }
 
   private fun encodeStringArray(values: List<String>): String {

@@ -559,7 +559,14 @@ class DownloadService : Service() {
     val job =
       serviceScope.launch {
         try {
-          val catalog = getCatalog() ?: return@launch
+          val catalog =
+            getCatalog() ?: run {
+              updateAdblockDownloadState {
+                it.copy(isDownloading = false, error = "Catalog unavailable")
+              }
+              _downloadEvents.emit(DownloadEvent.DownloadError("Catalog unavailable"))
+              return@launch
+            }
           val downloadPlan =
             catalog.planSupportDownloadByKind(ADBLOCK_KIND) ?: run {
               Log.w("DownloadService", "No adblock support pack in catalog")

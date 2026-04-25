@@ -10145,7 +10145,7 @@
       "files": [
         {
           "name": "adblock-lists-v1.zip",
-          "sizeBytes": 2124678,
+          "sizeBytes": 2124780,
           "installPath": "adblock/adblock-lists-v1.zip",
           "url": "https://offline-translator.davidv.dev/support/1/adblock/adblock-lists-v1.zip",
           "archiveFormat": "zip",

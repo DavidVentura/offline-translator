@@ -35,6 +35,7 @@ class DownloadEntry:
     url: str
     dest: Path
     size_bytes: int | None
+    refresh_always: bool
 
 
 def known_size(size_bytes: int | None) -> int | None:
@@ -149,12 +150,14 @@ def build_download_entries(manifest: dict, output_dir: Path) -> list[DownloadEnt
         feature = pack.get("feature", "misc")
         for file_info in pack.get("files", []):
             dest = resolve_destination(pack, file_info, output_dir)
+            size_bytes = known_size(file_info.get("sizeBytes"))
             entry = DownloadEntry(
                 pack_id=pack_id,
                 feature=feature,
                 url=file_info["url"],
                 dest=dest,
-                size_bytes=known_size(file_info.get("sizeBytes")),
+                size_bytes=size_bytes,
+                refresh_always=pack.get("kind") == catalog_adblock.ADBLOCK_KIND or size_bytes is None,
             )
 
             existing = entries_by_dest.get(dest)
@@ -179,7 +182,7 @@ def summarize(entries: Iterable[DownloadEntry], output_dir: Path) -> tuple[int, 
     for entry in entries:
         total_files += 1
         total_bytes += entry.size_bytes or 0
-        if entry.dest.exists():
+        if should_skip(entry):
             present_files += 1
             present_bytes += entry.size_bytes or 0
         else:
@@ -205,7 +208,26 @@ def format_size(num_bytes: int) -> str:
 
 
 def should_skip(entry: DownloadEntry) -> bool:
-    return entry.dest.exists()
+    return entry.dest.exists() and not entry.refresh_always
+
+
+def update_manifest_sizes(manifest: dict, output_dir: Path, manifest_path: Path) -> None:
+    changed = False
+    for pack in manifest.get("packs", {}).values():
+        refresh_pack = pack.get("kind") == catalog_adblock.ADBLOCK_KIND
+        for file_info in pack.get("files", []):
+            dest = resolve_destination(pack, file_info, output_dir)
+            if not dest.exists():
+                continue
+            current_size = file_info.get("sizeBytes")
+            actual_size = dest.stat().st_size
+            if refresh_pack or not isinstance(current_size, int) or current_size <= 0:
+                if current_size != actual_size:
+                    file_info["sizeBytes"] = actual_size
+                    changed = True
+    if changed:
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"updated_manifest_sizes={manifest_path}")
 
 
 def download_once(entry: DownloadEntry, timeout: int) -> str:
@@ -297,6 +319,7 @@ async def main() -> int:
         if result != 0:
             return result
 
+    update_manifest_sizes(manifest, args.output, args.manifest)
     adblock_size = await asyncio.to_thread(catalog_adblock.build_adblock_zip, manifest, args.output)
     if adblock_size > 0:
         print(f"adblock_bundle={catalog_adblock.adblock_bundle_path(args.output)}")

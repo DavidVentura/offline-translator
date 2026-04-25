@@ -2874,7 +2874,7 @@
       "files": [
         {
           "name": "ara.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1432056,
           "installPath": "tesseract/tessdata/ara.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/ara.traineddata",
           "sourcePath": "ara.traineddata",
@@ -2892,7 +2892,7 @@
       "files": [
         {
           "name": "aze.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3524799,
           "installPath": "tesseract/tessdata/aze.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/aze.traineddata",
           "sourcePath": "aze.traineddata",
@@ -2910,7 +2910,7 @@
       "files": [
         {
           "name": "bel.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3692098,
           "installPath": "tesseract/tessdata/bel.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/bel.traineddata",
           "sourcePath": "bel.traineddata",
@@ -2928,7 +2928,7 @@
       "files": [
         {
           "name": "bul.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1675212,
           "installPath": "tesseract/tessdata/bul.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/bul.traineddata",
           "sourcePath": "bul.traineddata",
@@ -2946,7 +2946,7 @@
       "files": [
         {
           "name": "ben.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 855841,
           "installPath": "tesseract/tessdata/ben.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/ben.traineddata",
           "sourcePath": "ben.traineddata",
@@ -2964,7 +2964,7 @@
       "files": [
         {
           "name": "bos.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2498242,
           "installPath": "tesseract/tessdata/bos.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/bos.traineddata",
           "sourcePath": "bos.traineddata",
@@ -2982,7 +2982,7 @@
       "files": [
         {
           "name": "cat.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1146012,
           "installPath": "tesseract/tessdata/cat.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/cat.traineddata",
           "sourcePath": "cat.traineddata",
@@ -3000,7 +3000,7 @@
       "files": [
         {
           "name": "ces.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3795684,
           "installPath": "tesseract/tessdata/ces.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/ces.traineddata",
           "sourcePath": "ces.traineddata",
@@ -3018,7 +3018,7 @@
       "files": [
         {
           "name": "dan.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2580059,
           "installPath": "tesseract/tessdata/dan.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/dan.traineddata",
           "sourcePath": "dan.traineddata",
@@ -3036,7 +3036,7 @@
       "files": [
         {
           "name": "deu.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1525436,
           "installPath": "tesseract/tessdata/deu.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/deu.traineddata",
           "sourcePath": "deu.traineddata",
@@ -3054,7 +3054,7 @@
       "files": [
         {
           "name": "ell.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1419514,
           "installPath": "tesseract/tessdata/ell.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/ell.traineddata",
           "sourcePath": "ell.traineddata",
@@ -3072,7 +3072,7 @@
       "files": [
         {
           "name": "eng.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 4113088,
           "installPath": "tesseract/tessdata/eng.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/eng.traineddata",
           "sourcePath": "eng.traineddata",
@@ -3088,7 +3088,7 @@
       "files": [
         {
           "name": "spa.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2294433,
           "installPath": "tesseract/tessdata/spa.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/spa.traineddata",
           "sourcePath": "spa.traineddata",
@@ -3106,7 +3106,7 @@
       "files": [
         {
           "name": "est.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 4458101,
           "installPath": "tesseract/tessdata/est.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/est.traineddata",
           "sourcePath": "est.traineddata",
@@ -3124,7 +3124,7 @@
       "files": [
         {
           "name": "fas.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 431500,
           "installPath": "tesseract/tessdata/fas.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/fas.traineddata",
           "sourcePath": "fas.traineddata",
@@ -3142,7 +3142,7 @@
       "files": [
         {
           "name": "fin.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 7865732,
           "installPath": "tesseract/tessdata/fin.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/fin.traineddata",
           "sourcePath": "fin.traineddata",
@@ -3160,7 +3160,7 @@
       "files": [
         {
           "name": "fra.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1130365,
           "installPath": "tesseract/tessdata/fra.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/fra.traineddata",
           "sourcePath": "fra.traineddata",
@@ -3178,7 +3178,7 @@
       "files": [
         {
           "name": "guj.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1418394,
           "installPath": "tesseract/tessdata/guj.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/guj.traineddata",
           "sourcePath": "guj.traineddata",
@@ -3196,7 +3196,7 @@
       "files": [
         {
           "name": "heb.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 961404,
           "installPath": "tesseract/tessdata/heb.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/heb.traineddata",
           "sourcePath": "heb.traineddata",
@@ -3214,7 +3214,7 @@
       "files": [
         {
           "name": "hin.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1122751,
           "installPath": "tesseract/tessdata/hin.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/hin.traineddata",
           "sourcePath": "hin.traineddata",
@@ -3232,7 +3232,7 @@
       "files": [
         {
           "name": "hrv.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 4103348,
           "installPath": "tesseract/tessdata/hrv.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/hrv.traineddata",
           "sourcePath": "hrv.traineddata",
@@ -3250,7 +3250,7 @@
       "files": [
         {
           "name": "hun.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 5296273,
           "installPath": "tesseract/tessdata/hun.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/hun.traineddata",
           "sourcePath": "hun.traineddata",
@@ -3268,7 +3268,7 @@
       "files": [
         {
           "name": "ind.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1122661,
           "installPath": "tesseract/tessdata/ind.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/ind.traineddata",
           "sourcePath": "ind.traineddata",
@@ -3286,7 +3286,7 @@
       "files": [
         {
           "name": "isl.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2278973,
           "installPath": "tesseract/tessdata/isl.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/isl.traineddata",
           "sourcePath": "isl.traineddata",
@@ -3304,7 +3304,7 @@
       "files": [
         {
           "name": "ita.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2701314,
           "installPath": "tesseract/tessdata/ita.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/ita.traineddata",
           "sourcePath": "ita.traineddata",
@@ -3346,7 +3346,7 @@
       "files": [
         {
           "name": "kan.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3608331,
           "installPath": "tesseract/tessdata/kan.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/kan.traineddata",
           "sourcePath": "kan.traineddata",
@@ -3364,7 +3364,7 @@
       "files": [
         {
           "name": "kor.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1677415,
           "installPath": "tesseract/tessdata/kor.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/kor.traineddata",
           "sourcePath": "kor.traineddata",
@@ -3382,7 +3382,7 @@
       "files": [
         {
           "name": "lit.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3154896,
           "installPath": "tesseract/tessdata/lit.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/lit.traineddata",
           "sourcePath": "lit.traineddata",
@@ -3400,7 +3400,7 @@
       "files": [
         {
           "name": "lav.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2717247,
           "installPath": "tesseract/tessdata/lav.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/lav.traineddata",
           "sourcePath": "lav.traineddata",
@@ -3418,7 +3418,7 @@
       "files": [
         {
           "name": "mal.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 5275996,
           "installPath": "tesseract/tessdata/mal.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/mal.traineddata",
           "sourcePath": "mal.traineddata",
@@ -3436,7 +3436,7 @@
       "files": [
         {
           "name": "msa.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1747801,
           "installPath": "tesseract/tessdata/msa.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/msa.traineddata",
           "sourcePath": "msa.traineddata",
@@ -3454,7 +3454,7 @@
       "files": [
         {
           "name": "nor.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3610079,
           "installPath": "tesseract/tessdata/nor.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/nor.traineddata",
           "sourcePath": "nor.traineddata",
@@ -3472,7 +3472,7 @@
       "files": [
         {
           "name": "nld.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 6050296,
           "installPath": "tesseract/tessdata/nld.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/nld.traineddata",
           "sourcePath": "nld.traineddata",
@@ -3490,7 +3490,7 @@
       "files": [
         {
           "name": "nor.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3610079,
           "installPath": "tesseract/tessdata/nor.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/nor.traineddata",
           "sourcePath": "nor.traineddata",
@@ -3508,7 +3508,7 @@
       "files": [
         {
           "name": "nor.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3610079,
           "installPath": "tesseract/tessdata/nor.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/nor.traineddata",
           "sourcePath": "nor.traineddata",
@@ -3526,7 +3526,7 @@
       "files": [
         {
           "name": "pol.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 4765518,
           "installPath": "tesseract/tessdata/pol.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/pol.traineddata",
           "sourcePath": "pol.traineddata",
@@ -3544,7 +3544,7 @@
       "files": [
         {
           "name": "por.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1982756,
           "installPath": "tesseract/tessdata/por.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/por.traineddata",
           "sourcePath": "por.traineddata",
@@ -3562,7 +3562,7 @@
       "files": [
         {
           "name": "ron.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2376323,
           "installPath": "tesseract/tessdata/ron.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/ron.traineddata",
           "sourcePath": "ron.traineddata",
@@ -3580,7 +3580,7 @@
       "files": [
         {
           "name": "rus.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3861738,
           "installPath": "tesseract/tessdata/rus.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/rus.traineddata",
           "sourcePath": "rus.traineddata",
@@ -3598,7 +3598,7 @@
       "files": [
         {
           "name": "slk.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 4427661,
           "installPath": "tesseract/tessdata/slk.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/slk.traineddata",
           "sourcePath": "slk.traineddata",
@@ -3616,7 +3616,7 @@
       "files": [
         {
           "name": "slv.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3003829,
           "installPath": "tesseract/tessdata/slv.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/slv.traineddata",
           "sourcePath": "slv.traineddata",
@@ -3634,7 +3634,7 @@
       "files": [
         {
           "name": "sqi.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1874705,
           "installPath": "tesseract/tessdata/sqi.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/sqi.traineddata",
           "sourcePath": "sqi.traineddata",
@@ -3652,7 +3652,7 @@
       "files": [
         {
           "name": "srp.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2149931,
           "installPath": "tesseract/tessdata/srp.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/srp.traineddata",
           "sourcePath": "srp.traineddata",
@@ -3670,7 +3670,7 @@
       "files": [
         {
           "name": "swe.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 4167034,
           "installPath": "tesseract/tessdata/swe.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/swe.traineddata",
           "sourcePath": "swe.traineddata",
@@ -3688,7 +3688,7 @@
       "files": [
         {
           "name": "tam.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3237963,
           "installPath": "tesseract/tessdata/tam.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/tam.traineddata",
           "sourcePath": "tam.traineddata",
@@ -3706,7 +3706,7 @@
       "files": [
         {
           "name": "tel.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2769654,
           "installPath": "tesseract/tessdata/tel.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/tel.traineddata",
           "sourcePath": "tel.traineddata",
@@ -3724,7 +3724,7 @@
       "files": [
         {
           "name": "tha.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 1072600,
           "installPath": "tesseract/tessdata/tha.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/tha.traineddata",
           "sourcePath": "tha.traineddata",
@@ -3742,7 +3742,7 @@
       "files": [
         {
           "name": "tur.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 4550554,
           "installPath": "tesseract/tessdata/tur.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/tur.traineddata",
           "sourcePath": "tur.traineddata",
@@ -3760,7 +3760,7 @@
       "files": [
         {
           "name": "ukr.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 3825102,
           "installPath": "tesseract/tessdata/ukr.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/ukr.traineddata",
           "sourcePath": "ukr.traineddata",
@@ -3778,7 +3778,7 @@
       "files": [
         {
           "name": "vie.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 531275,
           "installPath": "tesseract/tessdata/vie.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/vie.traineddata",
           "sourcePath": "vie.traineddata",
@@ -3796,7 +3796,7 @@
       "files": [
         {
           "name": "chi_sim.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2469156,
           "installPath": "tesseract/tessdata/chi_sim.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/chi_sim.traineddata",
           "sourcePath": "chi_sim.traineddata",
@@ -3814,7 +3814,7 @@
       "files": [
         {
           "name": "chi_tra.traineddata",
-          "sizeBytes": 0,
+          "sizeBytes": 2366642,
           "installPath": "tesseract/tessdata/chi_tra.traineddata",
           "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main/chi_tra.traineddata",
           "sourcePath": "chi_tra.traineddata",
@@ -3832,7 +3832,7 @@
       "files": [
         {
           "name": "mucab.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 6967556,
           "installPath": "bin/mucab.bin",
           "url": "https://offline-translator.davidv.dev/dictionaries/extra/mucab.bin",
           "sourcePath": "extra/mucab.bin",
@@ -3848,7 +3848,7 @@
       "files": [
         {
           "name": "model.aren.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23224456,
           "installPath": "bin/model.aren.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ar-en/retrain_base-memory_X9fDxFreTOCslPKzb1CXTg/exported/model.aren.intgemm.alphas.bin.gz",
           "sourcePath": "models/ar-en/retrain_base-memory_X9fDxFreTOCslPKzb1CXTg/exported/model.aren.intgemm.alphas.bin.gz",
@@ -3856,7 +3856,7 @@
         },
         {
           "name": "vocab.aren.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 416700,
           "installPath": "bin/vocab.aren.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ar-en/retrain_base-memory_X9fDxFreTOCslPKzb1CXTg/exported/vocab.aren.spm.gz",
           "sourcePath": "models/ar-en/retrain_base-memory_X9fDxFreTOCslPKzb1CXTg/exported/vocab.aren.spm.gz",
@@ -3864,7 +3864,7 @@
         },
         {
           "name": "lex.50.50.aren.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2259861,
           "installPath": "bin/lex.50.50.aren.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ar-en/retrain_base-memory_X9fDxFreTOCslPKzb1CXTg/exported/lex.50.50.aren.s2t.bin.gz",
           "sourcePath": "models/ar-en/retrain_base-memory_X9fDxFreTOCslPKzb1CXTg/exported/lex.50.50.aren.s2t.bin.gz",
@@ -3880,7 +3880,7 @@
       "files": [
         {
           "name": "model.azen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12740106,
           "installPath": "bin/model.azen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/az-en/h1-2025_Tm4nvtoLQnakAWSGhBZ-eA/exported/model.azen.intgemm.alphas.bin.gz",
           "sourcePath": "models/az-en/h1-2025_Tm4nvtoLQnakAWSGhBZ-eA/exported/model.azen.intgemm.alphas.bin.gz",
@@ -3888,7 +3888,7 @@
         },
         {
           "name": "vocab.azen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 418965,
           "installPath": "bin/vocab.azen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/az-en/h1-2025_Tm4nvtoLQnakAWSGhBZ-eA/exported/vocab.azen.spm.gz",
           "sourcePath": "models/az-en/h1-2025_Tm4nvtoLQnakAWSGhBZ-eA/exported/vocab.azen.spm.gz",
@@ -3896,7 +3896,7 @@
         },
         {
           "name": "lex.50.50.azen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2267101,
           "installPath": "bin/lex.50.50.azen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/az-en/h1-2025_Tm4nvtoLQnakAWSGhBZ-eA/exported/lex.50.50.azen.s2t.bin.gz",
           "sourcePath": "models/az-en/h1-2025_Tm4nvtoLQnakAWSGhBZ-eA/exported/lex.50.50.azen.s2t.bin.gz",
@@ -3912,7 +3912,7 @@
       "files": [
         {
           "name": "model.been.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12413897,
           "installPath": "bin/model.been.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/be-en/h1-2025_ARgOSPOSRVmOWTwFvRVOjA/exported/model.been.intgemm.alphas.bin.gz",
           "sourcePath": "models/be-en/h1-2025_ARgOSPOSRVmOWTwFvRVOjA/exported/model.been.intgemm.alphas.bin.gz",
@@ -3920,7 +3920,7 @@
         },
         {
           "name": "vocab.been.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 435364,
           "installPath": "bin/vocab.been.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/be-en/h1-2025_ARgOSPOSRVmOWTwFvRVOjA/exported/vocab.been.spm.gz",
           "sourcePath": "models/be-en/h1-2025_ARgOSPOSRVmOWTwFvRVOjA/exported/vocab.been.spm.gz",
@@ -3928,7 +3928,7 @@
         },
         {
           "name": "lex.50.50.been.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2197076,
           "installPath": "bin/lex.50.50.been.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/be-en/h1-2025_ARgOSPOSRVmOWTwFvRVOjA/exported/lex.50.50.been.s2t.bin.gz",
           "sourcePath": "models/be-en/h1-2025_ARgOSPOSRVmOWTwFvRVOjA/exported/lex.50.50.been.s2t.bin.gz",
@@ -3944,7 +3944,7 @@
       "files": [
         {
           "name": "model.bgen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22399269,
           "installPath": "bin/model.bgen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/bg-en/retrain_hr_WvwHu4k6TgmJ2YTvL4Mu2g/exported/model.bgen.intgemm.alphas.bin.gz",
           "sourcePath": "models/bg-en/retrain_hr_WvwHu4k6TgmJ2YTvL4Mu2g/exported/model.bgen.intgemm.alphas.bin.gz",
@@ -3952,7 +3952,7 @@
         },
         {
           "name": "vocab.bgen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 434940,
           "installPath": "bin/vocab.bgen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/bg-en/retrain_hr_WvwHu4k6TgmJ2YTvL4Mu2g/exported/vocab.bgen.spm.gz",
           "sourcePath": "models/bg-en/retrain_hr_WvwHu4k6TgmJ2YTvL4Mu2g/exported/vocab.bgen.spm.gz",
@@ -3960,7 +3960,7 @@
         },
         {
           "name": "lex.50.50.bgen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2187053,
           "installPath": "bin/lex.50.50.bgen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/bg-en/retrain_hr_WvwHu4k6TgmJ2YTvL4Mu2g/exported/lex.50.50.bgen.s2t.bin.gz",
           "sourcePath": "models/bg-en/retrain_hr_WvwHu4k6TgmJ2YTvL4Mu2g/exported/lex.50.50.bgen.s2t.bin.gz",
@@ -3976,7 +3976,7 @@
       "files": [
         {
           "name": "model.bnen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12665857,
           "installPath": "bin/model.bnen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/bn-en/h1-2025_XcpBlhA1SyOJCH2UzoIMyQ/exported/model.bnen.intgemm.alphas.bin.gz",
           "sourcePath": "models/bn-en/h1-2025_XcpBlhA1SyOJCH2UzoIMyQ/exported/model.bnen.intgemm.alphas.bin.gz",
@@ -3984,7 +3984,7 @@
         },
         {
           "name": "vocab.bnen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 437571,
           "installPath": "bin/vocab.bnen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/bn-en/h1-2025_XcpBlhA1SyOJCH2UzoIMyQ/exported/vocab.bnen.spm.gz",
           "sourcePath": "models/bn-en/h1-2025_XcpBlhA1SyOJCH2UzoIMyQ/exported/vocab.bnen.spm.gz",
@@ -3992,7 +3992,7 @@
         },
         {
           "name": "lex.50.50.bnen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2264284,
           "installPath": "bin/lex.50.50.bnen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/bn-en/h1-2025_XcpBlhA1SyOJCH2UzoIMyQ/exported/lex.50.50.bnen.s2t.bin.gz",
           "sourcePath": "models/bn-en/h1-2025_XcpBlhA1SyOJCH2UzoIMyQ/exported/lex.50.50.bnen.s2t.bin.gz",
@@ -4008,7 +4008,7 @@
       "files": [
         {
           "name": "model.bsen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13415215,
           "installPath": "bin/model.bsen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/bs-en/spring-2024_ArlZLOUDTlqbe5WcnWGt_A/exported/model.bsen.intgemm.alphas.bin.gz",
           "sourcePath": "models/bs-en/spring-2024_ArlZLOUDTlqbe5WcnWGt_A/exported/model.bsen.intgemm.alphas.bin.gz",
@@ -4016,7 +4016,7 @@
         },
         {
           "name": "vocab.bsen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 396913,
           "installPath": "bin/vocab.bsen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/bs-en/spring-2024_ArlZLOUDTlqbe5WcnWGt_A/exported/vocab.bsen.spm.gz",
           "sourcePath": "models/bs-en/spring-2024_ArlZLOUDTlqbe5WcnWGt_A/exported/vocab.bsen.spm.gz",
@@ -4024,7 +4024,7 @@
         },
         {
           "name": "lex.50.50.bsen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1426937,
           "installPath": "bin/lex.50.50.bsen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/bs-en/spring-2024_ArlZLOUDTlqbe5WcnWGt_A/exported/lex.50.50.bsen.s2t.bin.gz",
           "sourcePath": "models/bs-en/spring-2024_ArlZLOUDTlqbe5WcnWGt_A/exported/lex.50.50.bsen.s2t.bin.gz",
@@ -4040,7 +4040,7 @@
       "files": [
         {
           "name": "model.caen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22787743,
           "installPath": "bin/model.caen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ca-en/target-side-dedup_xxxxxxxxRxSxxxxxxxxxxA/exported/model.caen.intgemm.alphas.bin.gz",
           "sourcePath": "models/ca-en/target-side-dedup_xxxxxxxxRxSxxxxxxxxxxA/exported/model.caen.intgemm.alphas.bin.gz",
@@ -4048,7 +4048,7 @@
         },
         {
           "name": "vocab.caen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409662,
           "installPath": "bin/vocab.caen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ca-en/target-side-dedup_xxxxxxxxRxSxxxxxxxxxxA/exported/vocab.caen.spm.gz",
           "sourcePath": "models/ca-en/target-side-dedup_xxxxxxxxRxSxxxxxxxxxxA/exported/vocab.caen.spm.gz",
@@ -4056,7 +4056,7 @@
         },
         {
           "name": "lex.50.50.caen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2257590,
           "installPath": "bin/lex.50.50.caen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ca-en/target-side-dedup_xxxxxxxxRxSxxxxxxxxxxA/exported/lex.50.50.caen.s2t.bin.gz",
           "sourcePath": "models/ca-en/target-side-dedup_xxxxxxxxRxSxxxxxxxxxxA/exported/lex.50.50.caen.s2t.bin.gz",
@@ -4072,7 +4072,7 @@
       "files": [
         {
           "name": "model.csen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22830296,
           "installPath": "bin/model.csen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/cs-en/retrain_hr_EwWhUov8TP6D_oolATvbUA/exported/model.csen.intgemm.alphas.bin.gz",
           "sourcePath": "models/cs-en/retrain_hr_EwWhUov8TP6D_oolATvbUA/exported/model.csen.intgemm.alphas.bin.gz",
@@ -4080,7 +4080,7 @@
         },
         {
           "name": "vocab.csen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 412691,
           "installPath": "bin/vocab.csen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/cs-en/retrain_hr_EwWhUov8TP6D_oolATvbUA/exported/vocab.csen.spm.gz",
           "sourcePath": "models/cs-en/retrain_hr_EwWhUov8TP6D_oolATvbUA/exported/vocab.csen.spm.gz",
@@ -4088,7 +4088,7 @@
         },
         {
           "name": "lex.50.50.csen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2493702,
           "installPath": "bin/lex.50.50.csen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/cs-en/retrain_hr_EwWhUov8TP6D_oolATvbUA/exported/lex.50.50.csen.s2t.bin.gz",
           "sourcePath": "models/cs-en/retrain_hr_EwWhUov8TP6D_oolATvbUA/exported/lex.50.50.csen.s2t.bin.gz",
@@ -4104,7 +4104,7 @@
       "files": [
         {
           "name": "model.daen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12525769,
           "installPath": "bin/model.daen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/da-en/spring-2024_U1vVpsWWT-K4L9pRfP1K1g/exported/model.daen.intgemm.alphas.bin.gz",
           "sourcePath": "models/da-en/spring-2024_U1vVpsWWT-K4L9pRfP1K1g/exported/model.daen.intgemm.alphas.bin.gz",
@@ -4112,7 +4112,7 @@
         },
         {
           "name": "vocab.daen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 399344,
           "installPath": "bin/vocab.daen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/da-en/spring-2024_U1vVpsWWT-K4L9pRfP1K1g/exported/vocab.daen.spm.gz",
           "sourcePath": "models/da-en/spring-2024_U1vVpsWWT-K4L9pRfP1K1g/exported/vocab.daen.spm.gz",
@@ -4120,7 +4120,7 @@
         },
         {
           "name": "lex.50.50.daen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2170970,
           "installPath": "bin/lex.50.50.daen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/da-en/spring-2024_U1vVpsWWT-K4L9pRfP1K1g/exported/lex.50.50.daen.s2t.bin.gz",
           "sourcePath": "models/da-en/spring-2024_U1vVpsWWT-K4L9pRfP1K1g/exported/lex.50.50.daen.s2t.bin.gz",
@@ -4136,7 +4136,7 @@
       "files": [
         {
           "name": "model.deen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22403755,
           "installPath": "bin/model.deen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/de-en/retrain_hr2_WZOW24i4QJmIib61LeHfwg/exported/model.deen.intgemm.alphas.bin.gz",
           "sourcePath": "models/de-en/retrain_hr2_WZOW24i4QJmIib61LeHfwg/exported/model.deen.intgemm.alphas.bin.gz",
@@ -4144,7 +4144,7 @@
         },
         {
           "name": "vocab.deen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 413879,
           "installPath": "bin/vocab.deen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/de-en/retrain_hr2_WZOW24i4QJmIib61LeHfwg/exported/vocab.deen.spm.gz",
           "sourcePath": "models/de-en/retrain_hr2_WZOW24i4QJmIib61LeHfwg/exported/vocab.deen.spm.gz",
@@ -4152,7 +4152,7 @@
         },
         {
           "name": "lex.50.50.deen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2626658,
           "installPath": "bin/lex.50.50.deen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/de-en/retrain_hr2_WZOW24i4QJmIib61LeHfwg/exported/lex.50.50.deen.s2t.bin.gz",
           "sourcePath": "models/de-en/retrain_hr2_WZOW24i4QJmIib61LeHfwg/exported/lex.50.50.deen.s2t.bin.gz",
@@ -4168,7 +4168,7 @@
       "files": [
         {
           "name": "model.elen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12696541,
           "installPath": "bin/model.elen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/el-en/spring-2024_RJucgx7LRMKB9E4oSSzdtA/exported/model.elen.intgemm.alphas.bin.gz",
           "sourcePath": "models/el-en/spring-2024_RJucgx7LRMKB9E4oSSzdtA/exported/model.elen.intgemm.alphas.bin.gz",
@@ -4176,7 +4176,7 @@
         },
         {
           "name": "vocab.elen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 419174,
           "installPath": "bin/vocab.elen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/el-en/spring-2024_RJucgx7LRMKB9E4oSSzdtA/exported/vocab.elen.spm.gz",
           "sourcePath": "models/el-en/spring-2024_RJucgx7LRMKB9E4oSSzdtA/exported/vocab.elen.spm.gz",
@@ -4184,7 +4184,7 @@
         },
         {
           "name": "lex.50.50.elen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1851246,
           "installPath": "bin/lex.50.50.elen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/el-en/spring-2024_RJucgx7LRMKB9E4oSSzdtA/exported/lex.50.50.elen.s2t.bin.gz",
           "sourcePath": "models/el-en/spring-2024_RJucgx7LRMKB9E4oSSzdtA/exported/lex.50.50.elen.s2t.bin.gz",
@@ -4200,7 +4200,7 @@
       "files": [
         {
           "name": "model.enar.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22857819,
           "installPath": "bin/model.enar.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ar/retrain_base-memory_G3CmhwG_TZext3cys-udHg/exported/model.enar.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-ar/retrain_base-memory_G3CmhwG_TZext3cys-udHg/exported/model.enar.intgemm.alphas.bin.gz",
@@ -4208,7 +4208,7 @@
         },
         {
           "name": "vocab.enar.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 418930,
           "installPath": "bin/vocab.enar.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ar/retrain_base-memory_G3CmhwG_TZext3cys-udHg/exported/vocab.enar.spm.gz",
           "sourcePath": "models/en-ar/retrain_base-memory_G3CmhwG_TZext3cys-udHg/exported/vocab.enar.spm.gz",
@@ -4216,7 +4216,7 @@
         },
         {
           "name": "lex.50.50.enar.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1639219,
           "installPath": "bin/lex.50.50.enar.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ar/retrain_base-memory_G3CmhwG_TZext3cys-udHg/exported/lex.50.50.enar.s2t.bin.gz",
           "sourcePath": "models/en-ar/retrain_base-memory_G3CmhwG_TZext3cys-udHg/exported/lex.50.50.enar.s2t.bin.gz",
@@ -4232,7 +4232,7 @@
       "files": [
         {
           "name": "model.enaz.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13233108,
           "installPath": "bin/model.enaz.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-az/h1-2025_fu1HFuR0QY-zVBcKYQkJIA/exported/model.enaz.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-az/h1-2025_fu1HFuR0QY-zVBcKYQkJIA/exported/model.enaz.intgemm.alphas.bin.gz",
@@ -4240,7 +4240,7 @@
         },
         {
           "name": "vocab.enaz.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 418956,
           "installPath": "bin/vocab.enaz.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-az/h1-2025_fu1HFuR0QY-zVBcKYQkJIA/exported/vocab.enaz.spm.gz",
           "sourcePath": "models/en-az/h1-2025_fu1HFuR0QY-zVBcKYQkJIA/exported/vocab.enaz.spm.gz",
@@ -4248,7 +4248,7 @@
         },
         {
           "name": "lex.50.50.enaz.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1711544,
           "installPath": "bin/lex.50.50.enaz.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-az/h1-2025_fu1HFuR0QY-zVBcKYQkJIA/exported/lex.50.50.enaz.s2t.bin.gz",
           "sourcePath": "models/en-az/h1-2025_fu1HFuR0QY-zVBcKYQkJIA/exported/lex.50.50.enaz.s2t.bin.gz",
@@ -4264,7 +4264,7 @@
       "files": [
         {
           "name": "model.enbg.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23432015,
           "installPath": "bin/model.enbg.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-bg/retrain_hr_eAF9fkYRScmBmvvfdT4XWw/exported/model.enbg.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-bg/retrain_hr_eAF9fkYRScmBmvvfdT4XWw/exported/model.enbg.intgemm.alphas.bin.gz",
@@ -4272,7 +4272,7 @@
         },
         {
           "name": "vocab.enbg.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 434940,
           "installPath": "bin/vocab.enbg.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-bg/retrain_hr_eAF9fkYRScmBmvvfdT4XWw/exported/vocab.enbg.spm.gz",
           "sourcePath": "models/en-bg/retrain_hr_eAF9fkYRScmBmvvfdT4XWw/exported/vocab.enbg.spm.gz",
@@ -4280,7 +4280,7 @@
         },
         {
           "name": "lex.50.50.enbg.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1548577,
           "installPath": "bin/lex.50.50.enbg.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-bg/retrain_hr_eAF9fkYRScmBmvvfdT4XWw/exported/lex.50.50.enbg.s2t.bin.gz",
           "sourcePath": "models/en-bg/retrain_hr_eAF9fkYRScmBmvvfdT4XWw/exported/lex.50.50.enbg.s2t.bin.gz",
@@ -4296,7 +4296,7 @@
       "files": [
         {
           "name": "model.enbn.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12821521,
           "installPath": "bin/model.enbn.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-bn/h1-2025_TYlSskC_Sk6lBlfWRetXmg/exported/model.enbn.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-bn/h1-2025_TYlSskC_Sk6lBlfWRetXmg/exported/model.enbn.intgemm.alphas.bin.gz",
@@ -4304,7 +4304,7 @@
         },
         {
           "name": "vocab.enbn.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 437373,
           "installPath": "bin/vocab.enbn.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-bn/h1-2025_TYlSskC_Sk6lBlfWRetXmg/exported/vocab.enbn.spm.gz",
           "sourcePath": "models/en-bn/h1-2025_TYlSskC_Sk6lBlfWRetXmg/exported/vocab.enbn.spm.gz",
@@ -4312,7 +4312,7 @@
         },
         {
           "name": "lex.50.50.enbn.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1607697,
           "installPath": "bin/lex.50.50.enbn.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-bn/h1-2025_TYlSskC_Sk6lBlfWRetXmg/exported/lex.50.50.enbn.s2t.bin.gz",
           "sourcePath": "models/en-bn/h1-2025_TYlSskC_Sk6lBlfWRetXmg/exported/lex.50.50.enbn.s2t.bin.gz",
@@ -4328,7 +4328,7 @@
       "files": [
         {
           "name": "model.enbs.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22932779,
           "installPath": "bin/model.enbs.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-bs/hbs-topk10_HBBkp2ozSYaY9f7WVGRtpA/exported/model.enbs.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-bs/hbs-topk10_HBBkp2ozSYaY9f7WVGRtpA/exported/model.enbs.intgemm.alphas.bin.gz",
@@ -4336,7 +4336,7 @@
         },
         {
           "name": "vocab.enbs.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 412204,
           "installPath": "bin/vocab.enbs.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-bs/hbs-topk10_HBBkp2ozSYaY9f7WVGRtpA/exported/vocab.enbs.spm.gz",
           "sourcePath": "models/en-bs/hbs-topk10_HBBkp2ozSYaY9f7WVGRtpA/exported/vocab.enbs.spm.gz",
@@ -4344,7 +4344,7 @@
         },
         {
           "name": "lex.50.50.enbs.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1682912,
           "installPath": "bin/lex.50.50.enbs.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-bs/hbs-topk10_HBBkp2ozSYaY9f7WVGRtpA/exported/lex.50.50.enbs.s2t.bin.gz",
           "sourcePath": "models/en-bs/hbs-topk10_HBBkp2ozSYaY9f7WVGRtpA/exported/lex.50.50.enbs.s2t.bin.gz",
@@ -4360,7 +4360,7 @@
       "files": [
         {
           "name": "model.enca.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23174479,
           "installPath": "bin/model.enca.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ca/short-sentences_dqpjVFEaT2WLVB2nV0_H2g/exported/model.enca.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-ca/short-sentences_dqpjVFEaT2WLVB2nV0_H2g/exported/model.enca.intgemm.alphas.bin.gz",
@@ -4368,7 +4368,7 @@
         },
         {
           "name": "vocab.enca.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409866,
           "installPath": "bin/vocab.enca.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ca/short-sentences_dqpjVFEaT2WLVB2nV0_H2g/exported/vocab.enca.spm.gz",
           "sourcePath": "models/en-ca/short-sentences_dqpjVFEaT2WLVB2nV0_H2g/exported/vocab.enca.spm.gz",
@@ -4376,7 +4376,7 @@
         },
         {
           "name": "lex.50.50.enca.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2085904,
           "installPath": "bin/lex.50.50.enca.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ca/short-sentences_dqpjVFEaT2WLVB2nV0_H2g/exported/lex.50.50.enca.s2t.bin.gz",
           "sourcePath": "models/en-ca/short-sentences_dqpjVFEaT2WLVB2nV0_H2g/exported/lex.50.50.enca.s2t.bin.gz",
@@ -4392,7 +4392,7 @@
       "files": [
         {
           "name": "model.encs.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23192301,
           "installPath": "bin/model.encs.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-cs/retrain_hr_F_JF0vqvSjSwn3caQQcicA/exported/model.encs.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-cs/retrain_hr_F_JF0vqvSjSwn3caQQcicA/exported/model.encs.intgemm.alphas.bin.gz",
@@ -4400,7 +4400,7 @@
         },
         {
           "name": "vocab.encs.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 412691,
           "installPath": "bin/vocab.encs.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-cs/retrain_hr_F_JF0vqvSjSwn3caQQcicA/exported/vocab.encs.spm.gz",
           "sourcePath": "models/en-cs/retrain_hr_F_JF0vqvSjSwn3caQQcicA/exported/vocab.encs.spm.gz",
@@ -4408,7 +4408,7 @@
         },
         {
           "name": "lex.50.50.encs.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1896925,
           "installPath": "bin/lex.50.50.encs.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-cs/retrain_hr_F_JF0vqvSjSwn3caQQcicA/exported/lex.50.50.encs.s2t.bin.gz",
           "sourcePath": "models/en-cs/retrain_hr_F_JF0vqvSjSwn3caQQcicA/exported/lex.50.50.encs.s2t.bin.gz",
@@ -4424,7 +4424,7 @@
       "files": [
         {
           "name": "model.enda.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12723889,
           "installPath": "bin/model.enda.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-da/spring-2024_XUm0Ij8WSfabkKeKA_Xv_g/exported/model.enda.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-da/spring-2024_XUm0Ij8WSfabkKeKA_Xv_g/exported/model.enda.intgemm.alphas.bin.gz",
@@ -4432,7 +4432,7 @@
         },
         {
           "name": "vocab.enda.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 398818,
           "installPath": "bin/vocab.enda.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-da/spring-2024_XUm0Ij8WSfabkKeKA_Xv_g/exported/vocab.enda.spm.gz",
           "sourcePath": "models/en-da/spring-2024_XUm0Ij8WSfabkKeKA_Xv_g/exported/vocab.enda.spm.gz",
@@ -4440,7 +4440,7 @@
         },
         {
           "name": "lex.50.50.enda.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1582768,
           "installPath": "bin/lex.50.50.enda.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-da/spring-2024_XUm0Ij8WSfabkKeKA_Xv_g/exported/lex.50.50.enda.s2t.bin.gz",
           "sourcePath": "models/en-da/spring-2024_XUm0Ij8WSfabkKeKA_Xv_g/exported/lex.50.50.enda.s2t.bin.gz",
@@ -4456,7 +4456,7 @@
       "files": [
         {
           "name": "model.ende.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22992073,
           "installPath": "bin/model.ende.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-de/retrain_hr_fix_names_SCgGhxUPQ2WAECHLRtzrMg/exported/model.ende.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-de/retrain_hr_fix_names_SCgGhxUPQ2WAECHLRtzrMg/exported/model.ende.intgemm.alphas.bin.gz",
@@ -4464,7 +4464,7 @@
         },
         {
           "name": "vocab.ende.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 413879,
           "installPath": "bin/vocab.ende.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-de/retrain_hr_fix_names_SCgGhxUPQ2WAECHLRtzrMg/exported/vocab.ende.spm.gz",
           "sourcePath": "models/en-de/retrain_hr_fix_names_SCgGhxUPQ2WAECHLRtzrMg/exported/vocab.ende.spm.gz",
@@ -4472,7 +4472,7 @@
         },
         {
           "name": "lex.50.50.ende.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2314750,
           "installPath": "bin/lex.50.50.ende.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-de/retrain_hr_fix_names_SCgGhxUPQ2WAECHLRtzrMg/exported/lex.50.50.ende.s2t.bin.gz",
           "sourcePath": "models/en-de/retrain_hr_fix_names_SCgGhxUPQ2WAECHLRtzrMg/exported/lex.50.50.ende.s2t.bin.gz",
@@ -4488,7 +4488,7 @@
       "files": [
         {
           "name": "model.enel.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12808027,
           "installPath": "bin/model.enel.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-el/spring-2024_Y3ThG3XkTxG4ROUQK2LpVg/exported/model.enel.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-el/spring-2024_Y3ThG3XkTxG4ROUQK2LpVg/exported/model.enel.intgemm.alphas.bin.gz",
@@ -4496,7 +4496,7 @@
         },
         {
           "name": "vocab.enel.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 419275,
           "installPath": "bin/vocab.enel.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-el/spring-2024_Y3ThG3XkTxG4ROUQK2LpVg/exported/vocab.enel.spm.gz",
           "sourcePath": "models/en-el/spring-2024_Y3ThG3XkTxG4ROUQK2LpVg/exported/vocab.enel.spm.gz",
@@ -4504,7 +4504,7 @@
         },
         {
           "name": "lex.50.50.enel.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1352643,
           "installPath": "bin/lex.50.50.enel.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-el/spring-2024_Y3ThG3XkTxG4ROUQK2LpVg/exported/lex.50.50.enel.s2t.bin.gz",
           "sourcePath": "models/en-el/spring-2024_Y3ThG3XkTxG4ROUQK2LpVg/exported/lex.50.50.enel.s2t.bin.gz",
@@ -4520,7 +4520,7 @@
       "files": [
         {
           "name": "model.enes.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22698792,
           "installPath": "bin/model.enes.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-es/retrain_hr_fix_names_CUAEXUHoQum_cFqh-ZAryw/exported/model.enes.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-es/retrain_hr_fix_names_CUAEXUHoQum_cFqh-ZAryw/exported/model.enes.intgemm.alphas.bin.gz",
@@ -4528,7 +4528,7 @@
         },
         {
           "name": "vocab.enes.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409312,
           "installPath": "bin/vocab.enes.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-es/retrain_hr_fix_names_CUAEXUHoQum_cFqh-ZAryw/exported/vocab.enes.spm.gz",
           "sourcePath": "models/en-es/retrain_hr_fix_names_CUAEXUHoQum_cFqh-ZAryw/exported/vocab.enes.spm.gz",
@@ -4536,7 +4536,7 @@
         },
         {
           "name": "lex.50.50.enes.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2265250,
           "installPath": "bin/lex.50.50.enes.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-es/retrain_hr_fix_names_CUAEXUHoQum_cFqh-ZAryw/exported/lex.50.50.enes.s2t.bin.gz",
           "sourcePath": "models/en-es/retrain_hr_fix_names_CUAEXUHoQum_cFqh-ZAryw/exported/lex.50.50.enes.s2t.bin.gz",
@@ -4552,7 +4552,7 @@
       "files": [
         {
           "name": "model.enet.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22951751,
           "installPath": "bin/model.enet.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-et/retrain_hr_GubU3EaMRY2VkR8p1dPUNw/exported/model.enet.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-et/retrain_hr_GubU3EaMRY2VkR8p1dPUNw/exported/model.enet.intgemm.alphas.bin.gz",
@@ -4560,7 +4560,7 @@
         },
         {
           "name": "vocab.enet.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 414262,
           "installPath": "bin/vocab.enet.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-et/retrain_hr_GubU3EaMRY2VkR8p1dPUNw/exported/vocab.enet.spm.gz",
           "sourcePath": "models/en-et/retrain_hr_GubU3EaMRY2VkR8p1dPUNw/exported/vocab.enet.spm.gz",
@@ -4568,7 +4568,7 @@
         },
         {
           "name": "lex.50.50.enet.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1865410,
           "installPath": "bin/lex.50.50.enet.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-et/retrain_hr_GubU3EaMRY2VkR8p1dPUNw/exported/lex.50.50.enet.s2t.bin.gz",
           "sourcePath": "models/en-et/retrain_hr_GubU3EaMRY2VkR8p1dPUNw/exported/lex.50.50.enet.s2t.bin.gz",
@@ -4584,7 +4584,7 @@
       "files": [
         {
           "name": "model.enfa.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13058508,
           "installPath": "bin/model.enfa.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-fa/h1-2025_c_TYU1BOTByxOnnkAunO7g/exported/model.enfa.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-fa/h1-2025_c_TYU1BOTByxOnnkAunO7g/exported/model.enfa.intgemm.alphas.bin.gz",
@@ -4592,7 +4592,7 @@
         },
         {
           "name": "vocab.enfa.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 416223,
           "installPath": "bin/vocab.enfa.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-fa/h1-2025_c_TYU1BOTByxOnnkAunO7g/exported/vocab.enfa.spm.gz",
           "sourcePath": "models/en-fa/h1-2025_c_TYU1BOTByxOnnkAunO7g/exported/vocab.enfa.spm.gz",
@@ -4600,7 +4600,7 @@
         },
         {
           "name": "lex.50.50.enfa.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1728367,
           "installPath": "bin/lex.50.50.enfa.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-fa/h1-2025_c_TYU1BOTByxOnnkAunO7g/exported/lex.50.50.enfa.s2t.bin.gz",
           "sourcePath": "models/en-fa/h1-2025_c_TYU1BOTByxOnnkAunO7g/exported/lex.50.50.enfa.s2t.bin.gz",
@@ -4616,7 +4616,7 @@
       "files": [
         {
           "name": "model.enfi.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22580027,
           "installPath": "bin/model.enfi.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-fi/retrain_hr_b45LsGaNQFyDRhHAvBbKrA/exported/model.enfi.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-fi/retrain_hr_b45LsGaNQFyDRhHAvBbKrA/exported/model.enfi.intgemm.alphas.bin.gz",
@@ -4624,7 +4624,7 @@
         },
         {
           "name": "vocab.enfi.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 414280,
           "installPath": "bin/vocab.enfi.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-fi/retrain_hr_b45LsGaNQFyDRhHAvBbKrA/exported/vocab.enfi.spm.gz",
           "sourcePath": "models/en-fi/retrain_hr_b45LsGaNQFyDRhHAvBbKrA/exported/vocab.enfi.spm.gz",
@@ -4632,7 +4632,7 @@
         },
         {
           "name": "lex.50.50.enfi.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1875557,
           "installPath": "bin/lex.50.50.enfi.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-fi/retrain_hr_b45LsGaNQFyDRhHAvBbKrA/exported/lex.50.50.enfi.s2t.bin.gz",
           "sourcePath": "models/en-fi/retrain_hr_b45LsGaNQFyDRhHAvBbKrA/exported/lex.50.50.enfi.s2t.bin.gz",
@@ -4648,7 +4648,7 @@
       "files": [
         {
           "name": "model.enfr.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23045432,
           "installPath": "bin/model.enfr.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-fr/retrain_hr_NLIxDbE1TBGyOTI-zwZagw/exported/model.enfr.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-fr/retrain_hr_NLIxDbE1TBGyOTI-zwZagw/exported/model.enfr.intgemm.alphas.bin.gz",
@@ -4656,7 +4656,7 @@
         },
         {
           "name": "vocab.enfr.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409706,
           "installPath": "bin/vocab.enfr.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-fr/retrain_hr_NLIxDbE1TBGyOTI-zwZagw/exported/vocab.enfr.spm.gz",
           "sourcePath": "models/en-fr/retrain_hr_NLIxDbE1TBGyOTI-zwZagw/exported/vocab.enfr.spm.gz",
@@ -4664,7 +4664,7 @@
         },
         {
           "name": "lex.50.50.enfr.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2297334,
           "installPath": "bin/lex.50.50.enfr.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-fr/retrain_hr_NLIxDbE1TBGyOTI-zwZagw/exported/lex.50.50.enfr.s2t.bin.gz",
           "sourcePath": "models/en-fr/retrain_hr_NLIxDbE1TBGyOTI-zwZagw/exported/lex.50.50.enfr.s2t.bin.gz",
@@ -4680,7 +4680,7 @@
       "files": [
         {
           "name": "model.engu.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12657911,
           "installPath": "bin/model.engu.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-gu/h1-2025_Na2-WpCIR1Sdy17l-XDeLA/exported/model.engu.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-gu/h1-2025_Na2-WpCIR1Sdy17l-XDeLA/exported/model.engu.intgemm.alphas.bin.gz",
@@ -4688,7 +4688,7 @@
         },
         {
           "name": "vocab.engu.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 434881,
           "installPath": "bin/vocab.engu.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-gu/h1-2025_Na2-WpCIR1Sdy17l-XDeLA/exported/vocab.engu.spm.gz",
           "sourcePath": "models/en-gu/h1-2025_Na2-WpCIR1Sdy17l-XDeLA/exported/vocab.engu.spm.gz",
@@ -4696,7 +4696,7 @@
         },
         {
           "name": "lex.50.50.engu.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1529098,
           "installPath": "bin/lex.50.50.engu.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-gu/h1-2025_Na2-WpCIR1Sdy17l-XDeLA/exported/lex.50.50.engu.s2t.bin.gz",
           "sourcePath": "models/en-gu/h1-2025_Na2-WpCIR1Sdy17l-XDeLA/exported/lex.50.50.engu.s2t.bin.gz",
@@ -4712,7 +4712,7 @@
       "files": [
         {
           "name": "model.enhe.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12979964,
           "installPath": "bin/model.enhe.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-he/h1-2025_QtanzRiDRISacRVw4WzWYQ/exported/model.enhe.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-he/h1-2025_QtanzRiDRISacRVw4WzWYQ/exported/model.enhe.intgemm.alphas.bin.gz",
@@ -4720,7 +4720,7 @@
         },
         {
           "name": "vocab.enhe.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 411686,
           "installPath": "bin/vocab.enhe.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-he/h1-2025_QtanzRiDRISacRVw4WzWYQ/exported/vocab.enhe.spm.gz",
           "sourcePath": "models/en-he/h1-2025_QtanzRiDRISacRVw4WzWYQ/exported/vocab.enhe.spm.gz",
@@ -4728,7 +4728,7 @@
         },
         {
           "name": "lex.50.50.enhe.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1567190,
           "installPath": "bin/lex.50.50.enhe.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-he/h1-2025_QtanzRiDRISacRVw4WzWYQ/exported/lex.50.50.enhe.s2t.bin.gz",
           "sourcePath": "models/en-he/h1-2025_QtanzRiDRISacRVw4WzWYQ/exported/lex.50.50.enhe.s2t.bin.gz",
@@ -4744,7 +4744,7 @@
       "files": [
         {
           "name": "model.enhi.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12736263,
           "installPath": "bin/model.enhi.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-hi/h1-2025_KoJuCNf_Q42R2Bz6j2jlOQ/exported/model.enhi.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-hi/h1-2025_KoJuCNf_Q42R2Bz6j2jlOQ/exported/model.enhi.intgemm.alphas.bin.gz",
@@ -4752,7 +4752,7 @@
         },
         {
           "name": "vocab.enhi.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 430026,
           "installPath": "bin/vocab.enhi.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-hi/h1-2025_KoJuCNf_Q42R2Bz6j2jlOQ/exported/vocab.enhi.spm.gz",
           "sourcePath": "models/en-hi/h1-2025_KoJuCNf_Q42R2Bz6j2jlOQ/exported/vocab.enhi.spm.gz",
@@ -4760,7 +4760,7 @@
         },
         {
           "name": "lex.50.50.enhi.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1690062,
           "installPath": "bin/lex.50.50.enhi.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-hi/h1-2025_KoJuCNf_Q42R2Bz6j2jlOQ/exported/lex.50.50.enhi.s2t.bin.gz",
           "sourcePath": "models/en-hi/h1-2025_KoJuCNf_Q42R2Bz6j2jlOQ/exported/lex.50.50.enhi.s2t.bin.gz",
@@ -4776,7 +4776,7 @@
       "files": [
         {
           "name": "model.enhr.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22758240,
           "installPath": "bin/model.enhr.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-hr/hbs-topk10_PLHJ-5OxSNyWlwZM12Kghw/exported/model.enhr.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-hr/hbs-topk10_PLHJ-5OxSNyWlwZM12Kghw/exported/model.enhr.intgemm.alphas.bin.gz",
@@ -4784,7 +4784,7 @@
         },
         {
           "name": "vocab.enhr.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 410897,
           "installPath": "bin/vocab.enhr.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-hr/hbs-topk10_PLHJ-5OxSNyWlwZM12Kghw/exported/vocab.enhr.spm.gz",
           "sourcePath": "models/en-hr/hbs-topk10_PLHJ-5OxSNyWlwZM12Kghw/exported/vocab.enhr.spm.gz",
@@ -4792,7 +4792,7 @@
         },
         {
           "name": "lex.50.50.enhr.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1713561,
           "installPath": "bin/lex.50.50.enhr.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-hr/hbs-topk10_PLHJ-5OxSNyWlwZM12Kghw/exported/lex.50.50.enhr.s2t.bin.gz",
           "sourcePath": "models/en-hr/hbs-topk10_PLHJ-5OxSNyWlwZM12Kghw/exported/lex.50.50.enhr.s2t.bin.gz",
@@ -4808,7 +4808,7 @@
       "files": [
         {
           "name": "model.enhu.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23710206,
           "installPath": "bin/model.enhu.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-hu/h1-2025_J8_9zNmQT2GfHg7_heOI_Q/exported/model.enhu.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-hu/h1-2025_J8_9zNmQT2GfHg7_heOI_Q/exported/model.enhu.intgemm.alphas.bin.gz",
@@ -4816,7 +4816,7 @@
         },
         {
           "name": "vocab.enhu.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 405720,
           "installPath": "bin/vocab.enhu.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-hu/h1-2025_J8_9zNmQT2GfHg7_heOI_Q/exported/vocab.enhu.spm.gz",
           "sourcePath": "models/en-hu/h1-2025_J8_9zNmQT2GfHg7_heOI_Q/exported/vocab.enhu.spm.gz",
@@ -4824,7 +4824,7 @@
         },
         {
           "name": "lex.50.50.enhu.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1768398,
           "installPath": "bin/lex.50.50.enhu.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-hu/h1-2025_J8_9zNmQT2GfHg7_heOI_Q/exported/lex.50.50.enhu.s2t.bin.gz",
           "sourcePath": "models/en-hu/h1-2025_J8_9zNmQT2GfHg7_heOI_Q/exported/lex.50.50.enhu.s2t.bin.gz",
@@ -4840,7 +4840,7 @@
       "files": [
         {
           "name": "model.enid.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12503257,
           "installPath": "bin/model.enid.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-id/spring-2024_bbjDBFoDTNGSUo2if3ET_A/exported/model.enid.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-id/spring-2024_bbjDBFoDTNGSUo2if3ET_A/exported/model.enid.intgemm.alphas.bin.gz",
@@ -4848,7 +4848,7 @@
         },
         {
           "name": "vocab.enid.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 379806,
           "installPath": "bin/vocab.enid.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-id/spring-2024_bbjDBFoDTNGSUo2if3ET_A/exported/vocab.enid.spm.gz",
           "sourcePath": "models/en-id/spring-2024_bbjDBFoDTNGSUo2if3ET_A/exported/vocab.enid.spm.gz",
@@ -4856,7 +4856,7 @@
         },
         {
           "name": "lex.50.50.enid.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1734565,
           "installPath": "bin/lex.50.50.enid.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-id/spring-2024_bbjDBFoDTNGSUo2if3ET_A/exported/lex.50.50.enid.s2t.bin.gz",
           "sourcePath": "models/en-id/spring-2024_bbjDBFoDTNGSUo2if3ET_A/exported/lex.50.50.enid.s2t.bin.gz",
@@ -4872,7 +4872,7 @@
       "files": [
         {
           "name": "model.enis.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22588003,
           "installPath": "bin/model.enis.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-is/docmt-vocab_EkZBaZqDS5Cce_lC2BpxlA/exported/model.enis.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-is/docmt-vocab_EkZBaZqDS5Cce_lC2BpxlA/exported/model.enis.intgemm.alphas.bin.gz",
@@ -4880,7 +4880,7 @@
         },
         {
           "name": "vocab.enis.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 413543,
           "installPath": "bin/vocab.enis.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-is/docmt-vocab_EkZBaZqDS5Cce_lC2BpxlA/exported/vocab.enis.spm.gz",
           "sourcePath": "models/en-is/docmt-vocab_EkZBaZqDS5Cce_lC2BpxlA/exported/vocab.enis.spm.gz",
@@ -4888,7 +4888,7 @@
         },
         {
           "name": "lex.50.50.enis.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1977789,
           "installPath": "bin/lex.50.50.enis.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-is/docmt-vocab_EkZBaZqDS5Cce_lC2BpxlA/exported/lex.50.50.enis.s2t.bin.gz",
           "sourcePath": "models/en-is/docmt-vocab_EkZBaZqDS5Cce_lC2BpxlA/exported/lex.50.50.enis.s2t.bin.gz",
@@ -4904,7 +4904,7 @@
       "files": [
         {
           "name": "model.enit.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23892889,
           "installPath": "bin/model.enit.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-it/retrain_hr_fix_names_GPSr_u8PSmC9fOx1ZDCHoA/exported/model.enit.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-it/retrain_hr_fix_names_GPSr_u8PSmC9fOx1ZDCHoA/exported/model.enit.intgemm.alphas.bin.gz",
@@ -4912,7 +4912,7 @@
         },
         {
           "name": "vocab.enit.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 407598,
           "installPath": "bin/vocab.enit.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-it/retrain_hr_fix_names_GPSr_u8PSmC9fOx1ZDCHoA/exported/vocab.enit.spm.gz",
           "sourcePath": "models/en-it/retrain_hr_fix_names_GPSr_u8PSmC9fOx1ZDCHoA/exported/vocab.enit.spm.gz",
@@ -4920,7 +4920,7 @@
         },
         {
           "name": "lex.50.50.enit.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2209348,
           "installPath": "bin/lex.50.50.enit.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-it/retrain_hr_fix_names_GPSr_u8PSmC9fOx1ZDCHoA/exported/lex.50.50.enit.s2t.bin.gz",
           "sourcePath": "models/en-it/retrain_hr_fix_names_GPSr_u8PSmC9fOx1ZDCHoA/exported/lex.50.50.enit.s2t.bin.gz",
@@ -4936,7 +4936,7 @@
       "files": [
         {
           "name": "model.enja.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 33052218,
           "installPath": "bin/model.enja.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ja/llmaat_finetune10M_qe8_f2_ApiGGQIwTKuF9i_k3n9Q2Q/exported/model.enja.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-ja/llmaat_finetune10M_qe8_f2_ApiGGQIwTKuF9i_k3n9Q2Q/exported/model.enja.intgemm.alphas.bin.gz",
@@ -4944,7 +4944,7 @@
         },
         {
           "name": "srcvocab.enja.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 404352,
           "installPath": "bin/srcvocab.enja.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ja/llmaat_finetune10M_qe8_f2_ApiGGQIwTKuF9i_k3n9Q2Q/exported/srcvocab.enja.spm.gz",
           "sourcePath": "models/en-ja/llmaat_finetune10M_qe8_f2_ApiGGQIwTKuF9i_k3n9Q2Q/exported/srcvocab.enja.spm.gz",
@@ -4952,7 +4952,7 @@
         },
         {
           "name": "trgvocab.enja.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 431278,
           "installPath": "bin/trgvocab.enja.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ja/llmaat_finetune10M_qe8_f2_ApiGGQIwTKuF9i_k3n9Q2Q/exported/trgvocab.enja.spm.gz",
           "sourcePath": "models/en-ja/llmaat_finetune10M_qe8_f2_ApiGGQIwTKuF9i_k3n9Q2Q/exported/trgvocab.enja.spm.gz",
@@ -4960,7 +4960,7 @@
         },
         {
           "name": "lex.50.50.enja.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2341409,
           "installPath": "bin/lex.50.50.enja.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ja/llmaat_finetune10M_qe8_f2_ApiGGQIwTKuF9i_k3n9Q2Q/exported/lex.50.50.enja.s2t.bin.gz",
           "sourcePath": "models/en-ja/llmaat_finetune10M_qe8_f2_ApiGGQIwTKuF9i_k3n9Q2Q/exported/lex.50.50.enja.s2t.bin.gz",
@@ -4976,7 +4976,7 @@
       "files": [
         {
           "name": "model.enkn.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13009213,
           "installPath": "bin/model.enkn.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-kn/h1-2025_DDVsjRwsQ8GL3-JAiAmmfQ/exported/model.enkn.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-kn/h1-2025_DDVsjRwsQ8GL3-JAiAmmfQ/exported/model.enkn.intgemm.alphas.bin.gz",
@@ -4984,7 +4984,7 @@
         },
         {
           "name": "vocab.enkn.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 450046,
           "installPath": "bin/vocab.enkn.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-kn/h1-2025_DDVsjRwsQ8GL3-JAiAmmfQ/exported/vocab.enkn.spm.gz",
           "sourcePath": "models/en-kn/h1-2025_DDVsjRwsQ8GL3-JAiAmmfQ/exported/vocab.enkn.spm.gz",
@@ -4992,7 +4992,7 @@
         },
         {
           "name": "lex.50.50.enkn.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1416160,
           "installPath": "bin/lex.50.50.enkn.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-kn/h1-2025_DDVsjRwsQ8GL3-JAiAmmfQ/exported/lex.50.50.enkn.s2t.bin.gz",
           "sourcePath": "models/en-kn/h1-2025_DDVsjRwsQ8GL3-JAiAmmfQ/exported/lex.50.50.enkn.s2t.bin.gz",
@@ -5008,7 +5008,7 @@
       "files": [
         {
           "name": "model.enko.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 33738001,
           "installPath": "bin/model.enko.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ko/cjk_retrain_base-memory_GP50C3MpQ9apCWZOW-f3PA/exported/model.enko.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-ko/cjk_retrain_base-memory_GP50C3MpQ9apCWZOW-f3PA/exported/model.enko.intgemm.alphas.bin.gz",
@@ -5016,7 +5016,7 @@
         },
         {
           "name": "srcvocab.enko.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 402480,
           "installPath": "bin/srcvocab.enko.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ko/cjk_retrain_base-memory_GP50C3MpQ9apCWZOW-f3PA/exported/srcvocab.enko.spm.gz",
           "sourcePath": "models/en-ko/cjk_retrain_base-memory_GP50C3MpQ9apCWZOW-f3PA/exported/srcvocab.enko.spm.gz",
@@ -5024,7 +5024,7 @@
         },
         {
           "name": "trgvocab.enko.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 412614,
           "installPath": "bin/trgvocab.enko.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ko/cjk_retrain_base-memory_GP50C3MpQ9apCWZOW-f3PA/exported/trgvocab.enko.spm.gz",
           "sourcePath": "models/en-ko/cjk_retrain_base-memory_GP50C3MpQ9apCWZOW-f3PA/exported/trgvocab.enko.spm.gz",
@@ -5032,7 +5032,7 @@
         },
         {
           "name": "lex.50.50.enko.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 3471311,
           "installPath": "bin/lex.50.50.enko.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ko/cjk_retrain_base-memory_GP50C3MpQ9apCWZOW-f3PA/exported/lex.50.50.enko.s2t.bin.gz",
           "sourcePath": "models/en-ko/cjk_retrain_base-memory_GP50C3MpQ9apCWZOW-f3PA/exported/lex.50.50.enko.s2t.bin.gz",
@@ -5048,7 +5048,7 @@
       "files": [
         {
           "name": "model.enlt.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22865642,
           "installPath": "bin/model.enlt.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-lt/h1-2025_CpawQ31iTrmnax9Xi0DkBw/exported/model.enlt.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-lt/h1-2025_CpawQ31iTrmnax9Xi0DkBw/exported/model.enlt.intgemm.alphas.bin.gz",
@@ -5056,7 +5056,7 @@
         },
         {
           "name": "vocab.enlt.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 403356,
           "installPath": "bin/vocab.enlt.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-lt/h1-2025_CpawQ31iTrmnax9Xi0DkBw/exported/vocab.enlt.spm.gz",
           "sourcePath": "models/en-lt/h1-2025_CpawQ31iTrmnax9Xi0DkBw/exported/vocab.enlt.spm.gz",
@@ -5064,7 +5064,7 @@
         },
         {
           "name": "lex.50.50.enlt.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1769752,
           "installPath": "bin/lex.50.50.enlt.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-lt/h1-2025_CpawQ31iTrmnax9Xi0DkBw/exported/lex.50.50.enlt.s2t.bin.gz",
           "sourcePath": "models/en-lt/h1-2025_CpawQ31iTrmnax9Xi0DkBw/exported/lex.50.50.enlt.s2t.bin.gz",
@@ -5080,7 +5080,7 @@
       "files": [
         {
           "name": "model.enlv.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23727668,
           "installPath": "bin/model.enlv.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-lv/h1-2025_L9sajlF2TCKfEzDro4tK3Q/exported/model.enlv.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-lv/h1-2025_L9sajlF2TCKfEzDro4tK3Q/exported/model.enlv.intgemm.alphas.bin.gz",
@@ -5088,7 +5088,7 @@
         },
         {
           "name": "vocab.enlv.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 407540,
           "installPath": "bin/vocab.enlv.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-lv/h1-2025_L9sajlF2TCKfEzDro4tK3Q/exported/vocab.enlv.spm.gz",
           "sourcePath": "models/en-lv/h1-2025_L9sajlF2TCKfEzDro4tK3Q/exported/vocab.enlv.spm.gz",
@@ -5096,7 +5096,7 @@
         },
         {
           "name": "lex.50.50.enlv.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1725879,
           "installPath": "bin/lex.50.50.enlv.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-lv/h1-2025_L9sajlF2TCKfEzDro4tK3Q/exported/lex.50.50.enlv.s2t.bin.gz",
           "sourcePath": "models/en-lv/h1-2025_L9sajlF2TCKfEzDro4tK3Q/exported/lex.50.50.enlv.s2t.bin.gz",
@@ -5112,7 +5112,7 @@
       "files": [
         {
           "name": "model.enml.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12570038,
           "installPath": "bin/model.enml.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ml/h1-2025_UylcthuMRoelqd6lsCbXJw/exported/model.enml.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-ml/h1-2025_UylcthuMRoelqd6lsCbXJw/exported/model.enml.intgemm.alphas.bin.gz",
@@ -5120,7 +5120,7 @@
         },
         {
           "name": "vocab.enml.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 454768,
           "installPath": "bin/vocab.enml.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ml/h1-2025_UylcthuMRoelqd6lsCbXJw/exported/vocab.enml.spm.gz",
           "sourcePath": "models/en-ml/h1-2025_UylcthuMRoelqd6lsCbXJw/exported/vocab.enml.spm.gz",
@@ -5128,7 +5128,7 @@
         },
         {
           "name": "lex.50.50.enml.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1275347,
           "installPath": "bin/lex.50.50.enml.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ml/h1-2025_UylcthuMRoelqd6lsCbXJw/exported/lex.50.50.enml.s2t.bin.gz",
           "sourcePath": "models/en-ml/h1-2025_UylcthuMRoelqd6lsCbXJw/exported/lex.50.50.enml.s2t.bin.gz",
@@ -5144,7 +5144,7 @@
       "files": [
         {
           "name": "model.enms.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13039668,
           "installPath": "bin/model.enms.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ms/h1-2025_Ba76abX1Qtums6Vbv95tzg/exported/model.enms.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-ms/h1-2025_Ba76abX1Qtums6Vbv95tzg/exported/model.enms.intgemm.alphas.bin.gz",
@@ -5152,7 +5152,7 @@
         },
         {
           "name": "vocab.enms.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 404033,
           "installPath": "bin/vocab.enms.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ms/h1-2025_Ba76abX1Qtums6Vbv95tzg/exported/vocab.enms.spm.gz",
           "sourcePath": "models/en-ms/h1-2025_Ba76abX1Qtums6Vbv95tzg/exported/vocab.enms.spm.gz",
@@ -5160,7 +5160,7 @@
         },
         {
           "name": "lex.50.50.enms.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2044118,
           "installPath": "bin/lex.50.50.enms.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ms/h1-2025_Ba76abX1Qtums6Vbv95tzg/exported/lex.50.50.enms.s2t.bin.gz",
           "sourcePath": "models/en-ms/h1-2025_Ba76abX1Qtums6Vbv95tzg/exported/lex.50.50.enms.s2t.bin.gz",
@@ -5176,7 +5176,7 @@
       "files": [
         {
           "name": "model.ennb.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12713727,
           "installPath": "bin/model.ennb.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-nb/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/model.ennb.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-nb/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/model.ennb.intgemm.alphas.bin.gz",
@@ -5184,7 +5184,7 @@
         },
         {
           "name": "vocab.ennb.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409037,
           "installPath": "bin/vocab.ennb.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-nb/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/vocab.ennb.spm.gz",
           "sourcePath": "models/en-nb/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/vocab.ennb.spm.gz",
@@ -5192,7 +5192,7 @@
         },
         {
           "name": "lex.50.50.ennb.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2193397,
           "installPath": "bin/lex.50.50.ennb.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-nb/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/lex.50.50.ennb.s2t.bin.gz",
           "sourcePath": "models/en-nb/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/lex.50.50.ennb.s2t.bin.gz",
@@ -5208,7 +5208,7 @@
       "files": [
         {
           "name": "model.ennl.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23386633,
           "installPath": "bin/model.ennl.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-nl/retrain_hr_fix_names_fR8XhBiBQniIbi4I_ebJ2Q/exported/model.ennl.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-nl/retrain_hr_fix_names_fR8XhBiBQniIbi4I_ebJ2Q/exported/model.ennl.intgemm.alphas.bin.gz",
@@ -5216,7 +5216,7 @@
         },
         {
           "name": "vocab.ennl.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 410222,
           "installPath": "bin/vocab.ennl.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-nl/retrain_hr_fix_names_fR8XhBiBQniIbi4I_ebJ2Q/exported/vocab.ennl.spm.gz",
           "sourcePath": "models/en-nl/retrain_hr_fix_names_fR8XhBiBQniIbi4I_ebJ2Q/exported/vocab.ennl.spm.gz",
@@ -5224,7 +5224,7 @@
         },
         {
           "name": "lex.50.50.ennl.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2155034,
           "installPath": "bin/lex.50.50.ennl.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-nl/retrain_hr_fix_names_fR8XhBiBQniIbi4I_ebJ2Q/exported/lex.50.50.ennl.s2t.bin.gz",
           "sourcePath": "models/en-nl/retrain_hr_fix_names_fR8XhBiBQniIbi4I_ebJ2Q/exported/lex.50.50.ennl.s2t.bin.gz",
@@ -5240,7 +5240,7 @@
       "files": [
         {
           "name": "model.enno.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12713727,
           "installPath": "bin/model.enno.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-no/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/model.enno.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-no/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/model.enno.intgemm.alphas.bin.gz",
@@ -5248,7 +5248,7 @@
         },
         {
           "name": "vocab.enno.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409037,
           "installPath": "bin/vocab.enno.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-no/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/vocab.enno.spm.gz",
           "sourcePath": "models/en-no/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/vocab.enno.spm.gz",
@@ -5256,7 +5256,7 @@
         },
         {
           "name": "lex.50.50.enno.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2193397,
           "installPath": "bin/lex.50.50.enno.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-no/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/lex.50.50.enno.s2t.bin.gz",
           "sourcePath": "models/en-no/h1-2025_A0d8NsivR6Szy2dI4Nz6FQ/exported/lex.50.50.enno.s2t.bin.gz",
@@ -5272,7 +5272,7 @@
       "files": [
         {
           "name": "model.enpl.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22577447,
           "installPath": "bin/model.enpl.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-pl/retrain_hr_fix_names_YmTlfuUsSKCbUp75UXaUuw/exported/model.enpl.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-pl/retrain_hr_fix_names_YmTlfuUsSKCbUp75UXaUuw/exported/model.enpl.intgemm.alphas.bin.gz",
@@ -5280,7 +5280,7 @@
         },
         {
           "name": "vocab.enpl.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 413194,
           "installPath": "bin/vocab.enpl.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-pl/retrain_hr_fix_names_YmTlfuUsSKCbUp75UXaUuw/exported/vocab.enpl.spm.gz",
           "sourcePath": "models/en-pl/retrain_hr_fix_names_YmTlfuUsSKCbUp75UXaUuw/exported/vocab.enpl.spm.gz",
@@ -5288,7 +5288,7 @@
         },
         {
           "name": "lex.50.50.enpl.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1874327,
           "installPath": "bin/lex.50.50.enpl.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-pl/retrain_hr_fix_names_YmTlfuUsSKCbUp75UXaUuw/exported/lex.50.50.enpl.s2t.bin.gz",
           "sourcePath": "models/en-pl/retrain_hr_fix_names_YmTlfuUsSKCbUp75UXaUuw/exported/lex.50.50.enpl.s2t.bin.gz",
@@ -5304,7 +5304,7 @@
       "files": [
         {
           "name": "model.enpt.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23340019,
           "installPath": "bin/model.enpt.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-pt/retrain_hr_fix_names_Vnb0RUXTTd67hR-oLHM3eg/exported/model.enpt.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-pt/retrain_hr_fix_names_Vnb0RUXTTd67hR-oLHM3eg/exported/model.enpt.intgemm.alphas.bin.gz",
@@ -5312,7 +5312,7 @@
         },
         {
           "name": "vocab.enpt.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 408686,
           "installPath": "bin/vocab.enpt.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-pt/retrain_hr_fix_names_Vnb0RUXTTd67hR-oLHM3eg/exported/vocab.enpt.spm.gz",
           "sourcePath": "models/en-pt/retrain_hr_fix_names_Vnb0RUXTTd67hR-oLHM3eg/exported/vocab.enpt.spm.gz",
@@ -5320,7 +5320,7 @@
         },
         {
           "name": "lex.50.50.enpt.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2117608,
           "installPath": "bin/lex.50.50.enpt.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-pt/retrain_hr_fix_names_Vnb0RUXTTd67hR-oLHM3eg/exported/lex.50.50.enpt.s2t.bin.gz",
           "sourcePath": "models/en-pt/retrain_hr_fix_names_Vnb0RUXTTd67hR-oLHM3eg/exported/lex.50.50.enpt.s2t.bin.gz",
@@ -5336,7 +5336,7 @@
       "files": [
         {
           "name": "model.enro.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12207487,
           "installPath": "bin/model.enro.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ro/spring-2024_Ov3G4D_DRJa-4qTlILkPhg/exported/model.enro.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-ro/spring-2024_Ov3G4D_DRJa-4qTlILkPhg/exported/model.enro.intgemm.alphas.bin.gz",
@@ -5344,7 +5344,7 @@
         },
         {
           "name": "vocab.enro.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 397137,
           "installPath": "bin/vocab.enro.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ro/spring-2024_Ov3G4D_DRJa-4qTlILkPhg/exported/vocab.enro.spm.gz",
           "sourcePath": "models/en-ro/spring-2024_Ov3G4D_DRJa-4qTlILkPhg/exported/vocab.enro.spm.gz",
@@ -5352,7 +5352,7 @@
         },
         {
           "name": "lex.50.50.enro.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1846074,
           "installPath": "bin/lex.50.50.enro.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ro/spring-2024_Ov3G4D_DRJa-4qTlILkPhg/exported/lex.50.50.enro.s2t.bin.gz",
           "sourcePath": "models/en-ro/spring-2024_Ov3G4D_DRJa-4qTlILkPhg/exported/lex.50.50.enro.s2t.bin.gz",
@@ -5368,7 +5368,7 @@
       "files": [
         {
           "name": "model.enru.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 21988864,
           "installPath": "bin/model.enru.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ru/retrain_base-memory_KJ23-iDVTcymG1ZldWY17w/exported/model.enru.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-ru/retrain_base-memory_KJ23-iDVTcymG1ZldWY17w/exported/model.enru.intgemm.alphas.bin.gz",
@@ -5376,7 +5376,7 @@
         },
         {
           "name": "vocab.enru.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 419005,
           "installPath": "bin/vocab.enru.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ru/retrain_base-memory_KJ23-iDVTcymG1ZldWY17w/exported/vocab.enru.spm.gz",
           "sourcePath": "models/en-ru/retrain_base-memory_KJ23-iDVTcymG1ZldWY17w/exported/vocab.enru.spm.gz",
@@ -5384,7 +5384,7 @@
         },
         {
           "name": "lex.50.50.enru.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1378563,
           "installPath": "bin/lex.50.50.enru.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ru/retrain_base-memory_KJ23-iDVTcymG1ZldWY17w/exported/lex.50.50.enru.s2t.bin.gz",
           "sourcePath": "models/en-ru/retrain_base-memory_KJ23-iDVTcymG1ZldWY17w/exported/lex.50.50.enru.s2t.bin.gz",
@@ -5400,7 +5400,7 @@
       "files": [
         {
           "name": "model.ensk.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22902983,
           "installPath": "bin/model.ensk.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sk/h1-2025_NbGVkenLTPiss8w800509A/exported/model.ensk.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-sk/h1-2025_NbGVkenLTPiss8w800509A/exported/model.ensk.intgemm.alphas.bin.gz",
@@ -5408,7 +5408,7 @@
         },
         {
           "name": "vocab.ensk.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 405652,
           "installPath": "bin/vocab.ensk.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sk/h1-2025_NbGVkenLTPiss8w800509A/exported/vocab.ensk.spm.gz",
           "sourcePath": "models/en-sk/h1-2025_NbGVkenLTPiss8w800509A/exported/vocab.ensk.spm.gz",
@@ -5416,7 +5416,7 @@
         },
         {
           "name": "lex.50.50.ensk.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1708788,
           "installPath": "bin/lex.50.50.ensk.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sk/h1-2025_NbGVkenLTPiss8w800509A/exported/lex.50.50.ensk.s2t.bin.gz",
           "sourcePath": "models/en-sk/h1-2025_NbGVkenLTPiss8w800509A/exported/lex.50.50.ensk.s2t.bin.gz",
@@ -5432,7 +5432,7 @@
       "files": [
         {
           "name": "model.ensl.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22669559,
           "installPath": "bin/model.ensl.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sl/h1-2025_Ph0DK4RhRMe7z4cLk-f7eg/exported/model.ensl.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-sl/h1-2025_Ph0DK4RhRMe7z4cLk-f7eg/exported/model.ensl.intgemm.alphas.bin.gz",
@@ -5440,7 +5440,7 @@
         },
         {
           "name": "vocab.ensl.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 398763,
           "installPath": "bin/vocab.ensl.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sl/h1-2025_Ph0DK4RhRMe7z4cLk-f7eg/exported/vocab.ensl.spm.gz",
           "sourcePath": "models/en-sl/h1-2025_Ph0DK4RhRMe7z4cLk-f7eg/exported/vocab.ensl.spm.gz",
@@ -5448,7 +5448,7 @@
         },
         {
           "name": "lex.50.50.ensl.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1741316,
           "installPath": "bin/lex.50.50.ensl.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sl/h1-2025_Ph0DK4RhRMe7z4cLk-f7eg/exported/lex.50.50.ensl.s2t.bin.gz",
           "sourcePath": "models/en-sl/h1-2025_Ph0DK4RhRMe7z4cLk-f7eg/exported/lex.50.50.ensl.s2t.bin.gz",
@@ -5464,7 +5464,7 @@
       "files": [
         {
           "name": "model.ensq.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13366206,
           "installPath": "bin/model.ensq.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sq/h1-2025_HIreYm8_RDymI1qFdn0V5Q/exported/model.ensq.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-sq/h1-2025_HIreYm8_RDymI1qFdn0V5Q/exported/model.ensq.intgemm.alphas.bin.gz",
@@ -5472,7 +5472,7 @@
         },
         {
           "name": "vocab.ensq.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 410650,
           "installPath": "bin/vocab.ensq.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sq/h1-2025_HIreYm8_RDymI1qFdn0V5Q/exported/vocab.ensq.spm.gz",
           "sourcePath": "models/en-sq/h1-2025_HIreYm8_RDymI1qFdn0V5Q/exported/vocab.ensq.spm.gz",
@@ -5480,7 +5480,7 @@
         },
         {
           "name": "lex.50.50.ensq.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1599959,
           "installPath": "bin/lex.50.50.ensq.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sq/h1-2025_HIreYm8_RDymI1qFdn0V5Q/exported/lex.50.50.ensq.s2t.bin.gz",
           "sourcePath": "models/en-sq/h1-2025_HIreYm8_RDymI1qFdn0V5Q/exported/lex.50.50.ensq.s2t.bin.gz",
@@ -5496,7 +5496,7 @@
       "files": [
         {
           "name": "model.ensr.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23014587,
           "installPath": "bin/model.ensr.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sr/hbs-topk10_KZK68xhrQWWeK6xcMRtd9A/exported/model.ensr.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-sr/hbs-topk10_KZK68xhrQWWeK6xcMRtd9A/exported/model.ensr.intgemm.alphas.bin.gz",
@@ -5504,7 +5504,7 @@
         },
         {
           "name": "vocab.ensr.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 433623,
           "installPath": "bin/vocab.ensr.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sr/hbs-topk10_KZK68xhrQWWeK6xcMRtd9A/exported/vocab.ensr.spm.gz",
           "sourcePath": "models/en-sr/hbs-topk10_KZK68xhrQWWeK6xcMRtd9A/exported/vocab.ensr.spm.gz",
@@ -5512,7 +5512,7 @@
         },
         {
           "name": "lex.50.50.ensr.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1289317,
           "installPath": "bin/lex.50.50.ensr.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sr/hbs-topk10_KZK68xhrQWWeK6xcMRtd9A/exported/lex.50.50.ensr.s2t.bin.gz",
           "sourcePath": "models/en-sr/hbs-topk10_KZK68xhrQWWeK6xcMRtd9A/exported/lex.50.50.ensr.s2t.bin.gz",
@@ -5528,7 +5528,7 @@
       "files": [
         {
           "name": "model.ensv.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12775086,
           "installPath": "bin/model.ensv.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sv/spring-2024_bQQme71PS4eZRDl3NM-kgA/exported/model.ensv.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-sv/spring-2024_bQQme71PS4eZRDl3NM-kgA/exported/model.ensv.intgemm.alphas.bin.gz",
@@ -5536,7 +5536,7 @@
         },
         {
           "name": "vocab.ensv.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 398384,
           "installPath": "bin/vocab.ensv.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sv/spring-2024_bQQme71PS4eZRDl3NM-kgA/exported/vocab.ensv.spm.gz",
           "sourcePath": "models/en-sv/spring-2024_bQQme71PS4eZRDl3NM-kgA/exported/vocab.ensv.spm.gz",
@@ -5544,7 +5544,7 @@
         },
         {
           "name": "lex.50.50.ensv.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1921270,
           "installPath": "bin/lex.50.50.ensv.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-sv/spring-2024_bQQme71PS4eZRDl3NM-kgA/exported/lex.50.50.ensv.s2t.bin.gz",
           "sourcePath": "models/en-sv/spring-2024_bQQme71PS4eZRDl3NM-kgA/exported/lex.50.50.ensv.s2t.bin.gz",
@@ -5560,7 +5560,7 @@
       "files": [
         {
           "name": "model.enta.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12645399,
           "installPath": "bin/model.enta.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ta/h1-2025_aPztISjSRums11fBuT--4A/exported/model.enta.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-ta/h1-2025_aPztISjSRums11fBuT--4A/exported/model.enta.intgemm.alphas.bin.gz",
@@ -5568,7 +5568,7 @@
         },
         {
           "name": "vocab.enta.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 446752,
           "installPath": "bin/vocab.enta.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ta/h1-2025_aPztISjSRums11fBuT--4A/exported/vocab.enta.spm.gz",
           "sourcePath": "models/en-ta/h1-2025_aPztISjSRums11fBuT--4A/exported/vocab.enta.spm.gz",
@@ -5576,7 +5576,7 @@
         },
         {
           "name": "lex.50.50.enta.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1453949,
           "installPath": "bin/lex.50.50.enta.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-ta/h1-2025_aPztISjSRums11fBuT--4A/exported/lex.50.50.enta.s2t.bin.gz",
           "sourcePath": "models/en-ta/h1-2025_aPztISjSRums11fBuT--4A/exported/lex.50.50.enta.s2t.bin.gz",
@@ -5592,7 +5592,7 @@
       "files": [
         {
           "name": "model.ente.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12590862,
           "installPath": "bin/model.ente.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-te/h1-2025_J_7yoPHaRJqsevUR512RsQ/exported/model.ente.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-te/h1-2025_J_7yoPHaRJqsevUR512RsQ/exported/model.ente.intgemm.alphas.bin.gz",
@@ -5600,7 +5600,7 @@
         },
         {
           "name": "vocab.ente.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 448838,
           "installPath": "bin/vocab.ente.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-te/h1-2025_J_7yoPHaRJqsevUR512RsQ/exported/vocab.ente.spm.gz",
           "sourcePath": "models/en-te/h1-2025_J_7yoPHaRJqsevUR512RsQ/exported/vocab.ente.spm.gz",
@@ -5608,7 +5608,7 @@
         },
         {
           "name": "lex.50.50.ente.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1434105,
           "installPath": "bin/lex.50.50.ente.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-te/h1-2025_J_7yoPHaRJqsevUR512RsQ/exported/lex.50.50.ente.s2t.bin.gz",
           "sourcePath": "models/en-te/h1-2025_J_7yoPHaRJqsevUR512RsQ/exported/lex.50.50.ente.s2t.bin.gz",
@@ -5624,7 +5624,7 @@
       "files": [
         {
           "name": "model.enth.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22976729,
           "installPath": "bin/model.enth.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-th/new-opuscleaner-en-th-onestage-topk10_WIvJuHhrSyiXLtJBJOUrsA/exported/model.enth.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-th/new-opuscleaner-en-th-onestage-topk10_WIvJuHhrSyiXLtJBJOUrsA/exported/model.enth.intgemm.alphas.bin.gz",
@@ -5632,7 +5632,7 @@
         },
         {
           "name": "vocab.enth.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 450379,
           "installPath": "bin/vocab.enth.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-th/new-opuscleaner-en-th-onestage-topk10_WIvJuHhrSyiXLtJBJOUrsA/exported/vocab.enth.spm.gz",
           "sourcePath": "models/en-th/new-opuscleaner-en-th-onestage-topk10_WIvJuHhrSyiXLtJBJOUrsA/exported/vocab.enth.spm.gz",
@@ -5640,7 +5640,7 @@
         },
         {
           "name": "lex.50.50.enth.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1601933,
           "installPath": "bin/lex.50.50.enth.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-th/new-opuscleaner-en-th-onestage-topk10_WIvJuHhrSyiXLtJBJOUrsA/exported/lex.50.50.enth.s2t.bin.gz",
           "sourcePath": "models/en-th/new-opuscleaner-en-th-onestage-topk10_WIvJuHhrSyiXLtJBJOUrsA/exported/lex.50.50.enth.s2t.bin.gz",
@@ -5656,7 +5656,7 @@
       "files": [
         {
           "name": "model.entr.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13159314,
           "installPath": "bin/model.entr.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-tr/spring-2024_LiFGeNrEQpKdNlziG2qP_A/exported/model.entr.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-tr/spring-2024_LiFGeNrEQpKdNlziG2qP_A/exported/model.entr.intgemm.alphas.bin.gz",
@@ -5664,7 +5664,7 @@
         },
         {
           "name": "vocab.entr.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 395473,
           "installPath": "bin/vocab.entr.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-tr/spring-2024_LiFGeNrEQpKdNlziG2qP_A/exported/vocab.entr.spm.gz",
           "sourcePath": "models/en-tr/spring-2024_LiFGeNrEQpKdNlziG2qP_A/exported/vocab.entr.spm.gz",
@@ -5672,7 +5672,7 @@
         },
         {
           "name": "lex.50.50.entr.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1546258,
           "installPath": "bin/lex.50.50.entr.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-tr/spring-2024_LiFGeNrEQpKdNlziG2qP_A/exported/lex.50.50.entr.s2t.bin.gz",
           "sourcePath": "models/en-tr/spring-2024_LiFGeNrEQpKdNlziG2qP_A/exported/lex.50.50.entr.s2t.bin.gz",
@@ -5688,7 +5688,7 @@
       "files": [
         {
           "name": "model.enuk.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22864374,
           "installPath": "bin/model.enuk.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-uk/docmt-vocab_a2OVwdI-Sg-SBZ_0Joqb0w/exported/model.enuk.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-uk/docmt-vocab_a2OVwdI-Sg-SBZ_0Joqb0w/exported/model.enuk.intgemm.alphas.bin.gz",
@@ -5696,7 +5696,7 @@
         },
         {
           "name": "vocab.enuk.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 436850,
           "installPath": "bin/vocab.enuk.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-uk/docmt-vocab_a2OVwdI-Sg-SBZ_0Joqb0w/exported/vocab.enuk.spm.gz",
           "sourcePath": "models/en-uk/docmt-vocab_a2OVwdI-Sg-SBZ_0Joqb0w/exported/vocab.enuk.spm.gz",
@@ -5704,7 +5704,7 @@
         },
         {
           "name": "lex.50.50.enuk.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1564122,
           "installPath": "bin/lex.50.50.enuk.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-uk/docmt-vocab_a2OVwdI-Sg-SBZ_0Joqb0w/exported/lex.50.50.enuk.s2t.bin.gz",
           "sourcePath": "models/en-uk/docmt-vocab_a2OVwdI-Sg-SBZ_0Joqb0w/exported/lex.50.50.enuk.s2t.bin.gz",
@@ -5720,7 +5720,7 @@
       "files": [
         {
           "name": "model.envi.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 24244705,
           "installPath": "bin/model.envi.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-vi/test_prompsit_Ep8JhBQ3QRizDT91JVy8KQ/exported/model.envi.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-vi/test_prompsit_Ep8JhBQ3QRizDT91JVy8KQ/exported/model.envi.intgemm.alphas.bin.gz",
@@ -5728,7 +5728,7 @@
         },
         {
           "name": "vocab.envi.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 400183,
           "installPath": "bin/vocab.envi.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-vi/test_prompsit_Ep8JhBQ3QRizDT91JVy8KQ/exported/vocab.envi.spm.gz",
           "sourcePath": "models/en-vi/test_prompsit_Ep8JhBQ3QRizDT91JVy8KQ/exported/vocab.envi.spm.gz",
@@ -5736,7 +5736,7 @@
         },
         {
           "name": "lex.50.50.envi.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2246027,
           "installPath": "bin/lex.50.50.envi.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-vi/test_prompsit_Ep8JhBQ3QRizDT91JVy8KQ/exported/lex.50.50.envi.s2t.bin.gz",
           "sourcePath": "models/en-vi/test_prompsit_Ep8JhBQ3QRizDT91JVy8KQ/exported/lex.50.50.envi.s2t.bin.gz",
@@ -5752,7 +5752,7 @@
       "files": [
         {
           "name": "model.enzh.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 33375922,
           "installPath": "bin/model.enzh.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/model.enzh.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/model.enzh.intgemm.alphas.bin.gz",
@@ -5760,7 +5760,7 @@
         },
         {
           "name": "srcvocab.enzh.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 407784,
           "installPath": "bin/srcvocab.enzh.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/srcvocab.enzh.spm.gz",
           "sourcePath": "models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/srcvocab.enzh.spm.gz",
@@ -5768,7 +5768,7 @@
         },
         {
           "name": "trgvocab.enzh.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 425748,
           "installPath": "bin/trgvocab.enzh.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/trgvocab.enzh.spm.gz",
           "sourcePath": "models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/trgvocab.enzh.spm.gz",
@@ -5776,7 +5776,7 @@
         },
         {
           "name": "lex.50.50.enzh.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2536039,
           "installPath": "bin/lex.50.50.enzh.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/lex.50.50.enzh.s2t.bin.gz",
           "sourcePath": "models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/lex.50.50.enzh.s2t.bin.gz",
@@ -5792,7 +5792,7 @@
       "files": [
         {
           "name": "model.enzh_hant.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 33291007,
           "installPath": "bin/model.enzh_hant.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh_hant/zh_hant_llmaat_finetune10M_qe8_f2_aQ8azdOMQOSBVjBDOVDIZQ/exported/model.enzh_hant.intgemm.alphas.bin.gz",
           "sourcePath": "models/en-zh_hant/zh_hant_llmaat_finetune10M_qe8_f2_aQ8azdOMQOSBVjBDOVDIZQ/exported/model.enzh_hant.intgemm.alphas.bin.gz",
@@ -5800,7 +5800,7 @@
         },
         {
           "name": "srcvocab.enzh_hant.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 404976,
           "installPath": "bin/srcvocab.enzh_hant.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh_hant/zh_hant_llmaat_finetune10M_qe8_f2_aQ8azdOMQOSBVjBDOVDIZQ/exported/srcvocab.enzh_hant.spm.gz",
           "sourcePath": "models/en-zh_hant/zh_hant_llmaat_finetune10M_qe8_f2_aQ8azdOMQOSBVjBDOVDIZQ/exported/srcvocab.enzh_hant.spm.gz",
@@ -5808,7 +5808,7 @@
         },
         {
           "name": "trgvocab.enzh_hant.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 416659,
           "installPath": "bin/trgvocab.enzh_hant.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh_hant/zh_hant_llmaat_finetune10M_qe8_f2_aQ8azdOMQOSBVjBDOVDIZQ/exported/trgvocab.enzh_hant.spm.gz",
           "sourcePath": "models/en-zh_hant/zh_hant_llmaat_finetune10M_qe8_f2_aQ8azdOMQOSBVjBDOVDIZQ/exported/trgvocab.enzh_hant.spm.gz",
@@ -5816,7 +5816,7 @@
         },
         {
           "name": "lex.50.50.enzh_hant.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2290215,
           "installPath": "bin/lex.50.50.enzh_hant.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh_hant/zh_hant_llmaat_finetune10M_qe8_f2_aQ8azdOMQOSBVjBDOVDIZQ/exported/lex.50.50.enzh_hant.s2t.bin.gz",
           "sourcePath": "models/en-zh_hant/zh_hant_llmaat_finetune10M_qe8_f2_aQ8azdOMQOSBVjBDOVDIZQ/exported/lex.50.50.enzh_hant.s2t.bin.gz",
@@ -5832,7 +5832,7 @@
       "files": [
         {
           "name": "model.esen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23288494,
           "installPath": "bin/model.esen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/es-en/retrain_hr_HbNjJ60BTwmVTbhfFxuduA/exported/model.esen.intgemm.alphas.bin.gz",
           "sourcePath": "models/es-en/retrain_hr_HbNjJ60BTwmVTbhfFxuduA/exported/model.esen.intgemm.alphas.bin.gz",
@@ -5840,7 +5840,7 @@
         },
         {
           "name": "vocab.esen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409312,
           "installPath": "bin/vocab.esen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/es-en/retrain_hr_HbNjJ60BTwmVTbhfFxuduA/exported/vocab.esen.spm.gz",
           "sourcePath": "models/es-en/retrain_hr_HbNjJ60BTwmVTbhfFxuduA/exported/vocab.esen.spm.gz",
@@ -5848,7 +5848,7 @@
         },
         {
           "name": "lex.50.50.esen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2543246,
           "installPath": "bin/lex.50.50.esen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/es-en/retrain_hr_HbNjJ60BTwmVTbhfFxuduA/exported/lex.50.50.esen.s2t.bin.gz",
           "sourcePath": "models/es-en/retrain_hr_HbNjJ60BTwmVTbhfFxuduA/exported/lex.50.50.esen.s2t.bin.gz",
@@ -5864,7 +5864,7 @@
       "files": [
         {
           "name": "model.eten.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22785077,
           "installPath": "bin/model.eten.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/et-en/retrain_hr_RNXxp-Q9Q4GRExCoMAT77Q/exported/model.eten.intgemm.alphas.bin.gz",
           "sourcePath": "models/et-en/retrain_hr_RNXxp-Q9Q4GRExCoMAT77Q/exported/model.eten.intgemm.alphas.bin.gz",
@@ -5872,7 +5872,7 @@
         },
         {
           "name": "vocab.eten.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 414262,
           "installPath": "bin/vocab.eten.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/et-en/retrain_hr_RNXxp-Q9Q4GRExCoMAT77Q/exported/vocab.eten.spm.gz",
           "sourcePath": "models/et-en/retrain_hr_RNXxp-Q9Q4GRExCoMAT77Q/exported/vocab.eten.spm.gz",
@@ -5880,7 +5880,7 @@
         },
         {
           "name": "lex.50.50.eten.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2321326,
           "installPath": "bin/lex.50.50.eten.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/et-en/retrain_hr_RNXxp-Q9Q4GRExCoMAT77Q/exported/lex.50.50.eten.s2t.bin.gz",
           "sourcePath": "models/et-en/retrain_hr_RNXxp-Q9Q4GRExCoMAT77Q/exported/lex.50.50.eten.s2t.bin.gz",
@@ -5896,7 +5896,7 @@
       "files": [
         {
           "name": "model.faen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13071390,
           "installPath": "bin/model.faen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/fa-en/h1-2025_dyvKzoMQToKWHx7bbP-TtQ/exported/model.faen.intgemm.alphas.bin.gz",
           "sourcePath": "models/fa-en/h1-2025_dyvKzoMQToKWHx7bbP-TtQ/exported/model.faen.intgemm.alphas.bin.gz",
@@ -5904,7 +5904,7 @@
         },
         {
           "name": "vocab.faen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 416123,
           "installPath": "bin/vocab.faen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/fa-en/h1-2025_dyvKzoMQToKWHx7bbP-TtQ/exported/vocab.faen.spm.gz",
           "sourcePath": "models/fa-en/h1-2025_dyvKzoMQToKWHx7bbP-TtQ/exported/vocab.faen.spm.gz",
@@ -5912,7 +5912,7 @@
         },
         {
           "name": "lex.50.50.faen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1939291,
           "installPath": "bin/lex.50.50.faen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/fa-en/h1-2025_dyvKzoMQToKWHx7bbP-TtQ/exported/lex.50.50.faen.s2t.bin.gz",
           "sourcePath": "models/fa-en/h1-2025_dyvKzoMQToKWHx7bbP-TtQ/exported/lex.50.50.faen.s2t.bin.gz",
@@ -5928,7 +5928,7 @@
       "files": [
         {
           "name": "model.fien.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22935246,
           "installPath": "bin/model.fien.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/fi-en/retrain_hr_C7-zSzS7Tm6zkOfVP7k0Gw/exported/model.fien.intgemm.alphas.bin.gz",
           "sourcePath": "models/fi-en/retrain_hr_C7-zSzS7Tm6zkOfVP7k0Gw/exported/model.fien.intgemm.alphas.bin.gz",
@@ -5936,7 +5936,7 @@
         },
         {
           "name": "vocab.fien.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 414280,
           "installPath": "bin/vocab.fien.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/fi-en/retrain_hr_C7-zSzS7Tm6zkOfVP7k0Gw/exported/vocab.fien.spm.gz",
           "sourcePath": "models/fi-en/retrain_hr_C7-zSzS7Tm6zkOfVP7k0Gw/exported/vocab.fien.spm.gz",
@@ -5944,7 +5944,7 @@
         },
         {
           "name": "lex.50.50.fien.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2580517,
           "installPath": "bin/lex.50.50.fien.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/fi-en/retrain_hr_C7-zSzS7Tm6zkOfVP7k0Gw/exported/lex.50.50.fien.s2t.bin.gz",
           "sourcePath": "models/fi-en/retrain_hr_C7-zSzS7Tm6zkOfVP7k0Gw/exported/lex.50.50.fien.s2t.bin.gz",
@@ -5960,7 +5960,7 @@
       "files": [
         {
           "name": "model.fren.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23175075,
           "installPath": "bin/model.fren.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/fr-en/retrain_hr_EFgIftH_RrCyzl5gjemVNg/exported/model.fren.intgemm.alphas.bin.gz",
           "sourcePath": "models/fr-en/retrain_hr_EFgIftH_RrCyzl5gjemVNg/exported/model.fren.intgemm.alphas.bin.gz",
@@ -5968,7 +5968,7 @@
         },
         {
           "name": "vocab.fren.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409706,
           "installPath": "bin/vocab.fren.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/fr-en/retrain_hr_EFgIftH_RrCyzl5gjemVNg/exported/vocab.fren.spm.gz",
           "sourcePath": "models/fr-en/retrain_hr_EFgIftH_RrCyzl5gjemVNg/exported/vocab.fren.spm.gz",
@@ -5976,7 +5976,7 @@
         },
         {
           "name": "lex.50.50.fren.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2649934,
           "installPath": "bin/lex.50.50.fren.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/fr-en/retrain_hr_EFgIftH_RrCyzl5gjemVNg/exported/lex.50.50.fren.s2t.bin.gz",
           "sourcePath": "models/fr-en/retrain_hr_EFgIftH_RrCyzl5gjemVNg/exported/lex.50.50.fren.s2t.bin.gz",
@@ -5992,7 +5992,7 @@
       "files": [
         {
           "name": "model.guen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12917932,
           "installPath": "bin/model.guen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/gu-en/h1-2025_AbHCTUgSSguJ1-Pq-XLnVA/exported/model.guen.intgemm.alphas.bin.gz",
           "sourcePath": "models/gu-en/h1-2025_AbHCTUgSSguJ1-Pq-XLnVA/exported/model.guen.intgemm.alphas.bin.gz",
@@ -6000,7 +6000,7 @@
         },
         {
           "name": "vocab.guen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 435011,
           "installPath": "bin/vocab.guen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/gu-en/h1-2025_AbHCTUgSSguJ1-Pq-XLnVA/exported/vocab.guen.spm.gz",
           "sourcePath": "models/gu-en/h1-2025_AbHCTUgSSguJ1-Pq-XLnVA/exported/vocab.guen.spm.gz",
@@ -6008,7 +6008,7 @@
         },
         {
           "name": "lex.50.50.guen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2028621,
           "installPath": "bin/lex.50.50.guen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/gu-en/h1-2025_AbHCTUgSSguJ1-Pq-XLnVA/exported/lex.50.50.guen.s2t.bin.gz",
           "sourcePath": "models/gu-en/h1-2025_AbHCTUgSSguJ1-Pq-XLnVA/exported/lex.50.50.guen.s2t.bin.gz",
@@ -6024,7 +6024,7 @@
       "files": [
         {
           "name": "model.heen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12999905,
           "installPath": "bin/model.heen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/he-en/h1-2025_IZKPrf3xQaKu56F3zmH0cw/exported/model.heen.intgemm.alphas.bin.gz",
           "sourcePath": "models/he-en/h1-2025_IZKPrf3xQaKu56F3zmH0cw/exported/model.heen.intgemm.alphas.bin.gz",
@@ -6032,7 +6032,7 @@
         },
         {
           "name": "vocab.heen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 411769,
           "installPath": "bin/vocab.heen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/he-en/h1-2025_IZKPrf3xQaKu56F3zmH0cw/exported/vocab.heen.spm.gz",
           "sourcePath": "models/he-en/h1-2025_IZKPrf3xQaKu56F3zmH0cw/exported/vocab.heen.spm.gz",
@@ -6040,7 +6040,7 @@
         },
         {
           "name": "lex.50.50.heen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2232949,
           "installPath": "bin/lex.50.50.heen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/he-en/h1-2025_IZKPrf3xQaKu56F3zmH0cw/exported/lex.50.50.heen.s2t.bin.gz",
           "sourcePath": "models/he-en/h1-2025_IZKPrf3xQaKu56F3zmH0cw/exported/lex.50.50.heen.s2t.bin.gz",
@@ -6056,7 +6056,7 @@
       "files": [
         {
           "name": "model.hien.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12752013,
           "installPath": "bin/model.hien.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/hi-en/h1-2025_IcUQD-GbSJWB6WV08oDoEw/exported/model.hien.intgemm.alphas.bin.gz",
           "sourcePath": "models/hi-en/h1-2025_IcUQD-GbSJWB6WV08oDoEw/exported/model.hien.intgemm.alphas.bin.gz",
@@ -6064,7 +6064,7 @@
         },
         {
           "name": "vocab.hien.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 430096,
           "installPath": "bin/vocab.hien.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/hi-en/h1-2025_IcUQD-GbSJWB6WV08oDoEw/exported/vocab.hien.spm.gz",
           "sourcePath": "models/hi-en/h1-2025_IcUQD-GbSJWB6WV08oDoEw/exported/vocab.hien.spm.gz",
@@ -6072,7 +6072,7 @@
         },
         {
           "name": "lex.50.50.hien.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2319675,
           "installPath": "bin/lex.50.50.hien.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/hi-en/h1-2025_IcUQD-GbSJWB6WV08oDoEw/exported/lex.50.50.hien.s2t.bin.gz",
           "sourcePath": "models/hi-en/h1-2025_IcUQD-GbSJWB6WV08oDoEw/exported/lex.50.50.hien.s2t.bin.gz",
@@ -6088,7 +6088,7 @@
       "files": [
         {
           "name": "model.hren.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13050395,
           "installPath": "bin/model.hren.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/hr-en/spring-2024_eIcYjCedS26HE07kVyt5Qw/exported/model.hren.intgemm.alphas.bin.gz",
           "sourcePath": "models/hr-en/spring-2024_eIcYjCedS26HE07kVyt5Qw/exported/model.hren.intgemm.alphas.bin.gz",
@@ -6096,7 +6096,7 @@
         },
         {
           "name": "vocab.hren.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 394548,
           "installPath": "bin/vocab.hren.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/hr-en/spring-2024_eIcYjCedS26HE07kVyt5Qw/exported/vocab.hren.spm.gz",
           "sourcePath": "models/hr-en/spring-2024_eIcYjCedS26HE07kVyt5Qw/exported/vocab.hren.spm.gz",
@@ -6104,7 +6104,7 @@
         },
         {
           "name": "lex.50.50.hren.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1888089,
           "installPath": "bin/lex.50.50.hren.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/hr-en/spring-2024_eIcYjCedS26HE07kVyt5Qw/exported/lex.50.50.hren.s2t.bin.gz",
           "sourcePath": "models/hr-en/spring-2024_eIcYjCedS26HE07kVyt5Qw/exported/lex.50.50.hren.s2t.bin.gz",
@@ -6120,7 +6120,7 @@
       "files": [
         {
           "name": "model.huen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13181613,
           "installPath": "bin/model.huen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/hu-en/andre_xxxxxxxxRxSxxxxxxxxxxA/exported/model.huen.intgemm.alphas.bin.gz",
           "sourcePath": "models/hu-en/andre_xxxxxxxxRxSxxxxxxxxxxA/exported/model.huen.intgemm.alphas.bin.gz",
@@ -6128,7 +6128,7 @@
         },
         {
           "name": "vocab.huen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 419908,
           "installPath": "bin/vocab.huen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/hu-en/andre_xxxxxxxxRxSxxxxxxxxxxA/exported/vocab.huen.spm.gz",
           "sourcePath": "models/hu-en/andre_xxxxxxxxRxSxxxxxxxxxxA/exported/vocab.huen.spm.gz",
@@ -6136,7 +6136,7 @@
         },
         {
           "name": "lex.50.50.huen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2778202,
           "installPath": "bin/lex.50.50.huen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/hu-en/andre_xxxxxxxxRxSxxxxxxxxxxA/exported/lex.50.50.huen.s2t.bin.gz",
           "sourcePath": "models/hu-en/andre_xxxxxxxxRxSxxxxxxxxxxA/exported/lex.50.50.huen.s2t.bin.gz",
@@ -6152,7 +6152,7 @@
       "files": [
         {
           "name": "model.iden.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13010657,
           "installPath": "bin/model.iden.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/id-en/spring-2024_Yl0wXq-iQE6G9PpA3AQfcg/exported/model.iden.intgemm.alphas.bin.gz",
           "sourcePath": "models/id-en/spring-2024_Yl0wXq-iQE6G9PpA3AQfcg/exported/model.iden.intgemm.alphas.bin.gz",
@@ -6160,7 +6160,7 @@
         },
         {
           "name": "vocab.iden.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 379859,
           "installPath": "bin/vocab.iden.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/id-en/spring-2024_Yl0wXq-iQE6G9PpA3AQfcg/exported/vocab.iden.spm.gz",
           "sourcePath": "models/id-en/spring-2024_Yl0wXq-iQE6G9PpA3AQfcg/exported/vocab.iden.spm.gz",
@@ -6168,7 +6168,7 @@
         },
         {
           "name": "lex.50.50.iden.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1818222,
           "installPath": "bin/lex.50.50.iden.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/id-en/spring-2024_Yl0wXq-iQE6G9PpA3AQfcg/exported/lex.50.50.iden.s2t.bin.gz",
           "sourcePath": "models/id-en/spring-2024_Yl0wXq-iQE6G9PpA3AQfcg/exported/lex.50.50.iden.s2t.bin.gz",
@@ -6184,7 +6184,7 @@
       "files": [
         {
           "name": "model.isen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23229378,
           "installPath": "bin/model.isen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/is-en/docmt-vocab_I4Fy2MnOQHSOT4SYlCjPWw/exported/model.isen.intgemm.alphas.bin.gz",
           "sourcePath": "models/is-en/docmt-vocab_I4Fy2MnOQHSOT4SYlCjPWw/exported/model.isen.intgemm.alphas.bin.gz",
@@ -6192,7 +6192,7 @@
         },
         {
           "name": "vocab.isen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 412304,
           "installPath": "bin/vocab.isen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/is-en/docmt-vocab_I4Fy2MnOQHSOT4SYlCjPWw/exported/vocab.isen.spm.gz",
           "sourcePath": "models/is-en/docmt-vocab_I4Fy2MnOQHSOT4SYlCjPWw/exported/vocab.isen.spm.gz",
@@ -6200,7 +6200,7 @@
         },
         {
           "name": "lex.50.50.isen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2012853,
           "installPath": "bin/lex.50.50.isen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/is-en/docmt-vocab_I4Fy2MnOQHSOT4SYlCjPWw/exported/lex.50.50.isen.s2t.bin.gz",
           "sourcePath": "models/is-en/docmt-vocab_I4Fy2MnOQHSOT4SYlCjPWw/exported/lex.50.50.isen.s2t.bin.gz",
@@ -6216,7 +6216,7 @@
       "files": [
         {
           "name": "model.iten.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23301774,
           "installPath": "bin/model.iten.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/it-en/retrain_hr_d1nPDwVeSD6t-HdtWA4xNg/exported/model.iten.intgemm.alphas.bin.gz",
           "sourcePath": "models/it-en/retrain_hr_d1nPDwVeSD6t-HdtWA4xNg/exported/model.iten.intgemm.alphas.bin.gz",
@@ -6224,7 +6224,7 @@
         },
         {
           "name": "vocab.iten.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 407598,
           "installPath": "bin/vocab.iten.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/it-en/retrain_hr_d1nPDwVeSD6t-HdtWA4xNg/exported/vocab.iten.spm.gz",
           "sourcePath": "models/it-en/retrain_hr_d1nPDwVeSD6t-HdtWA4xNg/exported/vocab.iten.spm.gz",
@@ -6232,7 +6232,7 @@
         },
         {
           "name": "lex.50.50.iten.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2532929,
           "installPath": "bin/lex.50.50.iten.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/it-en/retrain_hr_d1nPDwVeSD6t-HdtWA4xNg/exported/lex.50.50.iten.s2t.bin.gz",
           "sourcePath": "models/it-en/retrain_hr_d1nPDwVeSD6t-HdtWA4xNg/exported/lex.50.50.iten.s2t.bin.gz",
@@ -6248,7 +6248,7 @@
       "files": [
         {
           "name": "model.jaen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 32577435,
           "installPath": "bin/model.jaen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ja-en/cjk_retrain_base-memory_NLRJLD_pQFyrvgKtbie2nA/exported/model.jaen.intgemm.alphas.bin.gz",
           "sourcePath": "models/ja-en/cjk_retrain_base-memory_NLRJLD_pQFyrvgKtbie2nA/exported/model.jaen.intgemm.alphas.bin.gz",
@@ -6256,7 +6256,7 @@
         },
         {
           "name": "vocab.jaen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 746616,
           "installPath": "bin/vocab.jaen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ja-en/cjk_retrain_base-memory_NLRJLD_pQFyrvgKtbie2nA/exported/vocab.jaen.spm.gz",
           "sourcePath": "models/ja-en/cjk_retrain_base-memory_NLRJLD_pQFyrvgKtbie2nA/exported/vocab.jaen.spm.gz",
@@ -6264,7 +6264,7 @@
         },
         {
           "name": "lex.50.50.jaen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 4819610,
           "installPath": "bin/lex.50.50.jaen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ja-en/cjk_retrain_base-memory_NLRJLD_pQFyrvgKtbie2nA/exported/lex.50.50.jaen.s2t.bin.gz",
           "sourcePath": "models/ja-en/cjk_retrain_base-memory_NLRJLD_pQFyrvgKtbie2nA/exported/lex.50.50.jaen.s2t.bin.gz",
@@ -6280,7 +6280,7 @@
       "files": [
         {
           "name": "model.knen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13077357,
           "installPath": "bin/model.knen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/kn-en/h1-2025_Ql24XjW0Sp-zWsmLrV5TGQ/exported/model.knen.intgemm.alphas.bin.gz",
           "sourcePath": "models/kn-en/h1-2025_Ql24XjW0Sp-zWsmLrV5TGQ/exported/model.knen.intgemm.alphas.bin.gz",
@@ -6288,7 +6288,7 @@
         },
         {
           "name": "vocab.knen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 450324,
           "installPath": "bin/vocab.knen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/kn-en/h1-2025_Ql24XjW0Sp-zWsmLrV5TGQ/exported/vocab.knen.spm.gz",
           "sourcePath": "models/kn-en/h1-2025_Ql24XjW0Sp-zWsmLrV5TGQ/exported/vocab.knen.spm.gz",
@@ -6296,7 +6296,7 @@
         },
         {
           "name": "lex.50.50.knen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2128860,
           "installPath": "bin/lex.50.50.knen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/kn-en/h1-2025_Ql24XjW0Sp-zWsmLrV5TGQ/exported/lex.50.50.knen.s2t.bin.gz",
           "sourcePath": "models/kn-en/h1-2025_Ql24XjW0Sp-zWsmLrV5TGQ/exported/lex.50.50.knen.s2t.bin.gz",
@@ -6312,7 +6312,7 @@
       "files": [
         {
           "name": "model.koen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 32152814,
           "installPath": "bin/model.koen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ko-en/cjk_retrain_base-memory_QgYNtG3BTzKBFSV1wl06Pg/exported/model.koen.intgemm.alphas.bin.gz",
           "sourcePath": "models/ko-en/cjk_retrain_base-memory_QgYNtG3BTzKBFSV1wl06Pg/exported/model.koen.intgemm.alphas.bin.gz",
@@ -6320,7 +6320,7 @@
         },
         {
           "name": "vocab.koen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 706864,
           "installPath": "bin/vocab.koen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ko-en/cjk_retrain_base-memory_QgYNtG3BTzKBFSV1wl06Pg/exported/vocab.koen.spm.gz",
           "sourcePath": "models/ko-en/cjk_retrain_base-memory_QgYNtG3BTzKBFSV1wl06Pg/exported/vocab.koen.spm.gz",
@@ -6328,7 +6328,7 @@
         },
         {
           "name": "lex.50.50.koen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 4381854,
           "installPath": "bin/lex.50.50.koen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ko-en/cjk_retrain_base-memory_QgYNtG3BTzKBFSV1wl06Pg/exported/lex.50.50.koen.s2t.bin.gz",
           "sourcePath": "models/ko-en/cjk_retrain_base-memory_QgYNtG3BTzKBFSV1wl06Pg/exported/lex.50.50.koen.s2t.bin.gz",
@@ -6344,7 +6344,7 @@
       "files": [
         {
           "name": "model.lten.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12571257,
           "installPath": "bin/model.lten.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/lt-en/spring-2024_aAroslw9Ru-c5cam6SvLBg/exported/model.lten.intgemm.alphas.bin.gz",
           "sourcePath": "models/lt-en/spring-2024_aAroslw9Ru-c5cam6SvLBg/exported/model.lten.intgemm.alphas.bin.gz",
@@ -6352,7 +6352,7 @@
         },
         {
           "name": "vocab.lten.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 403960,
           "installPath": "bin/vocab.lten.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/lt-en/spring-2024_aAroslw9Ru-c5cam6SvLBg/exported/vocab.lten.spm.gz",
           "sourcePath": "models/lt-en/spring-2024_aAroslw9Ru-c5cam6SvLBg/exported/vocab.lten.spm.gz",
@@ -6360,7 +6360,7 @@
         },
         {
           "name": "lex.50.50.lten.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2308876,
           "installPath": "bin/lex.50.50.lten.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/lt-en/spring-2024_aAroslw9Ru-c5cam6SvLBg/exported/lex.50.50.lten.s2t.bin.gz",
           "sourcePath": "models/lt-en/spring-2024_aAroslw9Ru-c5cam6SvLBg/exported/lex.50.50.lten.s2t.bin.gz",
@@ -6376,7 +6376,7 @@
       "files": [
         {
           "name": "model.lven.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12689153,
           "installPath": "bin/model.lven.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/lv-en/spring-2024_fkUrjGNcQiWrTQ5BcYbkgg/exported/model.lven.intgemm.alphas.bin.gz",
           "sourcePath": "models/lv-en/spring-2024_fkUrjGNcQiWrTQ5BcYbkgg/exported/model.lven.intgemm.alphas.bin.gz",
@@ -6384,7 +6384,7 @@
         },
         {
           "name": "vocab.lven.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 407237,
           "installPath": "bin/vocab.lven.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/lv-en/spring-2024_fkUrjGNcQiWrTQ5BcYbkgg/exported/vocab.lven.spm.gz",
           "sourcePath": "models/lv-en/spring-2024_fkUrjGNcQiWrTQ5BcYbkgg/exported/vocab.lven.spm.gz",
@@ -6392,7 +6392,7 @@
         },
         {
           "name": "lex.50.50.lven.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2131786,
           "installPath": "bin/lex.50.50.lven.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/lv-en/spring-2024_fkUrjGNcQiWrTQ5BcYbkgg/exported/lex.50.50.lven.s2t.bin.gz",
           "sourcePath": "models/lv-en/spring-2024_fkUrjGNcQiWrTQ5BcYbkgg/exported/lex.50.50.lven.s2t.bin.gz",
@@ -6408,7 +6408,7 @@
       "files": [
         {
           "name": "model.mlen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12792306,
           "installPath": "bin/model.mlen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ml-en/h1-2025_Ahkzk6jNTAut7rz6laKkGQ/exported/model.mlen.intgemm.alphas.bin.gz",
           "sourcePath": "models/ml-en/h1-2025_Ahkzk6jNTAut7rz6laKkGQ/exported/model.mlen.intgemm.alphas.bin.gz",
@@ -6416,7 +6416,7 @@
         },
         {
           "name": "vocab.mlen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 454911,
           "installPath": "bin/vocab.mlen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ml-en/h1-2025_Ahkzk6jNTAut7rz6laKkGQ/exported/vocab.mlen.spm.gz",
           "sourcePath": "models/ml-en/h1-2025_Ahkzk6jNTAut7rz6laKkGQ/exported/vocab.mlen.spm.gz",
@@ -6424,7 +6424,7 @@
         },
         {
           "name": "lex.50.50.mlen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2296381,
           "installPath": "bin/lex.50.50.mlen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ml-en/h1-2025_Ahkzk6jNTAut7rz6laKkGQ/exported/lex.50.50.mlen.s2t.bin.gz",
           "sourcePath": "models/ml-en/h1-2025_Ahkzk6jNTAut7rz6laKkGQ/exported/lex.50.50.mlen.s2t.bin.gz",
@@ -6440,7 +6440,7 @@
       "files": [
         {
           "name": "model.msen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12538542,
           "installPath": "bin/model.msen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ms-en/h1-2025_afzwIUAqQRWx5PtvozOHnw/exported/model.msen.intgemm.alphas.bin.gz",
           "sourcePath": "models/ms-en/h1-2025_afzwIUAqQRWx5PtvozOHnw/exported/model.msen.intgemm.alphas.bin.gz",
@@ -6448,7 +6448,7 @@
         },
         {
           "name": "vocab.msen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 403877,
           "installPath": "bin/vocab.msen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ms-en/h1-2025_afzwIUAqQRWx5PtvozOHnw/exported/vocab.msen.spm.gz",
           "sourcePath": "models/ms-en/h1-2025_afzwIUAqQRWx5PtvozOHnw/exported/vocab.msen.spm.gz",
@@ -6456,7 +6456,7 @@
         },
         {
           "name": "lex.50.50.msen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2141259,
           "installPath": "bin/lex.50.50.msen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ms-en/h1-2025_afzwIUAqQRWx5PtvozOHnw/exported/lex.50.50.msen.s2t.bin.gz",
           "sourcePath": "models/ms-en/h1-2025_afzwIUAqQRWx5PtvozOHnw/exported/lex.50.50.msen.s2t.bin.gz",
@@ -6472,7 +6472,7 @@
       "files": [
         {
           "name": "model.nben.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13193689,
           "installPath": "bin/model.nben.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/nb-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/model.nben.intgemm.alphas.bin.gz",
           "sourcePath": "models/nb-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/model.nben.intgemm.alphas.bin.gz",
@@ -6480,7 +6480,7 @@
         },
         {
           "name": "vocab.nben.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409135,
           "installPath": "bin/vocab.nben.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/nb-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/vocab.nben.spm.gz",
           "sourcePath": "models/nb-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/vocab.nben.spm.gz",
@@ -6488,7 +6488,7 @@
         },
         {
           "name": "lex.50.50.nben.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2308582,
           "installPath": "bin/lex.50.50.nben.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/nb-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/lex.50.50.nben.s2t.bin.gz",
           "sourcePath": "models/nb-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/lex.50.50.nben.s2t.bin.gz",
@@ -6504,7 +6504,7 @@
       "files": [
         {
           "name": "model.nlen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22647743,
           "installPath": "bin/model.nlen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/nl-en/retrain_hr_JbTCb42HREGvK8d6aOCjFQ/exported/model.nlen.intgemm.alphas.bin.gz",
           "sourcePath": "models/nl-en/retrain_hr_JbTCb42HREGvK8d6aOCjFQ/exported/model.nlen.intgemm.alphas.bin.gz",
@@ -6512,7 +6512,7 @@
         },
         {
           "name": "vocab.nlen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 410222,
           "installPath": "bin/vocab.nlen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/nl-en/retrain_hr_JbTCb42HREGvK8d6aOCjFQ/exported/vocab.nlen.spm.gz",
           "sourcePath": "models/nl-en/retrain_hr_JbTCb42HREGvK8d6aOCjFQ/exported/vocab.nlen.spm.gz",
@@ -6520,7 +6520,7 @@
         },
         {
           "name": "lex.50.50.nlen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2616098,
           "installPath": "bin/lex.50.50.nlen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/nl-en/retrain_hr_JbTCb42HREGvK8d6aOCjFQ/exported/lex.50.50.nlen.s2t.bin.gz",
           "sourcePath": "models/nl-en/retrain_hr_JbTCb42HREGvK8d6aOCjFQ/exported/lex.50.50.nlen.s2t.bin.gz",
@@ -6536,7 +6536,7 @@
       "files": [
         {
           "name": "model.nnen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 10465158,
           "installPath": "bin/model.nnen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/nn-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/model.nnen.intgemm.alphas.bin.gz",
           "sourcePath": "models/nn-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/model.nnen.intgemm.alphas.bin.gz",
@@ -6544,7 +6544,7 @@
         },
         {
           "name": "vocab.nnen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 269397,
           "installPath": "bin/vocab.nnen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/nn-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/vocab.nnen.spm.gz",
           "sourcePath": "models/nn-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/vocab.nnen.spm.gz",
@@ -6552,7 +6552,7 @@
         },
         {
           "name": "lex.50.50.nnen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 731899,
           "installPath": "bin/lex.50.50.nnen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/nn-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/lex.50.50.nnen.s2t.bin.gz",
           "sourcePath": "models/nn-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/lex.50.50.nnen.s2t.bin.gz",
@@ -6568,7 +6568,7 @@
       "files": [
         {
           "name": "model.noen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13193689,
           "installPath": "bin/model.noen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/no-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/model.noen.intgemm.alphas.bin.gz",
           "sourcePath": "models/no-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/model.noen.intgemm.alphas.bin.gz",
@@ -6576,7 +6576,7 @@
         },
         {
           "name": "vocab.noen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409135,
           "installPath": "bin/vocab.noen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/no-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/vocab.noen.spm.gz",
           "sourcePath": "models/no-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/vocab.noen.spm.gz",
@@ -6584,7 +6584,7 @@
         },
         {
           "name": "lex.50.50.noen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2308582,
           "installPath": "bin/lex.50.50.noen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/no-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/lex.50.50.noen.s2t.bin.gz",
           "sourcePath": "models/no-en/h1-2025_YKogHXi6Q4es3P7fEWEaBw/exported/lex.50.50.noen.s2t.bin.gz",
@@ -6600,7 +6600,7 @@
       "files": [
         {
           "name": "model.plen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22630393,
           "installPath": "bin/model.plen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/pl-en/retrain_hr_HLLa6ZwsSomB0kyBr7Iz6w/exported/model.plen.intgemm.alphas.bin.gz",
           "sourcePath": "models/pl-en/retrain_hr_HLLa6ZwsSomB0kyBr7Iz6w/exported/model.plen.intgemm.alphas.bin.gz",
@@ -6608,7 +6608,7 @@
         },
         {
           "name": "vocab.plen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 413194,
           "installPath": "bin/vocab.plen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/pl-en/retrain_hr_HLLa6ZwsSomB0kyBr7Iz6w/exported/vocab.plen.spm.gz",
           "sourcePath": "models/pl-en/retrain_hr_HLLa6ZwsSomB0kyBr7Iz6w/exported/vocab.plen.spm.gz",
@@ -6616,7 +6616,7 @@
         },
         {
           "name": "lex.50.50.plen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2489764,
           "installPath": "bin/lex.50.50.plen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/pl-en/retrain_hr_HLLa6ZwsSomB0kyBr7Iz6w/exported/lex.50.50.plen.s2t.bin.gz",
           "sourcePath": "models/pl-en/retrain_hr_HLLa6ZwsSomB0kyBr7Iz6w/exported/lex.50.50.plen.s2t.bin.gz",
@@ -6632,7 +6632,7 @@
       "files": [
         {
           "name": "model.pten.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22700409,
           "installPath": "bin/model.pten.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/pt-en/retrain_hr_drxrs5bGSsOWvfK9lyZISw/exported/model.pten.intgemm.alphas.bin.gz",
           "sourcePath": "models/pt-en/retrain_hr_drxrs5bGSsOWvfK9lyZISw/exported/model.pten.intgemm.alphas.bin.gz",
@@ -6640,7 +6640,7 @@
         },
         {
           "name": "vocab.pten.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 408686,
           "installPath": "bin/vocab.pten.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/pt-en/retrain_hr_drxrs5bGSsOWvfK9lyZISw/exported/vocab.pten.spm.gz",
           "sourcePath": "models/pt-en/retrain_hr_drxrs5bGSsOWvfK9lyZISw/exported/vocab.pten.spm.gz",
@@ -6648,7 +6648,7 @@
         },
         {
           "name": "lex.50.50.pten.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2487847,
           "installPath": "bin/lex.50.50.pten.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/pt-en/retrain_hr_drxrs5bGSsOWvfK9lyZISw/exported/lex.50.50.pten.s2t.bin.gz",
           "sourcePath": "models/pt-en/retrain_hr_drxrs5bGSsOWvfK9lyZISw/exported/lex.50.50.pten.s2t.bin.gz",
@@ -6664,7 +6664,7 @@
       "files": [
         {
           "name": "model.roen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12722200,
           "installPath": "bin/model.roen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ro-en/spring-2024_RwH0W_MDRK2BmZA6VzAmBg/exported/model.roen.intgemm.alphas.bin.gz",
           "sourcePath": "models/ro-en/spring-2024_RwH0W_MDRK2BmZA6VzAmBg/exported/model.roen.intgemm.alphas.bin.gz",
@@ -6672,7 +6672,7 @@
         },
         {
           "name": "vocab.roen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 396717,
           "installPath": "bin/vocab.roen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ro-en/spring-2024_RwH0W_MDRK2BmZA6VzAmBg/exported/vocab.roen.spm.gz",
           "sourcePath": "models/ro-en/spring-2024_RwH0W_MDRK2BmZA6VzAmBg/exported/vocab.roen.spm.gz",
@@ -6680,7 +6680,7 @@
         },
         {
           "name": "lex.50.50.roen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2159556,
           "installPath": "bin/lex.50.50.roen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ro-en/spring-2024_RwH0W_MDRK2BmZA6VzAmBg/exported/lex.50.50.roen.s2t.bin.gz",
           "sourcePath": "models/ro-en/spring-2024_RwH0W_MDRK2BmZA6VzAmBg/exported/lex.50.50.roen.s2t.bin.gz",
@@ -6696,7 +6696,7 @@
       "files": [
         {
           "name": "model.ruen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12613599,
           "installPath": "bin/model.ruen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ru-en/spring-2024_QrcdYgbwS7e7xbhtOSdoNQ/exported/model.ruen.intgemm.alphas.bin.gz",
           "sourcePath": "models/ru-en/spring-2024_QrcdYgbwS7e7xbhtOSdoNQ/exported/model.ruen.intgemm.alphas.bin.gz",
@@ -6704,7 +6704,7 @@
         },
         {
           "name": "vocab.ruen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 419860,
           "installPath": "bin/vocab.ruen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ru-en/spring-2024_QrcdYgbwS7e7xbhtOSdoNQ/exported/vocab.ruen.spm.gz",
           "sourcePath": "models/ru-en/spring-2024_QrcdYgbwS7e7xbhtOSdoNQ/exported/vocab.ruen.spm.gz",
@@ -6712,7 +6712,7 @@
         },
         {
           "name": "lex.50.50.ruen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1962008,
           "installPath": "bin/lex.50.50.ruen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ru-en/spring-2024_QrcdYgbwS7e7xbhtOSdoNQ/exported/lex.50.50.ruen.s2t.bin.gz",
           "sourcePath": "models/ru-en/spring-2024_QrcdYgbwS7e7xbhtOSdoNQ/exported/lex.50.50.ruen.s2t.bin.gz",
@@ -6728,7 +6728,7 @@
       "files": [
         {
           "name": "model.sken.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12821519,
           "installPath": "bin/model.sken.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sk-en/spring-2024_TD01UwWXRKacv3wnYeVKbg/exported/model.sken.intgemm.alphas.bin.gz",
           "sourcePath": "models/sk-en/spring-2024_TD01UwWXRKacv3wnYeVKbg/exported/model.sken.intgemm.alphas.bin.gz",
@@ -6736,7 +6736,7 @@
         },
         {
           "name": "vocab.sken.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 405122,
           "installPath": "bin/vocab.sken.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sk-en/spring-2024_TD01UwWXRKacv3wnYeVKbg/exported/vocab.sken.spm.gz",
           "sourcePath": "models/sk-en/spring-2024_TD01UwWXRKacv3wnYeVKbg/exported/vocab.sken.spm.gz",
@@ -6744,7 +6744,7 @@
         },
         {
           "name": "lex.50.50.sken.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2348184,
           "installPath": "bin/lex.50.50.sken.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sk-en/spring-2024_TD01UwWXRKacv3wnYeVKbg/exported/lex.50.50.sken.s2t.bin.gz",
           "sourcePath": "models/sk-en/spring-2024_TD01UwWXRKacv3wnYeVKbg/exported/lex.50.50.sken.s2t.bin.gz",
@@ -6760,7 +6760,7 @@
       "files": [
         {
           "name": "model.slen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23730414,
           "installPath": "bin/model.slen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sl-en/h1-2025_TCeLyjkQRL2YbTXrUhTlAg/exported/model.slen.intgemm.alphas.bin.gz",
           "sourcePath": "models/sl-en/h1-2025_TCeLyjkQRL2YbTXrUhTlAg/exported/model.slen.intgemm.alphas.bin.gz",
@@ -6768,7 +6768,7 @@
         },
         {
           "name": "vocab.slen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 398535,
           "installPath": "bin/vocab.slen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sl-en/h1-2025_TCeLyjkQRL2YbTXrUhTlAg/exported/vocab.slen.spm.gz",
           "sourcePath": "models/sl-en/h1-2025_TCeLyjkQRL2YbTXrUhTlAg/exported/vocab.slen.spm.gz",
@@ -6776,7 +6776,7 @@
         },
         {
           "name": "lex.50.50.slen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2138548,
           "installPath": "bin/lex.50.50.slen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sl-en/h1-2025_TCeLyjkQRL2YbTXrUhTlAg/exported/lex.50.50.slen.s2t.bin.gz",
           "sourcePath": "models/sl-en/h1-2025_TCeLyjkQRL2YbTXrUhTlAg/exported/lex.50.50.slen.s2t.bin.gz",
@@ -6792,7 +6792,7 @@
       "files": [
         {
           "name": "model.sqen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12593638,
           "installPath": "bin/model.sqen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sq-en/h1-2025_I8xy7KMeQoe3mMEV3umzfQ/exported/model.sqen.intgemm.alphas.bin.gz",
           "sourcePath": "models/sq-en/h1-2025_I8xy7KMeQoe3mMEV3umzfQ/exported/model.sqen.intgemm.alphas.bin.gz",
@@ -6800,7 +6800,7 @@
         },
         {
           "name": "vocab.sqen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 410423,
           "installPath": "bin/vocab.sqen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sq-en/h1-2025_I8xy7KMeQoe3mMEV3umzfQ/exported/vocab.sqen.spm.gz",
           "sourcePath": "models/sq-en/h1-2025_I8xy7KMeQoe3mMEV3umzfQ/exported/vocab.sqen.spm.gz",
@@ -6808,7 +6808,7 @@
         },
         {
           "name": "lex.50.50.sqen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2165940,
           "installPath": "bin/lex.50.50.sqen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sq-en/h1-2025_I8xy7KMeQoe3mMEV3umzfQ/exported/lex.50.50.sqen.s2t.bin.gz",
           "sourcePath": "models/sq-en/h1-2025_I8xy7KMeQoe3mMEV3umzfQ/exported/lex.50.50.sqen.s2t.bin.gz",
@@ -6824,7 +6824,7 @@
       "files": [
         {
           "name": "model.sren.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12729754,
           "installPath": "bin/model.sren.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sr-en/spring-2024_H5GCfsx4SnqOP4YFIQdkdA/exported/model.sren.intgemm.alphas.bin.gz",
           "sourcePath": "models/sr-en/spring-2024_H5GCfsx4SnqOP4YFIQdkdA/exported/model.sren.intgemm.alphas.bin.gz",
@@ -6832,7 +6832,7 @@
         },
         {
           "name": "vocab.sren.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 403515,
           "installPath": "bin/vocab.sren.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sr-en/spring-2024_H5GCfsx4SnqOP4YFIQdkdA/exported/vocab.sren.spm.gz",
           "sourcePath": "models/sr-en/spring-2024_H5GCfsx4SnqOP4YFIQdkdA/exported/vocab.sren.spm.gz",
@@ -6840,7 +6840,7 @@
         },
         {
           "name": "lex.50.50.sren.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2117763,
           "installPath": "bin/lex.50.50.sren.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sr-en/spring-2024_H5GCfsx4SnqOP4YFIQdkdA/exported/lex.50.50.sren.s2t.bin.gz",
           "sourcePath": "models/sr-en/spring-2024_H5GCfsx4SnqOP4YFIQdkdA/exported/lex.50.50.sren.s2t.bin.gz",
@@ -6856,7 +6856,7 @@
       "files": [
         {
           "name": "model.sven.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12847259,
           "installPath": "bin/model.sven.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sv-en/spring-2024_ObaRXwXeSW6HA_-J5_dE-g/exported/model.sven.intgemm.alphas.bin.gz",
           "sourcePath": "models/sv-en/spring-2024_ObaRXwXeSW6HA_-J5_dE-g/exported/model.sven.intgemm.alphas.bin.gz",
@@ -6864,7 +6864,7 @@
         },
         {
           "name": "vocab.sven.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 397625,
           "installPath": "bin/vocab.sven.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sv-en/spring-2024_ObaRXwXeSW6HA_-J5_dE-g/exported/vocab.sven.spm.gz",
           "sourcePath": "models/sv-en/spring-2024_ObaRXwXeSW6HA_-J5_dE-g/exported/vocab.sven.spm.gz",
@@ -6872,7 +6872,7 @@
         },
         {
           "name": "lex.50.50.sven.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2165215,
           "installPath": "bin/lex.50.50.sven.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/sv-en/spring-2024_ObaRXwXeSW6HA_-J5_dE-g/exported/lex.50.50.sven.s2t.bin.gz",
           "sourcePath": "models/sv-en/spring-2024_ObaRXwXeSW6HA_-J5_dE-g/exported/lex.50.50.sven.s2t.bin.gz",
@@ -6888,7 +6888,7 @@
       "files": [
         {
           "name": "model.taen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 23673200,
           "installPath": "bin/model.taen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ta-en/h1-2025_SCQIuddKRXKyysmEsTGv-A/exported/model.taen.intgemm.alphas.bin.gz",
           "sourcePath": "models/ta-en/h1-2025_SCQIuddKRXKyysmEsTGv-A/exported/model.taen.intgemm.alphas.bin.gz",
@@ -6896,7 +6896,7 @@
         },
         {
           "name": "vocab.taen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 446919,
           "installPath": "bin/vocab.taen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ta-en/h1-2025_SCQIuddKRXKyysmEsTGv-A/exported/vocab.taen.spm.gz",
           "sourcePath": "models/ta-en/h1-2025_SCQIuddKRXKyysmEsTGv-A/exported/vocab.taen.spm.gz",
@@ -6904,7 +6904,7 @@
         },
         {
           "name": "lex.50.50.taen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2453155,
           "installPath": "bin/lex.50.50.taen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/ta-en/h1-2025_SCQIuddKRXKyysmEsTGv-A/exported/lex.50.50.taen.s2t.bin.gz",
           "sourcePath": "models/ta-en/h1-2025_SCQIuddKRXKyysmEsTGv-A/exported/lex.50.50.taen.s2t.bin.gz",
@@ -6920,7 +6920,7 @@
       "files": [
         {
           "name": "model.teen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 13202063,
           "installPath": "bin/model.teen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/te-en/h1-2025_YEapi_rWRsSUVTqbBTqupw/exported/model.teen.intgemm.alphas.bin.gz",
           "sourcePath": "models/te-en/h1-2025_YEapi_rWRsSUVTqbBTqupw/exported/model.teen.intgemm.alphas.bin.gz",
@@ -6928,7 +6928,7 @@
         },
         {
           "name": "vocab.teen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 448555,
           "installPath": "bin/vocab.teen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/te-en/h1-2025_YEapi_rWRsSUVTqbBTqupw/exported/vocab.teen.spm.gz",
           "sourcePath": "models/te-en/h1-2025_YEapi_rWRsSUVTqbBTqupw/exported/vocab.teen.spm.gz",
@@ -6936,7 +6936,7 @@
         },
         {
           "name": "lex.50.50.teen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2209444,
           "installPath": "bin/lex.50.50.teen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/te-en/h1-2025_YEapi_rWRsSUVTqbBTqupw/exported/lex.50.50.teen.s2t.bin.gz",
           "sourcePath": "models/te-en/h1-2025_YEapi_rWRsSUVTqbBTqupw/exported/lex.50.50.teen.s2t.bin.gz",
@@ -6952,7 +6952,7 @@
       "files": [
         {
           "name": "model.then.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 22974117,
           "installPath": "bin/model.then.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/th-en/new-opuscleaner-en-th_aIiNAAZbRny4ODcYGOMlEA/exported/model.then.intgemm.alphas.bin.gz",
           "sourcePath": "models/th-en/new-opuscleaner-en-th_aIiNAAZbRny4ODcYGOMlEA/exported/model.then.intgemm.alphas.bin.gz",
@@ -6960,7 +6960,7 @@
         },
         {
           "name": "vocab.then.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 451231,
           "installPath": "bin/vocab.then.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/th-en/new-opuscleaner-en-th_aIiNAAZbRny4ODcYGOMlEA/exported/vocab.then.spm.gz",
           "sourcePath": "models/th-en/new-opuscleaner-en-th_aIiNAAZbRny4ODcYGOMlEA/exported/vocab.then.spm.gz",
@@ -6968,7 +6968,7 @@
         },
         {
           "name": "lex.50.50.then.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2239323,
           "installPath": "bin/lex.50.50.then.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/th-en/new-opuscleaner-en-th_aIiNAAZbRny4ODcYGOMlEA/exported/lex.50.50.then.s2t.bin.gz",
           "sourcePath": "models/th-en/new-opuscleaner-en-th_aIiNAAZbRny4ODcYGOMlEA/exported/lex.50.50.then.s2t.bin.gz",
@@ -6984,7 +6984,7 @@
       "files": [
         {
           "name": "model.tren.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12362908,
           "installPath": "bin/model.tren.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/tr-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/model.tren.intgemm.alphas.bin.gz",
           "sourcePath": "models/tr-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/model.tren.intgemm.alphas.bin.gz",
@@ -6992,7 +6992,7 @@
         },
         {
           "name": "vocab.tren.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 409060,
           "installPath": "bin/vocab.tren.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/tr-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/vocab.tren.spm.gz",
           "sourcePath": "models/tr-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/vocab.tren.spm.gz",
@@ -7000,7 +7000,7 @@
         },
         {
           "name": "lex.50.50.tren.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 2470683,
           "installPath": "bin/lex.50.50.tren.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/tr-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/lex.50.50.tren.s2t.bin.gz",
           "sourcePath": "models/tr-en/statmt_xxxxxxxxRxSxxxxxxxxxxA/exported/lex.50.50.tren.s2t.bin.gz",
@@ -7016,7 +7016,7 @@
       "files": [
         {
           "name": "model.uken.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12677432,
           "installPath": "bin/model.uken.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/uk-en/spring-2024_WEPBsc-zQWSDn34b5KFscw/exported/model.uken.intgemm.alphas.bin.gz",
           "sourcePath": "models/uk-en/spring-2024_WEPBsc-zQWSDn34b5KFscw/exported/model.uken.intgemm.alphas.bin.gz",
@@ -7024,7 +7024,7 @@
         },
         {
           "name": "vocab.uken.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 415266,
           "installPath": "bin/vocab.uken.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/uk-en/spring-2024_WEPBsc-zQWSDn34b5KFscw/exported/vocab.uken.spm.gz",
           "sourcePath": "models/uk-en/spring-2024_WEPBsc-zQWSDn34b5KFscw/exported/vocab.uken.spm.gz",
@@ -7032,7 +7032,7 @@
         },
         {
           "name": "lex.50.50.uken.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1790588,
           "installPath": "bin/lex.50.50.uken.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/uk-en/spring-2024_WEPBsc-zQWSDn34b5KFscw/exported/lex.50.50.uken.s2t.bin.gz",
           "sourcePath": "models/uk-en/spring-2024_WEPBsc-zQWSDn34b5KFscw/exported/lex.50.50.uken.s2t.bin.gz",
@@ -7048,7 +7048,7 @@
       "files": [
         {
           "name": "model.vien.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 12914609,
           "installPath": "bin/model.vien.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/vi-en/spring-2024_Nc0SHbrgQaiFt4_FmKBXOA/exported/model.vien.intgemm.alphas.bin.gz",
           "sourcePath": "models/vi-en/spring-2024_Nc0SHbrgQaiFt4_FmKBXOA/exported/model.vien.intgemm.alphas.bin.gz",
@@ -7056,7 +7056,7 @@
         },
         {
           "name": "vocab.vien.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 375643,
           "installPath": "bin/vocab.vien.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/vi-en/spring-2024_Nc0SHbrgQaiFt4_FmKBXOA/exported/vocab.vien.spm.gz",
           "sourcePath": "models/vi-en/spring-2024_Nc0SHbrgQaiFt4_FmKBXOA/exported/vocab.vien.spm.gz",
@@ -7064,7 +7064,7 @@
         },
         {
           "name": "lex.50.50.vien.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 1887658,
           "installPath": "bin/lex.50.50.vien.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/vi-en/spring-2024_Nc0SHbrgQaiFt4_FmKBXOA/exported/lex.50.50.vien.s2t.bin.gz",
           "sourcePath": "models/vi-en/spring-2024_Nc0SHbrgQaiFt4_FmKBXOA/exported/lex.50.50.vien.s2t.bin.gz",
@@ -7080,7 +7080,7 @@
       "files": [
         {
           "name": "model.zhen.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 32726806,
           "installPath": "bin/model.zhen.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/zh-en/cjk_retrain_base-memory_cNY_yaJCStGwnTeXgW8A5w/exported/model.zhen.intgemm.alphas.bin.gz",
           "sourcePath": "models/zh-en/cjk_retrain_base-memory_cNY_yaJCStGwnTeXgW8A5w/exported/model.zhen.intgemm.alphas.bin.gz",
@@ -7088,7 +7088,7 @@
         },
         {
           "name": "vocab.zhen.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 738862,
           "installPath": "bin/vocab.zhen.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/zh-en/cjk_retrain_base-memory_cNY_yaJCStGwnTeXgW8A5w/exported/vocab.zhen.spm.gz",
           "sourcePath": "models/zh-en/cjk_retrain_base-memory_cNY_yaJCStGwnTeXgW8A5w/exported/vocab.zhen.spm.gz",
@@ -7096,7 +7096,7 @@
         },
         {
           "name": "lex.50.50.zhen.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 4822158,
           "installPath": "bin/lex.50.50.zhen.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/zh-en/cjk_retrain_base-memory_cNY_yaJCStGwnTeXgW8A5w/exported/lex.50.50.zhen.s2t.bin.gz",
           "sourcePath": "models/zh-en/cjk_retrain_base-memory_cNY_yaJCStGwnTeXgW8A5w/exported/lex.50.50.zhen.s2t.bin.gz",
@@ -7112,7 +7112,7 @@
       "files": [
         {
           "name": "model.zh_hanten.intgemm.alphas.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 33653648,
           "installPath": "bin/model.zh_hanten.intgemm.alphas.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/zh_hant-en/zh_hant_openlid_zh_tw_lr0002_WJi5Ozi7SZWC6hgfD5GhTA/exported/model.zh_hanten.intgemm.alphas.bin.gz",
           "sourcePath": "models/zh_hant-en/zh_hant_openlid_zh_tw_lr0002_WJi5Ozi7SZWC6hgfD5GhTA/exported/model.zh_hanten.intgemm.alphas.bin.gz",
@@ -7120,7 +7120,7 @@
         },
         {
           "name": "srcvocab.zh_hanten.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 423691,
           "installPath": "bin/srcvocab.zh_hanten.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/zh_hant-en/zh_hant_openlid_zh_tw_lr0002_WJi5Ozi7SZWC6hgfD5GhTA/exported/srcvocab.zh_hanten.spm.gz",
           "sourcePath": "models/zh_hant-en/zh_hant_openlid_zh_tw_lr0002_WJi5Ozi7SZWC6hgfD5GhTA/exported/srcvocab.zh_hanten.spm.gz",
@@ -7128,7 +7128,7 @@
         },
         {
           "name": "trgvocab.zh_hanten.spm",
-          "sizeBytes": 0,
+          "sizeBytes": 408143,
           "installPath": "bin/trgvocab.zh_hanten.spm",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/zh_hant-en/zh_hant_openlid_zh_tw_lr0002_WJi5Ozi7SZWC6hgfD5GhTA/exported/trgvocab.zh_hanten.spm.gz",
           "sourcePath": "models/zh_hant-en/zh_hant_openlid_zh_tw_lr0002_WJi5Ozi7SZWC6hgfD5GhTA/exported/trgvocab.zh_hanten.spm.gz",
@@ -7136,7 +7136,7 @@
         },
         {
           "name": "lex.50.50.zh_hanten.s2t.bin",
-          "sizeBytes": 0,
+          "sizeBytes": 3268812,
           "installPath": "bin/lex.50.50.zh_hanten.s2t.bin",
           "url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/zh_hant-en/zh_hant_openlid_zh_tw_lr0002_WJi5Ozi7SZWC6hgfD5GhTA/exported/lex.50.50.zh_hanten.s2t.bin.gz",
           "sourcePath": "models/zh_hant-en/zh_hant_openlid_zh_tw_lr0002_WJi5Ozi7SZWC6hgfD5GhTA/exported/lex.50.50.zh_hanten.s2t.bin.gz",
@@ -7170,7 +7170,7 @@
       "files": [
         {
           "name": "ar_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 478165,
           "installPath": "bin/espeak-ng-data/ar_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/ar_dict",
           "mirrorPath": "tts/1/espeak-ng-data/ar_dict"
@@ -7186,7 +7186,7 @@
       "files": [
         {
           "name": "bg_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 87051,
           "installPath": "bin/espeak-ng-data/bg_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/bg_dict",
           "mirrorPath": "tts/1/espeak-ng-data/bg_dict"
@@ -7202,7 +7202,7 @@
       "files": [
         {
           "name": "ca_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 310331,
           "installPath": "bin/espeak-ng-data/ca_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/ca_dict",
           "mirrorPath": "tts/1/espeak-ng-data/ca_dict"
@@ -7218,7 +7218,7 @@
       "files": [
         {
           "name": "cmn_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 1566347,
           "installPath": "bin/espeak-ng-data/cmn_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/cmn_dict",
           "mirrorPath": "tts/1/espeak-ng-data/cmn_dict"
@@ -7234,7 +7234,7 @@
       "files": [
         {
           "name": "cs_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 50455,
           "installPath": "bin/espeak-ng-data/cs_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/cs_dict",
           "mirrorPath": "tts/1/espeak-ng-data/cs_dict"
@@ -7250,7 +7250,7 @@
       "files": [
         {
           "name": "da_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 245287,
           "installPath": "bin/espeak-ng-data/da_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/da_dict",
           "mirrorPath": "tts/1/espeak-ng-data/da_dict"
@@ -7266,7 +7266,7 @@
       "files": [
         {
           "name": "de_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 69277,
           "installPath": "bin/espeak-ng-data/de_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/de_dict",
           "mirrorPath": "tts/1/espeak-ng-data/de_dict"
@@ -7282,7 +7282,7 @@
       "files": [
         {
           "name": "el_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 72841,
           "installPath": "bin/espeak-ng-data/el_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/el_dict",
           "mirrorPath": "tts/1/espeak-ng-data/el_dict"
@@ -7298,7 +7298,7 @@
       "files": [
         {
           "name": "en_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 168204,
           "installPath": "bin/espeak-ng-data/en_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/en_dict",
           "mirrorPath": "tts/1/espeak-ng-data/en_dict"
@@ -7314,7 +7314,7 @@
       "files": [
         {
           "name": "es_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 49285,
           "installPath": "bin/espeak-ng-data/es_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/es_dict",
           "mirrorPath": "tts/1/espeak-ng-data/es_dict"
@@ -7330,7 +7330,7 @@
       "files": [
         {
           "name": "fa_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 292907,
           "installPath": "bin/espeak-ng-data/fa_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/fa_dict",
           "mirrorPath": "tts/1/espeak-ng-data/fa_dict"
@@ -7346,7 +7346,7 @@
       "files": [
         {
           "name": "fi_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 43928,
           "installPath": "bin/espeak-ng-data/fi_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/fi_dict",
           "mirrorPath": "tts/1/espeak-ng-data/fi_dict"
@@ -7362,7 +7362,7 @@
       "files": [
         {
           "name": "fr_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 63727,
           "installPath": "bin/espeak-ng-data/fr_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/fr_dict",
           "mirrorPath": "tts/1/espeak-ng-data/fr_dict"
@@ -7378,7 +7378,7 @@
       "files": [
         {
           "name": "hi_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 92143,
           "installPath": "bin/espeak-ng-data/hi_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/hi_dict",
           "mirrorPath": "tts/1/espeak-ng-data/hi_dict"
@@ -7394,7 +7394,7 @@
       "files": [
         {
           "name": "hu_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 177886,
           "installPath": "bin/espeak-ng-data/hu_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/hu_dict",
           "mirrorPath": "tts/1/espeak-ng-data/hu_dict"
@@ -7410,7 +7410,7 @@
       "files": [
         {
           "name": "id_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 43458,
           "installPath": "bin/espeak-ng-data/id_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/id_dict",
           "mirrorPath": "tts/1/espeak-ng-data/id_dict"
@@ -7426,7 +7426,7 @@
       "files": [
         {
           "name": "is_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 44354,
           "installPath": "bin/espeak-ng-data/is_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/is_dict",
           "mirrorPath": "tts/1/espeak-ng-data/is_dict"
@@ -7442,7 +7442,7 @@
       "files": [
         {
           "name": "it_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 154408,
           "installPath": "bin/espeak-ng-data/it_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/it_dict",
           "mirrorPath": "tts/1/espeak-ng-data/it_dict"
@@ -7458,7 +7458,7 @@
       "files": [
         {
           "name": "ja_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 47652,
           "installPath": "bin/espeak-ng-data/ja_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/ja_dict",
           "mirrorPath": "tts/1/espeak-ng-data/ja_dict"
@@ -7474,7 +7474,7 @@
       "files": [
         {
           "name": "ko_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 47523,
           "installPath": "bin/espeak-ng-data/ko_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/ko_dict",
           "mirrorPath": "tts/1/espeak-ng-data/ko_dict"
@@ -7490,7 +7490,7 @@
       "files": [
         {
           "name": "lv_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 66337,
           "installPath": "bin/espeak-ng-data/lv_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/lv_dict",
           "mirrorPath": "tts/1/espeak-ng-data/lv_dict"
@@ -7506,7 +7506,7 @@
       "files": [
         {
           "name": "ml_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 92345,
           "installPath": "bin/espeak-ng-data/ml_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/ml_dict",
           "mirrorPath": "tts/1/espeak-ng-data/ml_dict"
@@ -7522,7 +7522,7 @@
       "files": [
         {
           "name": "nl_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 65396,
           "installPath": "bin/espeak-ng-data/nl_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/nl_dict",
           "mirrorPath": "tts/1/espeak-ng-data/nl_dict"
@@ -7538,7 +7538,7 @@
       "files": [
         {
           "name": "no_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 4178,
           "installPath": "bin/espeak-ng-data/no_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/no_dict",
           "mirrorPath": "tts/1/espeak-ng-data/no_dict"
@@ -7554,7 +7554,7 @@
       "files": [
         {
           "name": "pl_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 76620,
           "installPath": "bin/espeak-ng-data/pl_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/pl_dict",
           "mirrorPath": "tts/1/espeak-ng-data/pl_dict"
@@ -7570,7 +7570,7 @@
       "files": [
         {
           "name": "pt_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 76389,
           "installPath": "bin/espeak-ng-data/pt_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/pt_dict",
           "mirrorPath": "tts/1/espeak-ng-data/pt_dict"
@@ -7586,7 +7586,7 @@
       "files": [
         {
           "name": "ro_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 68538,
           "installPath": "bin/espeak-ng-data/ro_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/ro_dict",
           "mirrorPath": "tts/1/espeak-ng-data/ro_dict"
@@ -7602,7 +7602,7 @@
       "files": [
         {
           "name": "ru_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 8538195,
           "installPath": "bin/espeak-ng-data/ru_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/ru_dict",
           "mirrorPath": "tts/1/espeak-ng-data/ru_dict"
@@ -7618,7 +7618,7 @@
       "files": [
         {
           "name": "sk_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 50002,
           "installPath": "bin/espeak-ng-data/sk_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/sk_dict",
           "mirrorPath": "tts/1/espeak-ng-data/sk_dict"
@@ -7634,7 +7634,7 @@
       "files": [
         {
           "name": "sl_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 45047,
           "installPath": "bin/espeak-ng-data/sl_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/sl_dict",
           "mirrorPath": "tts/1/espeak-ng-data/sl_dict"
@@ -7650,7 +7650,7 @@
       "files": [
         {
           "name": "sq_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 45003,
           "installPath": "bin/espeak-ng-data/sq_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/sq_dict",
           "mirrorPath": "tts/1/espeak-ng-data/sq_dict"
@@ -7666,7 +7666,7 @@
       "files": [
         {
           "name": "sr_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 46832,
           "installPath": "bin/espeak-ng-data/sr_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/sr_dict",
           "mirrorPath": "tts/1/espeak-ng-data/sr_dict"
@@ -7682,7 +7682,7 @@
       "files": [
         {
           "name": "sv_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 47836,
           "installPath": "bin/espeak-ng-data/sv_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/sv_dict",
           "mirrorPath": "tts/1/espeak-ng-data/sv_dict"
@@ -7698,7 +7698,7 @@
       "files": [
         {
           "name": "te_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 94837,
           "installPath": "bin/espeak-ng-data/te_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/te_dict",
           "mirrorPath": "tts/1/espeak-ng-data/te_dict"
@@ -7714,7 +7714,7 @@
       "files": [
         {
           "name": "tr_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 46793,
           "installPath": "bin/espeak-ng-data/tr_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/tr_dict",
           "mirrorPath": "tts/1/espeak-ng-data/tr_dict"
@@ -7730,7 +7730,7 @@
       "files": [
         {
           "name": "uk_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 3492,
           "installPath": "bin/espeak-ng-data/uk_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/uk_dict",
           "mirrorPath": "tts/1/espeak-ng-data/uk_dict"
@@ -7746,7 +7746,7 @@
       "files": [
         {
           "name": "vi_dict",
-          "sizeBytes": 0,
+          "sizeBytes": 52608,
           "installPath": "bin/espeak-ng-data/vi_dict",
           "url": "https://offline-translator.davidv.dev/tts/1/espeak-ng-data/vi_dict",
           "mirrorPath": "tts/1/espeak-ng-data/vi_dict"
@@ -11254,7 +11254,7 @@
       "files": [
         {
           "name": "adguard-mobile.txt",
-          "sizeBytes": 0,
+          "sizeBytes": 504571,
           "installPath": "adblock/adguard-mobile.txt",
           "url": "https://filters.adtidy.org/extension/ublock/filters/11.txt"
         }
@@ -11271,7 +11271,7 @@
       "files": [
         {
           "name": "easylist.txt",
-          "sizeBytes": 0,
+          "sizeBytes": 2267870,
           "installPath": "adblock/easylist.txt",
           "url": "https://easylist.to/easylist/easylist.txt"
         }
@@ -11288,7 +11288,7 @@
       "files": [
         {
           "name": "easyprivacy.txt",
-          "sizeBytes": 0,
+          "sizeBytes": 1481604,
           "installPath": "adblock/easyprivacy.txt",
           "url": "https://easylist.to/easylist/easyprivacy.txt"
         }
@@ -11305,7 +11305,7 @@
       "files": [
         {
           "name": "fanboy-annoyance.txt",
-          "sizeBytes": 0,
+          "sizeBytes": 1649123,
           "installPath": "adblock/fanboy-annoyance.txt",
           "url": "https://easylist.to/easylist/fanboy-annoyance.txt"
         }
@@ -11322,7 +11322,7 @@
       "files": [
         {
           "name": "ublock-filters.txt",
-          "sizeBytes": 0,
+          "sizeBytes": 477175,
           "installPath": "adblock/ublock-filters.txt",
           "url": "https://ublockorigin.github.io/uAssets/filters/filters.txt"
         }
@@ -11339,7 +11339,7 @@
       "files": [
         {
           "name": "ublock-unbreak.txt",
-          "sizeBytes": 0,
+          "sizeBytes": 273829,
           "installPath": "adblock/ublock-unbreak.txt",
           "url": "https://ublockorigin.github.io/uAssets/filters/unbreak.txt"
         }

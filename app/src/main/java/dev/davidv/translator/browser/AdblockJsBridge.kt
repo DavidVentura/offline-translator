@@ -23,24 +23,34 @@ import org.json.JSONArray
 
 class AdblockJsBridge(
   private val adblockManager: AdblockManager,
+  private val bridgeToken: String,
 ) {
+  companion object {
+    private const val MAX_VALUES = 5000
+    private const val MAX_JSON_CHARS = 200_000
+  }
+
   @JavascriptInterface
   fun lookupGenericSelectors(
     classesJson: String,
     idsJson: String,
     exceptionsJson: String,
+    token: String,
   ): String {
-    val classes = parseStringArray(classesJson)
-    val ids = parseStringArray(idsJson)
-    val exceptions = parseStringArray(exceptionsJson)
+    if (token != bridgeToken) return "[]"
+    val classes = parseStringArray(classesJson) ?: return "[]"
+    val ids = parseStringArray(idsJson) ?: return "[]"
+    val exceptions = parseStringArray(exceptionsJson) ?: return "[]"
     val selectors = adblockManager.hiddenClassIdSelectors(classes, ids, exceptions)
     val arr = JSONArray()
     selectors.forEach { arr.put(it) }
     return arr.toString()
   }
 
-  private fun parseStringArray(json: String): List<String> {
-    val arr = JSONArray(json)
-    return List(arr.length()) { arr.getString(it) }
+  private fun parseStringArray(json: String): List<String>? {
+    if (json.length > MAX_JSON_CHARS) return null
+    val arr = runCatching { JSONArray(json) }.getOrNull() ?: return null
+    if (arr.length() > MAX_VALUES) return null
+    return List(arr.length()) { i -> arr.optString(i, "") }
   }
 }

@@ -22,6 +22,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
@@ -35,6 +36,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -47,6 +49,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -72,6 +75,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import org.json.JSONTokener
+import java.util.UUID
 
 class BrowserActivity : ComponentActivity() {
   companion object {
@@ -174,6 +178,7 @@ private fun BrowserScreen(
   val languageState by viewModel.languageState.collectAsStateWithLifecycle()
   val languageMetadata by viewModel.languageMetadata.collectAsStateWithLifecycle()
   val url by viewModel.url.collectAsStateWithLifecycle()
+  val darkTheme = isSystemInDarkTheme()
 
   if (to == null) return
 
@@ -211,6 +216,7 @@ private fun BrowserScreen(
       contentScript = contentScript,
       translationService = translationService,
       adblockManager = adblockManager,
+      darkTheme = darkTheme,
       onScrollDelta = { y, dy ->
         if (y < TOPBAR_TOP_SHOW_PX) {
           topBarVisible = true
@@ -268,7 +274,7 @@ private fun BrowserScreen(
         LanguageSelectionRow(
           from = from!!,
           to = to!!,
-          canSwap = true,
+          canSwap = viewModel.canSwapLanguages(from!!, to!!),
           languageState = languageState,
           languageMetadata = languageMetadata,
           onMessage = viewModel::onMessage,
@@ -323,6 +329,7 @@ private fun BrowserWebView(
   contentScript: String,
   translationService: TranslationService,
   adblockManager: AdblockManager,
+  darkTheme: Boolean,
   onScrollDelta: (y: Int, dy: Int) -> Unit,
   onWebViewReady: (WebView) -> Unit,
   onPageStarted: () -> Unit,
@@ -331,91 +338,116 @@ private fun BrowserWebView(
   val scope = androidx.compose.runtime.rememberCoroutineScope()
   val bridgeRef = remember { arrayOfNulls<TranslatorJsBridge>(1) }
   val currentPageUrlRef = remember { java.util.concurrent.atomic.AtomicReference<String?>(null) }
+  val bridgeToken = remember { UUID.randomUUID().toString() }
+  val translatorBridgeName = remember { "__translatorBridge_${bridgeToken.filter { it != '-' }}" }
+  val adblockBridgeName = remember { "__adblockBridge_${bridgeToken.filter { it != '-' }}" }
 
-  AndroidView(
-    modifier = Modifier.fillMaxSize(),
-    factory = { ctx ->
-      val webView =
-        WebView(ctx).apply {
-          layoutParams =
-            ViewGroup.LayoutParams(
-              ViewGroup.LayoutParams.MATCH_PARENT,
-              ViewGroup.LayoutParams.MATCH_PARENT,
-            )
-          settings.javaScriptEnabled = true
-          settings.domStorageEnabled = true
+  key(darkTheme) {
+    AndroidView(
+      modifier = Modifier.fillMaxSize(),
+      factory = { ctx ->
+        val webViewContext =
+          ContextThemeWrapper(
+            ctx,
+            if (darkTheme) {
+              R.style.Theme_Translator_WebView_Dark
+            } else {
+              R.style.Theme_Translator_WebView_Light
+            },
+          )
+        val webView =
+          WebView(webViewContext).apply {
+            layoutParams =
+              ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+              )
+            settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+          }
+
+        webView.setOnScrollChangeListener { _, _, y, _, oldY ->
+          onScrollDelta(y, y - oldY)
         }
 
-      webView.setOnScrollChangeListener { _, _, y, _, oldY ->
-        onScrollDelta(y, y - oldY)
-      }
+        val bridge =
+          TranslatorJsBridge(
+            scope = scope,
+            webView = webView,
+            translationService = translationService,
+            bridgeToken = bridgeToken,
+            sourceLanguage = sourceLang,
+            targetLanguage = targetLang,
+          )
+        bridgeRef[0] = bridge
+        webView.addJavascriptInterface(bridge, translatorBridgeName)
+        webView.addJavascriptInterface(AdblockJsBridge(adblockManager, bridgeToken), adblockBridgeName)
 
-      val bridge =
-        TranslatorJsBridge(
-          scope = scope,
-          webView = webView,
-          translationService = translationService,
-          sourceLanguage = sourceLang,
-          targetLanguage = targetLang,
-        )
-      bridgeRef[0] = bridge
-      webView.addJavascriptInterface(bridge, "__translatorBridge")
-      webView.addJavascriptInterface(AdblockJsBridge(adblockManager), "__adblockBridge")
+        webView.webViewClient =
+          object : WebViewClient() {
+            override fun onPageStarted(
+              view: WebView?,
+              url: String?,
+              favicon: Bitmap?,
+            ) {
+              Log.i("AdblockManager", "onPageStarted view=$view url=$url")
+              onPageStarted()
+              currentPageUrlRef.set(url)
+              if (view != null && url != null) {
+                applyCosmeticFiltersAsync(
+                  scope,
+                  view,
+                  adblockManager,
+                  url,
+                  adblockBridgeName,
+                  bridgeToken,
+                )
+              }
+            }
 
-      webView.webViewClient =
-        object : WebViewClient() {
-          override fun onPageStarted(
-            view: WebView?,
-            url: String?,
-            favicon: Bitmap?,
-          ) {
-            Log.i("AdblockManager", "onPageStarted view=$view url=$url")
-            onPageStarted()
-            currentPageUrlRef.set(url)
-            if (view != null && url != null) {
-              applyCosmeticFiltersAsync(scope, view, adblockManager, url)
+            override fun onPageFinished(
+              view: WebView?,
+              url: String?,
+            ) {
+              view?.evaluateJavascript(
+                buildTranslatorContentJs(contentScript, translatorBridgeName, bridgeToken),
+                null,
+              )
+              if (view != null) onPageFinished(view)
+            }
+
+            override fun shouldInterceptRequest(
+              view: WebView?,
+              request: WebResourceRequest?,
+            ): WebResourceResponse? {
+              if (request == null) return null
+              val topUrl = currentPageUrlRef.get() ?: return null
+              val sourceUrl =
+                if (request.isForMainFrame) topUrl else refererOf(request) ?: topUrl
+              val verdict =
+                adblockManager.checkRequest(
+                  url = request.url.toString(),
+                  sourceUrl = sourceUrl,
+                  requestType = mapRequestType(request),
+                ) ?: return null
+              if (!verdict.matched || verdict.exception) return null
+              return WebResourceResponse("text/plain", "utf-8", ByteArray(0).inputStream())
             }
           }
 
-          override fun onPageFinished(
-            view: WebView?,
-            url: String?,
-          ) {
-            view?.evaluateJavascript(contentScript, null)
-            if (view != null) onPageFinished(view)
-          }
-
-          override fun shouldInterceptRequest(
-            view: WebView?,
-            request: WebResourceRequest?,
-          ): WebResourceResponse? {
-            if (request == null) return null
-            val topUrl = currentPageUrlRef.get() ?: return null
-            val sourceUrl =
-              if (request.isForMainFrame) topUrl else refererOf(request) ?: topUrl
-            val verdict =
-              adblockManager.checkRequest(
-                url = request.url.toString(),
-                sourceUrl = sourceUrl,
-                requestType = mapRequestType(request),
-              ) ?: return null
-            if (!verdict.matched || verdict.exception) return null
-            return WebResourceResponse("text/plain", "utf-8", ByteArray(0).inputStream())
-          }
-        }
-
-      onWebViewReady(webView)
-      webView.loadUrl(url)
-      webView
-    },
-    update = { webView ->
-      val b = bridgeRef[0] ?: return@AndroidView
-      val langsChanged = b.sourceLanguage != sourceLang || b.targetLanguage != targetLang
-      b.sourceLanguage = sourceLang
-      b.targetLanguage = targetLang
-      if (langsChanged) webView.reload()
-    },
-  )
+        onWebViewReady(webView)
+        webView.loadUrl(url)
+        webView
+      },
+      update = { webView ->
+        val b = bridgeRef[0] ?: return@AndroidView
+        val langsChanged = b.sourceLanguage != sourceLang || b.targetLanguage != targetLang
+        b.sourceLanguage = sourceLang
+        b.targetLanguage = targetLang
+        if (langsChanged) webView.reload()
+      },
+    )
+  }
 }
 
 private fun buildReaderModeJs(
@@ -430,6 +462,17 @@ private fun buildReaderModeJs(
     "(0, eval)($readerModeLiteral);"
 }
 
+private fun buildTranslatorContentJs(
+  contentScript: String,
+  bridgeName: String,
+  bridgeToken: String,
+): String =
+  "(function(){\n" +
+    "var __translatorBridgeName = ${JSONObject.quote(bridgeName)};\n" +
+    "var __translatorBridgeToken = ${JSONObject.quote(bridgeToken)};\n" +
+    contentScript +
+    "\n})();"
+
 private fun decodeJavascriptString(value: String): String? {
   if (value == "null") return null
   return runCatching { JSONTokener(value).nextValue() as? String }.getOrNull()
@@ -440,6 +483,8 @@ private fun applyCosmeticFiltersAsync(
   webView: WebView,
   adblockManager: AdblockManager,
   url: String,
+  adblockBridgeName: String,
+  bridgeToken: String,
 ) {
   Log.i("AdblockManager", "onPageStarted url=$url scheduling lookup")
   scope.launch {
@@ -466,6 +511,8 @@ private fun applyCosmeticFiltersAsync(
         cosmetic.exceptions,
         cosmetic.generichide,
         cosmetic.injectedScript,
+        adblockBridgeName,
+        bridgeToken,
       )
     if (js.isEmpty()) {
       Log.i("AdblockManager", "url=$url empty cosmetic, skipping")
@@ -482,6 +529,8 @@ private fun buildCosmeticJs(
   exceptions: List<String>,
   generichide: Boolean,
   injectedScript: String,
+  adblockBridgeName: String,
+  bridgeToken: String,
 ): String {
   if (hideSelectors.isEmpty() && styleRules.isEmpty() &&
     proceduralFilters.isEmpty() && injectedScript.isBlank() && generichide
@@ -504,6 +553,8 @@ private fun buildCosmeticJs(
   val exceptionsLiteral =
     org.json.JSONArray().apply { exceptions.forEach { put(it) } }.toString()
   val scriptLiteral = JSONObject.quote(injectedScript)
+  val adblockBridgeNameLiteral = JSONObject.quote(adblockBridgeName)
+  val bridgeTokenLiteral = JSONObject.quote(bridgeToken)
   val generichideLiteral = if (generichide) "true" else "false"
   return """
     (function(){
@@ -513,6 +564,8 @@ private fun buildCosmeticJs(
       var procedurals = $proceduralLiteral;
       var exceptions = $exceptionsLiteral;
       var generichide = $generichideLiteral;
+      var adblockBridgeName = $adblockBridgeNameLiteral;
+      var bridgeToken = $bridgeTokenLiteral;
 
       var jsInjected = false;
       var validatedHideCss = null;
@@ -729,7 +782,8 @@ private fun buildCosmeticJs(
 
       function applyGeneric() {
         if (generichide) return;
-        if (!window.__adblockBridge) return;
+        var adblockBridge = window[adblockBridgeName];
+        if (!adblockBridge) return;
         var classes = new Set();
         var ids = new Set();
         var els = document.getElementsByTagName('*');
@@ -749,7 +803,7 @@ private fun buildCosmeticJs(
         var exArr = JSON.stringify(exceptions || []);
         var resultJson;
         try {
-          resultJson = window.__adblockBridge.lookupGenericSelectors(classArr, idArr, exArr);
+          resultJson = adblockBridge.lookupGenericSelectors(classArr, idArr, exArr, bridgeToken);
         } catch (e) {
           console.warn('[adblock] generic lookup failed', e);
           return;

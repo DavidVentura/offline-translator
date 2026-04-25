@@ -2,6 +2,10 @@
   if (window.__translator) return;
 
   const nonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const bridgeName = typeof __translatorBridgeName === 'string' ? __translatorBridgeName : null;
+  const bridgeToken = typeof __translatorBridgeToken === 'string' ? __translatorBridgeToken : null;
+  const bridge = bridgeName ? window[bridgeName] : null;
+  if (!bridge || !bridgeToken) return;
   const pending = new Map();
   let nextId = 1;
 
@@ -10,7 +14,7 @@
       const id = nextId++;
       pending.set(id, { resolve, reject });
       try {
-        window.__translatorBridge[method](id, JSON.stringify(payload), nonce);
+        bridge[method](id, JSON.stringify(payload), bridgeToken, nonce);
       } catch (e) {
         pending.delete(id);
         reject(e);
@@ -388,7 +392,6 @@
   }
 
   window.__translator = {
-    nonce,
     resolve(id, results, callerNonce) {
       if (callerNonce !== nonce) return;
       const entry = pending.get(id);
@@ -402,9 +405,6 @@
       }
       entry.resolve(parsed);
     },
-    translateHtmlFragments: fragments => send('translateHtmlFragments', fragments),
-    translateTexts: texts => send('translateTexts', texts),
-    scan,
   };
 
   function hookSpaNavigation() {
