@@ -9,12 +9,42 @@
   const pending = new Map();
   let nextId = 1;
 
+  // Wire format: length-prefixed records. `<len>:<text><len>:<text>...`
+  // where `len` is the UTF-16 code-unit count of the text (matches JS
+  // String.length and Kotlin String.length). Robust to any content,
+  // cheaper than JSON because no per-char escaping.
+  function encodeWire(items) {
+    let s = '';
+    for (let i = 0; i < items.length; i++) {
+      const t = items[i];
+      s += t.length + ':' + t;
+    }
+    return s;
+  }
+
+  function decodeWire(s) {
+    const items = [];
+    let i = 0;
+    while (i < s.length) {
+      const colon = s.indexOf(':', i);
+      if (colon < 0) return null;
+      const len = parseInt(s.slice(i, colon), 10);
+      if (!Number.isFinite(len) || len < 0) return null;
+      const start = colon + 1;
+      const end = start + len;
+      if (end > s.length) return null;
+      items.push(s.slice(start, end));
+      i = end;
+    }
+    return items;
+  }
+
   function send(method, payload) {
     return new Promise((resolve, reject) => {
       const id = nextId++;
       pending.set(id, { resolve, reject });
       try {
-        bridge[method](id, JSON.stringify(payload), bridgeToken, nonce);
+        bridge[method](id, encodeWire(payload), bridgeToken, nonce);
       } catch (e) {
         pending.delete(id);
         reject(e);
@@ -88,37 +118,34 @@
     return !!t && t.trim().length > 0;
   }
 
-  function hasBlockLikeDescendant(el) {
-    for (const child of el.children) {
-      if (isBlockLike(child)) return true;
-      if (hasBlockLikeDescendant(child)) return true;
-    }
-    return false;
-  }
-
-  function isLeafUnit(el) {
-    if (!isBlockLike(el)) return false;
-    if (hasBlockLikeDescendant(el)) return false;
-    return hasMeaningfulText(el);
-  }
-
   function collectUnits(root, units) {
-    const children = root.children;
-    for (let i = 0; i < children.length; i++) {
-      walk(children[i], units);
+    const kids = root.children;
+    for (let i = 0; i < kids.length; i++) {
+      walk(kids[i], units);
     }
   }
 
+  // Single bottom-up pass: returns whether this subtree contains any
+  // block-like element so the caller can decide if it should itself be a
+  // leaf unit. Pushes leaf units into `target` as it goes. Inside skipped
+  // subtrees `target` is null — we still recurse to report block-like-ness
+  // (preserving the original semantic where skipped descendants prevent an
+  // ancestor from becoming a leaf), but we don't collect anything.
   function walk(el, units) {
-    if (isSkippedBySelf(el)) return;
-    if (el.hasAttribute('data-xlated')) return;
-    if (el.shadowRoot) collectUnits(el.shadowRoot, units);
-
-    if (isLeafUnit(el)) {
-      units.push(el);
-    } else {
-      collectUnits(el, units);
+    if (el.hasAttribute('data-xlated')) return true;
+    const skipped = isSkippedBySelf(el);
+    const target = skipped ? null : units;
+    if (!skipped && el.shadowRoot) collectUnits(el.shadowRoot, units);
+    let childHasBlockLike = false;
+    const kids = el.children;
+    for (let i = 0; i < kids.length; i++) {
+      if (walk(kids[i], target)) childHasBlockLike = true;
     }
+    const myselfBlockLike = isBlockLike(el);
+    if (target && myselfBlockLike && !childHasBlockLike && hasMeaningfulText(el)) {
+      target.push(el);
+    }
+    return myselfBlockLike || childHasBlockLike;
   }
 
   const queued = new Set();
@@ -367,11 +394,7 @@
       if (!node.isConnected) continue;
       if (isSkippedByAncestor(node)) continue;
       if (hasTranslatedAncestor(node)) continue;
-      if (isLeafUnit(node)) {
-        newUnits.push(node);
-      } else {
-        collectUnits(node, newUnits);
-      }
+      walk(node, newUnits);
       observeAttrCandidates(node);
     }
     observeUnits(newUnits);
@@ -397,12 +420,8 @@
       const entry = pending.get(id);
       if (!entry) return;
       pending.delete(id);
-      let parsed;
-      try {
-        parsed = typeof results === 'string' ? JSON.parse(results) : results;
-      } catch (e) {
-        parsed = results;
-      }
+      const parsed =
+        typeof results === 'string' ? (decodeWire(results) || []) : results;
       entry.resolve(parsed);
     },
   };

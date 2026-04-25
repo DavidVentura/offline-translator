@@ -26,7 +26,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONObject
 
 class TranslatorJsBridge(
@@ -46,13 +45,13 @@ class TranslatorJsBridge(
   @JavascriptInterface
   fun translateHtmlFragments(
     requestId: Int,
-    fragmentsJson: String,
+    fragmentsPayload: String,
     token: String,
     nonce: String,
   ) {
     if (token != bridgeToken) return
     scope.launch {
-      val fragments = decodeStringArray(fragmentsJson)
+      val fragments = decodeWire(fragmentsPayload)
       if (fragments == null) {
         resolveOnJs(requestId, emptyList(), nonce)
         return@launch
@@ -71,13 +70,13 @@ class TranslatorJsBridge(
   @JavascriptInterface
   fun translateTexts(
     requestId: Int,
-    textsJson: String,
+    textsPayload: String,
     token: String,
     nonce: String,
   ) {
     if (token != bridgeToken) return
     scope.launch {
-      val texts = decodeStringArray(textsJson)
+      val texts = decodeWire(textsPayload)
       if (texts == null) {
         resolveOnJs(requestId, emptyList(), nonce)
         return@launch
@@ -115,7 +114,7 @@ class TranslatorJsBridge(
     translated: List<String>,
     nonce: String,
   ) {
-    val payload = encodeStringArray(translated)
+    val payload = JSONObject.quote(encodeWire(translated))
     val jsNonce = JSONObject.quote(nonce)
     withContext(Dispatchers.Main) {
       webView.evaluateJavascript(
@@ -125,26 +124,41 @@ class TranslatorJsBridge(
     }
   }
 
-  private fun decodeStringArray(json: String): List<String>? {
-    if (json.length > MAX_TOTAL_CHARS + 4096) return null
-    val arr = runCatching { JSONArray(json) }.getOrNull() ?: return null
-    if (arr.length() > MAX_BATCH_ITEMS) return null
-    val values = ArrayList<String>(arr.length())
-    var totalChars = 0
-    for (i in 0 until arr.length()) {
-      if (arr.isNull(i)) return null
-      val value = arr.getString(i)
-      if (value.length > MAX_ITEM_CHARS) return null
-      totalChars += value.length
-      if (totalChars > MAX_TOTAL_CHARS) return null
-      values += value
+  // Wire format: length-prefixed records `<len>:<text><len>:<text>...`
+  // where `len` is the UTF-16 code-unit count (matches String.length on
+  // both sides). Robust to any content; cheaper than JSON because no
+  // per-char escape work.
+  private fun decodeWire(payload: String): List<String>? {
+    if (payload.isEmpty()) return emptyList()
+    if (payload.length > MAX_TOTAL_CHARS + MAX_BATCH_ITEMS * 8) return null
+    val items = ArrayList<String>()
+    var i = 0
+    val n = payload.length
+    while (i < n) {
+      val colon = payload.indexOf(':', i)
+      if (colon < 0) return null
+      val len =
+        try {
+          payload.substring(i, colon).toInt()
+        } catch (_: NumberFormatException) {
+          return null
+        }
+      if (len < 0 || len > MAX_ITEM_CHARS) return null
+      val start = colon + 1
+      val end = start + len
+      if (end > n) return null
+      items.add(payload.substring(start, end))
+      if (items.size > MAX_BATCH_ITEMS) return null
+      i = end
     }
-    return values
+    return items
   }
 
-  private fun encodeStringArray(values: List<String>): String {
-    val arr = JSONArray()
-    values.forEach { arr.put(it) }
-    return arr.toString()
+  private fun encodeWire(values: List<String>): String {
+    val sb = StringBuilder()
+    for (v in values) {
+      sb.append(v.length).append(':').append(v)
+    }
+    return sb.toString()
   }
 }
