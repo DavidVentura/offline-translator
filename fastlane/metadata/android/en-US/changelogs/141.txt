@@ -1,2 +1,6 @@
 - Small UI fixes
 - Improve TTS pacing
+- Implement tap-to-translate notification
+- Implement quick settings launcher
+- Implement "translate website" - share a URL and it will be translated
+- Fix use-after-free on CLD2 causing crash on GrapheneOS
