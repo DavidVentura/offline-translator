@@ -90,6 +90,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Print every resolved file path in dry-run mode and every completed file in download mode.",
     )
+    parser.add_argument(
+        "--refresh-adblock",
+        action="store_true",
+        help="Re-download adblock source lists even when they already exist.",
+    )
     return parser.parse_args()
 
 
@@ -143,7 +148,7 @@ def resolve_destination(pack: dict, file_info: dict, output_dir: Path) -> Path:
     return output_dir / feature / relative
 
 
-def build_download_entries(manifest: dict, output_dir: Path) -> list[DownloadEntry]:
+def build_download_entries(manifest: dict, output_dir: Path, refresh_adblock: bool) -> list[DownloadEntry]:
     entries_by_dest: dict[Path, DownloadEntry] = {}
 
     for pack_id, pack in manifest.get("packs", {}).items():
@@ -157,7 +162,7 @@ def build_download_entries(manifest: dict, output_dir: Path) -> list[DownloadEnt
                 url=file_info["url"],
                 dest=dest,
                 size_bytes=size_bytes,
-                refresh_always=pack.get("kind") == catalog_adblock.ADBLOCK_KIND or size_bytes is None,
+                refresh_always=refresh_adblock and pack.get("kind") == catalog_adblock.ADBLOCK_KIND,
             )
 
             existing = entries_by_dest.get(dest)
@@ -221,7 +226,7 @@ def update_manifest_sizes(manifest: dict, output_dir: Path, manifest_path: Path)
                 continue
             current_size = file_info.get("sizeBytes")
             actual_size = dest.stat().st_size
-            if refresh_pack or not isinstance(current_size, int) or current_size <= 0:
+            if not isinstance(current_size, int) or current_size <= 0:
                 if current_size != actual_size:
                     file_info["sizeBytes"] = actual_size
                     changed = True
@@ -298,7 +303,7 @@ async def fetch_all(entries: list[DownloadEntry], concurrency: int, timeout: int
 async def main() -> int:
     args = parse_args()
     manifest = load_manifest(args.manifest)
-    entries = build_download_entries(manifest, args.output)
+    entries = build_download_entries(manifest, args.output, args.refresh_adblock)
     total_files, total_bytes, missing_files, missing_bytes = summarize(entries, args.output)
     print(f"size_pretty={format_size(total_bytes)}")
     print(f"bytes_to_download_pretty={format_size(missing_bytes)}")

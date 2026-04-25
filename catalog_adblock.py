@@ -53,6 +53,11 @@ def build_adblock_zip(source_catalog: dict, bucket_dir: Path) -> int:
         raise FileNotFoundError(f"Missing {len(missing)} adblock source files.\n{sample}")
 
     output_path = adblock_bundle_path(bucket_dir)
+    if output_path.exists():
+        output_mtime = output_path.stat().st_mtime
+        if all(path.stat().st_mtime <= output_mtime for _, path in source_files):
+            return 0
+
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temp_path = output_path.with_name(output_path.name + ".tmp")
     with ZipFile(temp_path, "w", compression=ZIP_DEFLATED) as archive:
