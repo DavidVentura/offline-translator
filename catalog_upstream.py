@@ -5,6 +5,63 @@ import catalog_mirror
 import catalog_tts
 
 
+ADBLOCK_PACK_KIND = "adblock"
+
+ADBLOCK_LISTS = {
+    "easylist": {
+        "url": "https://easylist.to/easylist/easylist.txt",
+        "filename": "easylist.txt",
+        "description": "EasyList — primary advertising filter list.",
+    },
+    "easyprivacy": {
+        "url": "https://easylist.to/easylist/easyprivacy.txt",
+        "filename": "easyprivacy.txt",
+        "description": "EasyPrivacy — tracking and analytics filter list.",
+    },
+    "fanboy-annoyance": {
+        "url": "https://easylist.to/easylist/fanboy-annoyance.txt",
+        "filename": "fanboy-annoyance.txt",
+        "description": "Fanboy's Annoyances — cookie banners, social widgets, sticky video.",
+    },
+    "ublock-filters": {
+        "url": "https://ublockorigin.github.io/uAssets/filters/filters.txt",
+        "filename": "ublock-filters.txt",
+        "description": "uBlock Origin filters — cosmetic supplement to EasyList.",
+    },
+    "ublock-unbreak": {
+        "url": "https://ublockorigin.github.io/uAssets/filters/unbreak.txt",
+        "filename": "ublock-unbreak.txt",
+        "description": "uBlock Origin unbreak — exceptions to fix sites broken by other lists.",
+    },
+    "adguard-mobile": {
+        "url": "https://filters.adtidy.org/extension/ublock/filters/11.txt",
+        "filename": "adguard-mobile.txt",
+        "description": "AdGuard Mobile Ads — mobile-specific ad slots and tracker patterns.",
+    },
+}
+
+
+def add_adblock_packs(catalog: dict) -> None:
+    for list_id, info in sorted(ADBLOCK_LISTS.items()):
+        catalog["packs"][f"support-adblock-{list_id}"] = {
+            "feature": "support",
+            "kind": ADBLOCK_PACK_KIND,
+            "files": [
+                {
+                    "name": info["filename"],
+                    "sizeBytes": 0,
+                    "installPath": f"adblock/{info['filename']}",
+                    "url": info["url"],
+                }
+            ],
+            "dependsOn": [],
+            "metadata": {
+                "listId": list_id,
+                "description": info["description"],
+            },
+        }
+
+
 MODELS_MANIFEST_URL = "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json"
 TESSERACT_BASE_URL = "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main"
 DICTIONARY_BASE_URL = "https://offline-translator.davidv.dev/dictionaries"
@@ -361,6 +418,7 @@ def build_source_catalog(
         tts_version=tts_version,
         espeak_core_zip_size=espeak_core_zip_size,
     )
+    add_adblock_packs(catalog)
     catalog_mirror.apply_mirror_paths(catalog)
     catalog.setdefault("sources", {})
     catalog["sources"].update(

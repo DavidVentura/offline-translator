@@ -7,6 +7,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import catalog_base
+import catalog_adblock
 import catalog_mirror
 import catalog_tts
 import catalog_upstream
@@ -135,6 +136,8 @@ def build_public_catalog(source_catalog: dict, bucket_dir: Path, base_url: str, 
     published.pop("dictionaryBaseUrl", None)
 
     missing_paths = []
+
+    catalog_adblock.publish_adblock_pack(published, bucket_dir, base_url)
 
     for pack in published.get("packs", {}).values():
         for file_info in pack.get("files", []):

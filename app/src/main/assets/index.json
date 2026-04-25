@@ -1,10 +1,10 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1776550317,
+  "generatedAt": 1777135794,
   "dictionaryVersion": 1,
   "sources": {
     "languageIndexVersion": 1,
-    "languageIndexUpdatedAt": 1776550317,
+    "languageIndexUpdatedAt": 1777135794,
     "dictionaryIndexVersion": 1,
     "dictionaryIndexUpdatedAt": 1774864382,
     "gcsModelsUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
@@ -10138,6 +10138,59 @@
       "dependsOn": [
         "tts-espeak-dict-cmn"
       ]
+    },
+    "support-adblock-lists-v1": {
+      "feature": "support",
+      "kind": "adblock",
+      "files": [
+        {
+          "name": "adblock-lists-v1.zip",
+          "sizeBytes": 2124678,
+          "installPath": "adblock/adblock-lists-v1.zip",
+          "url": "https://offline-translator.davidv.dev/support/1/adblock/adblock-lists-v1.zip",
+          "archiveFormat": "zip",
+          "extractTo": ".",
+          "deleteAfterExtract": true,
+          "installMarkerPath": "adblock/.install-info.json",
+          "installMarkerVersion": 1
+        }
+      ],
+      "dependsOn": [],
+      "metadata": {
+        "version": 1,
+        "lists": [
+          {
+            "packId": "support-adblock-adguard-mobile",
+            "listId": "adguard-mobile",
+            "description": "AdGuard Mobile Ads — mobile-specific ad slots and tracker patterns."
+          },
+          {
+            "packId": "support-adblock-easylist",
+            "listId": "easylist",
+            "description": "EasyList — primary advertising filter list."
+          },
+          {
+            "packId": "support-adblock-easyprivacy",
+            "listId": "easyprivacy",
+            "description": "EasyPrivacy — tracking and analytics filter list."
+          },
+          {
+            "packId": "support-adblock-fanboy-annoyance",
+            "listId": "fanboy-annoyance",
+            "description": "Fanboy's Annoyances — cookie banners, social widgets, sticky video."
+          },
+          {
+            "packId": "support-adblock-ublock-filters",
+            "listId": "ublock-filters",
+            "description": "uBlock Origin filters — cosmetic supplement to EasyList."
+          },
+          {
+            "packId": "support-adblock-ublock-unbreak",
+            "listId": "ublock-unbreak",
+            "description": "uBlock Origin unbreak — exceptions to fix sites broken by other lists."
+          }
+        ]
+      }
     }
   }
 }

@@ -24,23 +24,29 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -63,6 +69,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.davidv.translator.AppSettings
 import dev.davidv.translator.BackgroundMode
+import dev.davidv.translator.DownloadService
+import dev.davidv.translator.DownloadState
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageCatalog
 import dev.davidv.translator.LanguageMetadataManager
@@ -132,8 +140,11 @@ fun SettingsScreen(
   languageMetadataManager: dev.davidv.translator.LanguageMetadataManager,
   availableLanguages: List<Language>,
   catalog: LanguageCatalog?,
+  adblockDownloadState: DownloadState,
+  adblockInstalled: Boolean,
   onSettingsChange: (AppSettings) -> Unit,
   onManageLanguages: () -> Unit,
+  onDeleteAdblockSupport: () -> Unit,
 ) {
   val context = LocalContext.current
   var showPermissionDialog by remember { mutableStateOf(false) }
@@ -348,6 +359,36 @@ fun SettingsScreen(
               },
             )
           }
+        }
+      }
+
+      // Web Translator Section
+      Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors =
+          CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+          ),
+      ) {
+        Column(
+          modifier = Modifier.padding(16.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          Text(
+            text = "Web Translator",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+          )
+
+          WebTranslatorAssetRow(
+            label = "Adblock support",
+            secondaryLabel = catalog?.supportSizeBytesByKind("adblock")?.let(::formatSize),
+            installed = adblockInstalled,
+            downloadState = adblockDownloadState,
+            onDownload = { DownloadService.startAdblockDownload(context) },
+            onDelete = onDeleteAdblockSupport,
+            onCancel = { DownloadService.cancelAdblockDownload(context) },
+          )
         }
       }
 
@@ -924,6 +965,129 @@ fun SettingsScreen(
   }
 }
 
+@Composable
+private fun WebTranslatorAssetRow(
+  label: String,
+  secondaryLabel: String?,
+  installed: Boolean,
+  downloadState: DownloadState,
+  onDownload: () -> Unit,
+  onDelete: () -> Unit,
+  onCancel: () -> Unit,
+) {
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.SpaceBetween,
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(
+      modifier = Modifier.weight(1f),
+      verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+      Text(
+        text = label,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+      )
+      secondaryLabel?.let { size ->
+        Text(
+          text = size,
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+      }
+    }
+
+    SupportActionButton(
+      downloadState = downloadState,
+      installed = installed,
+      onDownload = onDownload,
+      onDelete = onDelete,
+      onCancel = onCancel,
+    )
+  }
+}
+
+@Composable
+private fun SupportActionButton(
+  downloadState: DownloadState,
+  installed: Boolean,
+  onDownload: () -> Unit,
+  onDelete: () -> Unit,
+  onCancel: () -> Unit,
+) {
+  if (downloadState.isDownloading) {
+    Box(
+      contentAlignment = Alignment.Center,
+      modifier = Modifier.size(40.dp),
+    ) {
+      val targetProgress =
+        if (downloadState.totalSize > 0) {
+          downloadState.downloaded.toFloat() / downloadState.totalSize.toFloat()
+        } else {
+          0f
+        }
+      val animatedProgress by animateFloatAsState(
+        targetValue = targetProgress,
+        animationSpec = tween(durationMillis = 300),
+        label = "adblock-progress",
+      )
+      CircularProgressIndicator(
+        progress = { animatedProgress },
+        modifier = Modifier.size(32.dp),
+      )
+      IconButton(
+        onClick = onCancel,
+        modifier = Modifier.size(32.dp),
+      ) {
+        Icon(
+          painter = painterResource(id = R.drawable.cancel),
+          contentDescription = "Cancel Download",
+        )
+      }
+    }
+    return
+  }
+
+  IconButton(
+    onClick = if (installed) onDelete else onDownload,
+    modifier = Modifier.size(40.dp),
+  ) {
+    Icon(
+      painter =
+        painterResource(
+          id =
+            when {
+              installed -> R.drawable.delete
+              downloadState.isCancelled || downloadState.error != null -> R.drawable.refresh
+              else -> R.drawable.add
+            },
+        ),
+      contentDescription =
+        when {
+          installed -> "Delete"
+          downloadState.isCancelled || downloadState.error != null -> "Retry Download"
+          else -> "Download"
+        },
+    )
+  }
+}
+
+private fun formatSize(sizeBytes: Long): String {
+  val units = listOf("B", "KB", "MB", "GB")
+  var size = sizeBytes.toDouble()
+  var unitIndex = 0
+  while (size >= 1024 && unitIndex < units.lastIndex) {
+    size /= 1024
+    unitIndex++
+  }
+  return if (unitIndex == 0) {
+    "${size.toLong()} ${units[unitIndex]}"
+  } else {
+    "%.1f %s".format(size, units[unitIndex])
+  }
+}
+
 private fun isAssistantRoleHeld(context: android.content.Context): Boolean {
   if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false
   val roleManager = context.getSystemService(RoleManager::class.java) ?: return false
@@ -991,8 +1155,11 @@ fun SettingsScreenPreview() {
       languageMetadataManager = LanguageMetadataManager(context, kotlinx.coroutines.flow.MutableStateFlow(emptyList())),
       availableLanguages = previewLangs,
       catalog = null,
+      adblockDownloadState = DownloadState(),
+      adblockInstalled = false,
       onSettingsChange = {},
       onManageLanguages = {},
+      onDeleteAdblockSupport = {},
     )
   }
 }
@@ -1016,8 +1183,11 @@ fun SettingsScreenDarkPreview() {
       languageMetadataManager = LanguageMetadataManager(context, kotlinx.coroutines.flow.MutableStateFlow(emptyList())),
       availableLanguages = previewLangs,
       catalog = null,
+      adblockDownloadState = DownloadState(),
+      adblockInstalled = true,
       onSettingsChange = {},
       onManageLanguages = {},
+      onDeleteAdblockSupport = {},
     )
   }
 }

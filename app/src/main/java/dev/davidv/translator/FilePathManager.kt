@@ -47,6 +47,8 @@ class FilePathManager(
 
   fun getDictionariesDir(): File = File(baseDir, "dictionaries")
 
+  fun getAdblockDir(): File = File(baseDir, "adblock")
+
   fun resolveInstallPath(relativePath: String): File = File(baseDir, relativePath)
 
   fun getDictionaryFile(language: Language): File = File(getDictionariesDir(), "${language.dictionaryCode}.dict")

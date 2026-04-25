@@ -19,6 +19,7 @@ package dev.davidv.translator
 
 import android.app.Application
 import android.util.Log
+import dev.davidv.translator.adblock.AdblockManager
 
 class TranslatorApplication : Application() {
   lateinit var settingsManager: SettingsManager
@@ -29,6 +30,7 @@ class TranslatorApplication : Application() {
   lateinit var speechService: SpeechService
   lateinit var languageDetector: LanguageDetector
   lateinit var translationCoordinator: TranslationCoordinator
+  lateinit var adblockManager: AdblockManager
   val languagesFlow = kotlinx.coroutines.flow.MutableStateFlow<List<Language>>(emptyList())
   var languageCatalog: LanguageCatalog? = null
     private set
@@ -48,6 +50,7 @@ class TranslatorApplication : Application() {
     languageDetector = LanguageDetector { code -> languageCatalog?.languageByCode(code) }
     translationCoordinator =
       TranslationCoordinator(translationService, speechService, languageDetector, imageProcessor, settingsManager)
+    adblockManager = AdblockManager(filePathManager)
 
     if (settingsManager.settings.value.tapToTranslateEnabled) {
       TapToTranslateNotification.show(this)

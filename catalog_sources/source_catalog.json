@@ -1,13 +1,13 @@
 {
   "formatVersion": 2,
-  "generatedAt": 1776550317,
+  "generatedAt": 1777135794,
   "translationModelsBaseUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
   "tesseractModelsBaseUrl": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/refs/heads/main",
   "dictionaryBaseUrl": "https://offline-translator.davidv.dev/dictionaries",
   "dictionaryVersion": 1,
   "sources": {
     "languageIndexVersion": 1,
-    "languageIndexUpdatedAt": 1776550317,
+    "languageIndexUpdatedAt": 1777135794,
     "dictionaryIndexVersion": 1,
     "dictionaryIndexUpdatedAt": 1774864382,
     "gcsModelsUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
@@ -11247,6 +11247,108 @@
       "dependsOn": [
         "tts-espeak-dict-cmn"
       ]
+    },
+    "support-adblock-adguard-mobile": {
+      "feature": "support",
+      "kind": "adblock",
+      "files": [
+        {
+          "name": "adguard-mobile.txt",
+          "sizeBytes": 0,
+          "installPath": "adblock/adguard-mobile.txt",
+          "url": "https://filters.adtidy.org/extension/ublock/filters/11.txt"
+        }
+      ],
+      "dependsOn": [],
+      "metadata": {
+        "listId": "adguard-mobile",
+        "description": "AdGuard Mobile Ads — mobile-specific ad slots and tracker patterns."
+      }
+    },
+    "support-adblock-easylist": {
+      "feature": "support",
+      "kind": "adblock",
+      "files": [
+        {
+          "name": "easylist.txt",
+          "sizeBytes": 0,
+          "installPath": "adblock/easylist.txt",
+          "url": "https://easylist.to/easylist/easylist.txt"
+        }
+      ],
+      "dependsOn": [],
+      "metadata": {
+        "listId": "easylist",
+        "description": "EasyList — primary advertising filter list."
+      }
+    },
+    "support-adblock-easyprivacy": {
+      "feature": "support",
+      "kind": "adblock",
+      "files": [
+        {
+          "name": "easyprivacy.txt",
+          "sizeBytes": 0,
+          "installPath": "adblock/easyprivacy.txt",
+          "url": "https://easylist.to/easylist/easyprivacy.txt"
+        }
+      ],
+      "dependsOn": [],
+      "metadata": {
+        "listId": "easyprivacy",
+        "description": "EasyPrivacy — tracking and analytics filter list."
+      }
+    },
+    "support-adblock-fanboy-annoyance": {
+      "feature": "support",
+      "kind": "adblock",
+      "files": [
+        {
+          "name": "fanboy-annoyance.txt",
+          "sizeBytes": 0,
+          "installPath": "adblock/fanboy-annoyance.txt",
+          "url": "https://easylist.to/easylist/fanboy-annoyance.txt"
+        }
+      ],
+      "dependsOn": [],
+      "metadata": {
+        "listId": "fanboy-annoyance",
+        "description": "Fanboy's Annoyances — cookie banners, social widgets, sticky video."
+      }
+    },
+    "support-adblock-ublock-filters": {
+      "feature": "support",
+      "kind": "adblock",
+      "files": [
+        {
+          "name": "ublock-filters.txt",
+          "sizeBytes": 0,
+          "installPath": "adblock/ublock-filters.txt",
+          "url": "https://ublockorigin.github.io/uAssets/filters/filters.txt"
+        }
+      ],
+      "dependsOn": [],
+      "metadata": {
+        "listId": "ublock-filters",
+        "description": "uBlock Origin filters — cosmetic supplement to EasyList."
+      }
+    },
+    "support-adblock-ublock-unbreak": {
+      "feature": "support",
+      "kind": "adblock",
+      "files": [
+        {
+          "name": "ublock-unbreak.txt",
+          "sizeBytes": 0,
+          "installPath": "adblock/ublock-unbreak.txt",
+          "url": "https://ublockorigin.github.io/uAssets/filters/unbreak.txt"
+        }
+      ],
+      "dependsOn": [],
+      "metadata": {
+        "listId": "ublock-unbreak",
+        "description": "uBlock Origin unbreak — exceptions to fix sites broken by other lists."
+      }
     }
   }
 }

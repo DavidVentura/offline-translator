@@ -90,6 +90,8 @@ def mirror_path_for_file(pack_or_feature, file_info: dict) -> str:
 
 def apply_mirror_paths(catalog: dict) -> dict:
     for pack in catalog.get("packs", {}).values():
+        if pack.get("kind") == "adblock":
+            continue
         for file_info in pack.get("files", []):
             file_info["mirrorPath"] = mirror_path_for_file(pack, file_info)
     return catalog

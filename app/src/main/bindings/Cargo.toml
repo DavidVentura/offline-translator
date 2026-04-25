@@ -18,6 +18,8 @@ path = "src/lib.rs"
 [dependencies]
 translator = { git = "https://github.com/DavidVentura/translator-rs.git", default-features = false, features = ["uniffi", "transliterate"] }
 # translator = { path = "/home/david/git/translator-rs", default-features = false, features = ["uniffi", "transliterate"] }
+adblock = { version = "0.12.2", default-features = false, features = ["full-regex-handling", "embedded-domain-resolver"] }
+serde_json = "1"
 uniffi = "0.29"
 thiserror = "2"
 log = "0.4"

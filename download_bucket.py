@@ -20,6 +20,7 @@ if str(TRANSLATOR_DIR) not in sys.path:
     sys.path.insert(0, str(TRANSLATOR_DIR))
 
 import catalog_mirror
+import catalog_adblock
 
 
 DEFAULT_MANIFEST = SCRIPT_DIR / "catalog_sources/source_catalog.json"
@@ -291,9 +292,17 @@ async def main() -> int:
         return 0
     if missing_files == 0:
         print("All files already present.")
-        return 0
+    else:
+        result = await fetch_all(entries, args.concurrency, args.timeout, args.retries, args.verbose)
+        if result != 0:
+            return result
 
-    return await fetch_all(entries, args.concurrency, args.timeout, args.retries, args.verbose)
+    adblock_size = await asyncio.to_thread(catalog_adblock.build_adblock_zip, manifest, args.output)
+    if adblock_size > 0:
+        print(f"adblock_bundle={catalog_adblock.adblock_bundle_path(args.output)}")
+        print(f"adblock_bundle_size={adblock_size}")
+        print(f"adblock_bundle_size_pretty={format_size(adblock_size)}")
+    return 0
 
 
 if __name__ == "__main__":

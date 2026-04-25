@@ -168,6 +168,9 @@ fun TranslatorApp(
   val downloadStates by downloadService?.downloadStates?.collectAsState() ?: remember {
     kotlinx.coroutines.flow.MutableStateFlow<Map<Language, DownloadState>>(emptyMap())
   }.collectAsState()
+  val adblockDownloadState by downloadService?.adblockDownloadState?.collectAsState() ?: remember {
+    kotlinx.coroutines.flow.MutableStateFlow(DownloadState())
+  }.collectAsState()
   val isTranslating by viewModel.translationCoordinator.isTranslating.collectAsState()
   val ttsVoicesByLanguage by viewModel.ttsVoices.collectAsState()
 
@@ -483,11 +486,15 @@ fun TranslatorApp(
               } else {
                 languageState.translatorLanguages()
               }
+            val app = context.applicationContext as dev.davidv.translator.TranslatorApplication
+            val adblockReady by app.adblockManager.ready.collectAsState()
             SettingsScreen(
               settings = settings,
               languageMetadataManager = viewModel.languageMetadataManager,
               availableLanguages = availableWithEnglish,
               catalog = catalog,
+              adblockDownloadState = adblockDownloadState,
+              adblockInstalled = adblockReady || catalog?.supportInstalledByKind("adblock") == true,
               onSettingsChange = { newSettings ->
                 viewModel.settingsManager.updateSettings(newSettings)
                 if (newSettings.defaultTargetLanguageCode != settings.defaultTargetLanguageCode) {
@@ -502,6 +509,10 @@ fun TranslatorApp(
               },
               onManageLanguages = {
                 navController.navigate("language_manager")
+              },
+              onDeleteAdblockSupport = {
+                viewModel.languageStateManager.deleteSupportByKind("adblock")
+                app.adblockManager.reload()
               },
             )
           }

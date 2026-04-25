@@ -51,6 +51,7 @@
   };
 
   function isBlockLike(el) {
+    if (el.getAttribute && el.getAttribute('role') === 'heading') return true;
     return BLOCK_TAGS.has(el.tagName) || STRUCTURAL_TAGS.has(el.tagName);
   }
 

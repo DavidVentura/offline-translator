@@ -109,12 +109,16 @@ class DownloadService : Service() {
   private val _ttsDownloadStates = MutableStateFlow<Map<Language, DownloadState>>(emptyMap())
   val ttsDownloadStates: StateFlow<Map<Language, DownloadState>> = _ttsDownloadStates
 
+  private val _adblockDownloadState = MutableStateFlow(DownloadState())
+  val adblockDownloadState: StateFlow<DownloadState> = _adblockDownloadState
+
   private val _downloadEvents = MutableSharedFlow<DownloadEvent>()
   val downloadEvents: SharedFlow<DownloadEvent> = _downloadEvents.asSharedFlow()
 
   private val downloadJobs = mutableMapOf<Language, Job>()
   private val dictionaryDownloadJobs = mutableMapOf<Language, Job>()
   private val ttsDownloadJobs = mutableMapOf<Language, Job>()
+  private var adblockDownloadJob: Job? = null
   private val baseDirPath: String
     get() = filePathManager.currentBaseDir().absolutePath
 
@@ -196,6 +200,22 @@ class DownloadService : Service() {
       context.startService(intent)
     }
 
+    fun startAdblockDownload(context: Context) {
+      val intent =
+        Intent(context, DownloadService::class.java).apply {
+          action = "START_ADBLOCK_DOWNLOAD"
+        }
+      context.startService(intent)
+    }
+
+    fun cancelAdblockDownload(context: Context) {
+      val intent =
+        Intent(context, DownloadService::class.java).apply {
+          action = "CANCEL_ADBLOCK_DOWNLOAD"
+        }
+      context.startService(intent)
+    }
+
     fun fetchCatalog(context: Context) {
       val intent =
         Intent(context, DownloadService::class.java).apply {
@@ -254,6 +274,14 @@ class DownloadService : Service() {
         val catalog = getCatalog() ?: return START_NOT_STICKY
         val language = catalog.languageByCode(languageCode) ?: return START_NOT_STICKY
         cancelTtsDownload(language)
+      }
+
+      "START_ADBLOCK_DOWNLOAD" -> {
+        startAdblockDownload()
+      }
+
+      "CANCEL_ADBLOCK_DOWNLOAD" -> {
+        cancelAdblockDownload()
       }
 
       "FETCH_CATALOG" -> {
@@ -519,6 +547,87 @@ class DownloadService : Service() {
     Log.i("DownloadService", "Cancelled TTS download for ${language.displayName}")
   }
 
+  private fun startAdblockDownload() {
+    if (_adblockDownloadState.value.isDownloading) return
+    updateAdblockDownloadState {
+      DownloadState(
+        isDownloading = true,
+        isCompleted = false,
+        downloaded = 1,
+      )
+    }
+    val job =
+      serviceScope.launch {
+        try {
+          val catalog = getCatalog() ?: return@launch
+          val downloadPlan =
+            catalog.planSupportDownloadByKind(ADBLOCK_KIND) ?: run {
+              Log.w("DownloadService", "No adblock support pack in catalog")
+              updateAdblockDownloadState {
+                it.copy(isDownloading = false, error = "No adblock support pack in catalog")
+              }
+              return@launch
+            }
+          var success = true
+          if (downloadPlan.tasks.isNotEmpty()) {
+            updateAdblockDownloadState {
+              it.copy(
+                isDownloading = true,
+                downloaded = 1,
+                totalSize = downloadPlan.totalSize.toLong(),
+              )
+            }
+            Log.i("DownloadService", "Starting adblock download")
+            for (task in downloadPlan.tasks) {
+              if (!downloadPackFile(task, ::incrementAdblockDownloadBytes)) {
+                success = false
+              }
+            }
+          }
+
+          updateAdblockDownloadState {
+            DownloadState(
+              isDownloading = false,
+              isCompleted = success,
+            )
+          }
+
+          if (success) {
+            filePathManager.reloadCatalog()
+            (application as? TranslatorApplication)?.adblockManager?.reload()
+            Log.i("DownloadService", "Adblock download complete")
+            _downloadEvents.emit(DownloadEvent.NewSupportAvailable(ADBLOCK_KIND))
+          } else {
+            updateAdblockDownloadState {
+              it.copy(isDownloading = false, error = "Adblock download failed")
+            }
+            _downloadEvents.emit(DownloadEvent.DownloadError("Adblock download failed"))
+          }
+        } catch (e: Exception) {
+          Log.e("DownloadService", "Adblock download failed", e)
+          updateAdblockDownloadState {
+            it.copy(isDownloading = false, error = e.message)
+          }
+          _downloadEvents.emit(DownloadEvent.DownloadError("Adblock download failed"))
+        } finally {
+          adblockDownloadJob = null
+        }
+      }
+
+    adblockDownloadJob = job
+  }
+
+  private fun cancelAdblockDownload() {
+    adblockDownloadJob?.cancel()
+    adblockDownloadJob = null
+
+    updateAdblockDownloadState {
+      it.copy(isDownloading = false, isCancelled = true, error = null)
+    }
+
+    Log.i("DownloadService", "Cancelled adblock download")
+  }
+
   private fun cancelLanguageDownload(language: Language) {
     downloadJobs[language]?.cancel()
     downloadJobs.remove(language)
@@ -623,11 +732,37 @@ class DownloadService : Service() {
     }
   }
 
+  private fun updateAdblockDownloadState(update: (DownloadState) -> DownloadState) {
+    synchronized(this) {
+      _adblockDownloadState.value = update(_adblockDownloadState.value)
+    }
+  }
+
+  private fun incrementAdblockDownloadBytes(incrementalBytes: Long) {
+    updateAdblockDownloadState {
+      it.copy(downloaded = it.downloaded + incrementalBytes)
+    }
+  }
+
   private suspend fun downloadPackFile(
     task: DownloadTask,
     targetLanguage: Language,
     incrementDictionary: Boolean = false,
     incrementTts: Boolean = false,
+  ): Boolean =
+    downloadPackFile(task) { incrementalProgress ->
+      if (incrementDictionary) {
+        incrementDictionaryDownloadBytes(targetLanguage, incrementalProgress)
+      } else if (incrementTts) {
+        incrementTtsDownloadBytes(targetLanguage, incrementalProgress)
+      } else {
+        incrementDownloadBytes(targetLanguage, incrementalProgress)
+      }
+    }
+
+  private suspend fun downloadPackFile(
+    task: DownloadTask,
+    onProgress: (Long) -> Unit,
   ): Boolean {
     val outputFile = filePathManager.resolveInstallPath(task.installPath)
     val url = task.url
@@ -643,15 +778,8 @@ class DownloadService : Service() {
             extractTo = filePathManager.resolveInstallPath(extractTo),
             deleteAfterExtract = task.deleteAfterExtract,
             installMarkerPath = installMarkerPath,
-          ) { incrementalProgress ->
-            if (incrementDictionary) {
-              incrementDictionaryDownloadBytes(targetLanguage, incrementalProgress)
-            } else if (incrementTts) {
-              incrementTtsDownloadBytes(targetLanguage, incrementalProgress)
-            } else {
-              incrementDownloadBytes(targetLanguage, incrementalProgress)
-            }
-          }.also { extracted ->
+            onProgress = onProgress,
+          ).also { extracted ->
             if (extracted && installMarkerPath != null && installMarkerVersion != null) {
               filePathManager.writeInstallMarker(installMarkerPath, installMarkerVersion)
             }
@@ -661,15 +789,8 @@ class DownloadService : Service() {
             url,
             outputFile,
             decompress = task.decompress,
-          ) { incrementalProgress ->
-            if (incrementDictionary) {
-              incrementDictionaryDownloadBytes(targetLanguage, incrementalProgress)
-            } else if (incrementTts) {
-              incrementTtsDownloadBytes(targetLanguage, incrementalProgress)
-            } else {
-              incrementDownloadBytes(targetLanguage, incrementalProgress)
-            }
-          }
+            onProgress = onProgress,
+          )
         }
       Log.i("DownloadService", "Downloaded ${task.packId}:${task.installPath} from $url = $success")
       success
@@ -905,3 +1026,5 @@ data class DownloadState(
   val totalSize: Long = 1,
   val error: String? = null,
 )
+
+private const val ADBLOCK_KIND = "adblock"

@@ -117,6 +117,12 @@ class LanguageStateManager(
               refreshLanguageAvailability()
             }
 
+            is DownloadEvent.NewSupportAvailable -> {
+              setCatalog(withContext(Dispatchers.IO) { filePathManager.reloadCatalog() })
+              _catalogRefreshToken.value++
+              refreshLanguageAvailability()
+            }
+
             is DownloadEvent.CatalogDownloaded -> {
               setCatalog(withContext(Dispatchers.IO) { filePathManager.reloadCatalog() })
               _catalogRefreshToken.value++
@@ -177,6 +183,13 @@ class LanguageStateManager(
     filePathManager.applyDeletePlan(catalog.prepareDelete(language.code, Feature.TTS))
     refreshLanguageAvailability()
     Log.i("LanguageStateManager", "Removed TTS for language: ${language.displayName}")
+  }
+
+  fun deleteSupportByKind(kind: String) {
+    val catalog = catalogState.value ?: filePathManager.loadCatalog() ?: return
+    filePathManager.applyDeletePlan(catalog.prepareDeleteSupportByKind(kind))
+    refreshLanguageAvailability()
+    Log.i("LanguageStateManager", "Removed support files for kind: $kind")
   }
 
   fun canSwapLanguages(
