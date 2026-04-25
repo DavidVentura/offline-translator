@@ -242,6 +242,13 @@ class LanguageCatalog private constructor(
       availableLanguages.map { it.code },
     )
 
+  @Throws(CatalogException::class)
+  fun translateHtmlFragments(
+    from: Language,
+    to: Language,
+    fragments: List<String>,
+  ): List<String> = handle.translateHtmlFragments(from.code, to.code, fragments)
+
   fun translateStructuredFragments(
     fragments: List<StyledFragment>,
     forcedSourceLanguage: Language?,

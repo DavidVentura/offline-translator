@@ -222,6 +222,17 @@ impl CatalogHandle {
             .map_err(CatalogError::from)
     }
 
+    fn translate_html_fragments(
+        &self,
+        from_code: String,
+        to_code: String,
+        fragments: Vec<String>,
+    ) -> Result<Vec<String>, CatalogError> {
+        self.session
+            .translate_html_fragments(&from_code, &to_code, &fragments)
+            .map_err(CatalogError::from)
+    }
+
     fn translate_mixed_texts(
         &self,
         inputs: Vec<String>,
