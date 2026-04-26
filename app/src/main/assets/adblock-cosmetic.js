@@ -17,6 +17,35 @@
 
   var RUN_DELAY_MS = 120;
 
+  // Wire format: length-prefixed records `<len>:<text><len>:<text>...`
+  // (UTF-16 code-unit counts; matches Kotlin String.length on the bridge
+  // side). Robust to any content, no escape work.
+  function encodeWire(items) {
+    var s = '';
+    for (var i = 0; i < items.length; i++) {
+      var t = items[i];
+      s += t.length + ':' + t;
+    }
+    return s;
+  }
+
+  function decodeWire(s) {
+    var items = [];
+    var i = 0;
+    while (i < s.length) {
+      var colon = s.indexOf(':', i);
+      if (colon < 0) return null;
+      var len = parseInt(s.slice(i, colon), 10);
+      if (!isFinite(len) || len < 0) return null;
+      var start = colon + 1;
+      var end = start + len;
+      if (end > s.length) return null;
+      items.push(s.slice(start, end));
+      i = end;
+    }
+    return items;
+  }
+
   function current() {
     return state.config || {};
   }
@@ -259,12 +288,12 @@
       }
     }
 
-    var resultJson;
+    var resultPayload;
     try {
-      resultJson = adblockBridge.lookupGenericSelectors(
-        JSON.stringify(Array.from(classes)),
-        JSON.stringify(Array.from(ids)),
-        JSON.stringify(cfg.exceptions || []),
+      resultPayload = adblockBridge.lookupGenericSelectors(
+        encodeWire(Array.from(classes)),
+        encodeWire(Array.from(ids)),
+        encodeWire(cfg.exceptions || []),
         cfg.bridgeToken
       );
     } catch (e) {
@@ -272,12 +301,7 @@
       return;
     }
 
-    var selectors;
-    try {
-      selectors = JSON.parse(resultJson);
-    } catch (e) {
-      return;
-    }
+    var selectors = decodeWire(resultPayload || '');
     if (!selectors || selectors.length === 0) return;
 
     var style = document.querySelector('style[data-adblock-generic="1"]');

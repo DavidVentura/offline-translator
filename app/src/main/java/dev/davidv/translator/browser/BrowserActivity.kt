@@ -424,6 +424,12 @@ private fun BrowserWebView(
               onPageStarted()
               currentPageUrlRef.set(url)
               val pageSerial = currentPageSerialRef.incrementAndGet()
+              // Inject the translator content script as early as possible.
+              // The script self-defers its DOM scan until DOMContentLoaded
+              view?.evaluateJavascript(
+                buildTranslatorContentJs(contentScript, translatorBridgeName, bridgeToken),
+                null,
+              )
               if (view != null && url != null) {
                 applyCosmeticFiltersAsync(
                   scope,
@@ -443,10 +449,6 @@ private fun BrowserWebView(
               view: WebView?,
               url: String?,
             ) {
-              view?.evaluateJavascript(
-                buildTranslatorContentJs(contentScript, translatorBridgeName, bridgeToken),
-                null,
-              )
               val pageSerial = currentPageSerialRef.get()
               if (view != null && url != null) {
                 applyCosmeticFiltersAsync(

@@ -19,7 +19,6 @@ package dev.davidv.translator.browser
 
 import android.webkit.JavascriptInterface
 import dev.davidv.translator.adblock.AdblockManager
-import org.json.JSONArray
 
 class AdblockJsBridge(
   private val adblockManager: AdblockManager,
@@ -27,30 +26,56 @@ class AdblockJsBridge(
 ) {
   companion object {
     private const val MAX_VALUES = 5000
-    private const val MAX_JSON_CHARS = 200_000
+    private const val MAX_PAYLOAD_CHARS = 200_000
+    private const val MAX_ITEM_CHARS = 4_000
   }
 
   @JavascriptInterface
   fun lookupGenericSelectors(
-    classesJson: String,
-    idsJson: String,
-    exceptionsJson: String,
+    classesPayload: String,
+    idsPayload: String,
+    exceptionsPayload: String,
     token: String,
   ): String {
-    if (token != bridgeToken) return "[]"
-    val classes = parseStringArray(classesJson) ?: return "[]"
-    val ids = parseStringArray(idsJson) ?: return "[]"
-    val exceptions = parseStringArray(exceptionsJson) ?: return "[]"
+    if (token != bridgeToken) return ""
+    val classes = decodeWire(classesPayload) ?: return ""
+    val ids = decodeWire(idsPayload) ?: return ""
+    val exceptions = decodeWire(exceptionsPayload) ?: return ""
     val selectors = adblockManager.hiddenClassIdSelectors(classes, ids, exceptions)
-    val arr = JSONArray()
-    selectors.forEach { arr.put(it) }
-    return arr.toString()
+    return encodeWire(selectors)
   }
 
-  private fun parseStringArray(json: String): List<String>? {
-    if (json.length > MAX_JSON_CHARS) return null
-    val arr = runCatching { JSONArray(json) }.getOrNull() ?: return null
-    if (arr.length() > MAX_VALUES) return null
-    return List(arr.length()) { i -> arr.optString(i, "") }
+  // Wire format: length-prefixed records `<len>:<text><len>:<text>...`
+  // (UTF-16 code-unit counts; matches JS String.length).
+  private fun decodeWire(payload: String): List<String>? {
+    if (payload.isEmpty()) return emptyList()
+    if (payload.length > MAX_PAYLOAD_CHARS) return null
+    val items = ArrayList<String>()
+    var i = 0
+    val n = payload.length
+    while (i < n) {
+      val colon = payload.indexOf(':', i)
+      if (colon < 0) return null
+      val len =
+        try {
+          payload.substring(i, colon).toInt()
+        } catch (_: NumberFormatException) {
+          return null
+        }
+      if (len < 0 || len > MAX_ITEM_CHARS) return null
+      val start = colon + 1
+      val end = start + len
+      if (end > n) return null
+      items.add(payload.substring(start, end))
+      if (items.size > MAX_VALUES) return null
+      i = end
+    }
+    return items
+  }
+
+  private fun encodeWire(values: List<String>): String {
+    val sb = StringBuilder()
+    for (v in values) sb.append(v.length).append(':').append(v)
+    return sb.toString()
   }
 }
