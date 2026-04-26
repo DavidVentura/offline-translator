@@ -48,6 +48,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -343,11 +344,32 @@ private fun BrowserWebView(
 ) {
   val scope = androidx.compose.runtime.rememberCoroutineScope()
   val bridgeRef = remember { arrayOfNulls<TranslatorJsBridge>(1) }
+  val webViewRef = remember { arrayOfNulls<WebView>(1) }
   val currentPageUrlRef = remember { java.util.concurrent.atomic.AtomicReference<String?>(null) }
   val currentPageSerialRef = remember { java.util.concurrent.atomic.AtomicInteger(0) }
+  val adblockReady by adblockManager.ready.collectAsStateWithLifecycle()
   val bridgeToken = remember { UUID.randomUUID().toString() }
   val translatorBridgeName = remember { "__translatorBridge_${bridgeToken.filter { it != '-' }}" }
   val adblockBridgeName = remember { "__adblockBridge_${bridgeToken.filter { it != '-' }}" }
+
+  LaunchedEffect(adblockReady) {
+    if (!adblockReady) return@LaunchedEffect
+    val webView = webViewRef[0] ?: return@LaunchedEffect
+    val pageSerial = currentPageSerialRef.get()
+    if (pageSerial == 0) return@LaunchedEffect
+    val currentUrl = webView.url ?: currentPageUrlRef.get() ?: return@LaunchedEffect
+    applyCosmeticFiltersAsync(
+      scope,
+      webView,
+      adblockManager,
+      currentUrl,
+      pageSerial,
+      currentPageSerialRef,
+      adblockBridgeName,
+      bridgeToken,
+      adblockCosmeticScript,
+    )
+  }
 
   key(darkTheme) {
     AndroidView(
@@ -387,6 +409,7 @@ private fun BrowserWebView(
             targetLanguage = targetLang,
           )
         bridgeRef[0] = bridge
+        webViewRef[0] = webView
         webView.addJavascriptInterface(bridge, translatorBridgeName)
         webView.addJavascriptInterface(AdblockJsBridge(adblockManager, bridgeToken), adblockBridgeName)
 
