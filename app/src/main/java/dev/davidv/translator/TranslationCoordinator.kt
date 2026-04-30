@@ -76,6 +76,37 @@ class TranslationCoordinator(
     return result
   }
 
+  suspend fun translateDocumentPath(
+    inputPath: String,
+    outputPath: String,
+    from: Language,
+    to: Language,
+    availableLanguages: List<Language>,
+    onProgress: (DocumentTranslationProgress) -> Unit = {},
+    isCancelled: () -> Boolean = { false },
+  ): Result<String> {
+    _isTranslating.value = true
+    try {
+      val result =
+        translationService.translateDocumentPath(
+          inputPath = inputPath,
+          outputPath = outputPath,
+          from = from,
+          to = to,
+          availableLanguages = availableLanguages,
+          onProgress = onProgress,
+          isCancelled = isCancelled,
+        )
+      result.onSuccess { path ->
+        Log.d("TranslationCoordinator", "Translated document to $path")
+      }
+      return result
+    } finally {
+      lastTranslatedInput = inputPath
+      _isTranslating.value = false
+    }
+  }
+
   suspend fun detectLanguage(
     text: String,
     hint: Language?,

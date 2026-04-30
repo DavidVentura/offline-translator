@@ -39,6 +39,13 @@ class FilePathManager(
 
   fun currentBaseDir(): File = baseDir
 
+  fun getTranslatedDocumentsDir(): File =
+    File(context.cacheDir, "translated_documents").also { dir ->
+      if (!dir.exists()) {
+        dir.mkdirs()
+      }
+    }
+
   fun getDataDir(): File = File(baseDir, "bin")
 
   fun getTesseractDataDir(): File = File(baseDir, "tesseract/tessdata")

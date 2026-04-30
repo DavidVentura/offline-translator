@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::{fs, path::Path};
 
 use thiserror::Error;
 use translator::{
@@ -31,6 +32,23 @@ impl From<TranslatorError> for CatalogError {
             },
         }
     }
+}
+
+#[derive(Debug, Clone, uniffi::Enum)]
+pub enum DocumentProgressEvent {
+    Preparing,
+    Translating {
+        current: u32,
+        total: u32,
+        unit: String,
+    },
+    Writing,
+}
+
+#[uniffi::export(with_foreign)]
+pub trait DocumentProgressSink: Send + Sync {
+    fn on_progress(&self, event: DocumentProgressEvent);
+    fn is_cancelled(&self) -> bool;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, uniffi::Record)]
@@ -127,6 +145,185 @@ fn sample_overlay_colors_rgba(
         word_rects.as_deref(),
     )
     .ok()
+}
+
+fn document_extension(path: &str) -> String {
+    Path::new(path)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or_default()
+        .to_ascii_lowercase()
+}
+
+fn map_available_language_codes(codes: Vec<String>) -> Vec<translator::LanguageCode> {
+    codes
+        .into_iter()
+        .map(translator::LanguageCode::from)
+        .collect()
+}
+
+fn translate_document_path_impl(
+    session: &TranslatorSession,
+    input_path: String,
+    output_path: String,
+    forced_source_code: Option<String>,
+    target_code: String,
+    available_language_codes: Vec<String>,
+    mut on_progress: impl FnMut(DocumentProgressEvent),
+    is_cancelled: impl Fn() -> bool,
+) -> Result<String, CatalogError> {
+    let check_cancelled = || {
+        if is_cancelled() {
+            Err(CatalogError::Other {
+                reason: "document translation cancelled".to_string(),
+            })
+        } else {
+            Ok(())
+        }
+    };
+    check_cancelled()?;
+    on_progress(DocumentProgressEvent::Preparing);
+    check_cancelled()?;
+    let extension = document_extension(&input_path);
+    let available = map_available_language_codes(available_language_codes);
+    let input_bytes = fs::read(&input_path).map_err(|error| CatalogError::Other {
+        reason: format!("failed to read document: {error}"),
+    })?;
+    check_cancelled()?;
+
+    let output_bytes = match extension.as_str() {
+        "txt" => {
+            let source_code = forced_source_code
+                .as_deref()
+                .ok_or_else(|| CatalogError::Other {
+                    reason: "source language is required for text documents".to_string(),
+                })?;
+            let text = String::from_utf8(input_bytes).map_err(|error| CatalogError::Other {
+                reason: format!("text document is not UTF-8: {error}"),
+            })?;
+            on_progress(DocumentProgressEvent::Translating {
+                current: 0,
+                total: 1,
+                unit: "block".to_string(),
+            });
+            check_cancelled()?;
+            let translated = session
+                .translate_text(source_code, &target_code, &text)
+                .map_err(CatalogError::from)?;
+            check_cancelled()?;
+            on_progress(DocumentProgressEvent::Translating {
+                current: 1,
+                total: 1,
+                unit: "block".to_string(),
+            });
+            check_cancelled()?;
+            translated.into_bytes()
+        }
+        "odt" => {
+            #[cfg(feature = "odt")]
+            {
+                translator::odt::translate_odt_with_progress(
+                    session,
+                    &input_bytes,
+                    forced_source_code.as_deref(),
+                    &target_code,
+                    &available,
+                    |progress| {
+                        if is_cancelled() {
+                            return Err(translator::odt::OdtTranslateError::Cancelled);
+                        }
+                        let translator::odt::OdtTranslateProgress::TranslatingBlock {
+                            current,
+                            total,
+                        } = progress;
+                        on_progress(DocumentProgressEvent::Translating {
+                            current: current as u32,
+                            total: total as u32,
+                            unit: "block".to_string(),
+                        });
+                        if is_cancelled() {
+                            Err(translator::odt::OdtTranslateError::Cancelled)
+                        } else {
+                            Ok(())
+                        }
+                    },
+                )
+                .map_err(|error| CatalogError::Other {
+                    reason: format!("failed to translate ODT: {error}"),
+                })?
+            }
+            #[cfg(not(feature = "odt"))]
+            {
+                let _ = (forced_source_code, target_code, available);
+                return Err(CatalogError::Other {
+                    reason: "odt feature disabled".to_string(),
+                });
+            }
+        }
+        "pdf" => {
+            #[cfg(feature = "pdf")]
+            {
+                let translations = translator::pdf_translate::translate_pdf_with_progress(
+                    session,
+                    &input_bytes,
+                    forced_source_code.as_deref(),
+                    &target_code,
+                    &available,
+                    |progress| {
+                        if is_cancelled() {
+                            return Err(translator::pdf_translate::PdfTranslateError::Cancelled);
+                        }
+                        let translator::pdf_translate::PdfTranslateProgress::TranslatingPage {
+                            current,
+                            total,
+                        } = progress;
+                        on_progress(DocumentProgressEvent::Translating {
+                            current: current as u32,
+                            total: total as u32,
+                            unit: "page".to_string(),
+                        });
+                        if is_cancelled() {
+                            Err(translator::pdf_translate::PdfTranslateError::Cancelled)
+                        } else {
+                            Ok(())
+                        }
+                    },
+                )
+                .map_err(|error| CatalogError::Other {
+                    reason: format!("failed to translate PDF: {error}"),
+                })?;
+                on_progress(DocumentProgressEvent::Writing);
+                translator::pdf_write::write_translated_pdf(
+                    &input_bytes,
+                    &translations,
+                    &translator::font_provider::NoFontProvider,
+                )
+                .map_err(|error| CatalogError::Other {
+                    reason: format!("failed to write PDF: {error}"),
+                })?
+            }
+            #[cfg(not(feature = "pdf"))]
+            {
+                let _ = (forced_source_code, target_code, available);
+                return Err(CatalogError::Other {
+                    reason: "pdf feature disabled".to_string(),
+                });
+            }
+        }
+        _ => {
+            return Err(CatalogError::Other {
+                reason: format!("unsupported document type: {extension}"),
+            });
+        }
+    };
+
+    check_cancelled()?;
+    on_progress(DocumentProgressEvent::Writing);
+    check_cancelled()?;
+    fs::write(&output_path, output_bytes).map_err(|error| CatalogError::Other {
+        reason: format!("failed to write translated document: {error}"),
+    })?;
+    Ok(output_path)
 }
 
 #[derive(uniffi::Object)]
@@ -354,6 +551,47 @@ impl CatalogHandle {
                 reason: "tesseract feature disabled".to_string(),
             })
         }
+    }
+
+    fn translate_document_path(
+        &self,
+        input_path: String,
+        output_path: String,
+        forced_source_code: Option<String>,
+        target_code: String,
+        available_language_codes: Vec<String>,
+    ) -> Result<String, CatalogError> {
+        translate_document_path_impl(
+            &self.session,
+            input_path,
+            output_path,
+            forced_source_code,
+            target_code,
+            available_language_codes,
+            |_| {},
+            || false,
+        )
+    }
+
+    fn translate_document_path_with_progress(
+        &self,
+        input_path: String,
+        output_path: String,
+        forced_source_code: Option<String>,
+        target_code: String,
+        available_language_codes: Vec<String>,
+        progress: Arc<dyn DocumentProgressSink>,
+    ) -> Result<String, CatalogError> {
+        translate_document_path_impl(
+            &self.session,
+            input_path,
+            output_path,
+            forced_source_code,
+            target_code,
+            available_language_codes,
+            |event| progress.on_progress(event),
+            || progress.is_cancelled(),
+        )
     }
 
     fn plan_download(

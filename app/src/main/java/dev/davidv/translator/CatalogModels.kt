@@ -3,10 +3,36 @@ package dev.davidv.translator
 import android.graphics.Bitmap
 import uniffi.bindings.CatalogException
 import uniffi.bindings.CatalogHandle
+import uniffi.bindings.DocumentProgressEvent
+import uniffi.bindings.DocumentProgressSink
 import uniffi.bindings.sampleOverlayColorsRgba
 import java.nio.ByteBuffer
 
 typealias CatalogError = CatalogException
+
+sealed class DocumentTranslationProgress {
+  data object Preparing : DocumentTranslationProgress()
+
+  data class Translating(
+    val current: Int,
+    val total: Int,
+    val unit: String,
+  ) : DocumentTranslationProgress()
+
+  data object Writing : DocumentTranslationProgress()
+}
+
+private fun DocumentProgressEvent.toDocumentTranslationProgress(): DocumentTranslationProgress =
+  when (this) {
+    DocumentProgressEvent.Preparing -> DocumentTranslationProgress.Preparing
+    is DocumentProgressEvent.Translating ->
+      DocumentTranslationProgress.Translating(
+        current = current.toInt(),
+        total = total.toInt(),
+        unit = unit,
+      )
+    DocumentProgressEvent.Writing -> DocumentTranslationProgress.Writing
+  }
 
 private fun rgbaBytes(bitmap: Bitmap): ByteArray =
   ByteArray(bitmap.byteCount).also { bytes ->
@@ -105,6 +131,15 @@ private fun shiftStructuredTranslationResult(
         uniffi.translator.TranslatedStyledBlock(
           text = block.text,
           boundingBox = bounds,
+          sourceRects =
+            block.sourceRects.map { rect ->
+              Rect(
+                rect.left.toInt() + dx,
+                rect.top.toInt() + dy,
+                rect.right.toInt() + dx,
+                rect.bottom.toInt() + dy,
+              ).toUniffiRect()
+            },
           styleSpans = block.styleSpans,
           backgroundArgb = block.backgroundArgb,
           foregroundArgb = block.foregroundArgb,
@@ -318,6 +353,31 @@ class LanguageCatalog private constructor(
       minConfidence.toUInt(),
       readingOrder,
       backgroundMode,
+    )
+
+  @Throws(CatalogException::class)
+  fun translateDocumentPath(
+    inputPath: String,
+    outputPath: String,
+    from: Language,
+    to: Language,
+    availableLanguages: List<Language>,
+    onProgress: (DocumentTranslationProgress) -> Unit = {},
+    isCancelled: () -> Boolean = { false },
+  ): String =
+    handle.translateDocumentPathWithProgress(
+      inputPath,
+      outputPath,
+      from.code,
+      to.code,
+      availableLanguages.map { it.code },
+      object : DocumentProgressSink {
+        override fun onProgress(event: DocumentProgressEvent) {
+          onProgress(event.toDocumentTranslationProgress())
+        }
+
+        override fun isCancelled(): Boolean = isCancelled()
+      },
     )
 
   fun planDownload(

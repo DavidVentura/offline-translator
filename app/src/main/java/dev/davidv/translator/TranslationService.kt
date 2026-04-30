@@ -146,6 +146,29 @@ class TranslationService(
       TranslationResult.Success(TranslatedText(result, transliterated))
     }
 
+  suspend fun translateDocumentPath(
+    inputPath: String,
+    outputPath: String,
+    from: Language,
+    to: Language,
+    availableLanguages: List<Language>,
+    onProgress: (DocumentTranslationProgress) -> Unit = {},
+    isCancelled: () -> Boolean = { false },
+  ): Result<String> =
+    withContext(Dispatchers.IO) {
+      val catalog =
+        filePathManager.loadCatalog()
+          ?: return@withContext Result.failure(IllegalStateException("Catalog unavailable"))
+      try {
+        Result.success(catalog.translateDocumentPath(inputPath, outputPath, from, to, availableLanguages, onProgress, isCancelled))
+      } catch (e: CatalogException.MissingAsset) {
+        Result.failure(IllegalStateException("Language pair ${from.code} -> ${to.code} not installed", e))
+      } catch (e: CatalogException.Other) {
+        Log.e("TranslationService", "Document translation failed", e)
+        Result.failure(IllegalStateException("Document translation failed: ${e.message}", e))
+      }
+    }
+
   fun transliterate(
     text: String,
     from: Language,

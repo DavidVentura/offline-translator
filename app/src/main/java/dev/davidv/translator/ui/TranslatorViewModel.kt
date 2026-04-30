@@ -17,12 +17,15 @@
 
 package dev.davidv.translator.ui
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dev.davidv.translator.DocumentTranslationService
+import dev.davidv.translator.DocumentTranslationServiceState
 import dev.davidv.translator.DownloadService
 import dev.davidv.translator.FileEvent
 import dev.davidv.translator.FilePathManager
@@ -52,8 +55,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.File
 
 class TranslatorViewModel(
+  private val appContext: Context,
   val translationCoordinator: TranslationCoordinator,
   val settingsManager: SettingsManager,
   val filePathManager: FilePathManager,
@@ -115,6 +120,10 @@ class TranslatorViewModel(
   private val _ttsVoices = MutableStateFlow<Map<String, List<TtsVoiceOption>>>(emptyMap())
   val ttsVoices: StateFlow<Map<String, List<TtsVoiceOption>>> = _ttsVoices.asStateFlow()
 
+  private val _documentTranslation = MutableStateFlow<DocumentTranslationUiState?>(null)
+  val documentTranslation: StateFlow<DocumentTranslationUiState?> = _documentTranslation.asStateFlow()
+  private var dismissedInProgressDocumentTaskId: Long? = null
+
   // One-shot UI events (Toast, errors, etc.)
   private val _uiEvents = MutableSharedFlow<UiEvent>()
   val uiEvents: SharedFlow<UiEvent> = _uiEvents.asSharedFlow()
@@ -137,6 +146,24 @@ class TranslatorViewModel(
     viewModelScope.launch {
       languageStateManager.fileEvents.collect { event ->
         handleFileEvent(event)
+      }
+    }
+
+    viewModelScope.launch {
+      DocumentTranslationService.documentTranslationState.collect { state ->
+        if (state == null) {
+          dismissedInProgressDocumentTaskId = null
+          _documentTranslation.value = null
+          return@collect
+        }
+        if (state.isTranslating && dismissedInProgressDocumentTaskId == state.taskId) {
+          _documentTranslation.value = null
+          return@collect
+        }
+        if (!state.isTranslating && dismissedInProgressDocumentTaskId == state.taskId) {
+          dismissedInProgressDocumentTaskId = null
+        }
+        _documentTranslation.value = state.toUiState()
       }
     }
 
@@ -298,6 +325,15 @@ class TranslatorViewModel(
         }
       }
 
+      is TranslatorMessage.SetDocumentPath -> {
+        handleDocumentPath(
+          path = message.path,
+          displayName = message.displayName,
+          sizeBytes = message.sizeBytes,
+          deleteAfterLoad = message.deleteAfterLoad,
+        )
+      }
+
       TranslatorMessage.SwapLanguages -> {
         val oldFrom = _from.value ?: return
         val oldTo = _to.value ?: return
@@ -409,6 +445,21 @@ class TranslatorViewModel(
     _ttsVoices.value = _ttsVoices.value - languageCode
   }
 
+  fun dismissDocumentTranslation() {
+    val current = _documentTranslation.value
+    if (current?.isTranslating == true) {
+      dismissedInProgressDocumentTaskId = current.taskId
+    }
+    _documentTranslation.value = null
+  }
+
+  fun cancelDocumentTranslation() {
+    DocumentTranslationService.cancel(appContext)
+    dismissedInProgressDocumentTaskId = null
+    _documentTranslation.value = null
+    _inputType.value = InputType.TEXT
+  }
+
   private fun triggerTranslation() {
     val fromLang = _from.value ?: return
     val toLang = _to.value ?: return
@@ -476,7 +527,67 @@ class TranslatorViewModel(
           }
         }
       }
+
+      InputType.FILE -> {
+        _output.value = null
+      }
     }
+  }
+
+  private fun translatedDocumentOutputFile(
+    inputName: String,
+    from: Language,
+    to: Language,
+  ): File {
+    val inputFile = File(inputName)
+    val extension = inputFile.extension.ifBlank { "txt" }
+    val baseName = inputFile.nameWithoutExtension.ifBlank { "document" }
+    val safeBaseName = baseName.replace(Regex("[^A-Za-z0-9._-]+"), "_").trim('_').ifBlank { "document" }
+    return File(filePathManager.getTranslatedDocumentsDir(), "$safeBaseName.${from.code}-${to.code}.$extension")
+  }
+
+  private fun handleDocumentPath(
+    path: String,
+    displayName: String,
+    sizeBytes: Long,
+    deleteAfterLoad: Boolean,
+  ) {
+    _displayImage.value = null
+    originalImage.value = null
+    _output.value = null
+    _input.value = ""
+    _inputTransliterated.value = null
+    _inputType.value = InputType.FILE
+    _currentDetectedLanguage.value = null
+    Log.d("SetDocumentPath", "Selected document for translation: $displayName ($path)")
+
+    val fromLang = _from.value
+    val toLang = _to.value
+    if (fromLang == null || toLang == null) {
+      _documentTranslation.value =
+        DocumentTranslationUiState(
+          taskId = System.currentTimeMillis(),
+          fileName = displayName,
+          fileSizeBytes = sizeBytes,
+          errorMessage = "Languages are not ready yet",
+        )
+      viewModelScope.launch {
+        _uiEvents.emit(UiEvent.ShowToast("Languages are not ready yet"))
+      }
+      return
+    }
+
+    val outputFile = translatedDocumentOutputFile(displayName, fromLang, toLang)
+    DocumentTranslationService.startTranslation(
+      context = appContext,
+      inputPath = path,
+      outputPath = outputFile.absolutePath,
+      displayName = displayName,
+      sizeBytes = sizeBytes,
+      from = fromLang,
+      to = toLang,
+      deleteAfterLoad = deleteAfterLoad,
+    )
   }
 
   private fun currentReadingOrderFor(fromLang: Language): ReadingOrder =
@@ -637,7 +748,56 @@ sealed class UiEvent {
   data class PlayAudio(val audioChunks: Flow<PcmAudio>) : UiEvent()
 }
 
+data class DocumentTranslationUiState(
+  val taskId: Long,
+  val fileName: String,
+  val fileSizeBytes: Long,
+  val outputPath: String? = null,
+  val outputFileName: String? = null,
+  val outputMimeType: String? = null,
+  val errorMessage: String? = null,
+  val progressLabel: String = "Preparing file",
+  val progressCurrent: Int? = null,
+  val progressTotal: Int? = null,
+  val progressUnit: String? = null,
+) {
+  val isTranslating: Boolean
+    get() = outputPath == null && errorMessage == null
+
+  val progressFraction: Float?
+    get() {
+      val current = progressCurrent ?: return null
+      val total = progressTotal ?: return null
+      if (total <= 0) return null
+      return (current.toFloat() / total.toFloat()).coerceIn(0f, 1f)
+    }
+}
+
+private fun DocumentTranslationServiceState.toUiState(): DocumentTranslationUiState =
+  DocumentTranslationUiState(
+    taskId = taskId,
+    fileName = fileName,
+    fileSizeBytes = fileSizeBytes,
+    outputPath = outputPath,
+    outputFileName = outputPath?.let { File(it).name },
+    outputMimeType = outputPath?.let { mimeTypeForDocumentPath(it) },
+    errorMessage = errorMessage,
+    progressLabel = progressLabel,
+    progressCurrent = progressCurrent,
+    progressTotal = progressTotal,
+    progressUnit = progressUnit,
+  )
+
+private fun mimeTypeForDocumentPath(path: String): String =
+  when (File(path).extension.lowercase()) {
+    "pdf" -> "application/pdf"
+    "odt" -> "application/vnd.oasis.opendocument.text"
+    "txt" -> "text/plain"
+    else -> "application/octet-stream"
+  }
+
 class TranslatorViewModelFactory(
+  private val appContext: Context,
   private val translationCoordinator: TranslationCoordinator,
   private val settingsManager: SettingsManager,
   private val filePathManager: FilePathManager,
@@ -648,6 +808,7 @@ class TranslatorViewModelFactory(
   @Suppress("UNCHECKED_CAST")
   override fun <T : ViewModel> create(modelClass: Class<T>): T =
     TranslatorViewModel(
+      appContext = appContext,
       translationCoordinator = translationCoordinator,
       settingsManager = settingsManager,
       filePathManager = filePathManager,

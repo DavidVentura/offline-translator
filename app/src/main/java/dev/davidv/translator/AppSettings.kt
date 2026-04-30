@@ -34,7 +34,7 @@ data class AppSettings(
   val useExternalStorage: Boolean = false,
   val fontFactor: Float = 1.0f,
   val showOCRDetection: Boolean = false,
-  val showFilePickerInImagePicker: Boolean = false,
+  val showFilePickerInImagePicker: Boolean = true,
   val showTransliterationOnInput: Boolean = false,
   val onlyShowOutputOnReadonlyModal: Boolean = false,
   val readonlyModalOutputAlignment: ReadonlyModalOutputAlignment = ReadonlyModalOutputAlignment.MIDDLE,

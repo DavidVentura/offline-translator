@@ -24,6 +24,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -46,6 +47,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -58,7 +60,18 @@ import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import dev.davidv.translator.R
 import dev.davidv.translator.TranslatorMessage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
+
+private val filePickerMimeTypes =
+  arrayOf(
+    "image/*",
+    "application/pdf",
+    "text/plain",
+    "application/vnd.oasis.opendocument.text",
+  )
 
 private data class PendingImageImport(
   val sourceUri: Uri?,
@@ -98,6 +111,74 @@ private fun deleteTemporaryImageUri(
     false
   }
 
+private fun displayNameForUri(
+  context: Context,
+  uri: Uri,
+): String? =
+  context.contentResolver
+    .query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+    ?.use { cursor ->
+      if (cursor.moveToFirst()) {
+        val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        if (index >= 0) cursor.getString(index) else null
+      } else {
+        null
+      }
+    }
+
+private fun sizeBytesForUri(
+  context: Context,
+  uri: Uri,
+): Long? =
+  context.contentResolver
+    .query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)
+    ?.use { cursor ->
+      if (cursor.moveToFirst()) {
+        val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+        if (index >= 0 && !cursor.isNull(index)) cursor.getLong(index) else null
+      } else {
+        null
+      }
+    }
+
+private fun documentFileExtension(
+  context: Context,
+  uri: Uri,
+): String {
+  val displayName = displayNameForUri(context, uri)
+  val displayExtension =
+    displayName
+      ?.substringAfterLast('.', missingDelimiterValue = "")
+      ?.takeIf { it.isNotBlank() && it.length <= 8 }
+  if (displayExtension != null) return ".$displayExtension"
+
+  return when (context.contentResolver.getType(uri)) {
+    "application/pdf" -> ".pdf"
+    "text/plain" -> ".txt"
+    "application/vnd.oasis.opendocument.text" -> ".odt"
+    else -> ".bin"
+  }
+}
+
+private fun copyDocumentUriToCache(
+  context: Context,
+  uri: Uri,
+): File {
+  val outputFile = File.createTempFile("input_document_", documentFileExtension(context, uri), context.cacheDir)
+  context.contentResolver.openInputStream(uri).use { input ->
+    requireNotNull(input) { "Unable to open selected document" }
+    outputFile.outputStream().use { output ->
+      input.copyTo(output)
+    }
+  }
+  return outputFile
+}
+
+private fun isImageUri(
+  context: Context,
+  uri: Uri,
+): Boolean = context.contentResolver.getType(uri)?.startsWith("image/") == true
+
 @Composable
 fun ImageCaptureHandler(
   onMessage: (TranslatorMessage) -> Unit,
@@ -106,6 +187,7 @@ fun ImageCaptureHandler(
   showFilePickerInImagePicker: Boolean = true,
 ) {
   val context = LocalContext.current
+  val scope = rememberCoroutineScope()
   val pendingImport = remember { mutableStateOf<PendingImageImport?>(null) }
 
   val cropImage =
@@ -214,20 +296,40 @@ fun ImageCaptureHandler(
   val pickFromFiles =
     rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
       if (uri != null) {
-        val cropOutputUri = createTemporaryImageUri(context, "cropped_image")
-        pendingImport.value = PendingImageImport(sourceUri = null, cropOutputUri = cropOutputUri)
         Log.d("FilePicker", "Selected URI: $uri")
-        cropImage.launch(
-          CropImageContractOptions(
-            uri = uri,
-            cropImageOptions =
-              CropImageOptions(
-                customOutputUri = cropOutputUri,
-                outputCompressFormat = Bitmap.CompressFormat.JPEG,
-                outputCompressQuality = 95,
-              ),
-          ),
-        )
+        if (isImageUri(context, uri)) {
+          val cropOutputUri = createTemporaryImageUri(context, "cropped_image")
+          pendingImport.value = PendingImageImport(sourceUri = null, cropOutputUri = cropOutputUri)
+          cropImage.launch(
+            CropImageContractOptions(
+              uri = uri,
+              cropImageOptions =
+                CropImageOptions(
+                  customOutputUri = cropOutputUri,
+                  outputCompressFormat = Bitmap.CompressFormat.JPEG,
+                  outputCompressQuality = 95,
+                ),
+            ),
+          )
+        } else {
+          scope.launch {
+            try {
+              val documentFile = withContext(Dispatchers.IO) { copyDocumentUriToCache(context, uri) }
+              Log.d("FilePicker", "Copied document to: ${documentFile.absolutePath}")
+              onMessage(
+                TranslatorMessage.SetDocumentPath(
+                  path = documentFile.absolutePath,
+                  displayName = displayNameForUri(context, uri) ?: documentFile.name,
+                  sizeBytes = sizeBytesForUri(context, uri) ?: documentFile.length(),
+                  deleteAfterLoad = true,
+                ),
+              )
+            } catch (e: Exception) {
+              Log.e("FilePicker", "Failed to import document: $uri", e)
+              Toast.makeText(context, "Failed to open file", Toast.LENGTH_SHORT).show()
+            }
+          }
+        }
       } else {
         Log.d("FilePicker", "No file selected")
       }
@@ -265,7 +367,7 @@ fun ImageCaptureHandler(
       },
       onFilePickerClick = {
         onDismissImageSourceSheet()
-        pickFromFiles.launch(arrayOf("image/*"))
+        pickFromFiles.launch(filePickerMimeTypes)
       },
     )
   }
@@ -374,8 +476,8 @@ fun ImageSourceBottomSheet(
             modifier = Modifier.clickable { onFilePickerClick() },
           ) {
             Icon(
-              painter = painterResource(id = R.drawable.folder),
-              contentDescription = "Files",
+              painter = painterResource(id = R.drawable.draft),
+              contentDescription = "Document",
               modifier =
                 Modifier
                   .size(48.dp)
@@ -383,7 +485,7 @@ fun ImageSourceBottomSheet(
               tint = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-              text = "Files",
+              text = "Document",
               style = MaterialTheme.typography.bodyMedium,
               textAlign = TextAlign.Center,
             )

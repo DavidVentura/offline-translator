@@ -37,6 +37,13 @@ sealed class TranslatorMessage {
     val deleteAfterLoad: Boolean = false,
   ) : TranslatorMessage()
 
+  data class SetDocumentPath(
+    val path: String,
+    val displayName: String,
+    val sizeBytes: Long,
+    val deleteAfterLoad: Boolean = false,
+  ) : TranslatorMessage()
+
   data object ShareTranslatedImage : TranslatorMessage()
 
   data object ToggleJapaneseOcrMode : TranslatorMessage()

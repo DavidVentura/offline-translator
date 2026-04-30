@@ -27,13 +27,18 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,8 +47,14 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -52,11 +63,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
@@ -64,13 +77,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dev.davidv.translator.AppSettings
+import dev.davidv.translator.DocumentTranslationService
 import dev.davidv.translator.DownloadService
 import dev.davidv.translator.DownloadState
 import dev.davidv.translator.Language
 import dev.davidv.translator.LaunchMode
 import dev.davidv.translator.PcmAudioPlayer
+import dev.davidv.translator.R
 import dev.davidv.translator.TranslatorMessage
 import dev.davidv.translator.TtsVoiceOption
+import dev.davidv.translator.ui.DocumentTranslationUiState
 import dev.davidv.translator.ui.TranslatorViewModel
 import dev.davidv.translator.ui.UiEvent
 import kotlinx.coroutines.Dispatchers
@@ -86,6 +102,11 @@ import kotlin.math.roundToInt
 private fun defaultVoiceNameForLanguage(voices: List<TtsVoiceOption>): String? = voices.firstOrNull()?.name
 
 private enum class SpeechTarget { INPUT, OUTPUT }
+
+private data class PendingDocumentSave(
+  val path: String,
+  val mimeType: String,
+)
 
 private fun quantizePlaybackSpeed(speed: Float): Float = ((speed.coerceIn(0.5f, 2.0f) * 10.0f).roundToInt() / 10.0f)
 
@@ -115,6 +136,40 @@ fun shareImageUri(
   startActivity(context, intent, null)
 }
 
+fun openDocumentPath(
+  path: String,
+  mimeType: String,
+  context: Context,
+) {
+  val uri =
+    FileProvider.getUriForFile(
+      context,
+      "${context.packageName}.fileprovider",
+      File(path),
+    )
+  val intent =
+    Intent(Intent.ACTION_VIEW).apply {
+      setDataAndType(uri, mimeType)
+      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+  startActivity(context, Intent.createChooser(intent, "Open translated document"), null)
+}
+
+suspend fun saveDocumentPathToUri(
+  path: String,
+  uri: Uri,
+  context: Context,
+) {
+  withContext(Dispatchers.IO) {
+    File(path).inputStream().use { input ->
+      val output = requireNotNull(context.contentResolver.openOutputStream(uri)) { "Unable to open output file" }
+      output.use {
+        input.copyTo(it)
+      }
+    }
+  }
+}
+
 suspend fun saveImage(
   image: Bitmap,
   context: Context,
@@ -142,6 +197,97 @@ suspend fun saveImage(
   }
 
 @Composable
+private fun DocumentTranslationDialog(
+  document: DocumentTranslationUiState,
+  onDismiss: () -> Unit,
+  onSave: (String, String, String) -> Unit,
+  onOpen: (String, String) -> Unit,
+) {
+  val outputPath = document.outputPath
+  val outputMimeType = document.outputMimeType
+  val outputFileName = document.outputFileName ?: document.fileName
+
+  AlertDialog(
+    onDismissRequest = onDismiss,
+    title = {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text = if (document.isTranslating) "Translating file" else "Translated file",
+          modifier = Modifier.weight(1f),
+        )
+        if (document.isTranslating) {
+          IconButton(onClick = onDismiss) {
+            Icon(
+              painter = painterResource(R.drawable.cancel),
+              contentDescription = "Close",
+            )
+          }
+        }
+      }
+    },
+    text = {
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Text(
+            text = document.fileName,
+            modifier = Modifier.weight(1f),
+          )
+        }
+        if (document.isTranslating) {
+          val progressFraction = document.progressFraction
+          if (progressFraction != null) {
+            LinearProgressIndicator(
+              progress = { progressFraction },
+              modifier = Modifier.fillMaxWidth(),
+            )
+            val current = document.progressCurrent ?: 0
+            val total = document.progressTotal ?: 0
+            val displayCurrent = if (current < total) current + 1 else current
+            val unit =
+              when (document.progressUnit) {
+                "page" -> "Page"
+                else -> "Block"
+              }
+            Text("$unit $displayCurrent/$total")
+          } else {
+            Text(document.progressLabel)
+          }
+        }
+        if (document.errorMessage != null) {
+          Text(document.errorMessage)
+        } else if (outputPath != null) {
+          Text("Translated file: $outputFileName")
+        }
+      }
+    },
+    confirmButton = {
+      if (outputPath != null && outputMimeType != null) {
+        TextButton(onClick = { onOpen(outputPath, outputMimeType) }) {
+          Text("Open")
+        }
+      } else if (document.errorMessage != null) {
+        TextButton(onClick = onDismiss) {
+          Text("Close")
+        }
+      }
+    },
+    dismissButton = {
+      if (outputPath != null && outputMimeType != null) {
+        TextButton(onClick = { onSave(outputPath, outputMimeType, outputFileName) }) {
+          Text("Save")
+        }
+      }
+    },
+  )
+}
+
+@Composable
 fun TranslatorApp(
   viewModel: TranslatorViewModel,
   downloadServiceState: StateFlow<DownloadService?>,
@@ -149,9 +295,28 @@ fun TranslatorApp(
 ) {
   val navController = rememberNavController()
   val context = LocalContext.current
+  val scope = rememberCoroutineScope()
   var isAudioPlaying by remember { mutableStateOf(false) }
   var isAudioLoading by remember { mutableStateOf(false) }
   var activeSpeechTarget by remember { mutableStateOf<SpeechTarget?>(null) }
+  var pendingDocumentSave by remember { mutableStateOf<PendingDocumentSave?>(null) }
+  val saveTranslatedDocument =
+    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+      val pending = pendingDocumentSave
+      pendingDocumentSave = null
+      val uri = result.data?.data
+      if (result.resultCode == Activity.RESULT_OK && pending != null && uri != null) {
+        scope.launch {
+          try {
+            saveDocumentPathToUri(pending.path, uri, context)
+            Toast.makeText(context, "Document saved", Toast.LENGTH_SHORT).show()
+          } catch (e: Exception) {
+            Log.e("DocumentSave", "Failed to save translated document", e)
+            Toast.makeText(context, "Failed to save document", Toast.LENGTH_SHORT).show()
+          }
+        }
+      }
+    }
   val pcmAudioPlayer =
     remember {
       PcmAudioPlayer { playing ->
@@ -179,6 +344,7 @@ fun TranslatorApp(
   val dictionaryWord by viewModel.dictionaryWord.collectAsState()
   val dictionaryStack by viewModel.dictionaryStack.collectAsState()
   val dictionaryLookupLanguage by viewModel.dictionaryLookupLanguage.collectAsState()
+  val documentTranslation by viewModel.documentTranslation.collectAsState()
 
   val settings by viewModel.settingsManager.settings.collectAsState()
   val languageMetadata by viewModel.languageMetadataManager.metadata.collectAsState()
@@ -253,6 +419,39 @@ fun TranslatorApp(
     onDispose {
       pcmAudioPlayer.release()
     }
+  }
+
+  documentTranslation?.let { document ->
+    DocumentTranslationDialog(
+      document = document,
+      onDismiss = {
+        if (document.isTranslating) {
+          viewModel.cancelDocumentTranslation()
+        } else {
+          DocumentTranslationService.dismiss(context)
+          viewModel.dismissDocumentTranslation()
+        }
+      },
+      onSave = { path, mimeType, fileName ->
+        pendingDocumentSave = PendingDocumentSave(path = path, mimeType = mimeType)
+        saveTranslatedDocument.launch(
+          Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = mimeType
+            putExtra(Intent.EXTRA_TITLE, fileName)
+          },
+        )
+      },
+      onOpen = { path, mimeType ->
+        DocumentTranslationService.dismiss(context)
+        viewModel.dismissDocumentTranslation()
+        try {
+          openDocumentPath(path, mimeType, context)
+        } catch (e: Exception) {
+          Toast.makeText(context, "No app found to open this file", Toast.LENGTH_SHORT).show()
+        }
+      },
+    )
   }
 
   // Retranslate when isTranslating becomes false (queued translation)

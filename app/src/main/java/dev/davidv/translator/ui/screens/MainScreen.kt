@@ -173,8 +173,20 @@ fun MainScreen(
               showImageSourceSheet = true
             }) {
               Icon(
-                painterResource(id = R.drawable.add_photo),
-                contentDescription = "Translate image",
+                painterResource(
+                  id =
+                    if (settings.showFilePickerInImagePicker) {
+                      R.drawable.attach_file_add
+                    } else {
+                      R.drawable.add_photo
+                    },
+                ),
+                contentDescription =
+                  if (settings.showFilePickerInImagePicker) {
+                    "Translate image or file"
+                  } else {
+                    "Translate image"
+                  },
               )
             }
           }

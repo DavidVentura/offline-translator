@@ -113,6 +113,16 @@
             android:enabled="true"
             android:exported="false" />
 
+        <service
+            android:name=".DocumentTranslationService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="document_translation" />
+        </service>
+
         <receiver
             android:name=".TapToTranslateDismissReceiver"
             android:exported="false" />

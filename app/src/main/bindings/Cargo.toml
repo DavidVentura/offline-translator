@@ -4,11 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-default = ["dictionary", "mucab", "tesseract", "tts"]
+default = ["dictionary", "mucab", "tesseract", "tts", "pdf", "odt"]
 dictionary = ["translator/dictionary"]
 mucab = ["translator/mucab"]
 tesseract = ["translator/tesseract"]
 tts = ["translator/tts"]
+pdf = ["translator/pdf"]
+odt = ["translator/odt"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -32,3 +34,4 @@ lto = "thin"
 codegen-units = 1
 debug = false
 strip = "debuginfo"
+#
