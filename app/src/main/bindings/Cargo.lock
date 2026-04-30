@@ -1511,7 +1511,7 @@ dependencies = [
 [[package]]
 name = "mupdf"
 version = "0.6.0"
-source = "git+https://github.com/DavidVentura/mupdf-rs#ab0c0b12b2909b7f874da0d44f05ea1d99a0c7f8"
+source = "git+https://github.com/DavidVentura/mupdf-rs#f9f7645176572d3078c6196a5f56ba4726df13e5"
 dependencies = [
  "bitflags 2.11.1",
  "mupdf-sys",
@@ -1523,7 +1523,7 @@ dependencies = [
 [[package]]
 name = "mupdf-sys"
 version = "0.6.0"
-source = "git+https://github.com/DavidVentura/mupdf-rs#ab0c0b12b2909b7f874da0d44f05ea1d99a0c7f8"
+source = "git+https://github.com/DavidVentura/mupdf-rs#f9f7645176572d3078c6196a5f56ba4726df13e5"
 dependencies = [
  "bindgen 0.72.1",
  "cc",
@@ -2484,6 +2484,7 @@ dependencies = [
 [[package]]
 name = "translator"
 version = "0.1.0"
+source = "git+https://github.com/DavidVentura/translator-rs.git#3f4af34950bcb9501cb528695a3a3e9c8d01b2b8"
 dependencies = [
  "bergamot-sys",
  "cld2",
