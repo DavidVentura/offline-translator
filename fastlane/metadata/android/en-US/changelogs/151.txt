@@ -1,0 +1,2 @@
+- Speed up translation
+- Improve translation of websites and documents

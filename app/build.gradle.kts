@@ -31,8 +31,8 @@ android {
     applicationId = "dev.davidv.translator"
     minSdk = 21
     targetSdk = 34
-    versionCode = 14
-    versionName = "0.4.0"
+    versionCode = 15
+    versionName = "0.5.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -295,6 +295,15 @@ val abiToBindingsTask =
           environment("ORT_LIB_LOCATION", onnxRuntimeConfigDir(abi).absolutePath)
           environment("ORT_PREFER_DYNAMIC_LINK", "1")
           environment("CARGO_ENCODED_RUSTFLAGS", cargoEncodedRustflags(abi))
+          // CMake cross-compile contract for slimt-sys: parent build owns
+          // toolchain selection, the -sys crate just forwards these.
+          environment(
+            "CMAKE_TOOLCHAIN_FILE",
+            File(ndk, "build/cmake/android.toolchain.cmake").absolutePath,
+          )
+          environment("ANDROID_ABI", abi)
+          environment("ANDROID_PLATFORM", "android-$bindingsAndroidApi")
+          environment("CMAKE_GENERATOR", "Ninja")
           commandLine(
             "cargo",
             "ndk",

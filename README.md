@@ -25,8 +25,8 @@ Language packs contain the full translation models, translation happens _on your
 
 ## Tech
 
-- Translation models are [firefox-translations-models](https://github.com/mozilla/firefox-translations-models/tree/main)
-  - The translation models run on [bergamot-translator](https://github.com/browsermt/bergamot-translator)
+- Translation models are Firefox' [translations models](https://github.com/mozilla/translations)
+  - The translation models run on a modified [slimt](https://github.com/jerinphilip/slimt)
 - OCR models are [Tesseract](https://github.com/tesseract-ocr/tesseract)
 - Automatic language detection is done via [cld2](https://github.com/CLD2Owners/cld2)
 - Dictionary is based on data from Wiktionary, exported by [Kaikki](https://kaikki.org/)
