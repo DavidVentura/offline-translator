@@ -275,6 +275,11 @@ class TranslatorViewModel(
 
     when (message) {
       is TranslatorMessage.TextInput -> {
+        if (_inputType.value != InputType.TEXT) {
+          _displayImage.value = null
+          originalImage.value = null
+          _inputType.value = InputType.TEXT
+        }
         _input.value = message.text
         val settings = settingsManager.settings.value
         val fromLang = _from.value
