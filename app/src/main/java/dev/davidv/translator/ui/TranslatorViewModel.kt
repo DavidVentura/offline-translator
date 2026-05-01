@@ -102,6 +102,9 @@ class TranslatorViewModel(
   private val _currentDetectedLanguage = MutableStateFlow<Language?>(null)
   val currentDetectedLanguage: StateFlow<Language?> = _currentDetectedLanguage.asStateFlow()
 
+  private val _isAutoSource = MutableStateFlow(false)
+  val isAutoSource: StateFlow<Boolean> = _isAutoSource.asStateFlow()
+
   private val _currentLaunchMode = MutableStateFlow(initialLaunchMode)
   val currentLaunchMode: StateFlow<LaunchMode> = _currentLaunchMode.asStateFlow()
 
@@ -296,6 +299,9 @@ class TranslatorViewModel(
           _inputType.value = InputType.TEXT
         }
         _input.value = message.text
+        if (message.text.isBlank()) {
+          _currentDetectedLanguage.value = null
+        }
         val settings = settingsManager.settings.value
         val fromLang = _from.value
         if (settings.showTransliterationOnInput && fromLang != null) {
@@ -305,7 +311,21 @@ class TranslatorViewModel(
       }
 
       is TranslatorMessage.FromLang -> {
-        _from.value = message.language
+        _isAutoSource.value = false
+        val newFrom = message.language
+        if (newFrom == _to.value) {
+          val newTarget = pickAlternateTarget(newFrom)
+          if (newTarget != null) {
+            _to.value = newTarget
+          }
+        }
+        _from.value = newFrom
+        _output.value = null
+        triggerTranslation()
+      }
+
+      TranslatorMessage.EnableAutoSource -> {
+        _isAutoSource.value = true
         _output.value = null
         triggerTranslation()
       }
@@ -358,6 +378,7 @@ class TranslatorViewModel(
         val oldFrom = _from.value ?: return
         val oldTo = _to.value ?: return
         if (!languageStateManager.canSwapLanguages(oldFrom, oldTo)) return
+        _isAutoSource.value = false
         _from.value = oldTo
         _to.value = oldFrom
         _output.value = null
@@ -481,7 +502,6 @@ class TranslatorViewModel(
   }
 
   private fun triggerTranslation() {
-    val fromLang = _from.value ?: return
     val toLang = _to.value ?: return
 
     if (translationCoordinator.isTranslating.value) return
@@ -489,8 +509,24 @@ class TranslatorViewModel(
     viewModelScope.launch {
       val settings = settingsManager.settings.value
       if (!settings.disableCLD) {
-        _currentDetectedLanguage.value = translationCoordinator.detectLanguage(_input.value, fromLang)
+        if (_input.value.isBlank()) {
+          _currentDetectedLanguage.value = null
+        } else {
+          val detected = translationCoordinator.detectLanguage(_input.value, _from.value)
+          if (detected != null) {
+            _currentDetectedLanguage.value = detected
+          }
+        }
+        if (_isAutoSource.value) {
+          val detected = _currentDetectedLanguage.value
+          if (detected != null && languageStateManager.languageState.value.availabilityFor(detected)?.translatorFiles == true) {
+            if (detected != _to.value) {
+              _from.value = detected
+            }
+          }
+        }
       }
+      val fromLang = _from.value ?: return@launch
       translateWithLanguages(fromLang, toLang)
     }
   }
@@ -572,6 +608,12 @@ class TranslatorViewModel(
     sizeBytes: Long,
     deleteAfterLoad: Boolean,
   ) {
+    if (_isAutoSource.value) {
+      viewModelScope.launch {
+        _uiEvents.emit(UiEvent.ShowToast("Please select source language first"))
+      }
+      return
+    }
     _displayImage.value = null
     originalImage.value = null
     _output.value = null
@@ -731,6 +773,22 @@ class TranslatorViewModel(
     // Recycle bitmaps
     _displayImage.value?.let { if (!it.isRecycled) it.recycle() }
     originalImage.value?.let { if (!it.isRecycled) it.recycle() }
+  }
+
+  private fun pickAlternateTarget(newFrom: Language): Language? {
+    val state = languageStateManager.languageState.value
+    val catalog = languageStateManager.catalog.value
+    val settings = settingsManager.settings.value
+    val candidates =
+      state.allLanguages().filter { it != newFrom && languageStateManager.canTranslate(newFrom, it) }
+    val defaultTarget = catalog?.languageByCode(settings.defaultTargetLanguageCode)
+    if (defaultTarget != null && defaultTarget in candidates) {
+      return defaultTarget
+    }
+    val metadata = languageMetadataManager.metadata.value
+    val starred = candidates.firstOrNull { metadata[it]?.favorite == true }
+    if (starred != null) return starred
+    return candidates.minByOrNull { it.displayName }
   }
 
   private fun firstAvailableSourceLanguage(

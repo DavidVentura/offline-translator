@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -58,9 +59,20 @@ fun LanguageSelector(
   languageMetadata: Map<Language, LanguageMetadata>,
   onLanguageSelected: (Language) -> Unit,
   modifier: Modifier = Modifier,
+  isAutoSource: Boolean = false,
+  detectedInstalled: Language? = null,
+  showAutoOption: Boolean = false,
+  onAutoSelected: (() -> Unit)? = null,
 ) {
   var expanded by remember { mutableStateOf(false) }
   val interactionSource = remember { MutableInteractionSource() }
+
+  val displayText =
+    when {
+      isAutoSource && detectedInstalled != null -> "✨ ${detectedInstalled.displayName}"
+      isAutoSource -> "✨ Auto"
+      else -> selectedLanguage.displayName
+    }
 
   Box(
     modifier = modifier,
@@ -79,7 +91,7 @@ fun LanguageSelector(
           }
           .fillMaxWidth()
           .padding(vertical = 8.dp, horizontal = 4.dp),
-      text = selectedLanguage.displayName,
+      text = displayText,
       textAlign = TextAlign.Center,
       maxLines = 1,
       style = MaterialTheme.typography.bodyMedium,
@@ -90,6 +102,26 @@ fun LanguageSelector(
       expanded = expanded,
       onDismissRequest = { expanded = false },
     ) {
+      if (showAutoOption && onAutoSelected != null) {
+        DropdownMenuItem(
+          text = {
+            Text(
+              text = "✨ Auto",
+              color =
+                if (isAutoSource) {
+                  MaterialTheme.colorScheme.primary
+                } else {
+                  MaterialTheme.colorScheme.onSurface
+                },
+            )
+          },
+          onClick = {
+            onAutoSelected()
+            expanded = false
+          },
+        )
+        HorizontalDivider()
+      }
       availableLanguages
         .sortedWith(
           compareByDescending<Language> { languageMetadata[it]?.favorite ?: false }
@@ -180,6 +212,56 @@ fun LanguageSelectorSpanishPreview() {
           ),
         languageMetadata = mapOf(previewLanguage("es", "Spanish") to LanguageMetadata(favorite = true)),
         onLanguageSelected = { },
+      )
+    }
+  }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LanguageSelectorAutoNoDetectionPreview() {
+  TranslatorTheme {
+    Surface(
+      color = MaterialTheme.colorScheme.surface,
+    ) {
+      LanguageSelector(
+        selectedLanguage = previewLanguage("en", "English"),
+        availableLanguages =
+          listOf(
+            previewLanguage("en", "English"),
+            previewLanguage("es", "Spanish"),
+          ),
+        languageMetadata = emptyMap(),
+        onLanguageSelected = { },
+        isAutoSource = true,
+        detectedInstalled = null,
+        showAutoOption = true,
+        onAutoSelected = {},
+      )
+    }
+  }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LanguageSelectorAutoSpanishPreview() {
+  TranslatorTheme {
+    Surface(
+      color = MaterialTheme.colorScheme.surface,
+    ) {
+      LanguageSelector(
+        selectedLanguage = previewLanguage("es", "Spanish"),
+        availableLanguages =
+          listOf(
+            previewLanguage("en", "English"),
+            previewLanguage("es", "Spanish"),
+          ),
+        languageMetadata = emptyMap(),
+        onLanguageSelected = { },
+        isAutoSource = true,
+        detectedInstalled = previewLanguage("es", "Spanish"),
+        showAutoOption = true,
+        onAutoSelected = {},
       )
     }
   }

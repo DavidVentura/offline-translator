@@ -29,6 +29,16 @@ data class LanguageToolbarViews(
 object OverlayChromeFactory {
   private const val ACTIVE_OCR_BLUE = "#4488FF"
 
+  fun formatSourceLabel(
+    forcedSourceLanguage: Language?,
+    isAutoSource: Boolean,
+  ): String =
+    when {
+      isAutoSource && forcedSourceLanguage != null -> "✨ ${forcedSourceLanguage.shortDisplayName}"
+      isAutoSource -> "✨ Auto"
+      else -> forcedSourceLanguage?.shortDisplayName ?: "?"
+    }
+
   fun createLanguageToolbar(
     context: Context,
     dpToPx: (Int) -> Int,
@@ -45,6 +55,7 @@ object OverlayChromeFactory {
     showOcrButton: Boolean = false,
     onOcrClick: (() -> Unit)? = null,
     onMenuClick: () -> Unit,
+    isAutoSource: Boolean = false,
   ): LanguageToolbarViews {
     val toolbar = FrameLayout(context)
     val pad = dpToPx(6)
@@ -97,7 +108,7 @@ object OverlayChromeFactory {
     langRow.setPadding(dpToPx(12), dpToPx(8), dpToPx(12), dpToPx(8))
 
     val sourceLabel = TextView(context)
-    sourceLabel.text = forcedSourceLanguage?.shortDisplayName ?: "Auto"
+    sourceLabel.text = formatSourceLabel(forcedSourceLanguage, isAutoSource)
     sourceLabel.setTextColor(Color.WHITE)
     sourceLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
     sourceLabel.gravity = Gravity.CENTER

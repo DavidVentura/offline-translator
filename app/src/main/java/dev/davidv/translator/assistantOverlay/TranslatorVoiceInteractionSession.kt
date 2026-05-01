@@ -105,6 +105,7 @@ class TranslatorVoiceInteractionSession(
   private var processing = false
   private var translationJob: Job? = null
   private var forcedSourceLanguage: Language? = null
+  private var isAutoSource: Boolean = true
   private var forcedTargetLanguage: Language? = null
   private var ocrReadingOrder = ReadingOrder.LEFT_TO_RIGHT
   private var lastOcrBitmap: Bitmap? = null
@@ -475,6 +476,21 @@ class TranslatorVoiceInteractionSession(
     translationJob =
       sessionScope.launch {
         val targetLanguage = overlayTextTranslationHelper.awaitTargetLanguage(forcedTargetLanguage)
+        if (isAutoSource) {
+          val combinedText = fragments.joinToString(" ") { it.text }
+          val translatorLanguages = langStateManager.languageState.value.translatorLanguages()
+          val detected =
+            translationCoordinator.detectLanguageRobust(
+              text = combinedText,
+              hint = forcedSourceLanguage,
+              availableLanguages = translatorLanguages,
+            )
+          if (detected != null && detected != forcedSourceLanguage) {
+            forcedSourceLanguage = detected
+            syncReadingOrderForSource()
+            updateToolbarLabels()
+          }
+        }
         when (
           val result =
             translationCoordinator.translateStructuredFragments(
@@ -897,6 +913,7 @@ class TranslatorVoiceInteractionSession(
         showOcrButton = true,
         onOcrClick = { startManualOcrSelection() },
         onMenuClick = { showDotsMenu() },
+        isAutoSource = isAutoSource,
       )
     sourceLabelView = toolbarViews.sourceLabel
     targetLabelView = toolbarViews.targetLabel
@@ -946,6 +963,7 @@ class TranslatorVoiceInteractionSession(
   private fun swapLanguages() {
     val oldSource = forcedSourceLanguage
     val oldTarget = forcedTargetLanguage ?: langStateManager.languageByCode(settingsManager.settings.value.defaultTargetLanguageCode) ?: return
+    isAutoSource = false
     forcedSourceLanguage = oldTarget
     forcedTargetLanguage = oldSource
     syncReadingOrderForSource()
@@ -971,7 +989,7 @@ class TranslatorVoiceInteractionSession(
   }
 
   private fun updateToolbarLabels() {
-    sourceLabelView?.text = forcedSourceLanguage?.shortDisplayName ?: "Auto"
+    sourceLabelView?.text = OverlayChromeFactory.formatSourceLabel(forcedSourceLanguage, isAutoSource)
     val currentTarget = forcedTargetLanguage ?: langStateManager.languageByCode(settingsManager.settings.value.defaultTargetLanguageCode)
     targetLabelView?.text = currentTarget?.shortDisplayName ?: "?"
     OverlayChromeFactory.updateReadingOrderButtonState(
@@ -991,7 +1009,12 @@ class TranslatorVoiceInteractionSession(
         availableLangs = availableLangs,
       ) { language ->
         if (isSource) {
-          forcedSourceLanguage = language
+          if (language == null) {
+            isAutoSource = true
+          } else {
+            isAutoSource = false
+            forcedSourceLanguage = language
+          }
           syncReadingOrderForSource()
         } else {
           forcedTargetLanguage = language

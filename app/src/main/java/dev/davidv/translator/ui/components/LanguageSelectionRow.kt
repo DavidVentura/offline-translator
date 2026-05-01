@@ -48,6 +48,9 @@ fun LanguageSelectionRow(
   onMessage: (TranslatorMessage) -> Unit,
   onSettings: (() -> Unit)?,
   drawable: Pair<String, Int>,
+  isAutoSource: Boolean = false,
+  detectedInstalled: Language? = null,
+  showAutoOption: Boolean = false,
 ) {
   Row(
     modifier = Modifier.fillMaxWidth(),
@@ -56,7 +59,7 @@ fun LanguageSelectionRow(
   ) {
     val fromLanguages =
       languageState.allLanguages().filter { x ->
-        x != to && x != from && (languageState.availabilityFor(x)?.hasToEnglish == true || x.isEnglish)
+        (isAutoSource || x != from) && (languageState.availabilityFor(x)?.hasToEnglish == true || x.isEnglish)
       }
     val toLanguages =
       languageState.allLanguages().filter { x ->
@@ -71,10 +74,14 @@ fun LanguageSelectionRow(
         onMessage(TranslatorMessage.FromLang(language))
       },
       modifier = Modifier.weight(1f),
+      isAutoSource = isAutoSource,
+      detectedInstalled = detectedInstalled,
+      showAutoOption = showAutoOption,
+      onAutoSelected = { onMessage(TranslatorMessage.EnableAutoSource) },
     )
     IconButton(
       onClick = { onMessage(TranslatorMessage.SwapLanguages) },
-      enabled = canSwap,
+      enabled = canSwap && !(isAutoSource && detectedInstalled == null),
     ) {
       Icon(
         painterResource(id = R.drawable.compare),

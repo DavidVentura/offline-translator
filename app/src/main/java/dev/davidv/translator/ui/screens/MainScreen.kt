@@ -151,6 +151,7 @@ fun MainScreen(
   onSpeakOutput: (String, Language) -> Unit = { _, _ -> },
   launchMode: LaunchMode,
   pendingSharedImage: SharedFlow<android.net.Uri>? = null,
+  isAutoSource: Boolean = false,
 ) {
   var showFullScreenImage by remember { mutableStateOf(false) }
   var showImageSourceSheet by remember { mutableStateOf(false) }
@@ -159,6 +160,8 @@ fun MainScreen(
   val context = LocalContext.current
   val showOnlyOutputInReadonlyModal =
     launchMode == LaunchMode.ReadonlyModal && settings.onlyShowOutputOnReadonlyModal
+  val detectedInstalled =
+    detectedLanguage?.takeIf { languageState.availabilityFor(it)?.translatorFiles == true }
 
   // Handle back button when dictionary is open
   BackHandler(enabled = dictionaryWord != null) {
@@ -171,9 +174,30 @@ fun MainScreen(
       when (launchMode) {
         LaunchMode.Normal -> {
           if (!settings.disableOcr) {
-            FloatingActionButton(onClick = {
-              showImageSourceSheet = true
-            }) {
+            val fabDisabled = isAutoSource
+            FloatingActionButton(
+              onClick = {
+                if (fabDisabled) {
+                  android.widget.Toast
+                    .makeText(context, "Please select source language first", android.widget.Toast.LENGTH_SHORT)
+                    .show()
+                } else {
+                  showImageSourceSheet = true
+                }
+              },
+              containerColor =
+                if (fabDisabled) {
+                  MaterialTheme.colorScheme.surfaceVariant
+                } else {
+                  FloatingActionButtonDefaults.containerColor
+                },
+              contentColor =
+                if (fabDisabled) {
+                  MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                } else {
+                  MaterialTheme.colorScheme.onPrimaryContainer
+                },
+            ) {
               Icon(
                 painterResource(
                   id =
@@ -238,6 +262,9 @@ fun MainScreen(
           languageState = languageState,
           languageMetadata = languageMetadata,
           onMessage = onMessage,
+          isAutoSource = isAutoSource,
+          detectedInstalled = detectedInstalled,
+          showAutoOption = !settings.disableCLD,
           drawable =
             if (launchMode == LaunchMode.Normal) {
               Pair("Settings", R.drawable.settings)
@@ -429,6 +456,7 @@ fun MainScreen(
               languageState = languageState,
               onMessage = onMessage,
               downloadStates = downloadStates,
+              isAutoSource = isAutoSource,
               onEvent = { event ->
                 when (event) {
                   is LanguageEvent.Download -> DownloadService.startDownload(context, event.language)

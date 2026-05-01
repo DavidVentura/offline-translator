@@ -198,6 +198,7 @@ class OverlayUI(
     forcedSourceLanguage: Language?,
     forcedTargetLanguage: Language?,
     readingOrder: ReadingOrder,
+    isAutoSource: Boolean,
   ) {
     if (toolbarView != null) return
 
@@ -218,6 +219,7 @@ class OverlayUI(
         showOcrButton = true,
         onOcrClick = { service.startManualOcrSelection() },
         onMenuClick = { service.showDotsMenu() },
+        isAutoSource = isAutoSource,
       )
     val toolbar = toolbarViews.root
     sourceLabelView = toolbarViews.sourceLabel
@@ -260,8 +262,9 @@ class OverlayUI(
     forcedSourceLanguage: Language?,
     forcedTargetLanguage: Language?,
     readingOrder: ReadingOrder,
+    isAutoSource: Boolean,
   ) {
-    sourceLabelView?.text = forcedSourceLanguage?.shortDisplayName ?: "Auto"
+    sourceLabelView?.text = OverlayChromeFactory.formatSourceLabel(forcedSourceLanguage, isAutoSource)
     val currentTarget = forcedTargetLanguage ?: service.langStateManager.languageByCode(settingsManager.settings.value.defaultTargetLanguageCode)
     targetLabelView?.text = currentTarget?.shortDisplayName ?: "?"
     OverlayChromeFactory.updateReadingOrderButtonState(

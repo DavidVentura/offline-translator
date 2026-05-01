@@ -41,19 +41,22 @@ fun DetectedLanguageSection(
   onMessage: (TranslatorMessage) -> Unit,
   downloadStates: Map<Language, DownloadState>,
   onEvent: (LanguageEvent) -> Unit,
+  isAutoSource: Boolean = false,
 ) {
-  if (detectedLanguage != null && detectedLanguage != from) {
-    DetectedLanguageToast(
-      detectedLanguage = detectedLanguage,
-      languageState = languageState,
-      onSwitchClick = {
-        onMessage(TranslatorMessage.FromLang(detectedLanguage))
-      },
-      modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-      downloadStates = downloadStates,
-      onEvent = onEvent,
-    )
-  }
+  if (detectedLanguage == null) return
+  val isInstalled = languageState.availabilityFor(detectedLanguage)?.translatorFiles == true
+  if (isAutoSource && isInstalled) return
+  if (!isAutoSource && detectedLanguage == from) return
+  DetectedLanguageToast(
+    detectedLanguage = detectedLanguage,
+    languageState = languageState,
+    onSwitchClick = {
+      onMessage(TranslatorMessage.FromLang(detectedLanguage))
+    },
+    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+    downloadStates = downloadStates,
+    onEvent = onEvent,
+  )
 }
 
 private fun previewLanguageState(entries: List<Pair<Language, LangAvailability>>) =

@@ -339,6 +339,7 @@ fun TranslatorApp(
   val displayImage by viewModel.displayImage.collectAsState()
   val ocrReadingOrder by viewModel.ocrReadingOrder.collectAsState()
   val currentDetectedLanguage by viewModel.currentDetectedLanguage.collectAsState()
+  val isAutoSource by viewModel.isAutoSource.collectAsState()
   val currentLaunchMode by viewModel.currentLaunchMode.collectAsState()
   val modalVisible by viewModel.modalVisible.collectAsState()
   val dictionaryWord by viewModel.dictionaryWord.collectAsState()
@@ -732,6 +733,7 @@ fun TranslatorApp(
                 },
                 launchMode = currentLaunchMode,
                 pendingSharedImage = viewModel.pendingSharedImage,
+                isAutoSource = isAutoSource,
               )
             }
           }

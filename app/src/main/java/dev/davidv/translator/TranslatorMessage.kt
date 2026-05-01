@@ -50,6 +50,8 @@ sealed class TranslatorMessage {
 
   data object SwapLanguages : TranslatorMessage()
 
+  data object EnableAutoSource : TranslatorMessage()
+
   data object ClearInput : TranslatorMessage()
 
   data class InitializeLanguages(
