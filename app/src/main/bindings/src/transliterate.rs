@@ -7,12 +7,27 @@ pub fn transliterate_with_policy_record(
     japanese_dict_path: Option<String>,
     japanese_spaced: bool,
 ) -> Option<String> {
-    translator::transliterate::transliterate_with_policy_for_language(
-        &text,
-        &translator::LanguageCode::from(language_code),
-        &translator::ScriptCode::from(source_script),
-        &translator::ScriptCode::from(target_script),
-        japanese_dict_path.as_deref(),
-        japanese_spaced,
-    )
+    #[cfg(feature = "transliterate")]
+    {
+        translator::transliterate::transliterate_with_policy_for_language(
+            &text,
+            &translator::LanguageCode::from(language_code),
+            &translator::ScriptCode::from(source_script),
+            &translator::ScriptCode::from(target_script),
+            japanese_dict_path.as_deref(),
+            japanese_spaced,
+        )
+    }
+    #[cfg(not(feature = "transliterate"))]
+    {
+        let _ = (
+            text,
+            language_code,
+            source_script,
+            target_script,
+            japanese_dict_path,
+            japanese_spaced,
+        );
+        None
+    }
 }
