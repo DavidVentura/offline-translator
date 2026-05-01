@@ -98,9 +98,9 @@
 
   if (!ensureReadability()) return window.__translatorReaderModeProbe ? false : null;
 
-  try {
+  function parseArticle() {
     var clone = document.cloneNode(true);
-    var article = new Readability(clone, {
+    return new Readability(clone, {
       classesToPreserve: [
         'caption',
         'emoji',
@@ -114,6 +114,13 @@
         'wp-smiley'
       ]
     }).parse();
+  }
+
+  try {
+    var article =
+      window.__translator && typeof window.__translator.withSourceRestored === 'function'
+        ? window.__translator.withSourceRestored(parseArticle)
+        : parseArticle();
     if (!article || !article.content || article.length < 500) {
       return window.__translatorReaderModeProbe ? false : null;
     }

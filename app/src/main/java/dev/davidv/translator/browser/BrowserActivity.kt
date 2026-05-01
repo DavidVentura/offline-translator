@@ -494,7 +494,13 @@ private fun BrowserWebView(
         val langsChanged = b.sourceLanguage != sourceLang || b.targetLanguage != targetLang
         b.sourceLanguage = sourceLang
         b.targetLanguage = targetLang
-        if (langsChanged) webView.reload()
+        if (langsChanged) {
+          webView.evaluateJavascript(
+            "window.__translator && window.__translator.reset && window.__translator.reset();",
+          ) { result ->
+            if (result != "true") webView.reload()
+          }
+        }
       },
     )
   }

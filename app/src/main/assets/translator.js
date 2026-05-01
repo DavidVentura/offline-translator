@@ -8,6 +8,7 @@
   if (!bridge || !bridgeToken) return;
   const pending = new Map();
   let nextId = 1;
+  let translationEpoch = 0;
 
   // Wire format: length-prefixed records. `<len>:<text><len>:<text>...`
   // where `len` is the UTF-16 code-unit count of the text (matches JS
@@ -149,6 +150,8 @@
   }
 
   const queued = new Set();
+  const translatedUnits = new WeakMap();
+  const translatedUnitList = new Set();
 
   const io = new IntersectionObserver(
     (entries) => {
@@ -214,7 +217,128 @@
     if (observer) observer.observe(document.body, OBSERVER_OPTS);
   }
 
-  function writeBack(units, translated, snapshots) {
+  function isResetError(e) {
+    return e && e.name === 'TranslatorReset';
+  }
+
+  function closestTranslatedUnit(node) {
+    let el = node && node.nodeType === 1 ? node : node && node.parentElement;
+    for (let n = el; n; n = n.parentElement) {
+      if (n.hasAttribute && n.hasAttribute('data-xlated')) return n;
+    }
+    return null;
+  }
+
+  function rememberTranslatedUnit(el, sourceHtml, sourceText, translatedHtml) {
+    translatedUnits.set(el, {
+      sourceHtml,
+      sourceText,
+      translatedHtml,
+      translatedText: el.textContent,
+    });
+    translatedUnitList.add(el);
+  }
+
+  function forgetTranslatedUnit(el) {
+    translatedUnits.delete(el);
+    translatedUnitList.delete(el);
+    if (el.hasAttribute && el.hasAttribute('data-xlated')) {
+      el.removeAttribute('data-xlated');
+    }
+  }
+
+  function restoreTranslatedUnit(el, state) {
+    pauseObserver();
+    try {
+      if (!el.isConnected) return;
+      if (el.innerHTML !== state.translatedHtml) {
+        el.innerHTML = state.translatedHtml;
+      }
+      el.setAttribute('data-xlated', '1');
+    } finally {
+      resumeObserver();
+    }
+  }
+
+  function reconcileTranslatedUnit(el) {
+    const state = translatedUnits.get(el);
+    if (!state) {
+      forgetTranslatedUnit(el);
+      return 'changed';
+    }
+    if (!el.isConnected) {
+      translatedUnits.delete(el);
+      return 'ignored';
+    }
+    if (el.innerHTML === state.translatedHtml || el.textContent === state.translatedText) {
+      return 'translated';
+    }
+    if (el.textContent === state.sourceText) {
+      restoreTranslatedUnit(el, state);
+      return 'restored';
+    }
+    forgetTranslatedUnit(el);
+    return 'changed';
+  }
+
+  function resetTranslations() {
+    translationEpoch++;
+    for (const entry of pending.values()) {
+      const err = new Error('translation reset');
+      err.name = 'TranslatorReset';
+      entry.reject(err);
+    }
+    pending.clear();
+    pauseObserver();
+    try {
+      queued.clear();
+      attrQueued.clear();
+      for (const el of Array.from(translatedUnitList)) {
+        const state = translatedUnits.get(el);
+        translatedUnits.delete(el);
+        translatedUnitList.delete(el);
+        if (!state || !el.isConnected) continue;
+        if (el.hasAttribute && el.hasAttribute('data-xlated')) {
+          el.removeAttribute('data-xlated');
+        }
+        if (el.innerHTML === state.translatedHtml || el.textContent === state.translatedText) {
+          el.innerHTML = state.sourceHtml;
+        }
+      }
+    } finally {
+      resumeObserver();
+    }
+    scan();
+    return true;
+  }
+
+  function withSourceRestored(fn) {
+    const restored = [];
+    pauseObserver();
+    try {
+      for (const el of translatedUnitList) {
+        const state = translatedUnits.get(el);
+        if (!state || !el.isConnected) continue;
+        if (el.innerHTML !== state.translatedHtml && el.textContent !== state.translatedText) {
+          continue;
+        }
+        el.removeAttribute('data-xlated');
+        el.innerHTML = state.sourceHtml;
+        restored.push({ el, state });
+      }
+      return fn();
+    } finally {
+      for (let i = restored.length - 1; i >= 0; i--) {
+        const r = restored[i];
+        if (!r.el.isConnected) continue;
+        r.el.innerHTML = r.state.translatedHtml;
+        r.el.setAttribute('data-xlated', '1');
+      }
+      resumeObserver();
+    }
+  }
+
+  function writeBack(units, translated, fragments, snapshots) {
     pauseObserver();
     try {
       for (let i = 0; i < units.length; i++) {
@@ -225,6 +349,7 @@
         if (el.textContent !== snapshots[i]) continue;
         el.innerHTML = out;
         el.setAttribute('data-xlated', '1');
+        rememberTranslatedUnit(el, fragments[i], snapshots[i], out);
       }
     } finally {
       resumeObserver();
@@ -301,8 +426,10 @@
     ).filter(m => m.hasAttribute('content') && !m.hasAttribute('data-xlated-attr'));
     if (metas.length === 0) return;
     const texts = metas.map(m => m.getAttribute('content'));
+    const epoch = translationEpoch;
     send('translateTexts', texts)
       .then((translated) => {
+        if (epoch !== translationEpoch) return;
         for (let i = 0; i < metas.length; i++) {
           const out = translated[i];
           if (out == null) continue;
@@ -313,7 +440,10 @@
           m.setAttribute('data-xlated-attr', '1');
         }
       })
-      .catch((e) => console.warn('[translator] meta batch failed', e));
+      .catch((e) => {
+        if (isResetError(e)) return;
+        console.warn('[translator] meta batch failed', e);
+      });
   }
 
   async function drainAttrQueue() {
@@ -336,13 +466,16 @@
     for (let i = 0; i < records.length; i += BATCH_MAX) {
       const batch = records.slice(i, i + BATCH_MAX);
       const texts = batch.map(r => r.text);
+      const epoch = translationEpoch;
       let translated;
       try {
         translated = await send('translateTexts', texts);
       } catch (e) {
+        if (isResetError(e)) continue;
         console.warn('[translator] attr batch failed', e);
         continue;
       }
+      if (epoch !== translationEpoch) continue;
       pauseObserver();
       try {
         for (let j = 0; j < batch.length; j++) {
@@ -365,20 +498,26 @@
       const batchUnits = units.slice(i, i + BATCH_MAX);
       const batchFragments = batchUnits.map(u => u.innerHTML);
       const batchSnapshots = batchUnits.map(u => u.textContent);
+      const epoch = translationEpoch;
       let translated;
       try {
         translated = await send('translateHtmlFragments', batchFragments);
       } catch (e) {
+        if (isResetError(e)) continue;
         console.warn('[translator] batch failed', e);
         continue;
       }
-      writeBack(batchUnits, translated, batchSnapshots);
+      if (epoch !== translationEpoch) continue;
+      writeBack(batchUnits, translated, batchFragments, batchSnapshots);
     }
   }
 
   function handleMutations(muts) {
     const touched = new Set();
+    const translatedTouched = new Set();
     for (const m of muts) {
+      const translatedUnit = closestTranslatedUnit(m.target);
+      if (translatedUnit) translatedTouched.add(translatedUnit);
       if (m.type === 'childList') {
         for (const node of m.addedNodes) {
           if (node.nodeType === 1) touched.add(node);
@@ -388,8 +527,15 @@
         if (p) touched.add(p);
       }
     }
-    if (touched.size === 0) return;
     const newUnits = [];
+    for (const el of translatedTouched) {
+      if (reconcileTranslatedUnit(el) !== 'changed') continue;
+      if (!el.isConnected) continue;
+      if (isSkippedByAncestor(el)) continue;
+      walk(el, newUnits);
+      observeAttrCandidates(el);
+    }
+    if (touched.size === 0 && newUnits.length === 0) return;
     for (const node of touched) {
       if (!node.isConnected) continue;
       if (isSkippedByAncestor(node)) continue;
@@ -415,6 +561,8 @@
   }
 
   window.__translator = {
+    reset: resetTranslations,
+    withSourceRestored,
     resolve(id, results, callerNonce) {
       if (callerNonce !== nonce) return;
       const entry = pending.get(id);
