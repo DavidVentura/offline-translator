@@ -63,9 +63,8 @@
     'NAV', 'MAIN', 'FIGURE', 'DETAILS', 'FORM', 'ADDRESS',
   ]);
   const SKIP_TAGS = new Set([
-    'SCRIPT', 'STYLE', 'CODE', 'PRE', 'KBD', 'SAMP', 'VAR',
-    'OBJECT', 'EMBED', 'NOSCRIPT', 'TEMPLATE', 'IFRAME',
-    'TEXTAREA', 'SVG', 'MATH', 'CANVAS',
+    'SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE', 'IFRAME',
+    'TEXTAREA', 'SVG', 'CANVAS', 'OBJECT', 'EMBED',
   ]);
 
   const BATCH_MAX = 50;
@@ -152,6 +151,24 @@
   const queued = new Set();
   const translatedUnits = new WeakMap();
   const translatedUnitList = new Set();
+  const retryCount = new WeakMap();
+  const MAX_RETRIES = 3;
+
+  function bumpRetry(el) {
+    const n = (retryCount.get(el) || 0) + 1;
+    retryCount.set(el, n);
+    return n <= MAX_RETRIES;
+  }
+
+  function reWalkDirty(el) {
+    if (!el || !el.isConnected) return;
+    if (isSkippedByAncestor(el)) return;
+    if (!bumpRetry(el)) return;
+    const newUnits = [];
+    walk(el, newUnits);
+    observeUnits(newUnits);
+    observeAttrCandidates(el);
+  }
 
   const io = new IntersectionObserver(
     (entries) => {
@@ -312,33 +329,35 @@
     return true;
   }
 
-  function withSourceRestored(fn) {
-    const restored = [];
-    pauseObserver();
-    try {
-      for (const el of translatedUnitList) {
-        const state = translatedUnits.get(el);
-        if (!state || !el.isConnected) continue;
-        if (el.innerHTML !== state.translatedHtml && el.textContent !== state.translatedText) {
-          continue;
-        }
-        el.removeAttribute('data-xlated');
-        el.innerHTML = state.sourceHtml;
-        restored.push({ el, state });
+  function restoreSourceInClone(liveEl, cloneEl) {
+    if (!liveEl || !cloneEl) return;
+    if (liveEl.hasAttribute && liveEl.hasAttribute('data-xlated')) {
+      const state = translatedUnits.get(liveEl);
+      if (state) {
+        cloneEl.innerHTML = state.sourceHtml;
+        if (cloneEl.removeAttribute) cloneEl.removeAttribute('data-xlated');
+        return;
       }
-      return fn();
-    } finally {
-      for (let i = restored.length - 1; i >= 0; i--) {
-        const r = restored[i];
-        if (!r.el.isConnected) continue;
-        r.el.innerHTML = r.state.translatedHtml;
-        r.el.setAttribute('data-xlated', '1');
-      }
-      resumeObserver();
+    }
+    const liveKids = liveEl.children;
+    const cloneKids = cloneEl.children;
+    if (!liveKids || !cloneKids) return;
+    const n = Math.min(liveKids.length, cloneKids.length);
+    for (let i = 0; i < n; i++) {
+      restoreSourceInClone(liveKids[i], cloneKids[i]);
     }
   }
 
+  function cloneDocumentWithSource() {
+    const clone = document.cloneNode(true);
+    const liveRoot = document.documentElement;
+    const cloneRoot = clone.documentElement;
+    if (liveRoot && cloneRoot) restoreSourceInClone(liveRoot, cloneRoot);
+    return clone;
+  }
+
   function writeBack(units, translated, fragments, snapshots) {
+    const stale = [];
     pauseObserver();
     try {
       for (let i = 0; i < units.length; i++) {
@@ -346,7 +365,10 @@
         const out = translated[i];
         if (out == null) continue;
         if (!el.isConnected) continue;
-        if (el.textContent !== snapshots[i]) continue;
+        if (el.textContent !== snapshots[i]) {
+          stale.push(el);
+          continue;
+        }
         el.innerHTML = out;
         el.setAttribute('data-xlated', '1');
         rememberTranslatedUnit(el, fragments[i], snapshots[i], out);
@@ -354,6 +376,7 @@
     } finally {
       resumeObserver();
     }
+    for (const el of stale) reWalkDirty(el);
   }
 
   const attrQueued = new Map();
@@ -476,6 +499,7 @@
         continue;
       }
       if (epoch !== translationEpoch) continue;
+      const staleAttr = [];
       pauseObserver();
       try {
         for (let j = 0; j < batch.length; j++) {
@@ -483,12 +507,18 @@
           const out = translated[j];
           if (out == null) continue;
           if (!r.el.isConnected) continue;
-          if (r.el.getAttribute(r.attr) !== r.text) continue;
+          if (r.el.getAttribute(r.attr) !== r.text) {
+            staleAttr.push(r.el);
+            continue;
+          }
           r.el.setAttribute(r.attr, out);
           r.el.setAttribute('data-xlated-attr', '1');
         }
       } finally {
         resumeObserver();
+      }
+      for (const el of staleAttr) {
+        if (el.isConnected) attrIo.observe(el);
       }
     }
   }
@@ -532,6 +562,7 @@
       if (reconcileTranslatedUnit(el) !== 'changed') continue;
       if (!el.isConnected) continue;
       if (isSkippedByAncestor(el)) continue;
+      if (!bumpRetry(el)) continue;
       walk(el, newUnits);
       observeAttrCandidates(el);
     }
@@ -562,7 +593,7 @@
 
   window.__translator = {
     reset: resetTranslations,
-    withSourceRestored,
+    cloneDocumentWithSource,
     resolve(id, results, callerNonce) {
       if (callerNonce !== nonce) return;
       const entry = pending.get(id);

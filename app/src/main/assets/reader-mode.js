@@ -98,8 +98,15 @@
 
   if (!ensureReadability()) return window.__translatorReaderModeProbe ? false : null;
 
+  function buildSourceClone() {
+    if (window.__translator && typeof window.__translator.cloneDocumentWithSource === 'function') {
+      return window.__translator.cloneDocumentWithSource();
+    }
+    return document.cloneNode(true);
+  }
+
   function parseArticle() {
-    var clone = document.cloneNode(true);
+    var clone = buildSourceClone();
     return new Readability(clone, {
       classesToPreserve: [
         'caption',
@@ -117,10 +124,7 @@
   }
 
   try {
-    var article =
-      window.__translator && typeof window.__translator.withSourceRestored === 'function'
-        ? window.__translator.withSourceRestored(parseArticle)
-        : parseArticle();
+    var article = parseArticle();
     if (!article || !article.content || article.length < 500) {
       return window.__translatorReaderModeProbe ? false : null;
     }
