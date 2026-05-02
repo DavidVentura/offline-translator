@@ -24,19 +24,28 @@ serde_json = "1"
 uniffi = "0.29"
 thiserror = "2"
 log = "0.4"
+xml5ever = "0.38"
+markup5ever = "0.38"
 
 [dependencies.translator]
 default-features = false
-git = "https://github.com/DavidVentura/translator-rs.git"
-# path = "/home/david/git/translator-rs"
+# git = "https://github.com/DavidVentura/translator-rs.git"
+path = "/home/david/git/translator-rs"
 features = ["uniffi", "html"]
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = "0.14"
+
+# Override the slimt-sys git dep (transitive via translator) with a local
+# checkout so build.rs / source edits in /home/david/git/slimt-sys take effect
+# without committing+pushing+bumping Cargo.lock. Drop this once the fix is
+# pushed and Cargo.lock is updated.
+[patch."https://github.com/DavidVentura/slimt-sys"]
+slimt-sys = { path = "/home/david/git/slimt-sys" }
 
 [profile.release]
 lto = "thin"
 codegen-units = 1
 debug = false
 strip = "debuginfo"
-#
+##

@@ -296,7 +296,7 @@ fn translate_document_path_impl(
                 translator::pdf_write::write_translated_pdf(
                     &input_bytes,
                     &translations,
-                    &translator::font_provider::NoFontProvider,
+                    &crate::android_font_provider::AndroidFontProvider,
                 )
                 .map_err(|error| CatalogError::Other {
                     reason: format!("failed to write PDF: {error}"),

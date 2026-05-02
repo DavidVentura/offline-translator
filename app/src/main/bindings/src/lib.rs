@@ -1,6 +1,7 @@
 uniffi::setup_scaffolding!();
 
 pub mod adblock;
+pub mod android_font_provider;
 pub mod bergamot;
 pub mod transliterate;
 pub mod uniffi_catalog;

@@ -249,10 +249,12 @@ dependencies = [
  "adblock",
  "android_logger",
  "log",
+ "markup5ever",
  "serde_json",
  "thiserror 2.0.18",
  "translator",
  "uniffi",
+ "xml5ever",
 ]
 
 [[package]]
@@ -2072,7 +2074,6 @@ checksum = "b2aa850e253778c88a04c3d7323b043aeda9d3e30d5971937c1855769763678e"
 [[package]]
 name = "slimt-sys"
 version = "0.1.0"
-source = "git+https://github.com/DavidVentura/slimt-sys#9d873f2aefcbe82e249e58969b606e56bf260d54"
 dependencies = [
  "cmake",
 ]
@@ -2394,7 +2395,6 @@ dependencies = [
 [[package]]
 name = "translator"
 version = "0.1.0"
-source = "git+https://github.com/DavidVentura/translator-rs.git#e1d037fd99f9a650da150567eaa1fb9e844ea787"
 dependencies = [
  "cld2",
  "html5ever",
