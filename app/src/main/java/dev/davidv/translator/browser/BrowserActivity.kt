@@ -20,6 +20,7 @@ package dev.davidv.translator.browser
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.ContextThemeWrapper
@@ -28,6 +29,7 @@ import android.view.ViewGroup
 import android.webkit.ConsoleMessage
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebStorage
@@ -510,6 +512,21 @@ private fun BrowserWebView(
                   ) ?: return null
                 if (!verdict.matched || verdict.exception) return null
                 return WebResourceResponse("text/plain", "utf-8", ByteArray(0).inputStream())
+              }
+
+              override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?,
+              ) {
+                super.onReceivedError(view, request, error)
+                if (request?.isForMainFrame != true) return
+                val description = if (Build.VERSION.SDK_INT >= 23) {
+                  error?.description?.toString().orEmpty()
+                } else {
+                  ""
+                }
+                Log.w("BrowserActivity", "WebView failed to load ${request.url}: $description")
               }
             }
 
