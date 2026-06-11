@@ -2,7 +2,9 @@ package dev.davidv.translator
 
 import android.app.Service
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.IBinder
+import android.os.ParcelFileDescriptor
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -123,6 +125,125 @@ class AidlTranslationService : Service() {
             }
           }
         }
+      }
+
+      override fun translateImage(
+        image: ParcelFileDescriptor?,
+        fromLanguageStr: String?,
+        toLanguageStr: String?,
+        callback: IImageTranslationCallback?,
+      ) {
+        Log.d(tag, "translateImage from:$fromLanguageStr, to:$toLanguageStr, cb = ${callback != null}")
+
+        if (image == null || callback == null) {
+          Log.w(tag, "translateImage: image or callback is null")
+          image?.close()
+          return
+        }
+
+        val forcedFrom = fromLanguageStr?.takeIf { it.isNotEmpty() }?.let { langStateManager.languageByCode(it) }
+        val toLanguage = toLanguageStr?.takeIf { it.isNotEmpty() }?.let { langStateManager.languageByCode(it) }
+
+        CoroutineScope(Dispatchers.IO).launch {
+          try {
+            val bitmap =
+              ParcelFileDescriptor.AutoCloseInputStream(image).use { input ->
+                BitmapFactory.decodeStream(input)
+              }
+            if (bitmap == null) {
+              callback.onImageError(ErrorType.UNEXPECTED, null, "Could not decode image")
+              return@launch
+            }
+
+            langStateManager.languageState.first { !it.isChecking }
+            while (translationCoordinator.isTranslating.value) {
+              delay(100)
+            }
+
+            val to = toLanguage ?: langStateManager.languageByCode(settingsManager.settings.value.defaultTargetLanguageCode)
+            if (to == null) {
+              callback.onImageError(ErrorType.UNEXPECTED, null, "Target language not available")
+              return@launch
+            }
+
+            val isAutoSource = forcedFrom == null
+            var missingDetected: Language? = null
+            val result =
+              translationCoordinator.translateImageWithOverlay(
+                from = forcedFrom ?: to,
+                to = to,
+                finalBitmap = bitmap,
+                onMessage = {},
+                isAutoSource = isAutoSource,
+                onMissingDetectedLanguage = { missingDetected = it },
+              )
+
+            if (result == null) {
+              val missing = missingDetected
+              if (missing != null) {
+                callback.onImageError(ErrorType.DETECTED_BUT_UNAVAILABLE, missing.displayName, null)
+              } else {
+                callback.onImageError(ErrorType.UNEXPECTED, null, "Image translation failed")
+              }
+              return@launch
+            }
+
+            val blocks =
+              result.metadata.blocks.map { block ->
+                TextBlockResult().apply {
+                  sourceText = block.sourceText
+                  translatedText = block.translatedText
+                  left = block.boundingBox.left.toInt()
+                  top = block.boundingBox.top.toInt()
+                  right = block.boundingBox.right.toInt()
+                  bottom = block.boundingBox.bottom.toInt()
+                  backgroundArgb = block.backgroundArgb.toInt()
+                  foregroundArgb = block.foregroundArgb.toInt()
+                  lines =
+                    block.lines.map { line ->
+                      TextLineResult().apply {
+                        text = line.text
+                        left = line.boundingBox.left.toInt()
+                        top = line.boundingBox.top.toInt()
+                        right = line.boundingBox.right.toInt()
+                        bottom = line.boundingBox.bottom.toInt()
+                        orientedCx = line.orientedBox.cx
+                        orientedCy = line.orientedBox.cy
+                        orientedWidth = line.orientedBox.width
+                        orientedHeight = line.orientedBox.height
+                        orientedAngleRadians = line.orientedBox.angleRadians
+                        backgroundArgb = line.backgroundArgb.toInt()
+                        foregroundArgb = line.foregroundArgb.toInt()
+                      }
+                    }
+                }
+              }
+            val out =
+              ImageTranslationResult().apply {
+                extractedText = result.metadata.extractedText
+                this.translatedText = result.metadata.translatedText
+                this.blocks = blocks
+              }
+            callback.onResult(out)
+          } catch (e: Exception) {
+            Log.e(tag, "translateImage failed", e)
+            callback.onImageError(ErrorType.UNEXPECTED, null, e.message)
+          }
+        }
+      }
+
+      private fun IImageTranslationCallback.onImageError(
+        errorType: Byte,
+        language: String?,
+        message: String?,
+      ) {
+        onError(
+          TranslationError().apply {
+            type = errorType
+            this.language = language
+            this.message = message
+          },
+        )
       }
     }
 
