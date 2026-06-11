@@ -1,9 +1,9 @@
 package dev.davidv.translator;
 
-import dev.davidv.translator.TextBlockResult;
+import dev.davidv.translator.TextLineResult;
 
 parcelable ImageTranslationResult {
     String extractedText;
     String translatedText;
-    List<TextBlockResult> blocks;
+    List<TextLineResult> textLines;
 }

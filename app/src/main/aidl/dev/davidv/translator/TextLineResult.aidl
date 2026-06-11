@@ -1,16 +1,18 @@
 package dev.davidv.translator;
 
 parcelable TextLineResult {
-    String text;
+    String sourceText;
+    String translatedText;
     int left;
     int top;
     int right;
     int bottom;
-    float orientedCx;
-    float orientedCy;
+    float orientedCenterX;
+    float orientedCenterY;
     float orientedWidth;
     float orientedHeight;
     float orientedAngleRadians;
+    float suggestedFontSizePx;
     int backgroundArgb;
     int foregroundArgb;
 }
