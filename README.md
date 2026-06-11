@@ -58,8 +58,6 @@ https://github.com/user-attachments/assets/bf774a4f-3d58-49b7-b4e2-cb30eb395b39
 
 This app exposes an API (see `ITranslationService.aidl`) that other apps can use to request translations.
 
-Bind to the service with the action `dev.davidv.translator.ITranslationService`:
-
 - `translate(text, fromLanguage, toLanguage, callback)` — translate plain text. Pass an empty `fromLanguage` to auto-detect the source; results come back via `ITranslationCallback`.
 - `translateImage(image, fromLanguage, toLanguage, callback)` — run OCR + translation on an image. `image` is a `ParcelFileDescriptor` to an encoded PNG/JPEG. Pass null/empty `fromLanguage` to auto-detect the source and null/empty `toLanguage` to use the user's default target language. The `IImageTranslationCallback` returns an `ImageTranslationResult` with the `extractedText` and `translatedText` of the whole image, plus a list of `TextBlockResult`. Each `TextBlockResult` contains the original and translated text of that block, a bounding box (`left`/`top`/`right`/`bottom`), auto-detected `backgroundArgb`/`foregroundArgb` colors, and a list of `TextLineResult`. Each line carries its own text, AABB, per-line colors, and an oriented rectangle (`orientedCx`/`orientedCy`/`orientedWidth`/`orientedHeight`/`orientedAngleRadians`); use this to render tilted text correctly.
 
