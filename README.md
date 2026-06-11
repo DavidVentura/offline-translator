@@ -58,8 +58,6 @@ https://github.com/user-attachments/assets/bf774a4f-3d58-49b7-b4e2-cb30eb395b39
 
 This app exposes an API (see `ITranslationService.aidl`) that other apps can use to request translations.
 
-Bind to the service with the action `dev.davidv.translator.ITranslationService`:
-
 - `translate(text, fromLanguage, toLanguage, callback)` — translate plain text. Pass an empty `fromLanguage` to auto-detect the source; results come back via `ITranslationCallback`.
 - `translateImage(image, fromLanguage, toLanguage, callback)` — run OCR + translation on an image.
   - `image` is a `ParcelFileDescriptor` to an encoded PNG/JPEG.
