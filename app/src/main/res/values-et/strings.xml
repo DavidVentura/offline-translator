@@ -8,4 +8,12 @@
     <string name="common_ok">Sobib</string>
     <string name="common_cancel">Katkesta</string>
     <string name="common_done">Valmis</string>
+    <string name="live_tile_label">Tõlgi ekraanivaadet reaalajas</string>
+    <string name="translate_text">Tõlgi</string>
+    <string name="settings_title">Seadistused</string>
+    <string name="settings_languages">Keeled</string>
+    <string name="settings_language_packs">Keelepakid</string>
+    <string name="settings_general">Üldseadistused</string>
+    <string name="settings_font_size">Kirjatüübi suurus</string>
+    <string name="settings_font_sample">See on üks rõõmus näidistekst</string>
 </resources>
