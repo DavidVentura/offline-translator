@@ -1,3 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    </resources>
+    <string name="stop">Lõpeta</string>
+    <string name="pause">Peata</string>
+    <string name="resume">Jätka</string>
+    <string name="region_select_menu">Määratle tõlgitav ala</string>
+    <string name="screen_translate_needs_source">Määratle lähtekeel</string>
+    <string name="common_ok">Sobib</string>
+    <string name="common_cancel">Katkesta</string>
+    <string name="common_done">Valmis</string>
+</resources>
