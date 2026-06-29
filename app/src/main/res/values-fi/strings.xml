@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">Pysäytä</string>
     <string name="pause">Keskeytä</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">Pikakäännös</string>
     <string name="tap_to_translate_channel_description">Pysyvä ilmoitus käännösikkunan nopeaa avaamista varten</string>
     <string name="quick_tile_label">Käännä</string>
-
     <!-- common -->
     <string name="common_ok">OK</string>
     <string name="common_cancel">Peruuta</string>
     <string name="common_done">Valmis</string>
     <string name="common_grant">Myönnä</string>
     <string name="common_manage">Hallitse</string>
-
     <!-- settings -->
     <string name="settings_title">Asetukset</string>
     <string name="settings_languages">Kielet</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">Sovelluslokit kopioitu leikepöydälle</string>
     <string name="settings_about_support">Tue kehitystä</string>
     <string name="settings_external_storage_perm_body">Tallentaakseen käännöstiedostot Tiedostot-kansioosi tämä sovellus tarvitsee oikeuden hallita kaikkia tiedostoja.\nSinut ohjataan Asetuksiin, jossa voit myöntää \'Salli kaikkien tiedostojen hallinta\' -oikeuden.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">Äänet</string>
     <string name="langmgr_default">OLETUS</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">Kielten määritys</string>
     <string name="nolang_prompt">Lataa kielipaketteja aloittaaksesi kääntämisen</string>
     <string name="howto_title">Käyttöohjeet</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">Etäkuvia ei voi rajata suoraan</string>
     <string name="image_open_failed">Tiedoston avaaminen epäonnistui</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">Oletusääni</string>
     <string name="langsel_auto">✨ Automaattinen</string>
     <string name="dict_also_as">Myös muodossa:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">Kameran käyttöoikeus tarvitaan reaaliaikaiseen kääntämiseen.</string>
     <string name="camera_need_ocr_models">Sinun täytyy ladata OCR-mallit tälle kielelle</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">Lukutila ei ole käytettävissä tällä sivulla</string>
     <string name="browser_translate_image">Käännä kuva</string>
     <string name="screen_translating_notification">Käännetään näyttöä</string>
-
     <!-- enums -->
     <string name="align_top">Ylhäällä</string>
     <string name="align_middle">Keskellä</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">Valkoinen mustalla</string>
     <string name="background_mode_black_on_white">Musta valkoisella</string>
     <string name="background_mode_auto_detect">Tunnista värit automaattisesti</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Ei mitään puhuttavaa</string>
     <string name="tts_catalog_unavailable">Luettelo ei ole saatavilla</string>
     <string name="tts_no_voice">Kielelle %1$s ei ole asennettu TTS-ääntä</string>
     <string name="tts_synthesis_failed">Puhesynteesi epäonnistui kielelle %1$s</string>
     <string name="tts_sample_fallback">Tämä on tekstistä puheeksi -näyte sovelluksesta Offline Translator.</string>
-
     <!-- translation -->
     <string name="translation_error">Käännösvirhe: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s lataus epäonnistui</string>
     <string name="download_failed_ocr">%1$s OCR-lataus epäonnistui</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">Luettelon tallentaminen epäonnistui</string>
     <string name="download_unknown_error">Tuntematon virhe</string>
     <string name="download_catalog_failed">Luettelon lataaminen epäonnistui: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">Käynnistä tämä avustaja tekstin päällä kääntääksesi sen</string>
     <string name="assistant_collecting_context">Kerätään näytön sisältöä…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">Käännöskielet eivät ole vielä valmiina. Yritä uudelleen.</string>
     <string name="assistant_ocr_failed">OCR epäonnistui</string>
     <string name="assistant_set_source_live">Aseta oletuslähdekieli asetuksissa käyttääksesi reaaliaikaista näytön kääntämistä.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">Päivitetään puhemalleja</string>
     <string name="migration_accept_convert">Hyväksy ja muunna</string>
@@ -156,10 +146,9 @@
     <string name="migration_converting">Muunnetaan %1$d / %2$d</string>
     <string name="migration_optimizing">Optimoidaan malleja</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="one">Sinulla on %1$d tekstistä puheeksi -malli muunnettavana uuteen muotoon. Se kestää noin %2$d sekuntia. Säästät %3$.0f Mt levytilaa.</item>
-      <item quantity="other">Sinulla on %1$d tekstistä puheeksi -mallia muunnettavana uuteen muotoon. Se kestää noin %2$d sekuntia. Säästät %3$.0f Mt levytilaa.</item>
+        <item quantity="one">Sinulla on %1$d tekstistä puheeksi -malli muunnettavana uuteen muotoon. Se kestää noin %2$d sekuntia. Säästät %3$.0f Mt levytilaa.</item>
+        <item quantity="other">Sinulla on %1$d tekstistä puheeksi -mallia muunnettavana uuteen muotoon. Se kestää noin %2$d sekuntia. Säästät %3$.0f Mt levytilaa.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">Käännetään tiedostoa</string>
     <string name="doc_notif_translated">Tiedosto käännetty</string>
@@ -174,32 +163,27 @@
     <string name="doc_progress_saving">Tallennetaan käännettyä tiedostoa</string>
     <string name="doc_translation_failed">Asiakirjan kääntäminen epäonnistui</string>
     <string name="doc_url_unsupported">Lataa asiakirja ja avaa se sen sijaan sovelluksella</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">Rivitä %1$d sarakkeen kohdalla</string>
     <string name="document_translate_pdf_images">Käännä PDF:n kuvat</string>
     <string name="layout_preserve">Säilytä rivinvaihdot</string>
     <string name="layout_reflow">Muotoile uudelleen kappaleiksi</string>
     <string name="layout_reflow_wrap">Muotoile uudelleen ja rivitä</string>
-
     <!-- common (additional) -->
     <string name="common_open">Avaa</string>
     <string name="common_close">Sulje</string>
     <string name="common_save">Tallenna</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">Käännetty tiedosto: %1$s</string>
     <string name="translator_document_saved">Asiakirja tallennettu</string>
     <string name="translator_document_save_failed">Asiakirjan tallentaminen epäonnistui</string>
     <string name="translator_audio_playback_failed">Äänen toisto epäonnistui: %1$s</string>
     <string name="translator_no_app_to_open">Tämän tiedoston avaamiseen ei löytynyt sovellusta</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">Kuvaa ei voi purkaa.</string>
     <string name="docalign_detecting">Tunnistetaan kulmia…</string>
     <string name="docalign_redetecting">Tunnistetaan uudelleen…</string>
     <string name="docalign_help">Tarkka reunaviiva asiakirjan ympärillä parantaa tunnistuksen laatua. On tärkeää, että viivat ovat yhdensuuntaisia tekstin kanssa.\n\nZoomaaminen tai panorointi saa algoritmin yleensä tunnistamaan asiakirjan automaattisesti, mutta voit silti säätää sitä manuaalisesti, jos sitä ei löydy.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">Muista sovelluksista</string>
     <string name="howto_share_title">Jaa kääntääksesi</string>
@@ -213,12 +197,10 @@
     <string name="howto_dict_body">Paina pitkään mitä tahansa käännöksen sanaa nähdäksesi sen määritelmän. Tiedot peräisin Wiktionarysta.</string>
     <string name="howto_voice_title">Vaihda ääntä tai nopeutta</string>
     <string name="howto_voice_body">Paina pitkään toistopainiketta valitaksesi eri TTS-äänen tai säätääksesi toistonopeutta.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">Käännös</string>
     <string name="feature_dictionary">Sanakirja</string>
     <string name="feature_tts">Ääni</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">Kirjoita tekstiä</string>
     <string name="aidl_target_unavailable">Kohdekieli ei ole saatavilla</string>
