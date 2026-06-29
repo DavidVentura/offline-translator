@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">Stopp</string>
     <string name="pause">Pause</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">Schnellübersetzung</string>
     <string name="tap_to_translate_channel_description">Dauerhafte Benachrichtigung für schnellen Zugriff auf das Übersetzer-Popup</string>
     <string name="quick_tile_label">Übersetzen</string>
-
     <!-- common -->
     <string name="common_ok">OK</string>
     <string name="common_cancel">Abbrechen</string>
     <string name="common_done">Fertig</string>
     <string name="common_grant">Erlauben</string>
     <string name="common_manage">Verwalten</string>
-
     <!-- settings -->
     <string name="settings_title">Einstellungen</string>
     <string name="settings_languages">Sprachen</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">App-Protokolle in die Zwischenablage kopiert</string>
     <string name="settings_about_support">Entwicklung unterstützen</string>
     <string name="settings_external_storage_perm_body">Um Übersetzungsdateien in deinem Dokumente-Ordner zu speichern, braucht diese App Zugriff zur Verwaltung aller Dateien.\nDu wirst zu den Einstellungen geleitet, wo du die Berechtigung \'Zugriff zur Verwaltung aller Dateien erlauben\' erteilen kannst.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">Stimmen</string>
     <string name="langmgr_default">STANDARD</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">Spracheinrichtung</string>
     <string name="nolang_prompt">Lade Sprachpakete herunter, um mit dem Übersetzen zu beginnen</string>
     <string name="howto_title">Anleitung</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">Entfernte Bilder können nicht direkt zugeschnitten werden</string>
     <string name="image_open_failed">Datei konnte nicht geöffnet werden</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">Standardstimme</string>
     <string name="langsel_auto">✨ Auto</string>
     <string name="dict_also_as">Auch als:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">Für die Live-Übersetzung wird die Kamera-Berechtigung benötigt.</string>
     <string name="camera_need_ocr_models">Du musst die OCR-Modelle für diese Sprache herunterladen</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">Lesemodus für diese Seite nicht verfügbar</string>
     <string name="browser_translate_image">Bild übersetzen</string>
     <string name="screen_translating_notification">Bildschirm wird übersetzt</string>
-
     <!-- enums -->
     <string name="align_top">Oben</string>
     <string name="align_middle">Mitte</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">Weiß auf Schwarz</string>
     <string name="background_mode_black_on_white">Schwarz auf Weiß</string>
     <string name="background_mode_auto_detect">Farben automatisch erkennen</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Nichts vorzulesen</string>
     <string name="tts_catalog_unavailable">Katalog nicht verfügbar</string>
     <string name="tts_no_voice">Keine TTS-Stimme für %1$s installiert</string>
     <string name="tts_synthesis_failed">Sprachsynthese für %1$s fehlgeschlagen</string>
     <string name="tts_sample_fallback">Dies ist ein Sprachausgabe-Beispiel von Offline Translator.</string>
-
     <!-- translation -->
     <string name="translation_error">Übersetzungsfehler: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s-Download fehlgeschlagen</string>
     <string name="download_failed_ocr">%1$s-OCR-Download fehlgeschlagen</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">Katalog konnte nicht gespeichert werden</string>
     <string name="download_unknown_error">Unbekannter Fehler</string>
     <string name="download_catalog_failed">Katalog konnte nicht heruntergeladen werden: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">Rufe diesen Assistenten über Text auf, um ihn zu übersetzen</string>
     <string name="assistant_collecting_context">Bildschirmkontext wird gesammelt…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">Die Übersetzungssprachen sind noch nicht bereit. Versuche es erneut.</string>
     <string name="assistant_ocr_failed">OCR fehlgeschlagen</string>
     <string name="assistant_set_source_live">Lege in den Einstellungen eine Standard-Quellsprache fest, um die Live-Bildschirmübersetzung zu nutzen.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">Sprachmodelle werden aktualisiert</string>
     <string name="migration_accept_convert">Annehmen und umwandeln</string>
@@ -156,10 +146,9 @@
     <string name="migration_converting">%1$d von %2$d wird umgewandelt</string>
     <string name="migration_optimizing">Modelle werden optimiert</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="one">Du hast %1$d Sprachausgabe-Modell, das in ein neues Format umgewandelt werden muss. Es dauert etwa %2$d Sekunden. Du sparst %3$.0f MB Speicherplatz.</item>
-      <item quantity="other">Du hast %1$d Sprachausgabe-Modelle, die in ein neues Format umgewandelt werden müssen. Es dauert etwa %2$d Sekunden. Du sparst %3$.0f MB Speicherplatz.</item>
+        <item quantity="one">Du hast %1$d Sprachausgabe-Modell, das in ein neues Format umgewandelt werden muss. Es dauert etwa %2$d Sekunden. Du sparst %3$.0f MB Speicherplatz.</item>
+        <item quantity="other">Du hast %1$d Sprachausgabe-Modelle, die in ein neues Format umgewandelt werden müssen. Es dauert etwa %2$d Sekunden. Du sparst %3$.0f MB Speicherplatz.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">Datei wird übersetzt</string>
     <string name="doc_notif_translated">Datei übersetzt</string>
@@ -174,32 +163,27 @@
     <string name="doc_progress_saving">Übersetzte Datei wird gespeichert</string>
     <string name="doc_translation_failed">Dokumentübersetzung fehlgeschlagen</string>
     <string name="doc_url_unsupported">Lade das Dokument herunter und öffne es stattdessen mit der App</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">Bei %1$d Spalten umbrechen</string>
     <string name="document_translate_pdf_images">Bilder in PDF übersetzen</string>
     <string name="layout_preserve">Zeilenumbrüche beibehalten</string>
     <string name="layout_reflow">In Absätze umfließen</string>
     <string name="layout_reflow_wrap">Umfließen und umbrechen</string>
-
     <!-- common (additional) -->
     <string name="common_open">Öffnen</string>
     <string name="common_close">Schließen</string>
     <string name="common_save">Speichern</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">Übersetzte Datei: %1$s</string>
     <string name="translator_document_saved">Dokument gespeichert</string>
     <string name="translator_document_save_failed">Dokument konnte nicht gespeichert werden</string>
     <string name="translator_audio_playback_failed">Audiowiedergabe fehlgeschlagen: %1$s</string>
     <string name="translator_no_app_to_open">Keine App gefunden, um diese Datei zu öffnen</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">Bild konnte nicht dekodiert werden.</string>
     <string name="docalign_detecting">Ecken werden erkannt…</string>
     <string name="docalign_redetecting">Erneute Erkennung…</string>
     <string name="docalign_help">Ein genauer Rahmen um das Dokument verbessert die Erkennungsqualität. Wichtig ist, dass die Linien parallel zum Text verlaufen.\n\nZoomen oder Verschieben lässt den Algorithmus das Dokument meist automatisch erfassen, aber du kannst es bei Bedarf weiterhin manuell anpassen.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">Aus anderen Apps</string>
     <string name="howto_share_title">Zum Übersetzen teilen</string>
@@ -213,12 +197,10 @@
     <string name="howto_dict_body">Drücke lange auf ein beliebiges Wort in einer Übersetzung, um seine Definition zu sehen. Daten von Wiktionary.</string>
     <string name="howto_voice_title">Stimme oder Geschwindigkeit ändern</string>
     <string name="howto_voice_body">Drücke lange auf die Wiedergabetaste, um eine andere TTS-Stimme zu wählen oder die Wiedergabegeschwindigkeit anzupassen.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">Übersetzung</string>
     <string name="feature_dictionary">Wörterbuch</string>
     <string name="feature_tts">Stimme</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">Text eingeben</string>
     <string name="aidl_target_unavailable">Zielsprache nicht verfügbar</string>
