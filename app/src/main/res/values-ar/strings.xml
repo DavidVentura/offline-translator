@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">إيقاف</string>
     <string name="pause">إيقاف مؤقت</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">الترجمة السريعة</string>
     <string name="tap_to_translate_channel_description">إشعار دائم للوصول السريع إلى نافذة المترجم المنبثقة</string>
     <string name="quick_tile_label">ترجمة</string>
-
     <!-- common -->
     <string name="common_ok">موافق</string>
     <string name="common_cancel">إلغاء</string>
     <string name="common_done">تم</string>
     <string name="common_grant">منح</string>
     <string name="common_manage">إدارة</string>
-
     <!-- settings -->
     <string name="settings_title">الإعدادات</string>
     <string name="settings_languages">اللغات</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">تم نسخ سجلات التطبيق إلى الحافظة</string>
     <string name="settings_about_support">دعم التطوير</string>
     <string name="settings_external_storage_perm_body">لتخزين ملفات الترجمة في مجلد المستندات، يحتاج هذا التطبيق إلى صلاحية إدارة جميع الملفات.\nسيتم نقلك إلى الإعدادات حيث يمكنك منح صلاحية \'السماح بالوصول لإدارة جميع الملفات\'.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">الأصوات</string>
     <string name="langmgr_default">افتراضي</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">إعداد اللغة</string>
     <string name="nolang_prompt">نزّل حزم اللغات لبدء الترجمة</string>
     <string name="howto_title">طريقة الاستخدام</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">لا يمكن اقتصاص الصور البعيدة مباشرةً</string>
     <string name="image_open_failed">تعذّر فتح الملف</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">الصوت الافتراضي</string>
     <string name="langsel_auto">✨ تلقائي</string>
     <string name="dict_also_as">أيضاً كـ:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">إذن الكاميرا مطلوب للترجمة المباشرة.</string>
     <string name="camera_need_ocr_models">تحتاج إلى تنزيل نماذج OCR لهذه اللغة</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">وضع القارئ غير متاح لهذه الصفحة</string>
     <string name="browser_translate_image">ترجمة الصورة</string>
     <string name="screen_translating_notification">جارٍ ترجمة الشاشة</string>
-
     <!-- enums -->
     <string name="align_top">أعلى</string>
     <string name="align_middle">وسط</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">أبيض على أسود</string>
     <string name="background_mode_black_on_white">أسود على أبيض</string>
     <string name="background_mode_auto_detect">كشف الألوان تلقائياً</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">لا يوجد شيء لقراءته</string>
     <string name="tts_catalog_unavailable">الكتالوج غير متاح</string>
     <string name="tts_no_voice">لا يوجد صوت TTS مثبّت للغة %1$s</string>
     <string name="tts_synthesis_failed">فشل توليد الكلام للغة %1$s</string>
     <string name="tts_sample_fallback">هذا نموذج لتحويل النص إلى كلام من Offline Translator.</string>
-
     <!-- translation -->
     <string name="translation_error">خطأ في الترجمة: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">فشل تنزيل %1$s</string>
     <string name="download_failed_ocr">فشل تنزيل OCR للغة %1$s</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">تعذّر حفظ الكتالوج</string>
     <string name="download_unknown_error">خطأ غير معروف</string>
     <string name="download_catalog_failed">تعذّر تنزيل الكتالوج: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">استدعِ هذا المساعد فوق النص لترجمته</string>
     <string name="assistant_collecting_context">جارٍ جمع محتوى الشاشة…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">لغات الترجمة ليست جاهزة بعد. حاول مرة أخرى.</string>
     <string name="assistant_ocr_failed">فشل OCR</string>
     <string name="assistant_set_source_live">حدّد لغة مصدر افتراضية في الإعدادات لاستخدام الترجمة المباشرة للشاشة.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">جارٍ تحديث نماذج الكلام</string>
     <string name="migration_accept_convert">قبول وتحويل</string>
@@ -156,14 +146,13 @@
     <string name="migration_converting">جارٍ تحويل %1$d من %2$d</string>
     <string name="migration_optimizing">جارٍ تحسين النماذج</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="zero">ليس لديك أي نماذج تحويل نص إلى كلام للتحويل إلى التنسيق الجديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
-      <item quantity="one">لديك نموذج تحويل نص إلى كلام واحد %1$d للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
-      <item quantity="two">لديك نموذجا تحويل نص إلى كلام %1$d للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
-      <item quantity="few">لديك %1$d نماذج تحويل نص إلى كلام للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
-      <item quantity="many">لديك %1$d نموذجاً لتحويل النص إلى كلام للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
-      <item quantity="other">لديك %1$d نموذج تحويل نص إلى كلام للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
+        <item quantity="zero">ليس لديك أي نماذج تحويل نص إلى كلام للتحويل إلى التنسيق الجديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
+        <item quantity="one">لديك نموذج تحويل نص إلى كلام واحد %1$d للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
+        <item quantity="two">لديك نموذجا تحويل نص إلى كلام %1$d للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
+        <item quantity="few">لديك %1$d نماذج تحويل نص إلى كلام للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
+        <item quantity="many">لديك %1$d نموذجاً لتحويل النص إلى كلام للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
+        <item quantity="other">لديك %1$d نموذج تحويل نص إلى كلام للتحويل إلى تنسيق جديد. سيستغرق الأمر حوالي %2$d ثانية. ستوفّر %3$.0f ميجابايت من مساحة القرص.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">جارٍ ترجمة الملف</string>
     <string name="doc_notif_translated">تمت ترجمة الملف</string>
@@ -178,32 +167,27 @@
     <string name="doc_progress_saving">جارٍ حفظ الملف المترجَم</string>
     <string name="doc_translation_failed">فشلت ترجمة المستند</string>
     <string name="doc_url_unsupported">نزّل المستند وافتحه بالتطبيق بدلاً من ذلك</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">التفاف عند %1$d أعمدة</string>
     <string name="document_translate_pdf_images">ترجمة الصور في PDF</string>
     <string name="layout_preserve">الحفاظ على فواصل الأسطر</string>
     <string name="layout_reflow">إعادة التدفّق إلى فقرات</string>
     <string name="layout_reflow_wrap">إعادة التدفّق والالتفاف</string>
-
     <!-- common (additional) -->
     <string name="common_open">فتح</string>
     <string name="common_close">إغلاق</string>
     <string name="common_save">حفظ</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">الملف المترجَم: %1$s</string>
     <string name="translator_document_saved">تم حفظ المستند</string>
     <string name="translator_document_save_failed">تعذّر حفظ المستند</string>
     <string name="translator_audio_playback_failed">فشل تشغيل الصوت: %1$s</string>
     <string name="translator_no_app_to_open">لا يوجد تطبيق لفتح هذا الملف</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">تعذّر فك ترميز الصورة.</string>
     <string name="docalign_detecting">جارٍ اكتشاف الزوايا…</string>
     <string name="docalign_redetecting">جارٍ إعادة الاكتشاف…</string>
     <string name="docalign_help">يؤدي رسم محيط دقيق حول المستند إلى تحسين جودة التعرّف. من المهم أن تكون الخطوط موازية للنص.\n\nعادةً ما يؤدي التكبير أو التحريك إلى التقاط المستند تلقائياً، لكن يمكنك التعديل يدوياً إذا لم يُعثر عليه.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">من تطبيقات أخرى</string>
     <string name="howto_share_title">المشاركة للترجمة</string>
@@ -217,12 +201,10 @@
     <string name="howto_dict_body">اضغط مطولاً على أي كلمة في الترجمة لرؤية تعريفها. البيانات مصدرها Wiktionary.</string>
     <string name="howto_voice_title">تغيير الصوت أو السرعة</string>
     <string name="howto_voice_body">اضغط مطولاً على زر التشغيل لاختيار صوت TTS مختلف أو ضبط سرعة التشغيل.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">الترجمة</string>
     <string name="feature_dictionary">القاموس</string>
     <string name="feature_tts">الصوت</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">أدخل النص</string>
     <string name="aidl_target_unavailable">اللغة الهدف غير متاحة</string>
