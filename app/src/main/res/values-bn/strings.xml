@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">বন্ধ করুন</string>
     <string name="pause">থামান</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">দ্রুত অনুবাদ</string>
     <string name="tap_to_translate_channel_description">অনুবাদক পপআপে দ্রুত পৌঁছানোর জন্য স্থায়ী বিজ্ঞপ্তি</string>
     <string name="quick_tile_label">অনুবাদ করুন</string>
-
     <!-- common -->
     <string name="common_ok">ঠিক আছে</string>
     <string name="common_cancel">বাতিল করুন</string>
     <string name="common_done">সম্পন্ন</string>
     <string name="common_grant">অনুমতি দিন</string>
     <string name="common_manage">পরিচালনা করুন</string>
-
     <!-- settings -->
     <string name="settings_title">সেটিংস</string>
     <string name="settings_languages">ভাষা</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">অ্যাপ লগ ক্লিপবোর্ডে কপি করা হয়েছে</string>
     <string name="settings_about_support">উন্নয়নে সহায়তা করুন</string>
     <string name="settings_external_storage_perm_body">আপনার Documents ফোল্ডারে অনুবাদ ফাইল রাখতে এই অ্যাপের সব ফাইল পরিচালনার অনুমতি প্রয়োজন।\nআপনাকে সেটিংসে নিয়ে যাওয়া হবে, যেখানে আপনি \'সব ফাইল পরিচালনার অনুমতি দিন\' অনুমতিটি দিতে পারবেন।</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">কণ্ঠস্বর</string>
     <string name="langmgr_default">ডিফল্ট</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">ভাষা সেটআপ</string>
     <string name="nolang_prompt">অনুবাদ শুরু করতে ভাষা প্যাক ডাউনলোড করুন</string>
     <string name="howto_title">যেভাবে ব্যবহার করবেন</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">দূরবর্তী ছবি সরাসরি ক্রপ করা যায় না</string>
     <string name="image_open_failed">ফাইল খুলতে ব্যর্থ</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">ডিফল্ট কণ্ঠস্বর</string>
     <string name="langsel_auto">✨ স্বয়ংক্রিয়</string>
     <string name="dict_also_as">এভাবেও:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">লাইভ অনুবাদের জন্য ক্যামেরার অনুমতি প্রয়োজন।</string>
     <string name="camera_need_ocr_models">এই ভাষার জন্য আপনাকে OCR মডেল ডাউনলোড করতে হবে</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">এই পৃষ্ঠার জন্য রিডার মোড পাওয়া যাচ্ছে না</string>
     <string name="browser_translate_image">ছবি অনুবাদ করুন</string>
     <string name="screen_translating_notification">স্ক্রিন অনুবাদ করা হচ্ছে</string>
-
     <!-- enums -->
     <string name="align_top">উপরে</string>
     <string name="align_middle">মাঝে</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">কালোর উপর সাদা</string>
     <string name="background_mode_black_on_white">সাদার উপর কালো</string>
     <string name="background_mode_auto_detect">রঙ স্বয়ংক্রিয়ভাবে শনাক্ত করুন</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">বলার মতো কিছু নেই</string>
     <string name="tts_catalog_unavailable">ক্যাটালগ পাওয়া যাচ্ছে না</string>
     <string name="tts_no_voice">%1$s-এর জন্য কোনো TTS কণ্ঠস্বর ইনস্টল করা নেই</string>
     <string name="tts_synthesis_failed">%1$s-এর জন্য কণ্ঠ তৈরি করতে ব্যর্থ</string>
     <string name="tts_sample_fallback">এটি Offline Translator থেকে একটি লেখা-থেকে-কণ্ঠ নমুনা।</string>
-
     <!-- translation -->
     <string name="translation_error">অনুবাদে সমস্যা: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s ডাউনলোড ব্যর্থ</string>
     <string name="download_failed_ocr">%1$s OCR ডাউনলোড ব্যর্থ</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">ক্যাটালগ সংরক্ষণ করতে ব্যর্থ</string>
     <string name="download_unknown_error">অজানা সমস্যা</string>
     <string name="download_catalog_failed">ক্যাটালগ ডাউনলোড করতে ব্যর্থ: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">লেখা অনুবাদ করতে তার উপরে এই অ্যাসিস্ট্যান্ট চালু করুন</string>
     <string name="assistant_collecting_context">স্ক্রিনের তথ্য সংগ্রহ করা হচ্ছে…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">অনুবাদের ভাষা এখনো প্রস্তুত নয়। আবার চেষ্টা করুন।</string>
     <string name="assistant_ocr_failed">OCR ব্যর্থ</string>
     <string name="assistant_set_source_live">লাইভ স্ক্রিন অনুবাদ ব্যবহার করতে সেটিংসে একটি ডিফল্ট উৎস ভাষা ঠিক করুন।</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">কণ্ঠ মডেল আপডেট করা হচ্ছে</string>
     <string name="migration_accept_convert">মেনে নিন এবং রূপান্তর করুন</string>
@@ -156,10 +146,9 @@
     <string name="migration_converting">%2$d-এর %1$d রূপান্তর করা হচ্ছে</string>
     <string name="migration_optimizing">মডেল অপ্টিমাইজ করা হচ্ছে</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="one">নতুন ফরম্যাটে রূপান্তর করার জন্য আপনার %1$d টি লেখা-থেকে-কণ্ঠ মডেল আছে। এতে আনুমানিক %2$d সেকেন্ড লাগবে। আপনি %3$.0f MB ডিস্ক জায়গা সাশ্রয় করবেন।</item>
-      <item quantity="other">নতুন ফরম্যাটে রূপান্তর করার জন্য আপনার %1$d টি লেখা-থেকে-কণ্ঠ মডেল আছে। এতে আনুমানিক %2$d সেকেন্ড লাগবে। আপনি %3$.0f MB ডিস্ক জায়গা সাশ্রয় করবেন।</item>
+        <item quantity="one">নতুন ফরম্যাটে রূপান্তর করার জন্য আপনার %1$d টি লেখা-থেকে-কণ্ঠ মডেল আছে। এতে আনুমানিক %2$d সেকেন্ড লাগবে। আপনি %3$.0f MB ডিস্ক জায়গা সাশ্রয় করবেন।</item>
+        <item quantity="other">নতুন ফরম্যাটে রূপান্তর করার জন্য আপনার %1$d টি লেখা-থেকে-কণ্ঠ মডেল আছে। এতে আনুমানিক %2$d সেকেন্ড লাগবে। আপনি %3$.0f MB ডিস্ক জায়গা সাশ্রয় করবেন।</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">ফাইল অনুবাদ করা হচ্ছে</string>
     <string name="doc_notif_translated">অনুবাদ করা ফাইল</string>
@@ -174,32 +163,27 @@
     <string name="doc_progress_saving">অনুবাদ করা ফাইল সংরক্ষণ করা হচ্ছে</string>
     <string name="doc_translation_failed">ডকুমেন্ট অনুবাদ ব্যর্থ</string>
     <string name="doc_url_unsupported">ডকুমেন্টটি ডাউনলোড করে অ্যাপ দিয়ে খুলুন</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">%1$d কলামে মুড়ুন</string>
     <string name="document_translate_pdf_images">PDF-এর ছবি অনুবাদ করুন</string>
     <string name="layout_preserve">লাইন ব্রেক বজায় রাখুন</string>
     <string name="layout_reflow">অনুচ্ছেদে পুনর্বিন্যাস করুন</string>
     <string name="layout_reflow_wrap">পুনর্বিন্যাস ও মুড়ুন</string>
-
     <!-- common (additional) -->
     <string name="common_open">খুলুন</string>
     <string name="common_close">বন্ধ করুন</string>
     <string name="common_save">সংরক্ষণ করুন</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">অনুবাদ করা ফাইল: %1$s</string>
     <string name="translator_document_saved">ডকুমেন্ট সংরক্ষিত হয়েছে</string>
     <string name="translator_document_save_failed">ডকুমেন্ট সংরক্ষণ করতে ব্যর্থ</string>
     <string name="translator_audio_playback_failed">অডিও চালাতে ব্যর্থ: %1$s</string>
     <string name="translator_no_app_to_open">এই ফাইল খোলার মতো কোনো অ্যাপ পাওয়া যায়নি</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">ছবি ডিকোড করা যায়নি।</string>
     <string name="docalign_detecting">কোণ শনাক্ত করা হচ্ছে…</string>
     <string name="docalign_redetecting">আবার শনাক্ত করা হচ্ছে…</string>
     <string name="docalign_help">ডকুমেন্টের চারপাশে নিখুঁত একটি সীমারেখা শনাক্তকরণের মান উন্নত করে। লাইনগুলো লেখার সমান্তরাল থাকা জরুরি।\n\nজুম বা প্যান করলে সাধারণত অ্যালগরিদম নিজে থেকেই ডকুমেন্টটি ধরে ফেলে, তবে খুঁজে না পেলে আপনি হাতে করেও সমন্বয় করতে পারেন।</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">অন্য অ্যাপ থেকে</string>
     <string name="howto_share_title">অনুবাদ করতে শেয়ার করুন</string>
@@ -213,12 +197,10 @@
     <string name="howto_dict_body">অনুবাদের যেকোনো শব্দ চেপে ধরে তার অর্থ দেখুন। তথ্য Wiktionary থেকে নেওয়া।</string>
     <string name="howto_voice_title">কণ্ঠস্বর বা গতি বদলান</string>
     <string name="howto_voice_body">আলাদা TTS কণ্ঠস্বর বেছে নিতে বা চালানোর গতি বদলাতে প্লে বোতামটি চেপে ধরুন।</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">অনুবাদ</string>
     <string name="feature_dictionary">অভিধান</string>
     <string name="feature_tts">কণ্ঠস্বর</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">লেখা লিখুন</string>
     <string name="aidl_target_unavailable">লক্ষ্য ভাষা পাওয়া যাচ্ছে না</string>
