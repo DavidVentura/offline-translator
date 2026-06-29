@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">Zatrzymaj</string>
     <string name="pause">Wstrzymaj</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">Szybkie tłumaczenie</string>
     <string name="tap_to_translate_channel_description">Stałe powiadomienie zapewniające szybki dostęp do okienka tłumacza</string>
     <string name="quick_tile_label">Przetłumacz</string>
-
     <!-- common -->
     <string name="common_ok">OK</string>
     <string name="common_cancel">Anuluj</string>
     <string name="common_done">Gotowe</string>
     <string name="common_grant">Przyznaj</string>
     <string name="common_manage">Zarządzaj</string>
-
     <!-- settings -->
     <string name="settings_title">Ustawienia</string>
     <string name="settings_languages">Języki</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">Dzienniki aplikacji skopiowano do schowka</string>
     <string name="settings_about_support">Wesprzyj rozwój</string>
     <string name="settings_external_storage_perm_body">Aby przechowywać pliki tłumaczeń w folderze Dokumenty, ta aplikacja potrzebuje dostępu do zarządzania wszystkimi plikami.\nNastąpi przejście do Ustawień, gdzie możesz przyznać uprawnienie \'Zezwól na zarządzanie wszystkimi plikami\'.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">Głosy</string>
     <string name="langmgr_default">DOMYŚLNY</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">Konfiguracja języka</string>
     <string name="nolang_prompt">Pobierz pakiety językowe, aby rozpocząć tłumaczenie</string>
     <string name="howto_title">Jak korzystać</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">Obrazów zdalnych nie można przyciąć bezpośrednio</string>
     <string name="image_open_failed">Nie udało się otworzyć pliku</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">Domyślny głos</string>
     <string name="langsel_auto">✨ Auto</string>
     <string name="dict_also_as">Również jako:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">Tłumaczenie na żywo wymaga dostępu do aparatu.</string>
     <string name="camera_need_ocr_models">Musisz pobrać modele OCR dla tego języka</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">Tryb czytnika niedostępny dla tej strony</string>
     <string name="browser_translate_image">Przetłumacz obraz</string>
     <string name="screen_translating_notification">Tłumaczenie ekranu</string>
-
     <!-- enums -->
     <string name="align_top">Góra</string>
     <string name="align_middle">Środek</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">Biały na czarnym</string>
     <string name="background_mode_black_on_white">Czarny na białym</string>
     <string name="background_mode_auto_detect">Automatyczne wykrywanie kolorów</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Brak tekstu do odczytania</string>
     <string name="tts_catalog_unavailable">Katalog niedostępny</string>
     <string name="tts_no_voice">Brak zainstalowanego głosu TTS dla języka %1$s</string>
     <string name="tts_synthesis_failed">Synteza mowy nie powiodła się dla %1$s</string>
     <string name="tts_sample_fallback">To jest próbka mowy z Offline Translator.</string>
-
     <!-- translation -->
     <string name="translation_error">Błąd tłumaczenia: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">Pobieranie %1$s nie powiodło się</string>
     <string name="download_failed_ocr">Pobieranie OCR %1$s nie powiodło się</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">Nie udało się zapisać katalogu</string>
     <string name="download_unknown_error">Nieznany błąd</string>
     <string name="download_catalog_failed">Nie udało się pobrać katalogu: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">Wywołaj tego asystenta na tekście, aby go przetłumaczyć</string>
     <string name="assistant_collecting_context">Zbieranie kontekstu ekranu…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">Języki tłumaczenia nie są jeszcze gotowe. Spróbuj ponownie.</string>
     <string name="assistant_ocr_failed">OCR nie powiódł się</string>
     <string name="assistant_set_source_live">Ustaw domyślny język źródłowy w Ustawieniach, aby korzystać z tłumaczenia ekranu na żywo.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">Aktualizowanie modeli mowy</string>
     <string name="migration_accept_convert">Zaakceptuj i przekonwertuj</string>
@@ -156,12 +146,11 @@
     <string name="migration_converting">Konwertowanie %1$d z %2$d</string>
     <string name="migration_optimizing">Optymalizowanie modeli</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="one">Masz %1$d model syntezy mowy do przekonwertowania na nowy format. Zajmie to około %2$d sekund. Zaoszczędzisz %3$.0f MB miejsca na dysku.</item>
-      <item quantity="few">Masz %1$d modele syntezy mowy do przekonwertowania na nowy format. Zajmie to około %2$d sekund. Zaoszczędzisz %3$.0f MB miejsca na dysku.</item>
-      <item quantity="many">Masz %1$d modeli syntezy mowy do przekonwertowania na nowy format. Zajmie to około %2$d sekund. Zaoszczędzisz %3$.0f MB miejsca na dysku.</item>
-      <item quantity="other">Masz %1$d modelu syntezy mowy do przekonwertowania na nowy format. Zajmie to około %2$d sekund. Zaoszczędzisz %3$.0f MB miejsca na dysku.</item>
+        <item quantity="one">Masz %1$d model syntezy mowy do przekonwertowania na nowy format. Zajmie to około %2$d sekund. Zaoszczędzisz %3$.0f MB miejsca na dysku.</item>
+        <item quantity="few">Masz %1$d modele syntezy mowy do przekonwertowania na nowy format. Zajmie to około %2$d sekund. Zaoszczędzisz %3$.0f MB miejsca na dysku.</item>
+        <item quantity="many">Masz %1$d modeli syntezy mowy do przekonwertowania na nowy format. Zajmie to około %2$d sekund. Zaoszczędzisz %3$.0f MB miejsca na dysku.</item>
+        <item quantity="other">Masz %1$d modelu syntezy mowy do przekonwertowania na nowy format. Zajmie to około %2$d sekund. Zaoszczędzisz %3$.0f MB miejsca na dysku.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">Tłumaczenie pliku</string>
     <string name="doc_notif_translated">Przetłumaczono plik</string>
@@ -176,32 +165,27 @@
     <string name="doc_progress_saving">Zapisywanie przetłumaczonego pliku</string>
     <string name="doc_translation_failed">Tłumaczenie dokumentu nie powiodło się</string>
     <string name="doc_url_unsupported">Pobierz dokument i otwórz go w aplikacji</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">Zawijaj przy %1$d kolumnach</string>
     <string name="document_translate_pdf_images">Tłumacz obrazy w PDF</string>
     <string name="layout_preserve">Zachowaj podziały wierszy</string>
     <string name="layout_reflow">Połącz w akapity</string>
     <string name="layout_reflow_wrap">Połącz i zawijaj</string>
-
     <!-- common (additional) -->
     <string name="common_open">Otwórz</string>
     <string name="common_close">Zamknij</string>
     <string name="common_save">Zapisz</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">Przetłumaczony plik: %1$s</string>
     <string name="translator_document_saved">Dokument zapisany</string>
     <string name="translator_document_save_failed">Nie udało się zapisać dokumentu</string>
     <string name="translator_audio_playback_failed">Odtwarzanie dźwięku nie powiodło się: %1$s</string>
     <string name="translator_no_app_to_open">Nie znaleziono aplikacji do otwarcia tego pliku</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">Nie można zdekodować obrazu.</string>
     <string name="docalign_detecting">Wykrywanie narożników…</string>
     <string name="docalign_redetecting">Ponowne wykrywanie…</string>
     <string name="docalign_help">Dokładne obramowanie wokół dokumentu poprawia jakość rozpoznawania. Ważne jest, aby linie były równoległe do tekstu.\n\nPrzybliżanie lub przesuwanie zwykle sprawia, że algorytm automatycznie wykrywa dokument, ale jeśli nie zostanie znaleziony, nadal możesz dostosować go ręcznie.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">Z innych aplikacji</string>
     <string name="howto_share_title">Udostępnij, aby przetłumaczyć</string>
@@ -215,12 +199,10 @@
     <string name="howto_dict_body">Przytrzymaj dowolne słowo w tłumaczeniu, aby zobaczyć jego definicję. Dane pochodzą z Wiktionary.</string>
     <string name="howto_voice_title">Zmień głos lub prędkość</string>
     <string name="howto_voice_body">Przytrzymaj przycisk odtwarzania, aby wybrać inny głos TTS lub dostosować prędkość odtwarzania.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">Tłumaczenie</string>
     <string name="feature_dictionary">Słownik</string>
     <string name="feature_tts">Głos</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">Wpisz tekst</string>
     <string name="aidl_target_unavailable">Język docelowy niedostępny</string>
