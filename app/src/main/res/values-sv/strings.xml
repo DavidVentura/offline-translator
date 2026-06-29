@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">Stoppa</string>
     <string name="pause">Pausa</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">Snabböversättning</string>
     <string name="tap_to_translate_channel_description">Beständig avisering för snabb åtkomst till översättningsfönstret</string>
     <string name="quick_tile_label">Översätt</string>
-
     <!-- common -->
     <string name="common_ok">OK</string>
     <string name="common_cancel">Avbryt</string>
     <string name="common_done">Klar</string>
     <string name="common_grant">Bevilja</string>
     <string name="common_manage">Hantera</string>
-
     <!-- settings -->
     <string name="settings_title">Inställningar</string>
     <string name="settings_languages">Språk</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">Apploggar kopierade till urklipp</string>
     <string name="settings_about_support">Stöd utvecklingen</string>
     <string name="settings_external_storage_perm_body">För att lagra översättningsfiler i din Dokument-mapp behöver den här appen åtkomst för att hantera alla filer.\nDu kommer att tas till Inställningar där du kan bevilja behörigheten \'Tillåt åtkomst för att hantera alla filer\'.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">Röster</string>
     <string name="langmgr_default">STANDARD</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">Språkinställning</string>
     <string name="nolang_prompt">Ladda ner språkpaket för att börja översätta</string>
     <string name="howto_title">Så här använder du</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">Fjärrbilder kan inte beskäras direkt</string>
     <string name="image_open_failed">Det gick inte att öppna filen</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">Standardröst</string>
     <string name="langsel_auto">✨ Auto</string>
     <string name="dict_also_as">Även som:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">Kamerabehörighet krävs för live-översättning.</string>
     <string name="camera_need_ocr_models">Du behöver ladda ner OCR-modellerna för det här språket</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">Läsläge är inte tillgängligt för den här sidan</string>
     <string name="browser_translate_image">Översätt bild</string>
     <string name="screen_translating_notification">Översätter skärmen</string>
-
     <!-- enums -->
     <string name="align_top">Överst</string>
     <string name="align_middle">Mitten</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">Vitt på svart</string>
     <string name="background_mode_black_on_white">Svart på vitt</string>
     <string name="background_mode_auto_detect">Identifiera färger automatiskt</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Inget att läsa upp</string>
     <string name="tts_catalog_unavailable">Katalogen är inte tillgänglig</string>
     <string name="tts_no_voice">Ingen TTS-röst installerad för %1$s</string>
     <string name="tts_synthesis_failed">Talsyntes misslyckades för %1$s</string>
     <string name="tts_sample_fallback">Det här är ett text-till-tal-exempel från Offline Translator.</string>
-
     <!-- translation -->
     <string name="translation_error">Översättningsfel: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">Nedladdningen av %1$s misslyckades</string>
     <string name="download_failed_ocr">OCR-nedladdningen av %1$s misslyckades</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">Det gick inte att spara katalogen</string>
     <string name="download_unknown_error">Okänt fel</string>
     <string name="download_catalog_failed">Det gick inte att ladda ner katalogen: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">Aktivera den här assistenten ovanpå text för att översätta den</string>
     <string name="assistant_collecting_context">Samlar in skärmkontext…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">Översättningsspråken är inte redo än. Försök igen.</string>
     <string name="assistant_ocr_failed">OCR misslyckades</string>
     <string name="assistant_set_source_live">Ange ett standardkällspråk i Inställningar för att använda live-översättning av skärmen.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">Uppdaterar talmodeller</string>
     <string name="migration_accept_convert">Acceptera och konvertera</string>
@@ -156,10 +146,9 @@
     <string name="migration_converting">Konverterar %1$d av %2$d</string>
     <string name="migration_optimizing">Optimerar modeller</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="one">Du har %1$d text-till-tal-modell att konvertera till ett nytt format. Det tar ungefär %2$d sekunder. Du sparar %3$.0f MB diskutrymme.</item>
-      <item quantity="other">Du har %1$d text-till-tal-modeller att konvertera till ett nytt format. Det tar ungefär %2$d sekunder. Du sparar %3$.0f MB diskutrymme.</item>
+        <item quantity="one">Du har %1$d text-till-tal-modell att konvertera till ett nytt format. Det tar ungefär %2$d sekunder. Du sparar %3$.0f MB diskutrymme.</item>
+        <item quantity="other">Du har %1$d text-till-tal-modeller att konvertera till ett nytt format. Det tar ungefär %2$d sekunder. Du sparar %3$.0f MB diskutrymme.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">Översätter fil</string>
     <string name="doc_notif_translated">Översatt fil</string>
@@ -174,32 +163,27 @@
     <string name="doc_progress_saving">Sparar översatt fil</string>
     <string name="doc_translation_failed">Dokumentöversättningen misslyckades</string>
     <string name="doc_url_unsupported">Ladda ner dokumentet och öppna det med appen i stället</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">Radbryt vid %1$d kolumner</string>
     <string name="document_translate_pdf_images">Översätt bilder i PDF</string>
     <string name="layout_preserve">Behåll radbrytningar</string>
     <string name="layout_reflow">Omforma till stycken</string>
     <string name="layout_reflow_wrap">Omforma och radbryt</string>
-
     <!-- common (additional) -->
     <string name="common_open">Öppna</string>
     <string name="common_close">Stäng</string>
     <string name="common_save">Spara</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">Översatt fil: %1$s</string>
     <string name="translator_document_saved">Dokumentet sparat</string>
     <string name="translator_document_save_failed">Det gick inte att spara dokumentet</string>
     <string name="translator_audio_playback_failed">Ljuduppspelningen misslyckades: %1$s</string>
     <string name="translator_no_app_to_open">Ingen app hittades för att öppna den här filen</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">Det gick inte att avkoda bilden.</string>
     <string name="docalign_detecting">Identifierar hörn…</string>
     <string name="docalign_redetecting">Identifierar igen…</string>
     <string name="docalign_help">En exakt avgränsning runt dokumentet förbättrar igenkänningskvaliteten. Det är viktigt att linjerna är parallella med texten.\n\nGenom att zooma eller panorera plockar algoritmen oftast upp dokumentet automatiskt, men du kan fortfarande justera manuellt om det inte hittas.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">Från andra appar</string>
     <string name="howto_share_title">Dela för att översätta</string>
@@ -213,12 +197,10 @@
     <string name="howto_dict_body">Håll in valfritt ord i en översättning för att se dess definition. Data hämtad från Wiktionary.</string>
     <string name="howto_voice_title">Ändra röst eller hastighet</string>
     <string name="howto_voice_body">Håll in uppspelningsknappen för att välja en annan TTS-röst eller justera uppspelningshastigheten.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">Översättning</string>
     <string name="feature_dictionary">Ordbok</string>
     <string name="feature_tts">Röst</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">Skriv text</string>
     <string name="aidl_target_unavailable">Målspråket är inte tillgängligt</string>
