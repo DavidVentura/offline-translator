@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">थांबवा</string>
     <string name="pause">थांबवा</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">झटपट भाषांतर</string>
     <string name="tap_to_translate_channel_description">भाषांतर पॉपअप पटकन उघडण्यासाठीची कायमस्वरूपी सूचना</string>
     <string name="quick_tile_label">भाषांतर करा</string>
-
     <!-- common -->
     <string name="common_ok">ठीक आहे</string>
     <string name="common_cancel">रद्द करा</string>
     <string name="common_done">झाले</string>
     <string name="common_grant">परवानगी द्या</string>
     <string name="common_manage">व्यवस्थापित करा</string>
-
     <!-- settings -->
     <string name="settings_title">सेटिंग्ज</string>
     <string name="settings_languages">भाषा</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">अॅप लॉग क्लिपबोर्डवर कॉपी केले</string>
     <string name="settings_about_support">विकासाला पाठिंबा द्या</string>
     <string name="settings_external_storage_perm_body">तुमच्या Documents फोल्डरमध्ये भाषांतर फायली साठवण्यासाठी, या अॅपला सर्व फायली व्यवस्थापित करण्याचा प्रवेश हवा आहे.\nतुम्हाला सेटिंग्जमध्ये नेले जाईल जिथे तुम्ही \'सर्व फायली व्यवस्थापित करण्याचा प्रवेश अनुमती द्या\' ही परवानगी देऊ शकता.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">आवाज</string>
     <string name="langmgr_default">डीफॉल्ट</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">भाषा सेटअप</string>
     <string name="nolang_prompt">भाषांतर सुरू करण्यासाठी भाषा पॅक डाउनलोड करा</string>
     <string name="howto_title">कसे वापरावे</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">दूरस्थ प्रतिमा थेट कापता येत नाहीत</string>
     <string name="image_open_failed">फाईल उघडता आली नाही</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">डीफॉल्ट आवाज</string>
     <string name="langsel_auto">✨ आपोआप</string>
     <string name="dict_also_as">असेही:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">थेट भाषांतरासाठी कॅमेरा परवानगी आवश्यक आहे.</string>
     <string name="camera_need_ocr_models">या भाषेसाठी तुम्हाला OCR मॉडेल डाउनलोड करावे लागतील</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">या पानासाठी वाचक मोड उपलब्ध नाही</string>
     <string name="browser_translate_image">प्रतिमा भाषांतर करा</string>
     <string name="screen_translating_notification">स्क्रीन भाषांतर होत आहे</string>
-
     <!-- enums -->
     <string name="align_top">वर</string>
     <string name="align_middle">मध्यभागी</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">काळ्यावर पांढरे</string>
     <string name="background_mode_black_on_white">पांढऱ्यावर काळे</string>
     <string name="background_mode_auto_detect">रंग आपोआप ओळखा</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">बोलण्यासाठी काही नाही</string>
     <string name="tts_catalog_unavailable">कॅटलॉग उपलब्ध नाही</string>
     <string name="tts_no_voice">%1$s साठी कोणताही TTS आवाज स्थापित नाही</string>
     <string name="tts_synthesis_failed">%1$s साठी आवाज संश्लेषण अयशस्वी</string>
     <string name="tts_sample_fallback">हा Offline Translator कडून एक text-to-speech नमुना आहे.</string>
-
     <!-- translation -->
     <string name="translation_error">भाषांतर त्रुटी: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s डाउनलोड अयशस्वी</string>
     <string name="download_failed_ocr">%1$s OCR डाउनलोड अयशस्वी</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">कॅटलॉग जतन करता आला नाही</string>
     <string name="download_unknown_error">अज्ञात त्रुटी</string>
     <string name="download_catalog_failed">कॅटलॉग डाउनलोड करता आला नाही: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">मजकुराच्या वर हा सहाय्यक चालवून तो भाषांतर करा</string>
     <string name="assistant_collecting_context">स्क्रीन संदर्भ गोळा करत आहे…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">भाषांतर भाषा अद्याप तयार नाहीत. पुन्हा प्रयत्न करा.</string>
     <string name="assistant_ocr_failed">OCR अयशस्वी</string>
     <string name="assistant_set_source_live">थेट स्क्रीन भाषांतर वापरण्यासाठी सेटिंग्जमध्ये डीफॉल्ट स्रोत भाषा निवडा.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">आवाज मॉडेल अद्यतनित होत आहेत</string>
     <string name="migration_accept_convert">स्वीकारा आणि रूपांतरित करा</string>
@@ -156,10 +146,9 @@
     <string name="migration_converting">%2$d पैकी %1$d रूपांतरित होत आहे</string>
     <string name="migration_optimizing">मॉडेल सुधारत आहे</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="one">तुमच्याकडे नवीन स्वरूपात रूपांतरित करण्यासाठी %1$d text-to-speech मॉडेल आहे. यास अंदाजे %2$d सेकंद लागतील. तुम्ही %3$.0f MB डिस्क जागा वाचवाल.</item>
-      <item quantity="other">तुमच्याकडे नवीन स्वरूपात रूपांतरित करण्यासाठी %1$d text-to-speech मॉडेल आहेत. यास अंदाजे %2$d सेकंद लागतील. तुम्ही %3$.0f MB डिस्क जागा वाचवाल.</item>
+        <item quantity="one">तुमच्याकडे नवीन स्वरूपात रूपांतरित करण्यासाठी %1$d text-to-speech मॉडेल आहे. यास अंदाजे %2$d सेकंद लागतील. तुम्ही %3$.0f MB डिस्क जागा वाचवाल.</item>
+        <item quantity="other">तुमच्याकडे नवीन स्वरूपात रूपांतरित करण्यासाठी %1$d text-to-speech मॉडेल आहेत. यास अंदाजे %2$d सेकंद लागतील. तुम्ही %3$.0f MB डिस्क जागा वाचवाल.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">फाईल भाषांतर होत आहे</string>
     <string name="doc_notif_translated">फाईल भाषांतरित झाली</string>
@@ -174,32 +163,27 @@
     <string name="doc_progress_saving">भाषांतरित फाईल जतन होत आहे</string>
     <string name="doc_translation_failed">दस्तऐवज भाषांतर अयशस्वी</string>
     <string name="doc_url_unsupported">त्याऐवजी दस्तऐवज डाउनलोड करून अॅपने उघडा</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">%1$d स्तंभांवर गुंडाळा</string>
     <string name="document_translate_pdf_images">PDF मधील प्रतिमा भाषांतर करा</string>
     <string name="layout_preserve">ओळींचे खंड जपा</string>
     <string name="layout_reflow">परिच्छेदांमध्ये पुनर्रचना करा</string>
     <string name="layout_reflow_wrap">पुनर्रचना करा आणि गुंडाळा</string>
-
     <!-- common (additional) -->
     <string name="common_open">उघडा</string>
     <string name="common_close">बंद करा</string>
     <string name="common_save">जतन करा</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">भाषांतरित फाईल: %1$s</string>
     <string name="translator_document_saved">दस्तऐवज जतन झाला</string>
     <string name="translator_document_save_failed">दस्तऐवज जतन करता आला नाही</string>
     <string name="translator_audio_playback_failed">ऑडिओ प्लेबॅक अयशस्वी: %1$s</string>
     <string name="translator_no_app_to_open">ही फाईल उघडण्यासाठी कोणतेही अॅप सापडले नाही</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">प्रतिमा डीकोड करता आली नाही.</string>
     <string name="docalign_detecting">कोपरे शोधत आहे…</string>
     <string name="docalign_redetecting">पुन्हा शोधत आहे…</string>
     <string name="docalign_help">दस्तऐवजाभोवती अचूक परिमिती असल्यास ओळख गुणवत्ता सुधारते. ओळी मजकुराला समांतर असणे महत्त्वाचे आहे.\n\nझूम किंवा पॅन केल्यास अल्गोरिदम सहसा दस्तऐवज आपोआप ओळखतो, पण न सापडल्यास तुम्ही स्वतः जुळवणी करू शकता.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">इतर अॅप्समधून</string>
     <string name="howto_share_title">भाषांतर करण्यासाठी सामायिक करा</string>
@@ -213,12 +197,10 @@
     <string name="howto_dict_body">भाषांतरातील कोणताही शब्द दाबून धरून त्याची व्याख्या पहा. डेटा Wiktionary कडून घेतलेला आहे.</string>
     <string name="howto_voice_title">आवाज किंवा वेग बदला</string>
     <string name="howto_voice_body">वेगळा TTS आवाज निवडण्यासाठी किंवा प्लेबॅक वेग बदलण्यासाठी प्ले बटण दाबून धरा.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">भाषांतर</string>
     <string name="feature_dictionary">शब्दकोश</string>
     <string name="feature_tts">आवाज</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">मजकूर टाका</string>
     <string name="aidl_target_unavailable">लक्ष्य भाषा उपलब्ध नाही</string>
