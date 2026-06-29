@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">停止</string>
     <string name="pause">暂停</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">快速翻译</string>
     <string name="tap_to_translate_channel_description">用于快速打开翻译弹窗的常驻通知</string>
     <string name="quick_tile_label">翻译</string>
-
     <!-- common -->
     <string name="common_ok">确定</string>
     <string name="common_cancel">取消</string>
     <string name="common_done">完成</string>
     <string name="common_grant">授权</string>
     <string name="common_manage">管理</string>
-
     <!-- settings -->
     <string name="settings_title">设置</string>
     <string name="settings_languages">语言</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">应用日志已复制到剪贴板</string>
     <string name="settings_about_support">支持开发</string>
     <string name="settings_external_storage_perm_body">为了将翻译文件存储到你的“文档”文件夹，此应用需要管理所有文件的权限。\n你将被带到“设置”页面，在那里授予\'允许管理所有文件\'权限。</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">语音</string>
     <string name="langmgr_default">默认</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">语言设置</string>
     <string name="nolang_prompt">下载语言包即可开始翻译</string>
     <string name="howto_title">使用方法</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">远程图片无法直接裁剪</string>
     <string name="image_open_failed">打开文件失败</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">默认语音</string>
     <string name="langsel_auto">✨ 自动</string>
     <string name="dict_also_as">也作：</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">实时翻译需要相机权限。</string>
     <string name="camera_need_ocr_models">你需要下载此语言的 OCR 模型</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">此页面不支持阅读模式</string>
     <string name="browser_translate_image">翻译图片</string>
     <string name="screen_translating_notification">正在翻译屏幕</string>
-
     <!-- enums -->
     <string name="align_top">顶部</string>
     <string name="align_middle">居中</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">黑底白字</string>
     <string name="background_mode_black_on_white">白底黑字</string>
     <string name="background_mode_auto_detect">自动检测颜色</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">没有可朗读的内容</string>
     <string name="tts_catalog_unavailable">目录不可用</string>
     <string name="tts_no_voice">未安装 %1$s 的 TTS 语音</string>
     <string name="tts_synthesis_failed">%1$s 的语音合成失败</string>
     <string name="tts_sample_fallback">这是来自 Offline Translator 的语音合成示例。</string>
-
     <!-- translation -->
     <string name="translation_error">翻译错误：%1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s 下载失败</string>
     <string name="download_failed_ocr">%1$s OCR 下载失败</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">保存目录失败</string>
     <string name="download_unknown_error">未知错误</string>
     <string name="download_catalog_failed">下载目录失败：%1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">在文字上方调用此助手即可翻译</string>
     <string name="assistant_collecting_context">正在收集屏幕内容…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">翻译语言尚未就绪。请重试。</string>
     <string name="assistant_ocr_failed">OCR 失败</string>
     <string name="assistant_set_source_live">在设置中设定默认源语言即可使用实时屏幕翻译。</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">正在更新语音模型</string>
     <string name="migration_accept_convert">接受并转换</string>
@@ -156,9 +146,8 @@
     <string name="migration_converting">正在转换 %2$d 个中的第 %1$d 个</string>
     <string name="migration_optimizing">正在优化模型</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="other">你有 %1$d 个语音合成模型需要转换为新格式。大约需要 %2$d 秒。你将节省 %3$.0f MB 的磁盘空间。</item>
+        <item quantity="other">你有 %1$d 个语音合成模型需要转换为新格式。大约需要 %2$d 秒。你将节省 %3$.0f MB 的磁盘空间。</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">正在翻译文件</string>
     <string name="doc_notif_translated">已翻译文件</string>
@@ -173,32 +162,27 @@
     <string name="doc_progress_saving">正在保存翻译后的文件</string>
     <string name="doc_translation_failed">文档翻译失败</string>
     <string name="doc_url_unsupported">请改为下载该文档并用本应用打开</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">在 %1$d 列处换行</string>
     <string name="document_translate_pdf_images">翻译 PDF 中的图片</string>
     <string name="layout_preserve">保留换行</string>
     <string name="layout_reflow">重排为段落</string>
     <string name="layout_reflow_wrap">重排并换行</string>
-
     <!-- common (additional) -->
     <string name="common_open">打开</string>
     <string name="common_close">关闭</string>
     <string name="common_save">保存</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">已翻译文件：%1$s</string>
     <string name="translator_document_saved">文档已保存</string>
     <string name="translator_document_save_failed">保存文档失败</string>
     <string name="translator_audio_playback_failed">音频播放失败：%1$s</string>
     <string name="translator_no_app_to_open">未找到可打开此文件的应用</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">无法解码图片。</string>
     <string name="docalign_detecting">正在检测边角…</string>
     <string name="docalign_redetecting">正在重新检测…</string>
     <string name="docalign_help">在文档周围画出精确的边框可以提高识别质量。重要的是边线要与文字平行。\n\n缩放或平移通常会让算法自动识别到文档，但如果未能找到，你仍然可以手动调整。</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">从其他应用</string>
     <string name="howto_share_title">分享以翻译</string>
@@ -212,12 +196,10 @@
     <string name="howto_dict_body">长按译文中的任意词语即可查看释义。数据来自 Wiktionary。</string>
     <string name="howto_voice_title">更改语音或速度</string>
     <string name="howto_voice_body">长按播放按钮即可选择不同的 TTS 语音或调整播放速度。</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">翻译</string>
     <string name="feature_dictionary">词典</string>
     <string name="feature_tts">语音</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">输入文字</string>
     <string name="aidl_target_unavailable">目标语言不可用</string>
