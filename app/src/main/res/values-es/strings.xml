@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">Detener</string>
     <string name="pause">Pausar</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">Traducción rápida</string>
     <string name="tap_to_translate_channel_description">Notificación persistente para acceder rápidamente a la ventana del traductor</string>
     <string name="quick_tile_label">Traducir</string>
-
     <!-- common -->
     <string name="common_ok">Aceptar</string>
     <string name="common_cancel">Cancelar</string>
     <string name="common_done">Listo</string>
     <string name="common_grant">Conceder</string>
     <string name="common_manage">Gestionar</string>
-
     <!-- settings -->
     <string name="settings_title">Ajustes</string>
     <string name="settings_languages">Idiomas</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">Registros de la app copiados al portapapeles</string>
     <string name="settings_about_support">Apoyar el desarrollo</string>
     <string name="settings_external_storage_perm_body">Para guardar los archivos de traducción en tu carpeta Documentos, esta app necesita acceso para gestionar todos los archivos.\nSe te llevará a Ajustes, donde podrás conceder el permiso \'Permitir acceso para gestionar todos los archivos\'.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">Voces</string>
     <string name="langmgr_default">PREDET.</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">Configuración de idiomas</string>
     <string name="nolang_prompt">Descarga paquetes de idioma para empezar a traducir</string>
     <string name="howto_title">Cómo usar</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">Las imágenes remotas no se pueden recortar directamente</string>
     <string name="image_open_failed">No se pudo abrir el archivo</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">Voz predeterminada</string>
     <string name="langsel_auto">✨ Auto</string>
     <string name="dict_also_as">También como:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">Se necesita permiso de cámara para la traducción en vivo.</string>
     <string name="camera_need_ocr_models">Necesitas descargar los modelos de OCR para este idioma</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">El modo lector no está disponible para esta página</string>
     <string name="browser_translate_image">Traducir imagen</string>
     <string name="screen_translating_notification">Traduciendo pantalla</string>
-
     <!-- enums -->
     <string name="align_top">Arriba</string>
     <string name="align_middle">Centro</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">Blanco sobre negro</string>
     <string name="background_mode_black_on_white">Negro sobre blanco</string>
     <string name="background_mode_auto_detect">Colores de la imagen original</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">No hay nada que leer</string>
     <string name="tts_catalog_unavailable">Catálogo no disponible</string>
     <string name="tts_no_voice">No hay voz TTS instalada para %1$s</string>
     <string name="tts_synthesis_failed">Falló la síntesis de voz para %1$s</string>
     <string name="tts_sample_fallback">Esta es una muestra de texto a voz de Offline Translator.</string>
-
     <!-- translation -->
     <string name="translation_error">Error de traducción: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">Falló la descarga de %1$s</string>
     <string name="download_failed_ocr">Falló la descarga de OCR de %1$s</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">No se pudo guardar el catálogo</string>
     <string name="download_unknown_error">Error desconocido</string>
     <string name="download_catalog_failed">No se pudo descargar el catálogo: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">Invoca este asistente sobre un texto para traducirlo</string>
     <string name="assistant_collecting_context">Recopilando el contexto de la pantalla…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">Los idiomas de traducción aún no están listos. Inténtalo de nuevo.</string>
     <string name="assistant_ocr_failed">Error de OCR</string>
     <string name="assistant_set_source_live">Define un idioma de origen predeterminado en Ajustes para usar la traducción de pantalla en vivo.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">Actualizando modelos de voz</string>
     <string name="migration_accept_convert">Aceptar y convertir</string>
@@ -156,10 +146,9 @@
     <string name="migration_converting">Convirtiendo %1$d de %2$d</string>
     <string name="migration_optimizing">Optimizando modelos</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="one">Tienes %1$d modelo de texto a voz para convertir a un nuevo formato. Tardará aproximadamente %2$d segundos. Ahorrarás %3$.0f MB de espacio en disco.</item>
-      <item quantity="other">Tienes %1$d modelos de texto a voz para convertir a un nuevo formato. Tardará aproximadamente %2$d segundos. Ahorrarás %3$.0f MB de espacio en disco.</item>
+        <item quantity="one">Tienes %1$d modelo de texto a voz para convertir a un nuevo formato. Tardará aproximadamente %2$d segundos. Ahorrarás %3$.0f MB de espacio en disco.</item>
+        <item quantity="other">Tienes %1$d modelos de texto a voz para convertir a un nuevo formato. Tardará aproximadamente %2$d segundos. Ahorrarás %3$.0f MB de espacio en disco.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">Traduciendo archivo</string>
     <string name="doc_notif_translated">Archivo traducido</string>
@@ -174,32 +163,27 @@
     <string name="doc_progress_saving">Guardando archivo traducido</string>
     <string name="doc_translation_failed">Falló la traducción del documento</string>
     <string name="doc_url_unsupported">Descarga el documento y ábrelo con la app en su lugar</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">Ajustar a %1$d columnas</string>
     <string name="document_translate_pdf_images">Traducir imágenes en el PDF</string>
     <string name="layout_preserve">Conservar saltos de línea</string>
     <string name="layout_reflow">Reorganizar en párrafos</string>
     <string name="layout_reflow_wrap">Reorganizar y ajustar</string>
-
     <!-- common (additional) -->
     <string name="common_open">Abrir</string>
     <string name="common_close">Cerrar</string>
     <string name="common_save">Guardar</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">Archivo traducido: %1$s</string>
     <string name="translator_document_saved">Documento guardado</string>
     <string name="translator_document_save_failed">No se pudo guardar el documento</string>
     <string name="translator_audio_playback_failed">Falló la reproducción de audio: %1$s</string>
     <string name="translator_no_app_to_open">No se encontró ninguna app para abrir este archivo</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">No se pudo decodificar la imagen.</string>
     <string name="docalign_detecting">Detectando esquinas…</string>
     <string name="docalign_redetecting">Volviendo a detectar…</string>
     <string name="docalign_help">Un perímetro preciso alrededor del documento mejora la calidad del reconocimiento. Es importante que las líneas estén paralelas al texto.\n\nAl hacer zoom o desplazar la imagen, el algoritmo suele detectar el documento automáticamente, pero puedes ajustarlo manualmente si no se encuentra.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">Desde otras apps</string>
     <string name="howto_share_title">Traduce con solo compartir</string>
@@ -213,12 +197,10 @@
     <string name="howto_dict_body">Mantén pulsada cualquier palabra de una traducción para ver su definición. Datos obtenidos de Wiktionary.</string>
     <string name="howto_voice_title">Cambiar voz o velocidad</string>
     <string name="howto_voice_body">Mantén pulsado el botón de reproducción para elegir otra voz o ajustar la velocidad de reproducción.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">Traducción</string>
     <string name="feature_dictionary">Diccionario</string>
     <string name="feature_tts">Voz</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">Ingrese texto</string>
     <string name="aidl_target_unavailable">Idioma de destino no disponible</string>
