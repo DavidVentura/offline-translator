@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="stop">停止</string>
     <string name="pause">一時停止</string>
@@ -13,14 +14,12 @@
     <string name="tap_to_translate_channel">クイック翻訳</string>
     <string name="tap_to_translate_channel_description">翻訳ポップアップにすぐアクセスするための常駐通知です</string>
     <string name="quick_tile_label">翻訳</string>
-
     <!-- common -->
     <string name="common_ok">OK</string>
     <string name="common_cancel">キャンセル</string>
     <string name="common_done">完了</string>
     <string name="common_grant">許可</string>
     <string name="common_manage">管理</string>
-
     <!-- settings -->
     <string name="settings_title">設定</string>
     <string name="settings_languages">言語</string>
@@ -72,7 +71,6 @@
     <string name="settings_logs_copied">アプリのログをクリップボードにコピーしました</string>
     <string name="settings_about_support">開発を支援する</string>
     <string name="settings_external_storage_perm_body">翻訳ファイルをドキュメントフォルダに保存するには、すべてのファイルを管理する権限が必要です。\n設定画面が開くので、\'すべてのファイルへのアクセスを許可\'を有効にしてください。</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">音声</string>
     <string name="langmgr_default">既定</string>
@@ -83,7 +81,6 @@
     <string name="nolang_title">言語の設定</string>
     <string name="nolang_prompt">翻訳を始めるには言語パックをダウンロードしてください</string>
     <string name="howto_title">使い方</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">リモート画像は直接切り抜きできません</string>
     <string name="image_open_failed">ファイルを開けませんでした</string>
@@ -97,7 +94,6 @@
     <string name="voice_default">既定の音声</string>
     <string name="langsel_auto">✨ 自動</string>
     <string name="dict_also_as">別の表記:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">リアルタイム翻訳にはカメラの権限が必要です。</string>
     <string name="camera_need_ocr_models">この言語の OCR モデルをダウンロードする必要があります</string>
@@ -105,7 +101,6 @@
     <string name="browser_reader_unavailable">このページではリーダーモードを利用できません</string>
     <string name="browser_translate_image">画像を翻訳</string>
     <string name="screen_translating_notification">画面を翻訳中</string>
-
     <!-- enums -->
     <string name="align_top">上</string>
     <string name="align_middle">中央</string>
@@ -115,17 +110,14 @@
     <string name="background_mode_white_on_black">黒地に白文字</string>
     <string name="background_mode_black_on_white">白地に黒文字</string>
     <string name="background_mode_auto_detect">色を自動検出</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">読み上げる内容がありません</string>
     <string name="tts_catalog_unavailable">カタログを利用できません</string>
     <string name="tts_no_voice">%1$s の TTS 音声がインストールされていません</string>
     <string name="tts_synthesis_failed">%1$s の音声合成に失敗しました</string>
     <string name="tts_sample_fallback">これは Offline Translator の音声読み上げのサンプルです。</string>
-
     <!-- translation -->
     <string name="translation_error">翻訳エラー: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s のダウンロードに失敗しました</string>
     <string name="download_failed_ocr">%1$s の OCR ダウンロードに失敗しました</string>
@@ -137,7 +129,6 @@
     <string name="download_catalog_save_failed">カタログを保存できませんでした</string>
     <string name="download_unknown_error">不明なエラー</string>
     <string name="download_catalog_failed">カタログのダウンロードに失敗しました: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">翻訳したい文字の上でこのアシスタントを起動してください</string>
     <string name="assistant_collecting_context">画面の情報を取得中…</string>
@@ -148,7 +139,6 @@
     <string name="assistant_langs_not_ready">翻訳の言語がまだ準備できていません。もう一度お試しください。</string>
     <string name="assistant_ocr_failed">OCR に失敗しました</string>
     <string name="assistant_set_source_live">画面のリアルタイム翻訳を使うには、設定で既定の翻訳元の言語を指定してください。</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">音声モデルを更新中</string>
     <string name="migration_accept_convert">同意して変換</string>
@@ -156,9 +146,8 @@
     <string name="migration_converting">%2$d 件中 %1$d 件を変換中</string>
     <string name="migration_optimizing">モデルを最適化中</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="other">新しい形式に変換する音声読み上げモデルが %1$d 件あります。およそ %2$d 秒かかります。ディスク容量を %3$.0f MB 節約できます。</item>
+        <item quantity="other">新しい形式に変換する音声読み上げモデルが %1$d 件あります。およそ %2$d 秒かかります。ディスク容量を %3$.0f MB 節約できます。</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">ファイルを翻訳中</string>
     <string name="doc_notif_translated">ファイルを翻訳しました</string>
@@ -173,32 +162,27 @@
     <string name="doc_progress_saving">翻訳したファイルを保存中</string>
     <string name="doc_translation_failed">ドキュメントの翻訳に失敗しました</string>
     <string name="doc_url_unsupported">ドキュメントをダウンロードして、アプリで開いてください</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">%1$d 文字で折り返す</string>
     <string name="document_translate_pdf_images">PDF 内の画像を翻訳</string>
     <string name="layout_preserve">改行をそのまま残す</string>
     <string name="layout_reflow">段落にまとめ直す</string>
     <string name="layout_reflow_wrap">まとめ直して折り返す</string>
-
     <!-- common (additional) -->
     <string name="common_open">開く</string>
     <string name="common_close">閉じる</string>
     <string name="common_save">保存</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">翻訳したファイル: %1$s</string>
     <string name="translator_document_saved">ドキュメントを保存しました</string>
     <string name="translator_document_save_failed">ドキュメントの保存に失敗しました</string>
     <string name="translator_audio_playback_failed">音声の再生に失敗しました: %1$s</string>
     <string name="translator_no_app_to_open">このファイルを開けるアプリが見つかりません</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">画像をデコードできません。</string>
     <string name="docalign_detecting">角を検出中…</string>
     <string name="docalign_redetecting">再検出中…</string>
     <string name="docalign_help">ドキュメントを正確に囲むと認識の精度が上がります。線が文字と平行になっていることが大切です。\n\nズームや移動をすると、たいてい自動でドキュメントを認識しますが、見つからない場合は手動で調整することもできます。</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">他のアプリから</string>
     <string name="howto_share_title">共有して翻訳</string>
@@ -212,12 +196,10 @@
     <string name="howto_dict_body">翻訳内の単語を長押しすると意味が表示されます。データは Wiktionary を使用しています。</string>
     <string name="howto_voice_title">音声や速度を変える</string>
     <string name="howto_voice_body">再生ボタンを長押しすると、別の TTS 音声を選んだり再生速度を調整したりできます。</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">翻訳</string>
     <string name="feature_dictionary">辞書</string>
     <string name="feature_tts">音声</string>
-
     <!-- misc -->
     <string name="main_input_placeholder">テキストを入力</string>
     <string name="aidl_target_unavailable">翻訳先の言語を利用できません</string>
