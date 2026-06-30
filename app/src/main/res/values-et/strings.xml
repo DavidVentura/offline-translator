@@ -25,7 +25,7 @@
     <string name="langmgr_download_size">Laadi %1$s alla</string>
     <string name="nolang_title">Keelte seadistus</string>
     <string name="nolang_prompt">Alustamaks tõlkimisega laadi alla keelepakid</string>
-    <string name="howto_title">Kuidas saad seda rakendust kasutada</string>
+    <string name="howto_title">Lühike kasutusjuhend</string>
     <string name="common_grant">Anna õigused</string>
     <string name="common_manage">Halda</string>
     <string name="settings_about">Rakenduse teave</string>
@@ -158,4 +158,36 @@
     <string name="docalign_decode_failed">Pildi dekodeerimine ei õnnestunud.</string>
     <string name="docalign_detecting">Tuvastan nurki…</string>
     <string name="docalign_redetecting">Tuvastan uuesti…</string>
+    <string name="accessibility_service_description">Lülita see teenus sisse, kui soovid tõlkida ekraanil leiduvat teksti. Kui soovid hetkel nähtava ekraanivaate tõlkimist, siis klõpsa ujuvat tõlkenuppu. Lisaks saad alustada pidevat tõlget reaalajas.</string>
+    <string name="settings_shortcut">Kasuta otselinki tõlkimise käivitamiseks</string>
+    <string name="settings_shortcut_desc">Selleks vajuta pikalt avalehe või toitenuppu</string>
+    <string name="settings_on_shortcut">Otslingi käivitamisel</string>
+    <string name="image_open_failed">Faili avamine ei õnnestunud</string>
+    <string name="browser_no_source_language">Ühtegi lähtekeelt pole saadaval. Esmalt paigalda mõni soovitud keel rakenduse avavaatest või vali seadistustest vaikimisi tõlkekeel.</string>
+    <string name="tts_nothing_to_speak">Kõnesünteesi mudelil pole sisu, mida rääkida</string>
+    <string name="assistant_invoke_prompt">Tõlkimiseks käivita see abiline teksti peal</string>
+    <string name="assistant_collecting_context">Kogun ekraanivaate sisu…</string>
+    <string name="assistant_screenshot_disabled">Ligipääs ekraanitõmmisele on selle abilise jaoks keelatud. Palun lülita selline võimalus süteemi seadistustest sisse.</string>
+    <string name="assistant_no_screen_data">Ekraaniandmete tuvastamine ei õnnestunud. Palun kontrolli, et sellel abilisel on lubatud „Luba ekraanihõive“ õigused.</string>
+    <string name="assistant_no_screenshot">See rakendus ei teinud ekraanitõmmist.</string>
+    <string name="assistant_set_source_ocr">Seadista vaikimisi keel optilise märgituvastuse jaoks.</string>
+    <string name="assistant_langs_not_ready">Tõlkekeeled pole veel valmis. Palun proovi uuesti.</string>
+    <string name="assistant_ocr_failed">Optiline märgituvastus ei toiminud</string>
+    <string name="assistant_set_source_live">Reaalajas ekraanitõlke jaoks määratle Seadistustest vaikimisi lähtekeel.</string>
+    <string name="migration_updating_speech_models">Uuendan kõnemudeleid</string>
+    <string name="migration_accept_convert">Nõustu ja teisenda</string>
+    <string name="migration_delete_all">Selle asemel kustuta kõik</string>
+    <string name="migration_converting">Teisendan: %1$d / %2$d</string>
+    <string name="migration_optimizing">Optimeerin mudeleid</string>
+    <plurals name="migration_convert_prompt">
+        <item quantity="one">Uude vormingusse teisendamiseks on sul %1$d kõnesünteesi mudel. Selleks kulub umbes %2$d sekundit ja sa säästad %3$.0f MB andmeruumi.</item>
+        <item quantity="other">Uude vormingusse teisendamiseks on sul %1$d kõnesünteesi mudelit. Selleks kulub umbes %2$d sekundit ja sa säästad %3$.0f MB andmeruumi.</item>
+    </plurals>
+    <string name="docalign_help">Dokumenti ümbritsev täpne perimeeter parandab tuvastuse kvaliteeti. On oluline, et jooned asuks tekstiga rööpselt.\n\nSuurendamine või pildi nihutamine tekitab olukorra, kus algoritm tuvastab dokumendi automaatselt, aga muul juhul saad seda ka käsitsi kohendada.</string>
+    <string name="howto_section_other_apps">Muudest rakendustest</string>
+    <string name="howto_share_title">Tõlkimiseks jagamine</string>
+    <string name="howto_share_body">Tõlkimiseks ükspuha mis rakenduse sisu jaga sealt teksti, linke või pilte.</string>
+    <string name="howto_copy_title">Tõlkimine rakendusest väljumata</string>
+    <string name="howto_copy_body">Vali mis iganes rakenduses soovitud tekst, klõpsa kopeerimise tööriistaribalt „Tõlgi“ ja näed kompaktses hüpikaknas tõlget.</string>
+    <string name="howto_section_in_app">Rakenduse seest</string>
 </resources>
