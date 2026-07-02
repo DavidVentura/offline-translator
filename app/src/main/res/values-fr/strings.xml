@@ -109,7 +109,7 @@
     <string name="assistant_action_live_screen">Démarrer la traduction en direct</string>
     <string name="background_mode_white_on_black">Blanc sur noir</string>
     <string name="background_mode_black_on_white">Noir sur blanc</string>
-    <string name="background_mode_auto_detect">Détecter les couleurs automatiquement</string>
+    <string name="background_mode_auto_detect">Couleurs initiales de l\'image</string>
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Rien à lire</string>
     <string name="tts_catalog_unavailable">Catalogue indisponible</string>
@@ -191,8 +191,8 @@
     <string name="howto_copy_title">Traduire sans quitter les autres applis</string>
     <string name="howto_copy_body">Sélectionnez du texte n\'importe où, puis touchez \"Traduire\" dans la barre d\'outils de copie pour voir la traduction dans une fenêtre compacte.</string>
     <string name="howto_section_in_app">Dans l\'appli</string>
-    <string name="howto_docs_title">Traduire des documents</string>
-    <string name="howto_docs_body">Ouvrez l\'onglet Documents pour traduire des fichiers EPUB, PDF et TXT.</string>
+    <string name="howto_docs_title">Traduire des documents et images</string>
+    <string name="howto_docs_body">Ouvrez l\'onglet Documents pour traduire des images ou des fichiers EPUB, PDF et TXT.</string>
     <string name="howto_dict_title">Recherche dans le dictionnaire</string>
     <string name="howto_dict_body">Appui long sur un mot d\'une traduction pour voir sa définition. Données issues de Wiktionary.</string>
     <string name="howto_voice_title">Changer de voix ou de vitesse</string>
