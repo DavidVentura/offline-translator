@@ -36,7 +36,7 @@
     <string name="settings_tts_read_urls_hashtags">اقرأ الروابط والوسوم</string>
     <string name="settings_popup_settings">النافذة المنبثقة</string>
     <string name="settings_popup_desc">تظهر النافذة المنبثقة عند اختيار \'ترجم\' من قائمة تحديد النص</string>
-    <string name="settings_hide_input">أخف الإدخال</string>
+    <string name="settings_hide_input">أخفِ الإدخال</string>
     <string name="settings_popup_position">موضع النافذة المنبثقة</string>
     <string name="settings_popup_size">حجم النافذة المنبثقة: %1$d%%</string>
     <string name="settings_screen_translation">ترجمة الشاشة</string>
