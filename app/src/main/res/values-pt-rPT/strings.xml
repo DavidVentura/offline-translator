@@ -14,8 +14,8 @@
     <string name="howto_voice_body">Mantenha premido o botão de reprodução para escolher outra voz ou ajustar a velocidade de reprodução.</string>
     <string name="main_input_placeholder">Introduza texto aqui</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="one">Tem %1$d modelo de conversão de texto em fala para converter para um novo formato. Levará aproximadamente %2$d segundos. Irá economizar %3$.0f MB de espaço em disco.</item>
-      <item quantity="other">Tem %1$d modelos de conversão de texto em fala para converter para um novo formato. Levará aproximadamente %2$d segundos. Irá economizar %3$.0f MB de espaço em disco.</item>
+        <item quantity="one">Tem %1$d modelo de conversão de texto em fala para converter para um novo formato. Levará aproximadamente %2$d segundos. Irá economizar %3$.0f MB de espaço em disco.</item>
+        <item quantity="other">Tem %1$d modelos de conversão de texto em fala para converter para um novo formato. Levará aproximadamente %2$d segundos. Irá economizar %3$.0f MB de espaço em disco.</item>
     </plurals>
     <string name="migration_delete_all">Excluir tudo</string>
     <string name="migration_updating_speech_models">A atualizar modelos de fala</string>
