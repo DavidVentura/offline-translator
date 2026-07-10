@@ -14,14 +14,12 @@
     <string name="tap_to_translate_channel">แปลด่วน</string>
     <string name="tap_to_translate_channel_description">การแจ้งเตือนแบบถาวรเพื่อเข้าถึงหน้าต่างป๊อปอัปของตัวแปลได้อย่างรวดเร็ว</string>
     <string name="quick_tile_label">แปล</string>
-
     <!-- common -->
     <string name="common_ok">ตกลง</string>
     <string name="common_cancel">ยกเลิก</string>
     <string name="common_done">เสร็จ</string>
     <string name="common_grant">อนุญาต</string>
     <string name="common_manage">จัดการ</string>
-
     <!-- settings -->
     <string name="settings_title">การตั้งค่า</string>
     <string name="settings_languages">ภาษา</string>
@@ -74,7 +72,6 @@
     <string name="settings_logs_copied">คัดลอกบันทึกของแอปไปยังคลิปบอร์ดแล้ว</string>
     <string name="settings_about_support">สนับสนุนการพัฒนา</string>
     <string name="settings_external_storage_perm_body">หากต้องการเก็บไฟล์การแปลไว้ในโฟลเดอร์เอกสารของคุณ แอปนี้ต้องการสิทธิ์ในการจัดการไฟล์ทั้งหมด\nระบบจะพาคุณไปที่การตั้งค่า ซึ่งคุณสามารถให้สิทธิ์ \'อนุญาตให้เข้าถึงเพื่อจัดการไฟล์ทั้งหมด\' ได้</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">เสียง</string>
     <string name="voice_section_downloaded">ดาวน์โหลดแล้ว</string>
@@ -90,7 +87,6 @@
     <string name="nolang_title">ตั้งค่าภาษา</string>
     <string name="nolang_prompt">ดาวน์โหลดแพ็กภาษาเพื่อเริ่มแปล</string>
     <string name="howto_title">วิธีใช้</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">ไม่สามารถครอบตัดรูปภาพระยะไกลได้โดยตรง</string>
     <string name="image_open_failed">เปิดไฟล์ไม่สำเร็จ</string>
@@ -104,7 +100,6 @@
     <string name="voice_default">เสียงเริ่มต้น</string>
     <string name="langsel_auto">✨ อัตโนมัติ</string>
     <string name="dict_also_as">หรือเรียกว่า:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">ต้องใช้สิทธิ์กล้องเพื่อการแปลแบบสด</string>
     <string name="camera_need_ocr_models">คุณต้องดาวน์โหลดโมเดลอ่านข้อความจากรูปภาพสำหรับภาษานี้</string>
@@ -112,7 +107,6 @@
     <string name="browser_reader_unavailable">โหมดอ่านไม่พร้อมใช้งานสำหรับหน้านี้</string>
     <string name="browser_translate_image">แปลรูปภาพ</string>
     <string name="screen_translating_notification">กำลังแปลหน้าจอ</string>
-
     <!-- enums -->
     <string name="align_top">บน</string>
     <string name="align_middle">กลาง</string>
@@ -122,17 +116,14 @@
     <string name="background_mode_white_on_black">ตัวอักษรขาวบนพื้นดำ</string>
     <string name="background_mode_black_on_white">ตัวอักษรดำบนพื้นขาว</string>
     <string name="background_mode_auto_detect">สีของรูปภาพต้นฉบับ</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">ไม่มีข้อความให้อ่านออกเสียง</string>
     <string name="tts_catalog_unavailable">แคตตาล็อกไม่พร้อมใช้งาน</string>
     <string name="tts_no_voice">ไม่ได้ติดตั้งเสียงสำหรับ %1$s</string>
     <string name="tts_synthesis_failed">สังเคราะห์เสียงสำหรับ %1$s ไม่สำเร็จ</string>
     <string name="tts_sample_fallback">นี่คือตัวอย่างเสียงพูดจาก Offline Translator</string>
-
     <!-- translation -->
     <string name="translation_error">ข้อผิดพลาดในการแปล: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">ดาวน์โหลด %1$s ไม่สำเร็จ</string>
     <string name="download_failed_ocr">ดาวน์โหลดข้อมูลอ่านข้อความจากรูปภาพของ %1$s ไม่สำเร็จ</string>
@@ -145,7 +136,6 @@
     <string name="download_catalog_save_failed">บันทึกแคตตาล็อกไม่สำเร็จ</string>
     <string name="download_unknown_error">ข้อผิดพลาดที่ไม่รู้จัก</string>
     <string name="download_catalog_failed">ดาวน์โหลดแคตตาล็อกไม่สำเร็จ: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">เรียกใช้ผู้ช่วยนี้บนข้อความเพื่อแปล</string>
     <string name="assistant_collecting_context">กำลังรวบรวมบริบทของหน้าจอ…</string>
@@ -157,7 +147,6 @@
     <string name="assistant_ocr_failed">อ่านข้อความจากรูปภาพไม่สำเร็จ</string>
     <string name="ocr_models_missing">ไม่มีโมเดลการอ่านข้อความ เปิดจัดการภาษาในแอปเพื่อซ่อมแซม</string>
     <string name="assistant_set_source_live">กำหนดภาษาต้นทางเริ่มต้นในการตั้งค่าเพื่อใช้การแปลหน้าจอแบบสด</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">กำลังอัปเดตโมเดลเสียงพูด</string>
     <string name="migration_accept_convert">ยอมรับและแปลง</string>
@@ -165,9 +154,8 @@
     <string name="migration_converting">กำลังแปลง %1$d จาก %2$d</string>
     <string name="migration_optimizing">กำลังปรับโมเดลให้เหมาะสม</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="other">คุณมีโมเดลเสียงพูด %1$d โมเดลที่ต้องแปลงเป็นรูปแบบใหม่ จะใช้เวลาประมาณ %2$d วินาที คุณจะประหยัดพื้นที่ดิสก์ได้ %3$.0f MB</item>
+        <item quantity="other">คุณมีโมเดลเสียงพูด %1$d โมเดลที่ต้องแปลงเป็นรูปแบบใหม่ จะใช้เวลาประมาณ %2$d วินาที คุณจะประหยัดพื้นที่ดิสก์ได้ %3$.0f MB</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">กำลังแปลไฟล์</string>
     <string name="doc_notif_translated">แปลไฟล์แล้ว</string>
@@ -182,32 +170,27 @@
     <string name="doc_progress_saving">กำลังบันทึกไฟล์ที่แปลแล้ว</string>
     <string name="doc_translation_failed">แปลเอกสารไม่สำเร็จ</string>
     <string name="doc_url_unsupported">ดาวน์โหลดเอกสารและเปิดด้วยแอปแทน</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">ตัดบรรทัดที่ %1$d คอลัมน์</string>
     <string name="document_translate_pdf_images">แปลรูปภาพใน PDF</string>
     <string name="layout_preserve">คงการขึ้นบรรทัดใหม่</string>
     <string name="layout_reflow">จัดเรียงใหม่เป็นย่อหน้า</string>
     <string name="layout_reflow_wrap">จัดเรียงใหม่และตัดบรรทัด</string>
-
     <!-- common (additional) -->
     <string name="common_open">เปิด</string>
     <string name="common_close">ปิด</string>
     <string name="common_save">บันทึก</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">ไฟล์ที่แปลแล้ว: %1$s</string>
     <string name="translator_document_saved">บันทึกเอกสารแล้ว</string>
     <string name="translator_document_save_failed">บันทึกเอกสารไม่สำเร็จ</string>
     <string name="translator_audio_playback_failed">เล่นเสียงไม่สำเร็จ: %1$s</string>
     <string name="translator_no_app_to_open">ไม่พบแอปสำหรับเปิดไฟล์นี้</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">ไม่สามารถถอดรหัสรูปภาพได้</string>
     <string name="docalign_detecting">กำลังตรวจหามุม…</string>
     <string name="docalign_redetecting">กำลังตรวจหาอีกครั้ง…</string>
     <string name="docalign_help">ขอบเขตที่แม่นยำรอบเอกสารช่วยเพิ่มคุณภาพการอ่านข้อความ สิ่งสำคัญคือเส้นต้องขนานกับข้อความ\n\nการซูมหรือเลื่อนภาพมักทำให้อัลกอริทึมตรวจจับเอกสารได้โดยอัตโนมัติ แต่คุณยังปรับเองได้หากตรวจไม่พบ</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">จากแอปอื่น</string>
     <string name="howto_share_title">แชร์เพื่อแปล</string>
@@ -221,12 +204,10 @@
     <string name="howto_dict_body">กดค้างที่คำใดก็ได้ในคำแปลเพื่อดูความหมาย ข้อมูลจาก Wiktionary</string>
     <string name="howto_voice_title">เปลี่ยนเสียงหรือความเร็ว</string>
     <string name="howto_voice_body">กดค้างที่ปุ่มเล่นเพื่อเลือกเสียงอื่นหรือปรับความเร็วในการเล่น</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">การแปล</string>
     <string name="feature_dictionary">พจนานุกรม</string>
     <string name="feature_tts">เสียง</string>
-
     <!-- misc -->
     <string name="detected_translate_from">แปลจาก</string>
     <string name="detected_missing_language">ไม่มีภาษา</string>
