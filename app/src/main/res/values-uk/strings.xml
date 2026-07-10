@@ -14,14 +14,12 @@
     <string name="tap_to_translate_channel">Швидкий переклад</string>
     <string name="tap_to_translate_channel_description">Постійне сповіщення для швидкого доступу до вікна перекладача</string>
     <string name="quick_tile_label">Перекласти</string>
-
     <!-- common -->
     <string name="common_ok">Гаразд</string>
     <string name="common_cancel">Скасувати</string>
     <string name="common_done">Готово</string>
     <string name="common_grant">Надати</string>
     <string name="common_manage">Керувати</string>
-
     <!-- settings -->
     <string name="settings_title">Налаштування</string>
     <string name="settings_languages">Мови</string>
@@ -74,7 +72,6 @@
     <string name="settings_logs_copied">Журнали застосунку скопійовано в буфер обміну</string>
     <string name="settings_about_support">Підтримати розробку</string>
     <string name="settings_external_storage_perm_body">Щоб зберігати файли перекладу в твоїй папці «Документи», цьому застосунку потрібен доступ для керування всіма файлами.\nТебе буде перенаправлено в Налаштування, де ти зможеш надати дозвіл \'Дозволити доступ для керування всіма файлами\'.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">Голоси</string>
     <string name="voice_section_downloaded">ЗАВАНТАЖЕНІ</string>
@@ -90,7 +87,6 @@
     <string name="nolang_title">Налаштування мов</string>
     <string name="nolang_prompt">Завантаж мовні пакети, щоб почати перекладати</string>
     <string name="howto_title">Як користуватися</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">Віддалені зображення не можна обрізати напряму</string>
     <string name="image_open_failed">Не вдалося відкрити файл</string>
@@ -104,7 +100,6 @@
     <string name="voice_default">Голос за замовчуванням</string>
     <string name="langsel_auto">✨ Авто</string>
     <string name="dict_also_as">Також як:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">Для перекладу наживо потрібен дозвіл на камеру.</string>
     <string name="camera_need_ocr_models">Потрібно завантажити моделі розпізнавання тексту для цієї мови</string>
@@ -112,7 +107,6 @@
     <string name="browser_reader_unavailable">Режим читання недоступний для цієї сторінки</string>
     <string name="browser_translate_image">Перекласти зображення</string>
     <string name="screen_translating_notification">Переклад екрана</string>
-
     <!-- enums -->
     <string name="align_top">Зверху</string>
     <string name="align_middle">По центру</string>
@@ -122,17 +116,14 @@
     <string name="background_mode_white_on_black">Білий на чорному</string>
     <string name="background_mode_black_on_white">Чорний на білому</string>
     <string name="background_mode_auto_detect">Кольори оригінального зображення</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Нема чого озвучувати</string>
     <string name="tts_catalog_unavailable">Каталог недоступний</string>
     <string name="tts_no_voice">Немає встановленого голосу для %1$s</string>
     <string name="tts_synthesis_failed">Не вдалося синтезувати мовлення для %1$s</string>
     <string name="tts_sample_fallback">Це зразок озвучення від Offline Translator.</string>
-
     <!-- translation -->
     <string name="translation_error">Помилка перекладу: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">Не вдалося завантажити %1$s</string>
     <string name="download_failed_ocr">Не вдалося завантажити модель розпізнавання тексту для %1$s</string>
@@ -145,7 +136,6 @@
     <string name="download_catalog_save_failed">Не вдалося зберегти каталог</string>
     <string name="download_unknown_error">Невідома помилка</string>
     <string name="download_catalog_failed">Не вдалося завантажити каталог: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">Виклич цього помічника поверх тексту, щоб перекласти його</string>
     <string name="assistant_collecting_context">Збираю контекст екрана…</string>
@@ -157,7 +147,6 @@
     <string name="assistant_ocr_failed">Не вдалося розпізнати текст</string>
     <string name="ocr_models_missing">Моделі розпізнавання тексту відсутні. Відкрийте керування мовами в застосунку, щоб відновити їх.</string>
     <string name="assistant_set_source_live">Задай мову оригіналу за замовчуванням у Налаштуваннях, щоб користуватися перекладом екрана наживо.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">Оновлення голосових моделей</string>
     <string name="migration_accept_convert">Прийняти й конвертувати</string>
@@ -165,12 +154,11 @@
     <string name="migration_converting">Конвертування %1$d з %2$d</string>
     <string name="migration_optimizing">Оптимізація моделей</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="one">У тебе є %1$d голосова модель, яку потрібно конвертувати в новий формат. Це займе приблизно %2$d секунд. Ти звільниш %3$.0f MB місця на диску.</item>
-      <item quantity="few">У тебе є %1$d голосові моделі, які потрібно конвертувати в новий формат. Це займе приблизно %2$d секунд. Ти звільниш %3$.0f MB місця на диску.</item>
-      <item quantity="many">У тебе є %1$d голосових моделей, які потрібно конвертувати в новий формат. Це займе приблизно %2$d секунд. Ти звільниш %3$.0f MB місця на диску.</item>
-      <item quantity="other">У тебе є %1$d голосової моделі, яку потрібно конвертувати в новий формат. Це займе приблизно %2$d секунд. Ти звільниш %3$.0f MB місця на диску.</item>
+        <item quantity="one">У тебе є %1$d голосова модель, яку потрібно конвертувати в новий формат. Це займе приблизно %2$d секунд. Ти звільниш %3$.0f MB місця на диску.</item>
+        <item quantity="few">У тебе є %1$d голосові моделі, які потрібно конвертувати в новий формат. Це займе приблизно %2$d секунд. Ти звільниш %3$.0f MB місця на диску.</item>
+        <item quantity="many">У тебе є %1$d голосових моделей, які потрібно конвертувати в новий формат. Це займе приблизно %2$d секунд. Ти звільниш %3$.0f MB місця на диску.</item>
+        <item quantity="other">У тебе є %1$d голосової моделі, яку потрібно конвертувати в новий формат. Це займе приблизно %2$d секунд. Ти звільниш %3$.0f MB місця на диску.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">Переклад файлу</string>
     <string name="doc_notif_translated">Файл перекладено</string>
@@ -185,32 +173,27 @@
     <string name="doc_progress_saving">Збереження перекладеного файлу</string>
     <string name="doc_translation_failed">Не вдалося перекласти документ</string>
     <string name="doc_url_unsupported">Завантаж документ і відкрий його в застосунку</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">Переносити за %1$d стовпцями</string>
     <string name="document_translate_pdf_images">Перекладати зображення в PDF</string>
     <string name="layout_preserve">Зберігати розриви рядків</string>
     <string name="layout_reflow">Перекомпонувати в абзаци</string>
     <string name="layout_reflow_wrap">Перекомпонувати й переносити</string>
-
     <!-- common (additional) -->
     <string name="common_open">Відкрити</string>
     <string name="common_close">Закрити</string>
     <string name="common_save">Зберегти</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">Перекладений файл: %1$s</string>
     <string name="translator_document_saved">Документ збережено</string>
     <string name="translator_document_save_failed">Не вдалося зберегти документ</string>
     <string name="translator_audio_playback_failed">Не вдалося відтворити аудіо: %1$s</string>
     <string name="translator_no_app_to_open">Не знайдено застосунку для відкриття цього файлу</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">Не вдалося декодувати зображення.</string>
     <string name="docalign_detecting">Виявлення кутів…</string>
     <string name="docalign_redetecting">Повторне виявлення…</string>
     <string name="docalign_help">Точний периметр навколо документа покращує якість розпізнавання. Важливо, щоб лінії були паралельні тексту.\n\nЗазвичай масштабування або переміщення допомагає алгоритму автоматично знайти документ, але ти все одно можеш налаштувати вручну, якщо його не знайдено.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">З інших застосунків</string>
     <string name="howto_share_title">Поділися, щоб перекласти</string>
@@ -224,12 +207,10 @@
     <string name="howto_dict_body">Утримуй будь-яке слово в перекладі, щоб побачити його визначення. Дані з Wiktionary.</string>
     <string name="howto_voice_title">Зміни голос або швидкість</string>
     <string name="howto_voice_body">Утримуй кнопку відтворення, щоб вибрати інший голос або змінити швидкість відтворення.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">Переклад</string>
     <string name="feature_dictionary">Словник</string>
     <string name="feature_tts">Голос</string>
-
     <!-- misc -->
     <string name="detected_translate_from">Перекласти з</string>
     <string name="detected_missing_language">Мова відсутня</string>
