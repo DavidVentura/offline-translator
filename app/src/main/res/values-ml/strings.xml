@@ -14,14 +14,12 @@
     <string name="tap_to_translate_channel">ക്വിക്ക് ട്രാൻസ്ലേറ്റ്</string>
     <string name="tap_to_translate_channel_description">വിവർത്തക പോപ്പ്അപ്പ് വേഗത്തിൽ തുറക്കാനുള്ള സ്ഥിരം നോട്ടിഫിക്കേഷൻ</string>
     <string name="quick_tile_label">വിവർത്തനം</string>
-
     <!-- common -->
     <string name="common_ok">ശരി</string>
     <string name="common_cancel">റദ്ദാക്കുക</string>
     <string name="common_done">പൂർത്തിയായി</string>
     <string name="common_grant">അനുവദിക്കുക</string>
     <string name="common_manage">കൈകാര്യം ചെയ്യുക</string>
-
     <!-- settings -->
     <string name="settings_title">സെറ്റിംഗ്സ്</string>
     <string name="settings_languages">ഭാഷകൾ</string>
@@ -74,7 +72,6 @@
     <string name="settings_logs_copied">ആപ്പ് ലോഗുകൾ ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>
     <string name="settings_about_support">വികസനത്തെ പിന്തുണയ്ക്കുക</string>
     <string name="settings_external_storage_perm_body">വിവർത്തന ഫയലുകൾ നിങ്ങളുടെ Documents ഫോൾഡറിൽ സൂക്ഷിക്കാൻ, എല്ലാ ഫയലുകളും കൈകാര്യം ചെയ്യാനുള്ള അനുമതി ഈ ആപ്പിന് വേണം.\nഅനുമതി നൽകാവുന്ന സെറ്റിംഗ്സിലേക്ക് നിങ്ങളെ കൊണ്ടുപോകും, അവിടെ \'എല്ലാ ഫയലുകളും കൈകാര്യം ചെയ്യാൻ അനുമതി നൽകുക\' എന്നത് അനുവദിക്കാം.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">ശബ്ദങ്ങൾ</string>
     <string name="voice_section_downloaded">ഡൗൺലോഡ് ചെയ്തവ</string>
@@ -90,7 +87,6 @@
     <string name="nolang_title">ഭാഷാ ക്രമീകരണം</string>
     <string name="nolang_prompt">വിവർത്തനം തുടങ്ങാൻ ഭാഷാ പാക്കുകൾ ഡൗൺലോഡ് ചെയ്യുക</string>
     <string name="howto_title">എങ്ങനെ ഉപയോഗിക്കാം</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">റിമോട്ട് ചിത്രങ്ങൾ നേരിട്ട് ക്രോപ്പ് ചെയ്യാനാവില്ല</string>
     <string name="image_open_failed">ഫയൽ തുറക്കാനായില്ല</string>
@@ -104,7 +100,6 @@
     <string name="voice_default">സ്ഥിരം ശബ്ദം</string>
     <string name="langsel_auto">✨ ഓട്ടോ</string>
     <string name="dict_also_as">ഇങ്ങനെയും:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">തത്സമയ വിവർത്തനത്തിന് ക്യാമറ അനുമതി വേണം.</string>
     <string name="camera_need_ocr_models">ഈ ഭാഷയ്ക്കായി ചിത്രങ്ങളിലെ ടെക്സ്റ്റ് വായിക്കാനുള്ള മോഡലുകൾ ഡൗൺലോഡ് ചെയ്യണം</string>
@@ -112,7 +107,6 @@
     <string name="browser_reader_unavailable">ഈ പേജിന് റീഡർ മോഡ് ലഭ്യമല്ല</string>
     <string name="browser_translate_image">ചിത്രം വിവർത്തനം ചെയ്യുക</string>
     <string name="screen_translating_notification">സ്ക്രീൻ വിവർത്തനം ചെയ്യുന്നു</string>
-
     <!-- enums -->
     <string name="align_top">മുകളിൽ</string>
     <string name="align_middle">നടുവിൽ</string>
@@ -122,17 +116,14 @@
     <string name="background_mode_white_on_black">കറുപ്പിൽ വെളുപ്പ്</string>
     <string name="background_mode_black_on_white">വെളുപ്പിൽ കറുപ്പ്</string>
     <string name="background_mode_auto_detect">യഥാർത്ഥ ചിത്രത്തിന്റെ നിറങ്ങൾ</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">വായിക്കാൻ ഒന്നുമില്ല</string>
     <string name="tts_catalog_unavailable">കാറ്റലോഗ് ലഭ്യമല്ല</string>
     <string name="tts_no_voice">%1$s-ന് ശബ്ദമൊന്നും ഇൻസ്റ്റാൾ ചെയ്തിട്ടില്ല</string>
     <string name="tts_synthesis_failed">%1$s-ന്റെ ശബ്ദം സൃഷ്ടിക്കാനായില്ല</string>
     <string name="tts_sample_fallback">ഇത് Offline Translator-ൽ നിന്നുള്ള ഒരു ശബ്ദ സാമ്പിളാണ്.</string>
-
     <!-- translation -->
     <string name="translation_error">വിവർത്തന പിശക്: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s ഡൗൺലോഡ് പരാജയപ്പെട്ടു</string>
     <string name="download_failed_ocr">%1$s ചിത്ര-ടെക്സ്റ്റ് ഡൗൺലോഡ് പരാജയപ്പെട്ടു</string>
@@ -145,7 +136,6 @@
     <string name="download_catalog_save_failed">കാറ്റലോഗ് സേവ് ചെയ്യാനായില്ല</string>
     <string name="download_unknown_error">അജ്ഞാത പിശക്</string>
     <string name="download_catalog_failed">കാറ്റലോഗ് ഡൗൺലോഡ് ചെയ്യാനായില്ല: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">വിവർത്തനം ചെയ്യാൻ ടെക്സ്റ്റിന് മുകളിൽ ഈ അസിസ്റ്റന്റ് വിളിക്കുക</string>
     <string name="assistant_collecting_context">സ്ക്രീൻ വിവരങ്ങൾ ശേഖരിക്കുന്നു…</string>
@@ -157,7 +147,6 @@
     <string name="assistant_ocr_failed">ചിത്രങ്ങളിലെ ടെക്സ്റ്റ് വായിക്കാനായില്ല</string>
     <string name="ocr_models_missing">ടെക്സ്റ്റ് തിരിച്ചറിയൽ മോഡലുകൾ ഇല്ല. നന്നാക്കാൻ ആപ്പിൽ ഭാഷാ മാനേജ്‌മെന്റ് തുറക്കുക.</string>
     <string name="assistant_set_source_live">തത്സമയ സ്ക്രീൻ വിവർത്തനം ഉപയോഗിക്കാൻ സെറ്റിംഗ്സിൽ ഒരു സ്ഥിരം ഭാഷ സജ്ജമാക്കുക.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">ശബ്ദ മോഡലുകൾ അപ്ഡേറ്റ് ചെയ്യുന്നു</string>
     <string name="migration_accept_convert">സമ്മതിച്ച് മാറ്റുക</string>
@@ -168,7 +157,6 @@
         <item quantity="one">പുതിയ ഫോർമാറ്റിലേക്ക് മാറ്റാൻ %1$d ശബ്ദ മോഡൽ നിങ്ങൾക്കുണ്ട്. ഏകദേശം %2$d സെക്കൻഡ് എടുക്കും. %3$.0f MB ഡിസ്ക് സ്ഥലം ലാഭിക്കാം.</item>
         <item quantity="other">പുതിയ ഫോർമാറ്റിലേക്ക് മാറ്റാൻ %1$d ശബ്ദ മോഡലുകൾ നിങ്ങൾക്കുണ്ട്. ഏകദേശം %2$d സെക്കൻഡ് എടുക്കും. %3$.0f MB ഡിസ്ക് സ്ഥലം ലാഭിക്കാം.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">ഫയൽ വിവർത്തനം ചെയ്യുന്നു</string>
     <string name="doc_notif_translated">ഫയൽ വിവർത്തനം ചെയ്തു</string>
@@ -183,32 +171,27 @@
     <string name="doc_progress_saving">വിവർത്തനം ചെയ്ത ഫയൽ സേവ് ചെയ്യുന്നു</string>
     <string name="doc_translation_failed">ഡോക്യുമെന്റ് വിവർത്തനം പരാജയപ്പെട്ടു</string>
     <string name="doc_url_unsupported">പകരം ഡോക്യുമെന്റ് ഡൗൺലോഡ് ചെയ്ത് ആപ്പിൽ തുറക്കുക</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">%1$d കോളങ്ങളിൽ റാപ്പ് ചെയ്യുക</string>
     <string name="document_translate_pdf_images">PDF-ലെ ചിത്രങ്ങൾ വിവർത്തനം ചെയ്യുക</string>
     <string name="layout_preserve">വരി മുറിവുകൾ നിലനിർത്തുക</string>
     <string name="layout_reflow">ഖണ്ഡികകളായി ക്രമീകരിക്കുക</string>
     <string name="layout_reflow_wrap">ക്രമീകരിച്ച് റാപ്പ് ചെയ്യുക</string>
-
     <!-- common (additional) -->
     <string name="common_open">തുറക്കുക</string>
     <string name="common_close">അടയ്ക്കുക</string>
     <string name="common_save">സേവ് ചെയ്യുക</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">വിവർത്തനം ചെയ്ത ഫയൽ: %1$s</string>
     <string name="translator_document_saved">ഡോക്യുമെന്റ് സേവ് ചെയ്തു</string>
     <string name="translator_document_save_failed">ഡോക്യുമെന്റ് സേവ് ചെയ്യാനായില്ല</string>
     <string name="translator_audio_playback_failed">ഓഡിയോ പ്ലേബാക്ക് പരാജയപ്പെട്ടു: %1$s</string>
     <string name="translator_no_app_to_open">ഈ ഫയൽ തുറക്കാൻ ആപ്പൊന്നും കണ്ടെത്തിയില്ല</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">ചിത്രം ഡീകോഡ് ചെയ്യാനായില്ല.</string>
     <string name="docalign_detecting">മൂലകൾ കണ്ടെത്തുന്നു…</string>
     <string name="docalign_redetecting">വീണ്ടും കണ്ടെത്തുന്നു…</string>
     <string name="docalign_help">ഡോക്യുമെന്റിന് ചുറ്റും കൃത്യമായ ഒരു അതിര് ഉണ്ടെങ്കിൽ തിരിച്ചറിയൽ ഗുണനിലവാരം മെച്ചപ്പെടും. വരികൾ ടെക്സ്റ്റിന് സമാന്തരമായിരിക്കണം എന്നത് പ്രധാനമാണ്.\n\nസൂം ചെയ്യുമ്പോഴോ പാൻ ചെയ്യുമ്പോഴോ സാധാരണ ഡോക്യുമെന്റ് സ്വയം കണ്ടെത്തും, പക്ഷേ കണ്ടെത്തിയില്ലെങ്കിൽ നിങ്ങൾക്ക് സ്വയം ക്രമീകരിക്കാം.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">മറ്റ് ആപ്പുകളിൽ നിന്ന്</string>
     <string name="howto_share_title">ഷെയർ ചെയ്ത് വിവർത്തനം ചെയ്യുക</string>
@@ -222,12 +205,10 @@
     <string name="howto_dict_body">ഒരു വിവർത്തനത്തിലെ ഏതെങ്കിലും വാക്ക് അമർത്തിപ്പിടിച്ചാൽ അതിന്റെ അർത്ഥം കാണാം. വിവരങ്ങൾ Wiktionary-ൽ നിന്ന്.</string>
     <string name="howto_voice_title">ശബ്ദമോ വേഗതയോ മാറ്റുക</string>
     <string name="howto_voice_body">മറ്റൊരു ശബ്ദം തിരഞ്ഞെടുക്കാനോ പ്ലേബാക്ക് വേഗത ക്രമീകരിക്കാനോ പ്ലേ ബട്ടൺ അമർത്തിപ്പിടിക്കുക.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">വിവർത്തനം</string>
     <string name="feature_dictionary">നിഘണ്ടു</string>
     <string name="feature_tts">ശബ്ദം</string>
-
     <!-- misc -->
     <string name="detected_translate_from">ഏതിൽ നിന്ന് വിവർത്തനം ചെയ്യണം</string>
     <string name="detected_missing_language">ഭാഷ ലഭ്യമല്ല</string>
