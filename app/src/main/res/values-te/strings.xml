@@ -14,14 +14,12 @@
     <string name="tap_to_translate_channel">క్విక్ ట్రాన్స్‌లేట్</string>
     <string name="tap_to_translate_channel_description">అనువాదకం పాపప్‌ను త్వరగా తెరవడానికి ఎప్పుడూ ఉండే నోటిఫికేషన్</string>
     <string name="quick_tile_label">అనువదించు</string>
-
     <!-- common -->
     <string name="common_ok">సరే</string>
     <string name="common_cancel">రద్దు చేయి</string>
     <string name="common_done">అయిపోయింది</string>
     <string name="common_grant">అనుమతి ఇవ్వు</string>
     <string name="common_manage">నిర్వహించు</string>
-
     <!-- settings -->
     <string name="settings_title">సెట్టింగ్‌లు</string>
     <string name="settings_languages">భాషలు</string>
@@ -74,7 +72,6 @@
     <string name="settings_logs_copied">యాప్ లాగ్‌లు క్లిప్‌బోర్డ్‌కు కాపీ అయ్యాయి</string>
     <string name="settings_about_support">అభివృద్ధికి తోడ్పడు</string>
     <string name="settings_external_storage_perm_body">మీ Documents ఫోల్డర్‌లో అనువాద ఫైళ్లను సేవ్ చేయడానికి, ఈ యాప్‌కు అన్ని ఫైళ్లను నిర్వహించే అనుమతి అవసరం.\nమిమ్మల్ని సెట్టింగ్‌లకు తీసుకువెళ్తాం, అక్కడ \'అన్ని ఫైళ్లను నిర్వహించడానికి అనుమతించు\' అనుమతిని ఇవ్వవచ్చు.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">వాయిస్‌లు</string>
     <string name="voice_section_downloaded">డౌన్‌లోడ్ చేసినవి</string>
@@ -90,7 +87,6 @@
     <string name="nolang_title">భాషల సెటప్</string>
     <string name="nolang_prompt">అనువాదం మొదలుపెట్టడానికి భాషా ప్యాక్‌లను డౌన్‌లోడ్ చేయండి</string>
     <string name="howto_title">ఎలా వాడాలి</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">రిమోట్ చిత్రాలను నేరుగా క్రాప్ చేయలేరు</string>
     <string name="image_open_failed">ఫైల్‌ను తెరవడం విఫలమైంది</string>
@@ -104,7 +100,6 @@
     <string name="voice_default">డిఫాల్ట్ వాయిస్</string>
     <string name="langsel_auto">✨ ఆటో</string>
     <string name="dict_also_as">ఇలా కూడా:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">లైవ్ అనువాదానికి కెమెరా అనుమతి అవసరం.</string>
     <string name="camera_need_ocr_models">ఈ భాషకు చిత్రాల్లోని టెక్స్ట్‌ను గుర్తించే మోడల్‌లను డౌన్‌లోడ్ చేసుకోవాలి</string>
@@ -112,7 +107,6 @@
     <string name="browser_reader_unavailable">ఈ పేజీకి రీడర్ మోడ్ అందుబాటులో లేదు</string>
     <string name="browser_translate_image">చిత్రాన్ని అనువదించు</string>
     <string name="screen_translating_notification">స్క్రీన్‌ను అనువదిస్తోంది</string>
-
     <!-- enums -->
     <string name="align_top">పైన</string>
     <string name="align_middle">మధ్యలో</string>
@@ -122,17 +116,14 @@
     <string name="background_mode_white_on_black">నలుపుపై తెలుపు</string>
     <string name="background_mode_black_on_white">తెలుపుపై నలుపు</string>
     <string name="background_mode_auto_detect">అసలు చిత్రం రంగులు</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">చదవడానికి ఏమీ లేదు</string>
     <string name="tts_catalog_unavailable">కేటలాగ్ అందుబాటులో లేదు</string>
     <string name="tts_no_voice">%1$s కోసం ఏ వాయిస్ ఇన్‌స్టాల్ కాలేదు</string>
     <string name="tts_synthesis_failed">%1$s కోసం వాయిస్ తయారీ విఫలమైంది</string>
     <string name="tts_sample_fallback">ఇది Offline Translator నుంచి ఒక వాయిస్ నమూనా.</string>
-
     <!-- translation -->
     <string name="translation_error">అనువాద లోపం: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s డౌన్‌లోడ్ విఫలమైంది</string>
     <string name="download_failed_ocr">%1$s చిత్ర టెక్స్ట్ మోడల్ డౌన్‌లోడ్ విఫలమైంది</string>
@@ -145,7 +136,6 @@
     <string name="download_catalog_save_failed">కేటలాగ్‌ను సేవ్ చేయడం విఫలమైంది</string>
     <string name="download_unknown_error">తెలియని లోపం</string>
     <string name="download_catalog_failed">కేటలాగ్‌ను డౌన్‌లోడ్ చేయడం విఫలమైంది: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">ఏదైనా టెక్స్ట్‌ను అనువదించడానికి దాని పైన ఈ అసిస్టెంట్‌ను తెరవండి</string>
     <string name="assistant_collecting_context">స్క్రీన్ సమాచారాన్ని సేకరిస్తోంది…</string>
@@ -157,7 +147,6 @@
     <string name="assistant_ocr_failed">చిత్రంలో టెక్స్ట్‌ను గుర్తించడం విఫలమైంది</string>
     <string name="ocr_models_missing">టెక్స్ట్ గుర్తింపు మోడల్‌లు లేవు. మరమ్మతు చేయడానికి యాప్‌లో భాషల నిర్వహణ తెరవండి.</string>
     <string name="assistant_set_source_live">లైవ్ స్క్రీన్ అనువాదాన్ని వాడటానికి సెట్టింగ్‌లలో డిఫాల్ట్ మూల భాషను సెట్ చేయండి.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">వాయిస్ మోడల్‌లను అప్‌డేట్ చేస్తోంది</string>
     <string name="migration_accept_convert">అంగీకరించి మార్చు</string>
@@ -168,7 +157,6 @@
         <item quantity="one">కొత్త ఫార్మాట్‌కు మార్చాల్సిన %1$d వాయిస్ మోడల్ మీ దగ్గర ఉంది. దీనికి సుమారు %2$d సెకన్లు పడుతుంది. మీరు %3$.0f MB డిస్క్ స్థలాన్ని ఆదా చేస్తారు.</item>
         <item quantity="other">కొత్త ఫార్మాట్‌కు మార్చాల్సిన %1$d వాయిస్ మోడల్‌లు మీ దగ్గర ఉన్నాయి. దీనికి సుమారు %2$d సెకన్లు పడుతుంది. మీరు %3$.0f MB డిస్క్ స్థలాన్ని ఆదా చేస్తారు.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">ఫైల్‌ను అనువదిస్తోంది</string>
     <string name="doc_notif_translated">ఫైల్ అనువదించబడింది</string>
@@ -183,32 +171,27 @@
     <string name="doc_progress_saving">అనువదించిన ఫైల్‌ను సేవ్ చేస్తోంది</string>
     <string name="doc_translation_failed">డాక్యుమెంట్ అనువాదం విఫలమైంది</string>
     <string name="doc_url_unsupported">బదులుగా డాక్యుమెంట్‌ను డౌన్‌లోడ్ చేసి యాప్‌తో తెరవండి</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">%1$d కాలమ్‌ల వద్ద చుట్టు</string>
     <string name="document_translate_pdf_images">PDFలోని చిత్రాలను అనువదించు</string>
     <string name="layout_preserve">లైన్ బ్రేక్‌లను అలాగే ఉంచు</string>
     <string name="layout_reflow">పేరాలుగా మార్చు</string>
     <string name="layout_reflow_wrap">పేరాలుగా మార్చి చుట్టు</string>
-
     <!-- common (additional) -->
     <string name="common_open">తెరువు</string>
     <string name="common_close">మూసివేయి</string>
     <string name="common_save">సేవ్ చేయి</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">అనువదించిన ఫైల్: %1$s</string>
     <string name="translator_document_saved">డాక్యుమెంట్ సేవ్ అయింది</string>
     <string name="translator_document_save_failed">డాక్యుమెంట్‌ను సేవ్ చేయడం విఫలమైంది</string>
     <string name="translator_audio_playback_failed">ఆడియో ప్లేబ్యాక్ విఫలమైంది: %1$s</string>
     <string name="translator_no_app_to_open">ఈ ఫైల్‌ను తెరవడానికి యాప్ ఏదీ దొరకలేదు</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">చిత్రాన్ని డీకోడ్ చేయలేకపోయాం.</string>
     <string name="docalign_detecting">మూలలను గుర్తిస్తోంది…</string>
     <string name="docalign_redetecting">మళ్లీ గుర్తిస్తోంది…</string>
     <string name="docalign_help">డాక్యుమెంట్ చుట్టూ కచ్చితమైన అంచు ఉంటే గుర్తింపు నాణ్యత మెరుగుపడుతుంది. గీతలు టెక్స్ట్‌కు సమాంతరంగా ఉండటం ముఖ్యం.\n\nజూమ్ చేయడం లేదా పాన్ చేయడం వల్ల అల్గోరిథమ్ సాధారణంగా డాక్యుమెంట్‌ను దానంతటదే గుర్తిస్తుంది, కానీ దొరకకపోతే మీరు మాన్యువల్‌గా సర్దుబాటు చేయవచ్చు.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">వేరే యాప్‌ల నుంచి</string>
     <string name="howto_share_title">అనువదించడానికి షేర్ చేయి</string>
@@ -222,12 +205,10 @@
     <string name="howto_dict_body">అర్థం చూడటానికి అనువాదంలోని ఏ పదాన్నైనా నొక్కి పట్టుకోండి. డేటా Wiktionary నుంచి తీసుకోబడింది.</string>
     <string name="howto_voice_title">వాయిస్ లేదా వేగాన్ని మార్చు</string>
     <string name="howto_voice_body">వేరే వాయిస్‌ను ఎంచుకోవడానికి లేదా ప్లేబ్యాక్ వేగాన్ని సర్దుబాటు చేయడానికి ప్లే బటన్‌ను నొక్కి పట్టుకోండి.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">అనువాదం</string>
     <string name="feature_dictionary">నిఘంటువు</string>
     <string name="feature_tts">వాయిస్</string>
-
     <!-- misc -->
     <string name="detected_translate_from">ఈ భాష నుంచి అనువదించు</string>
     <string name="detected_missing_language">భాష లేదు</string>
