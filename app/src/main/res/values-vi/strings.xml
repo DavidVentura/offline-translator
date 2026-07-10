@@ -14,14 +14,12 @@
     <string name="tap_to_translate_channel">Dịch nhanh</string>
     <string name="tap_to_translate_channel_description">Thông báo cố định để truy cập nhanh cửa sổ dịch</string>
     <string name="quick_tile_label">Dịch</string>
-
     <!-- common -->
     <string name="common_ok">OK</string>
     <string name="common_cancel">Hủy</string>
     <string name="common_done">Xong</string>
     <string name="common_grant">Cấp quyền</string>
     <string name="common_manage">Quản lý</string>
-
     <!-- settings -->
     <string name="settings_title">Cài đặt</string>
     <string name="settings_languages">Ngôn ngữ</string>
@@ -74,7 +72,6 @@
     <string name="settings_logs_copied">Đã sao chép nhật ký ứng dụng vào bộ nhớ tạm</string>
     <string name="settings_about_support">Ủng hộ phát triển</string>
     <string name="settings_external_storage_perm_body">Để lưu các tệp dịch vào thư mục Tài liệu của bạn, ứng dụng cần quyền quản lý mọi tệp.\nBạn sẽ được đưa đến phần Cài đặt, nơi bạn có thể cấp quyền \'Cho phép truy cập để quản lý mọi tệp\'.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">Giọng nói</string>
     <string name="voice_section_downloaded">ĐÃ TẢI</string>
@@ -90,7 +87,6 @@
     <string name="nolang_title">Thiết lập ngôn ngữ</string>
     <string name="nolang_prompt">Tải gói ngôn ngữ để bắt đầu dịch</string>
     <string name="howto_title">Cách sử dụng</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">Không thể cắt trực tiếp ảnh từ xa</string>
     <string name="image_open_failed">Không mở được tệp</string>
@@ -104,7 +100,6 @@
     <string name="voice_default">Giọng mặc định</string>
     <string name="langsel_auto">✨ Tự động</string>
     <string name="dict_also_as">Cũng là:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">Cần quyền máy ảnh để dịch trực tiếp.</string>
     <string name="camera_need_ocr_models">Bạn cần tải các mô hình nhận diện văn bản (cho hình ảnh) cho ngôn ngữ này</string>
@@ -112,7 +107,6 @@
     <string name="browser_reader_unavailable">Chế độ đọc không khả dụng cho trang này</string>
     <string name="browser_translate_image">Dịch hình ảnh</string>
     <string name="screen_translating_notification">Đang dịch màn hình</string>
-
     <!-- enums -->
     <string name="align_top">Trên</string>
     <string name="align_middle">Giữa</string>
@@ -122,17 +116,14 @@
     <string name="background_mode_white_on_black">Chữ trắng nền đen</string>
     <string name="background_mode_black_on_white">Chữ đen nền trắng</string>
     <string name="background_mode_auto_detect">Màu của ảnh gốc</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Không có gì để đọc</string>
     <string name="tts_catalog_unavailable">Danh mục không khả dụng</string>
     <string name="tts_no_voice">Chưa cài giọng nói cho %1$s</string>
     <string name="tts_synthesis_failed">Tổng hợp giọng nói thất bại cho %1$s</string>
     <string name="tts_sample_fallback">Đây là mẫu giọng nói từ Offline Translator.</string>
-
     <!-- translation -->
     <string name="translation_error">Lỗi dịch: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">Tải %1$s thất bại</string>
     <string name="download_failed_ocr">Tải nhận diện văn bản %1$s thất bại</string>
@@ -145,7 +136,6 @@
     <string name="download_catalog_save_failed">Không lưu được danh mục</string>
     <string name="download_unknown_error">Lỗi không xác định</string>
     <string name="download_catalog_failed">Không tải được danh mục: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">Gọi trợ lý này lên trên một đoạn văn bản để dịch</string>
     <string name="assistant_collecting_context">Đang thu thập nội dung màn hình…</string>
@@ -157,7 +147,6 @@
     <string name="assistant_ocr_failed">Nhận diện văn bản thất bại</string>
     <string name="ocr_models_missing">Thiếu mô hình nhận diện văn bản. Mở Quản lý ngôn ngữ trong ứng dụng để sửa.</string>
     <string name="assistant_set_source_live">Hãy đặt ngôn ngữ nguồn mặc định trong phần Cài đặt để dùng dịch màn hình trực tiếp.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">Đang cập nhật mô hình giọng nói</string>
     <string name="migration_accept_convert">Chấp nhận và chuyển đổi</string>
@@ -165,9 +154,8 @@
     <string name="migration_converting">Đang chuyển đổi %1$d trên %2$d</string>
     <string name="migration_optimizing">Đang tối ưu mô hình</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="other">Bạn có %1$d mô hình giọng nói cần chuyển sang định dạng mới. Quá trình này mất khoảng %2$d giây. Bạn sẽ tiết kiệm được %3$.0f MB dung lượng đĩa.</item>
+        <item quantity="other">Bạn có %1$d mô hình giọng nói cần chuyển sang định dạng mới. Quá trình này mất khoảng %2$d giây. Bạn sẽ tiết kiệm được %3$.0f MB dung lượng đĩa.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">Đang dịch tệp</string>
     <string name="doc_notif_translated">Đã dịch tệp</string>
@@ -182,32 +170,27 @@
     <string name="doc_progress_saving">Đang lưu tệp đã dịch</string>
     <string name="doc_translation_failed">Dịch tài liệu thất bại</string>
     <string name="doc_url_unsupported">Hãy tải tài liệu về và mở bằng ứng dụng</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">Ngắt dòng ở %1$d cột</string>
     <string name="document_translate_pdf_images">Dịch hình ảnh trong PDF</string>
     <string name="layout_preserve">Giữ nguyên ngắt dòng</string>
     <string name="layout_reflow">Sắp xếp lại thành đoạn văn</string>
     <string name="layout_reflow_wrap">Sắp xếp lại và ngắt dòng</string>
-
     <!-- common (additional) -->
     <string name="common_open">Mở</string>
     <string name="common_close">Đóng</string>
     <string name="common_save">Lưu</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">Tệp đã dịch: %1$s</string>
     <string name="translator_document_saved">Đã lưu tài liệu</string>
     <string name="translator_document_save_failed">Không lưu được tài liệu</string>
     <string name="translator_audio_playback_failed">Phát âm thanh thất bại: %1$s</string>
     <string name="translator_no_app_to_open">Không tìm thấy ứng dụng nào để mở tệp này</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">Không giải mã được hình ảnh.</string>
     <string name="docalign_detecting">Đang phát hiện các góc…</string>
     <string name="docalign_redetecting">Đang phát hiện lại…</string>
     <string name="docalign_help">Một đường viền chính xác quanh tài liệu giúp cải thiện chất lượng nhận diện. Quan trọng là các đường viền phải song song với văn bản.\n\nViệc phóng to hoặc di chuyển thường giúp thuật toán tự nhận ra tài liệu, nhưng bạn vẫn có thể chỉnh thủ công nếu không tìm thấy.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">Từ ứng dụng khác</string>
     <string name="howto_share_title">Chia sẻ để dịch</string>
@@ -221,12 +204,10 @@
     <string name="howto_dict_body">Nhấn giữ bất kỳ từ nào trong bản dịch để xem định nghĩa. Dữ liệu lấy từ Wiktionary.</string>
     <string name="howto_voice_title">Đổi giọng nói hoặc tốc độ</string>
     <string name="howto_voice_body">Nhấn giữ nút phát để chọn giọng nói khác hoặc điều chỉnh tốc độ phát.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">Dịch</string>
     <string name="feature_dictionary">Từ điển</string>
     <string name="feature_tts">Giọng nói</string>
-
     <!-- misc -->
     <string name="detected_translate_from">Dịch từ</string>
     <string name="detected_missing_language">Thiếu ngôn ngữ</string>
