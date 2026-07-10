@@ -99,7 +99,7 @@
     <string name="dict_also_as">أيضًا كـ:</string>
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">إذن الكاميرا مطلوب للترجمة المباشرة.</string>
-    <string name="camera_need_ocr_models">تحتاج إلى تنزيل نماذج التعرّف على النص لهذه اللغة</string>
+    <string name="camera_need_ocr_models">تحتاج إلى تنزيل نماذج التعرُّف على النص لهذه اللغة</string>
     <string name="browser_no_source_language">لا توجد لغة مصدر متاحة. ثبّت واحدة من الشاشة الرئيسية أولاً، أو حدّد لغة مصدر افتراضية في الإعدادات.</string>
     <string name="browser_reader_unavailable">وضع القارئ غير متاح لهذه الصفحة</string>
     <string name="browser_translate_image">ترجمة الصورة</string>
@@ -123,8 +123,8 @@
     <string name="translation_error">خطأ في الترجمة: %1$s</string>
     <!-- download errors -->
     <string name="download_failed_core">فشل تنزيل %1$s</string>
-    <string name="download_failed_ocr">فشل تنزيل التعرّف على النص للغة %1$s</string>
-    <string name="download_failed_ocr_batch">فشل التنزيل الدفعي للتعرّف على النص</string>
+    <string name="download_failed_ocr">فشل تنزيل التعرُّف على النص للغة %1$s</string>
+    <string name="download_failed_ocr_batch">فشل التنزيل الدفعي للتعرُّف على النص</string>
     <string name="download_failed_dictionary">فشل تنزيل قاموس %1$s</string>
     <string name="download_failed_tts">فشل تنزيل الصوت للغة %1$s</string>
     <string name="download_failed_adblock">فشل تنزيل Adblock</string>
@@ -139,10 +139,10 @@
     <string name="assistant_screenshot_disabled">الوصول إلى لقطة الشاشة معطّل لهذا المساعد. فعّله من إعدادات مساعد النظام.</string>
     <string name="assistant_no_screen_data">لم يستلم أي بيانات من الشاشة. فعّل \'استخدام لقطة الشاشة\' لهذا المساعد.</string>
     <string name="assistant_no_screenshot">لم يوفّر هذا التطبيق لقطة شاشة.</string>
-    <string name="assistant_set_source_ocr">حدّد لغة مصدر افتراضية للتعرّف على النص.</string>
+    <string name="assistant_set_source_ocr">حدّد لغة مصدر افتراضية للتعرُّف على النص.</string>
     <string name="assistant_langs_not_ready">لغات الترجمة ليست جاهزة بعد. حاول مرة أخرى.</string>
-    <string name="assistant_ocr_failed">فشل التعرّف على النص</string>
-    <string name="ocr_models_missing">ملفات التعرّف على النص مفقودة. افتح إدارة اللغات في التطبيق للإصلاح.</string>
+    <string name="assistant_ocr_failed">فشل التعرُّف على النص</string>
+    <string name="ocr_models_missing">ملفات التعرُّف على النص مفقودة. افتح إدارة اللغات في التطبيق للإصلاح.</string>
     <string name="assistant_set_source_live">حدّد لغة مصدر افتراضية في الإعدادات لاستخدام الترجمة المباشرة للشاشة.</string>
     <!-- migration gate -->
     <string name="migration_updating_speech_models">يحدِّث نماذج الكلام</string>
@@ -192,7 +192,7 @@
     <string name="docalign_decode_failed">تعذّر فك ترميز الصورة.</string>
     <string name="docalign_detecting">جارٍ اكتشاف الزوايا…</string>
     <string name="docalign_redetecting">جارٍ إعادة الاكتشاف…</string>
-    <string name="docalign_help">يؤدي رسم محيط دقيق حول المستند إلى تحسين جودة التعرّف. من المهم أن تكون الخطوط موازية للنص.\n\nعادةً ما يؤدي التكبير أو التحريك إلى التقاط المستند تلقائياً، لكن يمكنك التعديل يدوياً إذا لم يُعثر عليه.</string>
+    <string name="docalign_help">يؤدي رسم محيط دقيق حول المستند إلى تحسين جودة التعرُّف. من المهم أن تكون الخطوط موازية للنص.\n\nعادةً ما يؤدي التقريب أو التحريك إلى التقاط المستند تلقائيًا، لكن يمكنك التعديل يدويًا إذا لم يُعثر عليه.</string>
     <!-- how to use -->
     <string name="howto_section_other_apps">من تطبيقات أخرى</string>
     <string name="howto_share_title">المشاركة للترجمة</string>
@@ -203,7 +203,7 @@
     <string name="howto_docs_title">ترجم المستندات والصور</string>
     <string name="howto_docs_body">افتح تبويب المستندات لترجمة ملفات الصور أو EPUB وPDF وTXT.</string>
     <string name="howto_dict_title">البحث في القاموس</string>
-    <string name="howto_dict_body">اضغط مطولاً على أي كلمة في الترجمة لرؤية تعريفها. البيانات مصدرها Wiktionary.</string>
+    <string name="howto_dict_body">اضغط مطولاً على أي كلمة — سواء في النص الذي تكتبه أو في ترجمته — للاطّلاع على تعريفها. أو اضغط على زر القاموس، ثم اضغط على الكلمات واحدة تلو الأخرى للبحث عنها. البيانات مأخوذة من Wiktionary.</string>
     <string name="howto_voice_title">تغيير الصوت أو السرعة</string>
     <string name="howto_voice_body">اضغط مطولاً على زر التشغيل لاختيار صوت مختلف أو ضبط سرعة التشغيل.</string>
     <!-- feature row labels -->
@@ -279,4 +279,20 @@
     <string name="a11y_translated_image">الصورة المُترجمة</string>
     <string name="a11y_zoomable_original_image">الصورة الأصلية القابلة للتقريب</string>
     <string name="a11y_zoomable_translated_image">الصورة المُترجمة القابلة للتقريب</string>
+    <string name="settings_experimental_screen_translate">ترجمة الشاشة (تجريبي)</string>
+    <string name="settings_multi_target">لغات مستهدفة متعدّدة</string>
+    <string name="a11y_add_target_language">أضف اللغة المستهدفة</string>
+    <string name="a11y_remove_target_language">أزِل اللغة المستهدفة</string>
+    <string name="feature_unavailable_tts">ميزة تحويل النص إلى كلام غير متوفرة، نزّلها من صفحة إدارة اللغات</string>
+    <string name="feature_unavailable_dictionary">القاموس غير متوفر، نزّلها من صفحة إدارة اللغات</string>
+    <string name="howto_alt_title">اختر كلمات بديلة</string>
+    <string name="howto_alt_body">انقر على زر البدائل، ثم اضغط على كلمة مخطوطة في الترجمة للاطّلاع على صيغ أخرى واختيار إحداها. وسيتم إعادة ترجمة بقية الجملة لتتوافق مع الاختيار.</string>
+    <string name="a11y_alternatives_mode_on">اخرج من وضع البدائل</string>
+    <string name="a11y_alternatives_mode_off">وضع البدائل: انقر على كلمة ما للاطّلاع على ترجمات أخرى</string>
+    <string name="a11y_close_alternatives">أغلِق البدائل</string>
+    <string name="alt_custom_entry">اكتب ما تريد…</string>
+    <string name="alt_custom_label">كلمتك</string>
+    <string name="alt_custom_preview_label">معاينة</string>
+    <string name="a11y_dictionary_mode_on">اخرج من وضع القاموس</string>
+    <string name="a11y_dictionary_mode_off">وضع القاموس: انقر على كلمة ما للبحث عنها</string>
 </resources>
