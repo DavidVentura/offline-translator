@@ -14,14 +14,12 @@
     <string name="tap_to_translate_channel">விரைவு மொழிபெயர்ப்பு</string>
     <string name="tap_to_translate_channel_description">மொழிபெயர்ப்பு பாப்அப்பை விரைவாக அணுக நிலையான அறிவிப்பு</string>
     <string name="quick_tile_label">மொழிபெயர்</string>
-
     <!-- common -->
     <string name="common_ok">சரி</string>
     <string name="common_cancel">ரத்து செய்</string>
     <string name="common_done">முடிந்தது</string>
     <string name="common_grant">அனுமதி</string>
     <string name="common_manage">நிர்வகி</string>
-
     <!-- settings -->
     <string name="settings_title">அமைப்புகள்</string>
     <string name="settings_languages">மொழிகள்</string>
@@ -74,7 +72,6 @@
     <string name="settings_logs_copied">ஆப் லாக்குகள் கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டன</string>
     <string name="settings_about_support">டெவலப்மென்ட்டுக்கு ஆதரவளி</string>
     <string name="settings_external_storage_perm_body">மொழிபெயர்ப்பு கோப்புகளை உங்கள் Documents ஃபோல்டரில் சேமிக்க, இந்த ஆப்புக்கு எல்லா கோப்புகளையும் நிர்வகிக்கும் அணுகல் தேவை.\n\'எல்லா கோப்புகளையும் நிர்வகிக்க அனுமதி\' என்ற அனுமதியை வழங்கக்கூடிய அமைப்புகளுக்கு நீங்கள் அழைத்துச் செல்லப்படுவீர்கள்.</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">குரல்கள்</string>
     <string name="voice_section_downloaded">டவுன்லோடு செய்யப்பட்டவை</string>
@@ -90,7 +87,6 @@
     <string name="nolang_title">மொழி அமைப்பு</string>
     <string name="nolang_prompt">மொழிபெயர்க்கத் தொடங்க மொழித் தொகுப்புகளை டவுன்லோடு செய்யுங்கள்</string>
     <string name="howto_title">எப்படிப் பயன்படுத்துவது</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">தொலைநிலைப் படங்களை நேரடியாக கிராப் செய்ய முடியாது</string>
     <string name="image_open_failed">கோப்பைத் திறக்க முடியவில்லை</string>
@@ -104,7 +100,6 @@
     <string name="voice_default">இயல்பான குரல்</string>
     <string name="langsel_auto">✨ தானியங்கி</string>
     <string name="dict_also_as">இவ்வாறும்:</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">நேரலை மொழிபெயர்ப்புக்கு கேமரா அனுமதி தேவை.</string>
     <string name="camera_need_ocr_models">இந்த மொழிக்கான படத்திலிருந்து உரை அடையாளம் காணும் மாடல்களை டவுன்லோடு செய்ய வேண்டும்</string>
@@ -112,7 +107,6 @@
     <string name="browser_reader_unavailable">இந்தப் பக்கத்திற்கு வாசிப்பு பயன்முறை கிடைக்கவில்லை</string>
     <string name="browser_translate_image">படத்தை மொழிபெயர்</string>
     <string name="screen_translating_notification">திரையை மொழிபெயர்க்கிறது</string>
-
     <!-- enums -->
     <string name="align_top">மேல்</string>
     <string name="align_middle">நடு</string>
@@ -122,17 +116,14 @@
     <string name="background_mode_white_on_black">கருப்பில் வெள்ளை</string>
     <string name="background_mode_black_on_white">வெள்ளையில் கருப்பு</string>
     <string name="background_mode_auto_detect">அசல் படத்தின் வண்ணங்கள்</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">படிக்க எதுவும் இல்லை</string>
     <string name="tts_catalog_unavailable">பட்டியல் கிடைக்கவில்லை</string>
     <string name="tts_no_voice">%1$s மொழிக்கு குரல் எதுவும் நிறுவப்படவில்லை</string>
     <string name="tts_synthesis_failed">%1$s மொழிக்கு குரல் உருவாக்கம் தோல்வியடைந்தது</string>
     <string name="tts_sample_fallback">இது Offline Translator-இன் ஒரு குரல் மாதிரி.</string>
-
     <!-- translation -->
     <string name="translation_error">மொழிபெயர்ப்புப் பிழை: %1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s டவுன்லோடு தோல்வியடைந்தது</string>
     <string name="download_failed_ocr">%1$s படத்திலிருந்து உரை அடையாளம் காணும் டவுன்லோடு தோல்வியடைந்தது</string>
@@ -145,7 +136,6 @@
     <string name="download_catalog_save_failed">பட்டியலைச் சேமிக்க முடியவில்லை</string>
     <string name="download_unknown_error">தெரியாத பிழை</string>
     <string name="download_catalog_failed">பட்டியலை டவுன்லோடு செய்ய முடியவில்லை: %1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">உரையை மொழிபெயர்க்க அதன் மேல் இந்த அசிஸ்டண்டை இயக்கவும்</string>
     <string name="assistant_collecting_context">திரையின் சூழலைச் சேகரிக்கிறது…</string>
@@ -157,7 +147,6 @@
     <string name="assistant_ocr_failed">படத்திலிருந்து உரை அடையாளம் காண்பது தோல்வியடைந்தது</string>
     <string name="ocr_models_missing">உரை அடையாளம் காணும் மாதிரிகள் இல்லை. சரிசெய்ய, ஆப்பில் மொழி மேலாண்மையைத் திற.</string>
     <string name="assistant_set_source_live">நேரலைத் திரை மொழிபெயர்ப்பைப் பயன்படுத்த அமைப்புகளில் இயல்பான மூல மொழியை அமைக்கவும்.</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">குரல் மாடல்களைப் புதுப்பிக்கிறது</string>
     <string name="migration_accept_convert">ஏற்று மாற்று</string>
@@ -168,7 +157,6 @@
         <item quantity="one">புதிய வடிவத்திற்கு மாற்ற உங்களிடம் %1$d குரல் மாடல் உள்ளது. இதற்கு சுமார் %2$d வினாடிகள் ஆகும். நீங்கள் %3$.0f MB சேமிப்பக இடத்தைச் சேமிப்பீர்கள்.</item>
         <item quantity="other">புதிய வடிவத்திற்கு மாற்ற உங்களிடம் %1$d குரல் மாடல்கள் உள்ளன. இதற்கு சுமார் %2$d வினாடிகள் ஆகும். நீங்கள் %3$.0f MB சேமிப்பக இடத்தைச் சேமிப்பீர்கள்.</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">கோப்பை மொழிபெயர்க்கிறது</string>
     <string name="doc_notif_translated">மொழிபெயர்த்த கோப்பு</string>
@@ -183,32 +171,27 @@
     <string name="doc_progress_saving">மொழிபெயர்த்த கோப்பைச் சேமிக்கிறது</string>
     <string name="doc_translation_failed">ஆவண மொழிபெயர்ப்பு தோல்வியடைந்தது</string>
     <string name="doc_url_unsupported">அதற்குப் பதிலாக ஆவணத்தை டவுன்லோடு செய்து ஆப்பில் திறக்கவும்</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">%1$d நெடுவரிசைகளில் அடைக்கவும்</string>
     <string name="document_translate_pdf_images">PDF-இல் உள்ள படங்களை மொழிபெயர்</string>
     <string name="layout_preserve">வரி இடைவெளிகளைத் தக்கவை</string>
     <string name="layout_reflow">பத்திகளாக மறுஅமை</string>
     <string name="layout_reflow_wrap">மறுஅமைத்து அடைக்கவும்</string>
-
     <!-- common (additional) -->
     <string name="common_open">திற</string>
     <string name="common_close">மூடு</string>
     <string name="common_save">சேமி</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">மொழிபெயர்த்த கோப்பு: %1$s</string>
     <string name="translator_document_saved">ஆவணம் சேமிக்கப்பட்டது</string>
     <string name="translator_document_save_failed">ஆவணத்தைச் சேமிக்க முடியவில்லை</string>
     <string name="translator_audio_playback_failed">ஆடியோ ஒலிபரப்பு தோல்வியடைந்தது: %1$s</string>
     <string name="translator_no_app_to_open">இந்தக் கோப்பைத் திறக்க ஆப் எதுவும் கிடைக்கவில்லை</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">படத்தை டிகோடு செய்ய முடியவில்லை.</string>
     <string name="docalign_detecting">மூலைகளைக் கண்டறிகிறது…</string>
     <string name="docalign_redetecting">மீண்டும் கண்டறிகிறது…</string>
     <string name="docalign_help">ஆவணத்தைச் சுற்றி துல்லியமான விளிம்பு இருந்தால் அடையாளம் காணும் தரம் மேம்படும். வரிகள் உரைக்கு இணையாக இருப்பது முக்கியம்.\n\nஜூம் செய்வது அல்லது நகர்த்துவது பொதுவாக அல்காரிதம் தானாகவே ஆவணத்தைக் கண்டறிய உதவும், ஆனால் அது கண்டறியப்படாவிட்டால் நீங்கள் கைமுறையாகவும் சரிசெய்யலாம்.</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">பிற ஆப்களில் இருந்து</string>
     <string name="howto_share_title">மொழிபெயர்க்கப் பகிரவும்</string>
@@ -222,12 +205,10 @@
     <string name="howto_dict_body">மொழிபெயர்ப்பில் உள்ள எந்த சொல்லையும் நீண்ட நேரம் அழுத்தினால் அதன் பொருளைக் காணலாம். தரவு Wiktionary-இல் இருந்து பெறப்பட்டது.</string>
     <string name="howto_voice_title">குரல் அல்லது வேகத்தை மாற்று</string>
     <string name="howto_voice_body">வேறு குரலைத் தேர்ந்தெடுக்க அல்லது ஒலிபரப்பு வேகத்தைச் சரிசெய்ய பிளே பட்டனை நீண்ட நேரம் அழுத்தவும்.</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">மொழிபெயர்ப்பு</string>
     <string name="feature_dictionary">அகராதி</string>
     <string name="feature_tts">குரல்</string>
-
     <!-- misc -->
     <string name="detected_translate_from">இதிலிருந்து மொழிபெயர்</string>
     <string name="detected_missing_language">மொழி இல்லை</string>
