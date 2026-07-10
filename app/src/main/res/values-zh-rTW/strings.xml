@@ -14,14 +14,12 @@
     <string name="tap_to_translate_channel">快速翻譯</string>
     <string name="tap_to_translate_channel_description">用於快速開啟翻譯彈出視窗的常駐通知</string>
     <string name="quick_tile_label">翻譯</string>
-
     <!-- common -->
     <string name="common_ok">確定</string>
     <string name="common_cancel">取消</string>
     <string name="common_done">完成</string>
     <string name="common_grant">授予</string>
     <string name="common_manage">管理</string>
-
     <!-- settings -->
     <string name="settings_title">設定</string>
     <string name="settings_languages">語言</string>
@@ -74,7 +72,6 @@
     <string name="settings_logs_copied">應用程式記錄已複製到剪貼簿</string>
     <string name="settings_about_support">支持開發</string>
     <string name="settings_external_storage_perm_body">為了將翻譯檔案儲存到你的「文件」資料夾，此應用程式需要管理所有檔案的權限。\n系統會帶你前往「設定」，你可以在那裡授予「允許存取以管理所有檔案」權限。</string>
-
     <!-- language manager / setup / how-to -->
     <string name="langmgr_voices">語音</string>
     <string name="voice_section_downloaded">已下載</string>
@@ -90,7 +87,6 @@
     <string name="nolang_title">語言設定</string>
     <string name="nolang_prompt">下載語言包即可開始翻譯</string>
     <string name="howto_title">使用方法</string>
-
     <!-- image capture / voice / dictionary / language selector -->
     <string name="image_no_crop_remote">遠端圖片無法直接裁切</string>
     <string name="image_open_failed">開啟檔案失敗</string>
@@ -104,7 +100,6 @@
     <string name="voice_default">預設語音</string>
     <string name="langsel_auto">✨ 自動</string>
     <string name="dict_also_as">也作：</string>
-
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">即時翻譯需要相機權限。</string>
     <string name="camera_need_ocr_models">你需要下載此語言的文字辨識模型（用於圖片）</string>
@@ -112,7 +107,6 @@
     <string name="browser_reader_unavailable">此頁面不支援閱讀模式</string>
     <string name="browser_translate_image">翻譯圖片</string>
     <string name="screen_translating_notification">正在翻譯螢幕</string>
-
     <!-- enums -->
     <string name="align_top">頂端</string>
     <string name="align_middle">置中</string>
@@ -122,17 +116,14 @@
     <string name="background_mode_white_on_black">黑底白字</string>
     <string name="background_mode_black_on_white">白底黑字</string>
     <string name="background_mode_auto_detect">原始圖片顏色</string>
-
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">沒有可朗讀的內容</string>
     <string name="tts_catalog_unavailable">目錄無法使用</string>
     <string name="tts_no_voice">尚未為 %1$s 安裝語音</string>
     <string name="tts_synthesis_failed">%1$s 的語音合成失敗</string>
     <string name="tts_sample_fallback">這是來自 Offline Translator 的語音範例。</string>
-
     <!-- translation -->
     <string name="translation_error">翻譯錯誤：%1$s</string>
-
     <!-- download errors -->
     <string name="download_failed_core">%1$s 下載失敗</string>
     <string name="download_failed_ocr">%1$s 圖片文字辨識下載失敗</string>
@@ -145,7 +136,6 @@
     <string name="download_catalog_save_failed">儲存目錄失敗</string>
     <string name="download_unknown_error">未知錯誤</string>
     <string name="download_catalog_failed">下載目錄失敗：%1$s</string>
-
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">在文字上方喚起此助理即可翻譯</string>
     <string name="assistant_collecting_context">正在收集螢幕內容…</string>
@@ -157,7 +147,6 @@
     <string name="assistant_ocr_failed">文字辨識失敗</string>
     <string name="ocr_models_missing">缺少文字辨識模型。請在應用程式中開啟語言管理進行修復。</string>
     <string name="assistant_set_source_live">在設定中設定預設來源語言即可使用即時螢幕翻譯。</string>
-
     <!-- migration gate -->
     <string name="migration_updating_speech_models">正在更新語音模型</string>
     <string name="migration_accept_convert">接受並轉換</string>
@@ -165,9 +154,8 @@
     <string name="migration_converting">正在轉換第 %1$d / %2$d 個</string>
     <string name="migration_optimizing">正在最佳化模型</string>
     <plurals name="migration_convert_prompt">
-      <item quantity="other">你有 %1$d 個語音合成模型需要轉換為新格式。大約需要 %2$d 秒。你將節省 %3$.0f MB 的磁碟空間。</item>
+        <item quantity="other">你有 %1$d 個語音合成模型需要轉換為新格式。大約需要 %2$d 秒。你將節省 %3$.0f MB 的磁碟空間。</item>
     </plurals>
-
     <!-- document translation notification + progress -->
     <string name="doc_notif_translating">正在翻譯檔案</string>
     <string name="doc_notif_translated">已翻譯檔案</string>
@@ -182,32 +170,27 @@
     <string name="doc_progress_saving">正在儲存翻譯後的檔案</string>
     <string name="doc_translation_failed">文件翻譯失敗</string>
     <string name="doc_url_unsupported">請改為下載文件並用本應用程式開啟</string>
-
     <!-- document configure sheet -->
     <string name="document_wrap_columns">在第 %1$d 欄換行</string>
     <string name="document_translate_pdf_images">翻譯 PDF 中的圖片</string>
     <string name="layout_preserve">保留換行</string>
     <string name="layout_reflow">重排為段落</string>
     <string name="layout_reflow_wrap">重排並換行</string>
-
     <!-- common (additional) -->
     <string name="common_open">開啟</string>
     <string name="common_close">關閉</string>
     <string name="common_save">儲存</string>
-
     <!-- translator app -->
     <string name="translator_translated_file">已翻譯檔案：%1$s</string>
     <string name="translator_document_saved">文件已儲存</string>
     <string name="translator_document_save_failed">儲存文件失敗</string>
     <string name="translator_audio_playback_failed">音訊播放失敗：%1$s</string>
     <string name="translator_no_app_to_open">找不到可開啟此檔案的應用程式</string>
-
     <!-- document alignment -->
     <string name="docalign_decode_failed">無法解碼圖片。</string>
     <string name="docalign_detecting">正在偵測邊角…</string>
     <string name="docalign_redetecting">正在重新偵測…</string>
     <string name="docalign_help">在文件周圍畫出精確的邊框可提升辨識品質。重要的是邊線要與文字平行。\n\n縮放或平移通常會讓演算法自動辨識到文件，但若未能找到，你仍可手動調整。</string>
-
     <!-- how to use -->
     <string name="howto_section_other_apps">從其他應用程式</string>
     <string name="howto_share_title">分享以翻譯</string>
@@ -221,12 +204,10 @@
     <string name="howto_dict_body">長按譯文中的任何字詞即可查看釋義。資料來自 Wiktionary。</string>
     <string name="howto_voice_title">變更語音或速度</string>
     <string name="howto_voice_body">長按播放按鈕即可選擇不同的語音或調整播放速度。</string>
-
     <!-- feature row labels -->
     <string name="feature_translation">翻譯</string>
     <string name="feature_dictionary">詞典</string>
     <string name="feature_tts">語音</string>
-
     <!-- misc -->
     <string name="detected_translate_from">翻譯自</string>
     <string name="detected_missing_language">缺少語言</string>
