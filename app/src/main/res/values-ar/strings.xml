@@ -198,12 +198,12 @@
     <string name="howto_share_title">المشاركة للترجمة</string>
     <string name="howto_share_body">شارك النصوص أو الروابط أو الصور من أي تطبيق لترجمتها.</string>
     <string name="howto_copy_title">ترجم دون مغادرة التطبيقات الأخرى</string>
-    <string name="howto_copy_body">حدّد نصًا في أي مكان، ثم اضغط على \"ترجم\" في شريط النسخ لرؤية الترجمة في نافذة منبثقة مضغوطة.</string>
+    <string name="howto_copy_body">حدّد نصًا على أي تطبيق، ثم اضغط على \"ترجم\" في شريط النسخ لرؤية الترجمة في نافذة منبثقة مضغوطة.</string>
     <string name="howto_section_in_app">داخل التطبيق</string>
     <string name="howto_docs_title">ترجم المستندات والصور</string>
     <string name="howto_docs_body">افتح تبويب المستندات لترجمة ملفات الصور أو EPUB وPDF وTXT.</string>
     <string name="howto_dict_title">البحث في القاموس</string>
-    <string name="howto_dict_body">اضغط مطولاً على أي كلمة — سواء في النص الذي تكتبه أو في ترجمته — للاطّلاع على تعريفها. أو اضغط على زر القاموس، ثم اضغط على الكلمات واحدة تلو الأخرى للبحث عنها. البيانات مأخوذة من Wiktionary.</string>
+    <string name="howto_dict_body">اضغط مطولاً على أي كلمة، ثم اضغط على «القاموس» للاطلاع على تعريفها. أو يمكنك النقر على زر القاموس، ثم انقر على أي كلمة. البيانات مأخوذة من Wiktionary.</string>
     <string name="howto_voice_title">تغيير الصوت أو السرعة</string>
     <string name="howto_voice_body">اضغط مطولاً على زر التشغيل لاختيار صوت مختلف أو ضبط سرعة التشغيل.</string>
     <!-- feature row labels -->
@@ -286,7 +286,7 @@
     <string name="feature_unavailable_tts">ميزة تحويل النص إلى كلام غير متوفرة، نزّلها من صفحة إدارة اللغات</string>
     <string name="feature_unavailable_dictionary">القاموس غير متوفر، نزّلها من صفحة إدارة اللغات</string>
     <string name="howto_alt_title">اختر كلمات بديلة</string>
-    <string name="howto_alt_body">انقر على زر البدائل، ثم اضغط على كلمة مخطوطة في الترجمة للاطّلاع على صيغ أخرى واختيار إحداها. وسيتم إعادة ترجمة بقية الجملة لتتوافق مع الاختيار.</string>
+    <string name="howto_alt_body">انقر على زر البدائل، ثم اضغط على أي كلمة لاستبدالها. قد يقدم النموذج بعض البدائل، وإلا فيمكنك إدخال بدائلك. وسيتم إعادة ترجمة بقية الجملة لتتوافق مع ذلك.</string>
     <string name="a11y_alternatives_mode_on">اخرج من وضع البدائل</string>
     <string name="a11y_alternatives_mode_off">وضع البدائل: انقر على كلمة ما للاطّلاع على ترجمات أخرى</string>
     <string name="a11y_close_alternatives">أغلِق البدائل</string>
