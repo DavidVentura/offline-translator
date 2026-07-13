@@ -295,4 +295,16 @@
     <string name="alt_custom_preview_label">معاينة</string>
     <string name="a11y_dictionary_mode_on">اخرج من وضع القاموس</string>
     <string name="a11y_dictionary_mode_off">وضع القاموس: انقر على كلمة ما للبحث عنها</string>
+    <string name="settings_http_server">فعِّل خادم HTTP متوافق مع LibreTranslate</string>
+    <string name="settings_http_server_desc">يسمح للتطبيقات الأخرى بطلب الترجمات برمجيًّا</string>
+    <string name="settings_http_server_port">المنفذ</string>
+    <string name="settings_http_server_bind">ربط على</string>
+    <string name="settings_http_server_bind_localhost">localhost</string>
+    <string name="settings_http_server_bind_all">كل الواجهات</string>
+    <string name="http_server_notif_channel_name">API الترجمة</string>
+    <string name="http_server_notif_channel_desc">تُعرض أثناء تشغيل الخادم المتوافق مع LibreTranslate</string>
+    <string name="http_server_notif_running">API الترجمة</string>
+    <string name="http_server_notif_text">يسمع على %1$s: %2$d</string>
+    <string name="http_server_notif_error">فشل التشغيل على المنفذ %1$d</string>
+    <string name="http_server_notif_stop">أوقِف</string>
 </resources>
