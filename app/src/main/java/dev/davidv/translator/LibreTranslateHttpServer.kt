@@ -56,6 +56,15 @@ class LibreTranslateHttpServer(
   }
 
   override fun serve(session: IHTTPSession): Response {
+    // DNS-rebinding guard: a page on any origin can fetch() this loopback server,
+    // and one that rebinds its own hostname to 127.0.0.1 could then read the
+    // responses (ACAO is `*`). Reject requests whose Host header is a registered
+    // domain name; loopback names and raw IP literals — what real LibreTranslate
+    // clients use — are still accepted. Not cors()-wrapped, so a blocked browser
+    // caller cannot read the body either.
+    if (!isAllowedHost(session.headers["host"])) {
+      return error(Response.Status.FORBIDDEN, "host not allowed")
+    }
     if (session.method == Method.OPTIONS) return cors(newFixedLengthResponse(Response.Status.OK, MIME_JSON, "{}"))
     return try {
       val response =
@@ -381,6 +390,38 @@ class LibreTranslateHttpServer(
     // The native robust detector returns a single best language code without a
     // score, so we report full confidence to satisfy the LibreTranslate schema.
     private const val DETECTED_CONFIDENCE = 100.0
+
+    private val IPV4 = Regex("""^\d{1,3}(\.\d{1,3}){3}$""")
+    private val IPV6 = Regex("""^[0-9a-fA-F:]+$""")
+
+    /**
+     * Whether a request's `Host` header is safe to serve. Accepts a missing
+     * Host, `localhost`, and raw IPv4/IPv6 literals; rejects registered domain
+     * names. This is the DNS-rebinding defense (see [serve]): rebinding relies on
+     * a hostname that re-resolves to a loopback/LAN address, so refusing
+     * hostnames — while still allowing the IPs and `localhost` that real clients
+     * target — closes the hole without breaking normal use.
+     */
+    internal fun isAllowedHost(hostHeader: String?): Boolean {
+      if (hostHeader.isNullOrBlank()) return true
+      val host = hostNameOnly(hostHeader).lowercase()
+      if (host.isEmpty()) return false
+      if (host == "localhost") return true
+      return IPV4.matches(host) || (host.contains(':') && IPV6.matches(host))
+    }
+
+    // Extracts the host from a `Host` header value, dropping any `:port`.
+    // IPv6 literals are bracketed per RFC 3986 (`[::1]:5000`); a bare IPv6
+    // address (multiple colons, no brackets) carries no port.
+    private fun hostNameOnly(hostHeader: String): String {
+      val h = hostHeader.trim()
+      if (h.startsWith("[")) {
+        val end = h.indexOf(']')
+        return if (end >= 0) h.substring(1, end).trim() else h.substring(1).trim()
+      }
+      if (h.count { it == ':' } > 1) return h
+      return h.substringBefore(':')
+    }
   }
 }
 
