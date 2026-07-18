@@ -1234,23 +1234,15 @@ class DownloadService : Service() {
           ?.parentFile
           ?.name
 
-      fun normalizedEntryName(entryName: String): String {
-        val trimmed = entryName.trimStart('/').removePrefix("./")
-        if (trimmed.isBlank()) return trimmed
-        val rootName = installRootName ?: return trimmed
-        return if (trimmed == rootName || trimmed.startsWith("$rootName/")) {
-          trimmed
-        } else {
-          "$rootName/$trimmed"
-        }
-      }
-
       val managedPaths = mutableSetOf<File>()
       ZipFile(archiveFile).use { zipFile ->
         val entries = zipFile.entries()
         while (entries.hasMoreElements()) {
           val entry = entries.nextElement()
-          val normalizedName = normalizedEntryName(entry.name)
+          // Skip entries that would escape extractTo so they cannot influence
+          // which existing directories get deleted below (Zip Slip, CWE-22).
+          if (safeZipEntryTarget(extractTo, entry.name, installRootName) == null) continue
+          val normalizedName = normalizeZipEntryName(entry.name, installRootName)
           val parts = normalizedName.split('/').filter { it.isNotBlank() }
           if (parts.size >= 2) {
             managedPaths += File(extractTo, "${parts[0]}/${parts[1]}")
@@ -1270,8 +1262,12 @@ class DownloadService : Service() {
       ZipInputStream(archiveFile.inputStream().buffered()).use { zipInput ->
         var entry = zipInput.nextEntry
         while (entry != null) {
-          val output = File(extractTo, normalizedEntryName(entry.name))
-          if (entry.isDirectory) {
+          val output = safeZipEntryTarget(extractTo, entry.name, installRootName)
+          if (output == null) {
+            // Zip Slip guard: an entry resolving outside extractTo (via `..`, an
+            // absolute path, etc.) is dropped rather than written.
+            Log.w("DownloadService", "Skipping unsafe zip entry: ${entry.name}")
+          } else if (entry.isDirectory) {
             output.mkdirs()
           } else {
             output.parentFile?.mkdirs()
@@ -1374,3 +1370,58 @@ private const val DOC_DETECT_KIND = "doc_detect"
 // Not a catalog pack kind: the NewSupportAvailable event key for a finished
 // repair download, so availability listeners refresh like any support install.
 private const val REPAIR_KIND = "repair"
+
+/**
+ * Normalizes a zip entry name the way pack extraction expects: it strips a
+ * leading `/` or `./` and, when the pack has a known install root
+ * ([installRootName]), re-roots the entry under it so archives with or without a
+ * top-level directory land in the same place.
+ *
+ * This is purely a naming transform — it does NOT make the result safe to join
+ * onto the extraction directory (it does not neutralise `..` segments). Use
+ * [safeZipEntryTarget] to obtain a path that is guaranteed to stay inside the
+ * target directory.
+ */
+internal fun normalizeZipEntryName(
+  entryName: String,
+  installRootName: String?,
+): String {
+  val trimmed = entryName.trimStart('/').removePrefix("./")
+  if (trimmed.isBlank()) return trimmed
+  val rootName = installRootName ?: return trimmed
+  return if (trimmed == rootName || trimmed.startsWith("$rootName/")) {
+    trimmed
+  } else {
+    "$rootName/$trimmed"
+  }
+}
+
+/**
+ * Resolves a zip entry to the concrete file it would extract to under
+ * [extractTo], or returns `null` when the entry must be skipped because it is
+ * blank or because it would resolve outside [extractTo] via `..` segments, an
+ * absolute path, or similar.
+ *
+ * This is the Zip Slip guard (CWE-22): [normalizeZipEntryName] only trims a
+ * leading `/`/`./` and, when a root is known, prefixes it — which still lets a
+ * name like `../../x` (or `root/../../x`) escape the target. Comparing the
+ * canonicalised target against the canonicalised [extractTo] closes that hole so
+ * a malicious or corrupt archive can never write (or trigger a delete) outside
+ * the intended directory.
+ */
+internal fun safeZipEntryTarget(
+  extractTo: File,
+  entryName: String,
+  installRootName: String?,
+): File? {
+  val normalized = normalizeZipEntryName(entryName, installRootName)
+  if (normalized.isBlank()) return null
+  val target = File(extractTo, normalized)
+  val root = extractTo.canonicalFile
+  val canonical = target.canonicalFile
+  return if (canonical == root || canonical.path.startsWith(root.path + File.separator)) {
+    target
+  } else {
+    null
+  }
+}
