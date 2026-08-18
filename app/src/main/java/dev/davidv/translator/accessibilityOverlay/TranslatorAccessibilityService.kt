@@ -331,13 +331,13 @@ class TranslatorAccessibilityService : AccessibilityService() {
       return
     }
 
-    val dm = resources.displayMetrics
+    val windowBounds = windowManager.currentWindowMetrics.bounds
     val region =
       Rect(
         0,
         ui.getStatusBarHeight() + ui.dpToPx(48),
-        dm.widthPixels,
-        dm.heightPixels - ui.getNavBarHeight(),
+        windowBounds.width(),
+        windowBounds.height() - ui.getNavBarHeight(),
       )
 
     // Let any open picker/menu finish dismissing before grabbing the screen,

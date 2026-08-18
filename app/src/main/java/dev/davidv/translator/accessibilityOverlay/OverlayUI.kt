@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
@@ -284,6 +285,7 @@ class OverlayUI(
     params.gravity = Gravity.TOP or Gravity.START
     params.x = bounds.left
     params.y = bounds.top
+    params.usePhysicalDisplayCoordinates()
 
     windowManager.addView(imageView, params)
     translationOverlays.add(imageView)
@@ -323,6 +325,7 @@ class OverlayUI(
           y = region.top
           width = region.width()
           height = region.height()
+          usePhysicalDisplayCoordinates()
         }
       decorView.setPadding(0, 0, 0, 0)
       host.installOn(decorView)
@@ -413,6 +416,7 @@ class OverlayUI(
     params.gravity = Gravity.TOP or Gravity.START
     params.x = region.left
     params.y = region.top
+    params.usePhysicalDisplayCoordinates()
     params.windowAnimations = 0
     windowManager.addView(host.view, params)
     scanHost = host
@@ -518,4 +522,13 @@ class OverlayUI(
   }
 
   internal fun dpToPx(dp: Int): Int = (dp * service.resources.displayMetrics.density).toInt()
+
+  private fun WindowManager.LayoutParams.usePhysicalDisplayCoordinates() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      setFitInsetsTypes(0)
+    }
+  }
 }
