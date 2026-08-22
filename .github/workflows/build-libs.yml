@@ -1,0 +1,186 @@
+name: Build native libraries (bergamot)
+
+# Builds libbergamot-sys.so for all four Android ABIs and publishes them
+# as a GitHub Release. Triggered by pushing a tag (e.g. v0.2.6-cgeo.1) or
+# manually via workflow_dispatch.
+#
+# The bergamot module uses Android product flavors (aarch64, armeabi-v7a,
+# x86, x86_64), each with its own abiFilters. Running ./gradlew
+# :app:bergamot:assembleRelease assembles all four flavors and produces
+# four separate AAR files. We then extract the per-ABI .so files and
+# also assemble a single "fat" AAR containing all four ABIs for direct
+# Gradle consumption via JitPack.
+
+on:
+  push:
+    tags:
+      - 'v*-cgeo.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name to release (e.g. v0.2.6-cgeo.1). Must already exist as a git tag.'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build bergamot .so for all four ABIs
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Resolve release tag
+        id: tag
+        run: |
+          echo "tag=${{ github.event.inputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
+          echo "Releasing as: ${{ github.event.inputs.tag || github.ref_name }}"
+
+      # bergamot-translator's .gitmodules pins the marian-dev submodule to
+      # commit 02b99943..., a fork-specific commit not reachable from any
+      # browsermt upstream ref. The cgeo fork (cgeo/marian-dev) anchors it
+      # with a tag. This insteadOf rewrite must be set before checkout so the
+      # recursive submodule fetch below resolves marian-dev from the cgeo
+      # fork instead of the no-longer-maintained DavidVentura/marian-dev.
+      - name: Redirect marian-dev submodule to cgeo fork
+        run: git config --global url."https://github.com/cgeo/marian-dev".insteadOf "https://github.com/DavidVentura/marian-dev"
+
+      - name: Check out source at ${{ steps.tag.outputs.tag }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+          submodules: recursive
+
+      - name: Build Docker image (bergamot-builder)
+        run: docker build -t bergamot-builder .
+
+      - name: Build native libraries (all four ABIs)
+        run: |
+          docker run --rm \
+            -v "$(pwd)":/home/vagrant/build/dev.davidv.translator/ \
+            bergamot-builder \
+            ./gradlew :app:bergamot:assembleRelease --no-daemon
+
+      - name: Stage per-ABI .so files and assemble fat AAR
+        id: stage
+        run: |
+          set -euo pipefail
+          OUT_DIR="${GITHUB_WORKSPACE}/release"
+          mkdir -p "${OUT_DIR}"
+
+          declare -A FLAVOR_FOR=(
+            [arm64-v8a]=aarch64
+            [armeabi-v7a]=armeabi-v7a
+            [x86]=x86
+            [x86_64]=x86_64
+          )
+
+          # Docker ran as root, so the AAR files in app/bergamot/build/ are
+          # owned by root on the host. We do not modify them, only read, so
+          # ownership is fine. We still need a chown on the parent build dir
+          # at the end so the runner's post-job cleanup does not fail.
+          for abi in arm64-v8a armeabi-v7a x86 x86_64; do
+            flavor="${FLAVOR_FOR[$abi]}"
+            src="app/bergamot/build/outputs/aar/bergamot-${flavor}-release.aar"
+            if [ ! -f "${src}" ]; then
+              echo "::error::Expected AAR not found: ${src}"
+              exit 1
+            fi
+            unzip -p "${src}" "jni/${abi}/libbergamot-sys.so" \
+              > "${OUT_DIR}/libbergamot-sys-${abi}.so"
+          done
+
+          # Build a single fat AAR containing jni/<abi>/libbergamot-sys.so for
+          # all four ABIs. Start from the aarch64 AAR (which has a valid
+          # AndroidManifest.xml, classes.jar, R.txt, etc.) and add the other
+          # three ABIs' jni/ trees on top.
+          STAGE=$(mktemp -d)
+          unzip -q "app/bergamot/build/outputs/aar/bergamot-aarch64-release.aar" -d "${STAGE}"
+          for flavor in armeabi-v7a x86 x86_64; do
+            abi="${flavor}"
+            mkdir -p "${STAGE}/jni/${abi}"
+            unzip -p "app/bergamot/build/outputs/aar/bergamot-${flavor}-release.aar" \
+                  "jni/${abi}/libbergamot-sys.so" \
+                  > "${STAGE}/jni/${abi}/libbergamot-sys.so"
+          done
+          (cd "${STAGE}" && zip -qr "${OUT_DIR}/bergamot-sys.aar" .)
+          rm -rf "${STAGE}"
+
+      - name: Generate Maven POM
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.tag.outputs.tag }}"
+          # JitPack uses groupId com.github.<owner>, so projects depending on
+          # this fork via JitPack will pin com.github.cgeo:offline-translator:<TAG>.
+          cat > "${GITHUB_WORKSPACE}/release/bergamot-sys.pom" <<POM
+          <?xml version="1.0" encoding="UTF-8"?>
+          <project xmlns="http://maven.apache.org/POM/4.0.0"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+            <modelVersion>4.0.0</modelVersion>
+            <groupId>com.github.cgeo</groupId>
+            <artifactId>offline-translator</artifactId>
+            <version>${TAG}</version>
+            <packaging>aar</packaging>
+            <name>cgeo offline translator native libraries</name>
+            <description>Prebuilt Bergamot translator .so files for Android (arm64-v8a, armeabi-v7a, x86, x86_64).</description>
+          </project>
+          POM
+
+      - name: Compute SHA256 checksums
+        run: |
+          set -euo pipefail
+          cd "${GITHUB_WORKSPACE}/release"
+          sha256sum \
+            libbergamot-sys-arm64-v8a.so \
+            libbergamot-sys-armeabi-v7a.so \
+            libbergamot-sys-x86.so \
+            libbergamot-sys-x86_64.so \
+            bergamot-sys.aar \
+            bergamot-sys.pom \
+            | tee checksums.txt
+
+      - name: Upload build artifacts (for inspection)
+        uses: actions/upload-artifact@v4
+        with:
+          name: bergamot-libs-${{ steps.tag.outputs.tag }}
+          path: release/
+          retention-days: 30
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
+          generate_release_notes: false
+          body: |
+            Prebuilt Bergamot native libraries for Android.
+
+            **Per-ABI `.so` files** (drop into `src/main/jniLibs/<abi>/`):
+            - `libbergamot-sys-arm64-v8a.so`
+            - `libbergamot-sys-armeabi-v7a.so`
+            - `libbergamot-sys-x86.so`
+            - `libbergamot-sys-x86_64.so`
+
+            **Single fat AAR** (all four ABIs, for Gradle consumption via JitPack):
+            - `bergamot-sys.aar`
+            - `bergamot-sys.pom`
+
+            See `checksums.txt` for SHA256.
+
+            ### Consume via JitPack
+            ```kotlin
+            repositories { maven("https://jitpack.io") }
+            dependencies {
+                implementation("com.github.cgeo:offline-translator:${{ steps.tag.outputs.tag }}")
+            }
+            ```
+          files: |
+            release/libbergamot-sys-arm64-v8a.so
+            release/libbergamot-sys-armeabi-v7a.so
+            release/libbergamot-sys-x86.so
+            release/libbergamot-sys-x86_64.so
+            release/bergamot-sys.aar
+            release/bergamot-sys.pom
+            release/checksums.txt
