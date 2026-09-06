@@ -120,6 +120,14 @@ https://github.com/user-attachments/assets/bf774a4f-3d58-49b7-b4e2-cb30eb395b39
 
 This app exposes an API (see `ITranslationService.aidl`) that other apps can use to request translations.
 
+- `translate(text, fromLanguage, toLanguage, callback)` — translate plain text. Pass an empty `fromLanguage` to auto-detect the source; results come back via `ITranslationCallback`.
+- `translateImage(image, fromLanguage, toLanguage, callback)` — run OCR + translation on an image.
+  - `image` is a `ParcelFileDescriptor` to an encoded PNG/JPEG.
+  - Pass null/empty `fromLanguage` to auto-detect the source and null/empty `toLanguage` to use the user's default target language.
+  - The `IImageTranslationCallback` returns an `ImageTranslationResult` with the `extractedText` and `translatedText` of the whole image, plus a list of `TextLineResult`.
+  - Each `TextLineResult` is one line of text, with everything needed to render an overlay: the line's `sourceText`, a bounding box (`left`/`top`/`right`/`bottom`), an oriented rectangle (`orientedCenterX`/`orientedCenterY`/`orientedWidth`/`orientedHeight`/`orientedAngleRadians`) for tilted text, a `suggestedFontSizePx`, and auto-detected `backgroundArgb`/`foregroundArgb` colors.
+  - `translatedText` is only set on the *first* line of each paragraph and contains the whole paragraph's translation; every other line of that paragraph has an empty string.
+
 
 ## Manual offline setup
 
