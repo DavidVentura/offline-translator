@@ -312,4 +312,5 @@
     <string name="langmgr_translation_upgrade_available">تتوفّر ترجمة مُحسّنة لـ: %1$s</string>
     <string name="download_failed_translation_batch">فشل تنزيل تحديث الترجمة</string>
     <string name="settings_http_server_title">خادم API</string>
+    <string name="tts_synthesis_error">فشل توليف الكلام لـ %1$s: %2$s</string>
 </resources>
