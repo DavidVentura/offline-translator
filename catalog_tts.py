@@ -135,6 +135,8 @@ BANNED_TTS_VOICES = {
     # Piper pinyin-frontend Mandarin voices are not supported by the runtime frontend.
     "zh_CN-chaowen-medium",
     "zh_CN-xiao_ya-medium",
+    # Output sounds broken, in the app as well.
+    "sv_SE-lisa-medium",
 }
 
 # Human-curated per-voice rank nudges. Applied as the highest-priority component
