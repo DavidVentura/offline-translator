@@ -69,7 +69,7 @@ class TranslationCoordinator(
         measureTimeMillis {
           result = translationService.translate(from, to, text)
         }
-      Log.d("TranslationCoordinator", "Translating ${text.length} chars from ${from.displayName} to ${to.displayName} took ${elapsed}ms")
+      Log.d("TranslationCoordinator", "Translation took ${elapsed}ms")
     } finally {
       lastTranslatedInput = text
       _isTranslating.value = false

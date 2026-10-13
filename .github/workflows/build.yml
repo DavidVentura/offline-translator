@@ -54,7 +54,7 @@ jobs:
           -v ${{ github.workspace }}:/build/build/dev.davidv.translator/ \
           --user $(id -u):$(id -g) \
           ${{ steps.img.outputs.tag }} \
-          ./gradlew assembleRelease -PtargetAbi=${{ matrix.abi }}
+          ./gradlew testDebugUnitTest assembleRelease -PtargetAbi=${{ matrix.abi }}
 
     - name: Upload APK artifacts
       uses: actions/upload-artifact@v4

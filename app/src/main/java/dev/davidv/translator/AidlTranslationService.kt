@@ -53,8 +53,6 @@ class AidlTranslationService : Service() {
         toLanguageStr: String?,
         callback: ITranslationCallback?,
       ) {
-        Log.d(tag, "txt len:${textToTranslate?.length ?: -1}, from:$fromLanguageStr, to:$toLanguageStr, cb = ${callback != null}")
-
         if (textToTranslate == null || callback == null) {
           Log.w(tag, "translate: textToTranslate or callback is null")
           return
@@ -70,7 +68,6 @@ class AidlTranslationService : Service() {
             delay(100)
           }
           val from = fromLanguage ?: translationCoordinator.detectLanguageRobust(textToTranslate, null, langs)
-          Log.d(tag, "Detected lang $from")
           if (from == null) {
             Log.d(tag, "Could not detect language")
             val err =
@@ -83,7 +80,6 @@ class AidlTranslationService : Service() {
             return@launch
           }
           if (!langs.contains(from)) {
-            Log.d(tag, "Detected language ${from.displayName} not available")
             val err =
               TranslationError().apply {
                 type = ErrorType.DETECTED_BUT_UNAVAILABLE
@@ -107,12 +103,11 @@ class AidlTranslationService : Service() {
           when (val result = translationCoordinator.translateText(from, to, textToTranslate)) {
             is TranslationResult.Success -> {
               val translatedText = result.result.translated
-              Log.d(tag, "translated text: $translatedText")
               callback.onTranslationResult(translatedText)
             }
 
             is TranslationResult.Error -> {
-              Log.d(tag, "Translation error: ${result.message}")
+              Log.d(tag, "Translation request failed")
               val err =
                 TranslationError().apply {
                   type = ErrorType.UNEXPECTED

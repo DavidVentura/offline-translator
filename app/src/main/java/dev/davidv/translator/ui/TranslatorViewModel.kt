@@ -384,7 +384,7 @@ class TranslatorViewModel(
 
   fun handleMessage(message: TranslatorMessage) {
     if (message !is TranslatorMessage.TextInput) {
-      Log.d("HandleMessage", "Handle: $message")
+      Log.d("HandleMessage", "Handling ${message.javaClass.simpleName}")
     }
 
     when (message) {
@@ -527,7 +527,7 @@ class TranslatorViewModel(
         viewModelScope.launch {
           when (val r = translationCoordinator.steer(fromLang, toLang, src, message.forcedPrefix)) {
             is TranslationResult.Success -> _output.value = r.result
-            is TranslationResult.Error -> Log.e("Steer", r.message)
+            is TranslationResult.Error -> Log.e("Steer", "Translation steering failed")
           }
         }
       }
@@ -948,7 +948,7 @@ class TranslatorViewModel(
     str: String,
     language: Language,
   ) {
-    Log.i("DictionaryLookup", "Looking up $str for $language")
+    Log.i("DictionaryLookup", "Looking up word")
     val catalog = languageStateManager.catalog.value
     val foundWord =
       try {
@@ -959,14 +959,14 @@ class TranslatorViewModel(
         }
         return
       } catch (e: uniffi.bindings.CatalogException.Other) {
-        Log.w("DictionaryLookup", "Lookup failed for ${language.displayName}", e)
+        Log.w("DictionaryLookup", "Lookup failed")
         null
       }
     if (foundWord != null) {
       _dictionaryWord.value = foundWord
       _dictionaryLookupLanguage.value = language
       _dictionaryStack.value = _dictionaryStack.value + foundWord
-      Log.d("DictionaryLookup", "From lookup got $foundWord")
+      Log.d("DictionaryLookup", "Word found")
     } else {
       viewModelScope.launch {
         _uiEvents.emit(UiEvent.ShowToast("'$str' not found in ${language.code} dictionary"))
@@ -1007,7 +1007,7 @@ class TranslatorViewModel(
         viewModelScope.launch {
           _uiEvents.emit(UiEvent.ShowToast(event.message))
         }
-        Log.w("TranslatorViewModel", "Error event: ${event.message}")
+        Log.w("TranslatorViewModel", "File operation failed")
       }
     }
   }

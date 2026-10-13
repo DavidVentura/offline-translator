@@ -17,14 +17,12 @@
 
 package dev.davidv.translator
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class LanguageDetector(
   private val languageByCode: (String) -> Language?,
 ) {
-  private val tag = this.javaClass.name.substringAfterLast('.')
   private val nativeLanguageRuntime = NativeLanguageRuntime()
 
   private fun languageForCode(code: String?): Language? = code?.let(languageByCode)
@@ -35,7 +33,6 @@ class LanguageDetector(
     availableLanguages: List<Language>,
   ): Language? =
     withContext(Dispatchers.IO) {
-      Log.d(tag, "detectLanguageRobust: ${hint ?: "null"} | $text")
       languageForCode(
         nativeLanguageRuntime.detectLanguageRobustCode(
           text,
