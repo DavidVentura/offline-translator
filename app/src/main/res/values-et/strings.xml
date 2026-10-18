@@ -290,4 +290,7 @@
     <string name="a11y_download_feature">Laadi komponent alla</string>
     <string name="a11y_refresh">Uuenda andmeid</string>
     <string name="howto_alt_body">Puuduta valikute nuppu ja seejärel puuduta mõnda sõna, et seda asendada. Mudel võib pakkuda mõningaid valikuid, muidu võid sisestada oma valiku. Ülejäänud lause tõlgitakse uuesti vastavalt sellele.</string>
+    <string name="download_notif_channel_name">Allalaadimised</string>
+    <string name="download_notif_channel_desc">Näita keelte andmete allalaadimiste edenemist</string>
+    <string name="download_notif_title">Keelte andmed on allalaadimisel</string>
 </resources>
