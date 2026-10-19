@@ -314,4 +314,11 @@
     <string name="download_notif_channel_name">Pobrane</string>
     <string name="download_notif_channel_desc">Pokaż postęp podczas pobieraniach danych językowych</string>
     <string name="download_notif_title">Pobieranie danych językowych</string>
+    <string name="settings_offer_accessibility_service">Usługi dostępności</string>
+    <string name="settings_offer_accessibility_service_desc">Wyłącz tę opcję, aby usunąć aplikację z ustawień ułatwień dostępu w systemie Android; przycisk „zawsze włączony” przestanie działać</string>
+    <string name="browser_page_language_missing">Ta strona jest w języku %1$s, który nie jest zainstalowany</string>
+    <string name="a11y_input_sources">Źródła danych wejściowych</string>
+    <string name="shortcut_live_camera_short">Aparat</string>
+    <string name="shortcut_live_camera_long">Tłumacz z aparatem</string>
+    <string name="settings_popup_size_expanded">Rozmiar wyskakującego okna: Rozszerzone</string>
 </resources>
