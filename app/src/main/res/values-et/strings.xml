@@ -293,4 +293,11 @@
     <string name="download_notif_channel_name">Allalaadimised</string>
     <string name="download_notif_channel_desc">Näita keelte andmete allalaadimiste edenemist</string>
     <string name="download_notif_title">Keelte andmed on allalaadimisel</string>
+    <string name="settings_popup_size_expanded">Hüpikakna mõõdud: laiendatud</string>
+    <string name="settings_offer_accessibility_service">Hõlbustusteenus</string>
+    <string name="settings_offer_accessibility_service_desc">Eemaldamaks rakendust Androidi hõlbusseadistustest, lülita see välja. Sel puhul alati sisselülitatud nupuke enam ei toimi</string>
+    <string name="browser_page_language_missing">Selle lehe keel on %1$s, tolle andmemudel aga pole paigaldatud</string>
+    <string name="a11y_input_sources">Sisendallikad</string>
+    <string name="shortcut_live_camera_short">Kaamera</string>
+    <string name="shortcut_live_camera_long">Tõlgi kaamera sisendist</string>
 </resources>
