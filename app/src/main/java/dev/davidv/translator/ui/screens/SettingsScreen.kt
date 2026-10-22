@@ -105,7 +105,6 @@ private fun LanguageDropdown(
   label: String,
   selectedLanguage: Language?,
   availableLanguages: List<Language>,
-  fallbackLanguage: Language?,
   onLanguageSelected: (Language) -> Unit,
 ) {
   var expanded by remember { mutableStateOf(false) }
@@ -126,7 +125,7 @@ private fun LanguageDropdown(
     modifier = Modifier.fillMaxWidth(),
   ) {
     OutlinedTextField(
-      value = selectedLanguage?.localizedName() ?: fallbackLanguage?.localizedName() ?: stringResource(R.string.settings_no_languages_available),
+      value = selectedLanguage?.localizedName() ?: stringResource(R.string.settings_no_languages_available),
       onValueChange = {},
       readOnly = true,
       trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -362,7 +361,6 @@ fun SettingsScreen(
             label = stringResource(R.string.settings_default_from),
             selectedLanguage = settings.defaultSourceLanguageCode?.let { catalog.languageByCode(it) },
             availableLanguages = sourceLanguages,
-            fallbackLanguage = sourceLanguages.firstOrNull { it.code != settings.defaultTargetLanguageCode },
             onLanguageSelected = { language ->
               onSettingsChange { it.copy(defaultSourceLanguageCode = language.code) }
             },
@@ -372,7 +370,6 @@ fun SettingsScreen(
             label = stringResource(R.string.settings_default_to),
             selectedLanguage = catalog.languageByCode(settings.defaultTargetLanguageCode),
             availableLanguages = targetLanguages,
-            fallbackLanguage = null,
             onLanguageSelected = { language ->
               onDefaultTargetLanguageSelected(language)
             },

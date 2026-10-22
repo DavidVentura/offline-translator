@@ -27,34 +27,17 @@ import androidx.compose.ui.viewinterop.AndroidView
 
 private const val TRANSLITERATION_SIZE_RATIO = 0.75f
 
-enum class TransliterationInteraction {
-  Selectable,
-
-  // Taps fall through to the parent so the input card can still take focus.
-  Passive,
-}
-
 @Composable
 fun TransliterationText(
   text: String,
   mainStyle: TextStyle,
-  interaction: TransliterationInteraction,
   modifier: Modifier = Modifier,
 ) {
   val textSize = mainStyle.fontSize.value * TRANSLITERATION_SIZE_RATIO
   val textColor = MaterialTheme.colorScheme.onSurface.toArgb()
   AndroidView(
     factory = { context ->
-      TextView(context).apply {
-        when (interaction) {
-          TransliterationInteraction.Selectable -> setTextIsSelectable(true)
-          TransliterationInteraction.Passive -> {
-            isClickable = false
-            isLongClickable = false
-            isFocusable = false
-          }
-        }
-      }
+      TextView(context).apply { setTextIsSelectable(true) }
     },
     update = { textView ->
       textView.text = text

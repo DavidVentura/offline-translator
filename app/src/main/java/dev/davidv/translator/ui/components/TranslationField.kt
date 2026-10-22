@@ -242,7 +242,6 @@ fun TranslationField(
           TransliterationText(
             text = text.transliterated,
             mainStyle = textStyle,
-            interaction = TransliterationInteraction.Selectable,
             modifier = Modifier.padding(top = 8.dp, bottom = 20.dp),
           )
         }

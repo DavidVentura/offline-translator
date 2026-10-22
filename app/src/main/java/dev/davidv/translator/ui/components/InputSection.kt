@@ -215,7 +215,6 @@ fun InputSection(
             TransliterationText(
               text = inputTransliteration,
               mainStyle = inputTextStyle,
-              interaction = TransliterationInteraction.Passive,
               modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             )
           }
