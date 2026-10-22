@@ -22,6 +22,7 @@ import android.net.Uri
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import uniffi.bindings.PdfImages
 import uniffi.translator_core.OcrSourceSelection
 import uniffi.translator_core.PreparedImageOverlay
 import java.nio.ByteBuffer
@@ -81,7 +82,12 @@ class TranslationCoordinator(
         outputPath = outputPath,
         from = from,
         to = to,
-        translatePdfImages = translatePdfImages,
+        pdfImages =
+          if (translatePdfImages) {
+            PdfImages.Translate(settingsManager.settings.value.maxImageSize.toUInt())
+          } else {
+            PdfImages.Skip
+          },
         txtLayout = txtLayout,
         onProgress = onProgress,
         isCancelled = isCancelled,

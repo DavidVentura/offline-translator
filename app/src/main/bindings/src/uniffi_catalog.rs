@@ -86,6 +86,21 @@ pub enum TxtLayout {
     Reflow { wrap: Option<u32> },
 }
 
+#[derive(Debug, Clone, uniffi::Enum)]
+pub enum PdfImages {
+    Skip,
+    Translate { max_image_size: u32 },
+}
+
+impl From<PdfImages> for translator::document::PdfImages {
+    fn from(value: PdfImages) -> Self {
+        match value {
+            PdfImages::Skip => Self::Skip,
+            PdfImages::Translate { max_image_size } => Self::Translate { max_image_size },
+        }
+    }
+}
+
 impl From<TxtLayout> for translator::txt::TxtLayout {
     fn from(value: TxtLayout) -> Self {
         match value {
@@ -906,14 +921,14 @@ impl CatalogHandle {
         output_path: String,
         forced_source_code: Option<String>,
         target_code: String,
-        translate_pdf_images: bool,
+        pdf_images: PdfImages,
         txt_layout: TxtLayout,
         progress: Arc<dyn DocumentProgressSink>,
     ) -> Result<String, CatalogError> {
         let options = translator::document::DocumentOptions {
             forced_source_code: forced_source_code.as_deref(),
             target_code: &target_code,
-            translate_pdf_images,
+            pdf_images: pdf_images.into(),
             txt_layout: txt_layout.into(),
             fonts: &crate::android_font_provider::AndroidFontProvider,
         };

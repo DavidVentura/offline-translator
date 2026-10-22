@@ -21,6 +21,7 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import uniffi.bindings.CatalogException
+import uniffi.bindings.PdfImages
 
 class TranslationService(
   private val settingsManager: SettingsManager,
@@ -157,7 +158,7 @@ class TranslationService(
     outputPath: String,
     from: Language,
     to: Language,
-    translatePdfImages: Boolean,
+    pdfImages: PdfImages,
     txtLayout: TxtLayoutChoice,
     onProgress: (DocumentTranslationProgress) -> Unit = {},
     isCancelled: () -> Boolean = { false },
@@ -166,7 +167,7 @@ class TranslationService(
       val catalog = catalogRepository.catalog.value
       try {
         Result.success(
-          catalog.translateDocumentPath(inputPath, outputPath, from, to, translatePdfImages, txtLayout, onProgress, isCancelled),
+          catalog.translateDocumentPath(inputPath, outputPath, from, to, pdfImages, txtLayout, onProgress, isCancelled),
         )
       } catch (e: CatalogException.MissingAsset) {
         Result.failure(IllegalStateException("Language pair ${from.code} -> ${to.code} not installed", e))

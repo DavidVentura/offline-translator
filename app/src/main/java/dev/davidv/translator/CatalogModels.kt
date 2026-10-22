@@ -5,6 +5,7 @@ import uniffi.bindings.CatalogException
 import uniffi.bindings.CatalogHandle
 import uniffi.bindings.DocumentProgressEvent
 import uniffi.bindings.DocumentProgressSink
+import uniffi.bindings.PdfImages
 import uniffi.bindings.TxtLayout
 import java.nio.ByteBuffer
 
@@ -414,7 +415,7 @@ class LanguageCatalog private constructor(
     outputPath: String,
     from: Language,
     to: Language,
-    translatePdfImages: Boolean,
+    pdfImages: PdfImages,
     txtLayout: TxtLayoutChoice,
     onProgress: (DocumentTranslationProgress) -> Unit = {},
     isCancelled: () -> Boolean = { false },
@@ -424,7 +425,7 @@ class LanguageCatalog private constructor(
       outputPath,
       from.code,
       to.code,
-      translatePdfImages,
+      pdfImages,
       txtLayout.toUniffi(),
       object : DocumentProgressSink {
         override fun onProgress(event: DocumentProgressEvent) {
