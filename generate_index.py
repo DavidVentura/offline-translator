@@ -133,9 +133,10 @@ def pack_models_are_convertible(pack: dict) -> bool:
 # The pre-MNN kokoro engine: the ONNX core blob plus its `engine == "kokoro"`
 # voice packs (which depend on it). Both are unloadable under the MNN-only runtime
 # and fully superseded by the `kokoro_mnn` packs, so they are removed from the
-# public index instead of migrated.
+# public index instead of migrated. The all-voices file goes with them: each
+# `kokoro_mnn` voice pack carries its own voice.
 def is_deprecated_kokoro_onnx_pack(pack: dict) -> bool:
-    if pack.get("kind") == "tts-kokoro-core":
+    if pack.get("kind") in {"tts-kokoro-core", "tts-kokoro-voices"}:
         return True
     return pack.get("feature") == "tts" and pack.get("engine") == "kokoro"
 

@@ -631,7 +631,12 @@ EXTRA_TTS_VOICES = {
         "quality": "high",
         "num_speakers": 1,
         "speaker_id_map": {},
-        "files": {},
+        "files": {
+            "ja/ja_JP/jf_alpha/high/jf_alpha.bin": {
+                "size_bytes": 261390,
+                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/ja/ja_JP/jf_alpha/high/jf_alpha.bin",
+            },
+        },
         "aliases": [],
     },
     # External Kokoro model metadata source:
@@ -671,7 +676,12 @@ EXTRA_TTS_VOICES = {
         "quality": "high",
         "num_speakers": 1,
         "speaker_id_map": {},
-        "files": {},
+        "files": {
+            "ko/ko_KR/jf_alpha/high/jf_alpha.bin": {
+                "size_bytes": 261390,
+                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/ko/ko_KR/jf_alpha/high/jf_alpha.bin",
+            },
+        },
         "aliases": [],
     },
     "en_US-af_heart-kokoro-mnn-v1.0": {
@@ -690,7 +700,12 @@ EXTRA_TTS_VOICES = {
         "quality": "high",
         "num_speakers": 1,
         "speaker_id_map": {},
-        "files": {},
+        "files": {
+            "en/en_US/af_heart/high/af_heart.bin": {
+                "size_bytes": 261390,
+                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/en/en_US/af_heart/high/af_heart.bin",
+            },
+        },
         "aliases": [],
     },
     "en_GB-bf_emma-kokoro-mnn-v1.0": {
@@ -709,7 +724,12 @@ EXTRA_TTS_VOICES = {
         "quality": "high",
         "num_speakers": 1,
         "speaker_id_map": {},
-        "files": {},
+        "files": {
+            "en/en_GB/bf_emma/high/bf_emma.bin": {
+                "size_bytes": 261388,
+                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/en/en_GB/bf_emma/high/bf_emma.bin",
+            },
+        },
         "aliases": [],
     },
     "es_ES-ef_dora-kokoro-mnn-v1.0": {
@@ -728,7 +748,12 @@ EXTRA_TTS_VOICES = {
         "quality": "high",
         "num_speakers": 1,
         "speaker_id_map": {},
-        "files": {},
+        "files": {
+            "es/es_ES/ef_dora/high/ef_dora.bin": {
+                "size_bytes": 261388,
+                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/es/es_ES/ef_dora/high/ef_dora.bin",
+            },
+        },
         "aliases": [],
     },
     "fr_FR-ff_siwis-kokoro-mnn-v1.0": {
@@ -747,7 +772,12 @@ EXTRA_TTS_VOICES = {
         "quality": "high",
         "num_speakers": 1,
         "speaker_id_map": {},
-        "files": {},
+        "files": {
+            "fr/fr_FR/ff_siwis/high/ff_siwis.bin": {
+                "size_bytes": 261390,
+                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/fr/fr_FR/ff_siwis/high/ff_siwis.bin",
+            },
+        },
         "aliases": [],
     },
     "hi_IN-hf_alpha-kokoro-mnn-v1.0": {
@@ -766,7 +796,12 @@ EXTRA_TTS_VOICES = {
         "quality": "high",
         "num_speakers": 1,
         "speaker_id_map": {},
-        "files": {},
+        "files": {
+            "hi/hi_IN/hf_alpha/high/hf_alpha.bin": {
+                "size_bytes": 261390,
+                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/hi/hi_IN/hf_alpha/high/hf_alpha.bin",
+            },
+        },
         "aliases": [],
     },
     "it_IT-if_sara-kokoro-mnn-v1.0": {
@@ -785,7 +820,12 @@ EXTRA_TTS_VOICES = {
         "quality": "high",
         "num_speakers": 1,
         "speaker_id_map": {},
-        "files": {},
+        "files": {
+            "it/it_IT/if_sara/high/if_sara.bin": {
+                "size_bytes": 261388,
+                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/it/it_IT/if_sara/high/if_sara.bin",
+            },
+        },
         "aliases": [],
     },
     "pt_BR-pf_dora-kokoro-mnn-v1.0": {
@@ -804,7 +844,12 @@ EXTRA_TTS_VOICES = {
         "quality": "high",
         "num_speakers": 1,
         "speaker_id_map": {},
-        "files": {},
+        "files": {
+            "pt/pt_BR/pf_dora/high/pf_dora.bin": {
+                "size_bytes": 261388,
+                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/pt/pt_BR/pf_dora/high/pf_dora.bin",
+            },
+        },
         "aliases": [],
     },
     # External Mimic3 model metadata source:
@@ -1353,7 +1398,9 @@ def build_shared_tts_support_packs(catalog: dict, voices: dict) -> None:
     needs_kokoro = any(voice.get("shared_pack") == KOKORO_SHARED_PACK_ID for voice in voices.values())
     needs_kokoro_mnn = any(voice.get("shared_pack") == KOKORO_MNN_SHARED_PACK_ID for voice in voices.values())
 
-    if needs_kokoro or needs_kokoro_mnn:
+    # kokoro_mnn voice packs carry their own voice file; only the deprecated ONNX
+    # engine still reads every voice from the shared file.
+    if needs_kokoro:
         catalog["packs"][KOKORO_VOICES_PACK_ID] = {
             "feature": "support",
             "kind": "tts-kokoro-voices",
@@ -1404,7 +1451,7 @@ def build_shared_tts_support_packs(catalog: dict, voices: dict) -> None:
                 }
                 for filename, file_info in KOKORO_MNN_SHARED_FILES.items()
             ],
-            "dependsOn": [KOKORO_VOICES_PACK_ID],
+            "dependsOn": [],
         }
 
 
