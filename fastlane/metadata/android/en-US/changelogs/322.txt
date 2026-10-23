@@ -1,0 +1,3 @@
+- Fix some PDFs failing to open
+- Lower memory usage for long texts and documents
+- Transliteration of the input field can now be selected and copied

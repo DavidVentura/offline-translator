@@ -14046,7 +14046,7 @@
       "onnx": "bin/piper/ka/ka_GE/natia/medium/ka_GE-natia-medium.onnx",
       "mnn": "bin/piper/ka/ka_GE/natia/medium/ka_GE-natia-medium.mnn",
       "quantBits": 8,
-      "onnxBytes": 0,
+      "onnxBytes": 63201294,
       "mnnBytes": 16864416,
       "feature": "tts"
     },
@@ -14102,7 +14102,7 @@
       "onnx": "bin/piper/mr/mr_IN/google/medium/mr_IN-google-medium.onnx",
       "mnn": "bin/piper/mr/mr_IN/google/medium/mr_IN-google-medium.mnn",
       "quantBits": 8,
-      "onnxBytes": 0,
+      "onnxBytes": 76768179,
       "mnnBytes": 20317492,
       "feature": "tts"
     },
@@ -14438,7 +14438,7 @@
       "onnx": "bin/piper/ur/ur_PK/aegis_female/medium/ur_PK-aegis_female-medium.onnx",
       "mnn": "bin/piper/ur/ur_PK/aegis_female/medium/ur_PK-aegis_female-medium.mnn",
       "quantBits": 8,
-      "onnxBytes": 0,
+      "onnxBytes": 63515589,
       "mnnBytes": 16977404,
       "feature": "tts"
     },
