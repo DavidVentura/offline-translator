@@ -674,6 +674,139 @@ EXTRA_TTS_VOICES = {
         "files": {},
         "aliases": [],
     },
+    "en_US-af_heart-kokoro-mnn-v1.0": {
+        "engine": "kokoro_mnn",
+        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
+        "key": "en_US-af_heart-kokoro-mnn-v1.0",
+        "name": "af_heart",
+        "language": {
+            "code": "en_US",
+            "family": "en",
+            "region": "US",
+            "name_native": "English",
+            "name_english": "English",
+            "country_english": "United States",
+        },
+        "quality": "high",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {},
+        "aliases": [],
+    },
+    "en_GB-bf_emma-kokoro-mnn-v1.0": {
+        "engine": "kokoro_mnn",
+        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
+        "key": "en_GB-bf_emma-kokoro-mnn-v1.0",
+        "name": "bf_emma",
+        "language": {
+            "code": "en_GB",
+            "family": "en",
+            "region": "GB",
+            "name_native": "English",
+            "name_english": "English",
+            "country_english": "Great Britain",
+        },
+        "quality": "high",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {},
+        "aliases": [],
+    },
+    "es_ES-ef_dora-kokoro-mnn-v1.0": {
+        "engine": "kokoro_mnn",
+        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
+        "key": "es_ES-ef_dora-kokoro-mnn-v1.0",
+        "name": "ef_dora",
+        "language": {
+            "code": "es_ES",
+            "family": "es",
+            "region": "ES",
+            "name_native": "Español",
+            "name_english": "Spanish",
+            "country_english": "Spain",
+        },
+        "quality": "high",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {},
+        "aliases": [],
+    },
+    "fr_FR-ff_siwis-kokoro-mnn-v1.0": {
+        "engine": "kokoro_mnn",
+        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
+        "key": "fr_FR-ff_siwis-kokoro-mnn-v1.0",
+        "name": "ff_siwis",
+        "language": {
+            "code": "fr_FR",
+            "family": "fr",
+            "region": "FR",
+            "name_native": "Français",
+            "name_english": "French",
+            "country_english": "France",
+        },
+        "quality": "high",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {},
+        "aliases": [],
+    },
+    "hi_IN-hf_alpha-kokoro-mnn-v1.0": {
+        "engine": "kokoro_mnn",
+        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
+        "key": "hi_IN-hf_alpha-kokoro-mnn-v1.0",
+        "name": "hf_alpha",
+        "language": {
+            "code": "hi_IN",
+            "family": "hi",
+            "region": "IN",
+            "name_native": "हिन्दी",
+            "name_english": "Hindi",
+            "country_english": "India",
+        },
+        "quality": "high",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {},
+        "aliases": [],
+    },
+    "it_IT-if_sara-kokoro-mnn-v1.0": {
+        "engine": "kokoro_mnn",
+        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
+        "key": "it_IT-if_sara-kokoro-mnn-v1.0",
+        "name": "if_sara",
+        "language": {
+            "code": "it_IT",
+            "family": "it",
+            "region": "IT",
+            "name_native": "Italiano",
+            "name_english": "Italian",
+            "country_english": "Italy",
+        },
+        "quality": "high",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {},
+        "aliases": [],
+    },
+    "pt_BR-pf_dora-kokoro-mnn-v1.0": {
+        "engine": "kokoro_mnn",
+        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
+        "key": "pt_BR-pf_dora-kokoro-mnn-v1.0",
+        "name": "pf_dora",
+        "language": {
+            "code": "pt_BR",
+            "family": "pt",
+            "region": "BR",
+            "name_native": "Português",
+            "name_english": "Portuguese",
+            "country_english": "Brazil",
+        },
+        "quality": "high",
+        "num_speakers": 1,
+        "speaker_id_map": {},
+        "files": {},
+        "aliases": [],
+    },
     # External Mimic3 model metadata source:
     # https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models
     "ko_KO-kss_low": {
@@ -1342,7 +1475,12 @@ def merge_tts(
     regions_by_language: dict[str, dict[str, dict]] = defaultdict(dict)
     for (app_language, region), region_voices in sorted(grouped.items()):
         limit = PER_LANGUAGE_VOICES_PER_REGION.get(app_language, DEFAULT_VOICES_PER_REGION)
-        ranked = sorted(region_voices, key=voice_sort_key)[:limit]
+        # Kokoro voices share one model across languages, so they are listed on
+        # top of the per-region cap instead of displacing a standalone voice, and
+        # after the standalone voices so they never become the default download.
+        standalone = [item for item in region_voices if item[1].get("shared_pack") != KOKORO_MNN_SHARED_PACK_ID]
+        shared = [item for item in region_voices if item[1].get("shared_pack") == KOKORO_MNN_SHARED_PACK_ID]
+        ranked = sorted(standalone, key=voice_sort_key)[:limit] + sorted(shared, key=voice_sort_key)
         voice_ids: list[str] = []
 
         for key, voice in ranked:

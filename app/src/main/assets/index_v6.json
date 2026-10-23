@@ -1,10 +1,10 @@
 {
   "formatVersion": 6,
-  "generatedAt": 1792502389,
+  "generatedAt": 1792780311,
   "dictionaryVersion": 1,
   "sources": {
     "languageIndexVersion": 1,
-    "languageIndexUpdatedAt": 1792502389,
+    "languageIndexUpdatedAt": 1792780311,
     "dictionaryIndexVersion": 1,
     "dictionaryIndexUpdatedAt": 1784028791,
     "gcsModelsUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
@@ -512,7 +512,8 @@
               "tts-piper-en-gb-alan-medium",
               "tts-piper-en-gb-alba-medium",
               "tts-piper-en-gb-jenny-dioco-medium",
-              "tts-piper-en-gb-northern-english-male-medium"
+              "tts-piper-en-gb-northern-english-male-medium",
+              "tts-kokoro_mnn-en-gb-bf-emma-kokoro-mnn-v1.0"
             ]
           },
           "US": {
@@ -521,7 +522,8 @@
               "tts-piper-en-us-amy-medium",
               "tts-piper-en-us-hfc-female-medium",
               "tts-piper-en-us-hfc-male-medium",
-              "tts-piper-en-us-joe-medium"
+              "tts-piper-en-us-joe-medium",
+              "tts-kokoro_mnn-en-us-af-heart-kokoro-mnn-v1.0"
             ]
           }
         },
@@ -559,7 +561,8 @@
             "voices": [
               "tts-piper-es-es-davefx-medium",
               "tts-piper-es-es-sharvard-medium",
-              "tts-piper-es-es-carlfm-x-low"
+              "tts-piper-es-es-carlfm-x-low",
+              "tts-kokoro_mnn-es-es-ef-dora-kokoro-mnn-v1.0"
             ]
           },
           "MX": {
@@ -724,7 +727,8 @@
               "tts-piper-fr-fr-siwis-medium",
               "tts-piper-fr-fr-tom-medium",
               "tts-piper-fr-fr-upmc-medium",
-              "tts-piper-fr-fr-mls-medium"
+              "tts-piper-fr-fr-mls-medium",
+              "tts-kokoro_mnn-fr-fr-ff-siwis-kokoro-mnn-v1.0"
             ]
           }
         },
@@ -850,7 +854,8 @@
             "voices": [
               "tts-piper-hi-in-rohan-medium",
               "tts-piper-hi-in-pratham-medium",
-              "tts-piper-hi-in-priyamvada-medium"
+              "tts-piper-hi-in-priyamvada-medium",
+              "tts-kokoro_mnn-hi-in-hf-alpha-kokoro-mnn-v1.0"
             ]
           }
         },
@@ -1006,7 +1011,8 @@
             "displayName": "Italy",
             "voices": [
               "tts-piper-it-it-paola-medium",
-              "tts-piper-it-it-riccardo-x-low"
+              "tts-piper-it-it-riccardo-x-low",
+              "tts-kokoro_mnn-it-it-if-sara-kokoro-mnn-v1.0"
             ]
           }
         },
@@ -1477,7 +1483,8 @@
               "tts-piper-pt-br-cadu-medium",
               "tts-piper-pt-br-jeff-medium",
               "tts-piper-pt-br-faber-medium",
-              "tts-piper-pt-br-edresson-low"
+              "tts-piper-pt-br-edresson-low",
+              "tts-kokoro_mnn-pt-br-pf-dora-kokoro-mnn-v1.0"
             ]
           },
           "PT": {
@@ -9358,6 +9365,24 @@
       ],
       "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/en/northern_english_male_medium.opus"
     },
+    "tts-kokoro_mnn-en-gb-bf-emma-kokoro-mnn-v1.0": {
+      "feature": "tts",
+      "engine": "kokoro_mnn",
+      "auxRole": "voices",
+      "language": "en",
+      "locale": "en_GB",
+      "region": "GB",
+      "voice": "bf_emma",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [],
+      "dependsOn": [
+        "tts-espeak-dict-en",
+        "tts-kokoro-mnn-v1.0-core"
+      ],
+      "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/en/bf_emma_high.opus"
+    },
     "tts-piper-en-us-amy-medium": {
       "feature": "tts",
       "engine": "piper",
@@ -9493,6 +9518,24 @@
         "tts-espeak-dict-en"
       ],
       "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/en/joe_medium.opus"
+    },
+    "tts-kokoro_mnn-en-us-af-heart-kokoro-mnn-v1.0": {
+      "feature": "tts",
+      "engine": "kokoro_mnn",
+      "auxRole": "voices",
+      "language": "en",
+      "locale": "en_US",
+      "region": "US",
+      "voice": "af_heart",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [],
+      "dependsOn": [
+        "tts-espeak-dict-en",
+        "tts-kokoro-mnn-v1.0-core"
+      ],
+      "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/en/af_heart_high.opus"
     },
     "tts-piper-es-ar-daniela-high": {
       "feature": "tts",
@@ -9632,6 +9675,24 @@
         "tts-espeak-dict-es"
       ],
       "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/es/carlfm_x_low.opus"
+    },
+    "tts-kokoro_mnn-es-es-ef-dora-kokoro-mnn-v1.0": {
+      "feature": "tts",
+      "engine": "kokoro_mnn",
+      "auxRole": "voices",
+      "language": "es",
+      "locale": "es_ES",
+      "region": "ES",
+      "voice": "ef_dora",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [],
+      "dependsOn": [
+        "tts-espeak-dict-es",
+        "tts-kokoro-mnn-v1.0-core"
+      ],
+      "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/es/ef_dora_high.opus"
     },
     "tts-piper-es-mx-ald-medium": {
       "feature": "tts",
@@ -10171,6 +10232,24 @@
       ],
       "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/fr/mls_medium.opus"
     },
+    "tts-kokoro_mnn-fr-fr-ff-siwis-kokoro-mnn-v1.0": {
+      "feature": "tts",
+      "engine": "kokoro_mnn",
+      "auxRole": "voices",
+      "language": "fr",
+      "locale": "fr_FR",
+      "region": "FR",
+      "voice": "ff_siwis",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [],
+      "dependsOn": [
+        "tts-espeak-dict-fr",
+        "tts-kokoro-mnn-v1.0-core"
+      ],
+      "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/fr/ff_siwis_high.opus"
+    },
     "tts-cotovia_vits-gl-es-sabela-cotovia-vits": {
       "feature": "tts",
       "engine": "cotovia_vits",
@@ -10466,6 +10545,24 @@
         "tts-espeak-dict-hi"
       ],
       "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/hi/priyamvada_medium.opus"
+    },
+    "tts-kokoro_mnn-hi-in-hf-alpha-kokoro-mnn-v1.0": {
+      "feature": "tts",
+      "engine": "kokoro_mnn",
+      "auxRole": "voices",
+      "language": "hi",
+      "locale": "hi_IN",
+      "region": "IN",
+      "voice": "hf_alpha",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [],
+      "dependsOn": [
+        "tts-espeak-dict-hi",
+        "tts-kokoro-mnn-v1.0-core"
+      ],
+      "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/hi/hf_alpha_high.opus"
     },
     "tts-coqui_vits-hr-hr-cv-coqui-vits": {
       "feature": "tts",
@@ -10872,6 +10969,24 @@
         "tts-espeak-dict-it"
       ],
       "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/it/riccardo_x_low.opus"
+    },
+    "tts-kokoro_mnn-it-it-if-sara-kokoro-mnn-v1.0": {
+      "feature": "tts",
+      "engine": "kokoro_mnn",
+      "auxRole": "voices",
+      "language": "it",
+      "locale": "it_IT",
+      "region": "IT",
+      "voice": "if_sara",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [],
+      "dependsOn": [
+        "tts-espeak-dict-it",
+        "tts-kokoro-mnn-v1.0-core"
+      ],
+      "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/it/if_sara_high.opus"
     },
     "tts-kokoro_mnn-ja-jp-jf-alpha-kokoro-mnn-v1.0": {
       "feature": "tts",
@@ -11828,6 +11943,24 @@
         "tts-espeak-dict-pt"
       ],
       "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/pt/edresson_low.opus"
+    },
+    "tts-kokoro_mnn-pt-br-pf-dora-kokoro-mnn-v1.0": {
+      "feature": "tts",
+      "engine": "kokoro_mnn",
+      "auxRole": "voices",
+      "language": "pt",
+      "locale": "pt_BR",
+      "region": "BR",
+      "voice": "pf_dora",
+      "quality": "high",
+      "numSpeakers": 1,
+      "aliases": [],
+      "files": [],
+      "dependsOn": [
+        "tts-espeak-dict-pt",
+        "tts-kokoro-mnn-v1.0-core"
+      ],
+      "sampleUrl": "https://offline-translator.davidv.dev/samples_ogg/pt/pf_dora_high.opus"
     },
     "tts-piper-pt-pt-tugão-medium": {
       "feature": "tts",
