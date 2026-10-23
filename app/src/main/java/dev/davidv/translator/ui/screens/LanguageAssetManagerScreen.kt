@@ -173,6 +173,15 @@ private data class TranslationUpgrade(
   }
 }
 
+private data class TtsUpgrade(
+  val languages: List<Language>,
+  val totalBytes: Long,
+) {
+  companion object {
+    val EMPTY = TtsUpgrade(emptyList(), 0L)
+  }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun VoicePickerDialog(
@@ -723,6 +732,18 @@ fun LanguageAssetManagerScreen(
       }
     }
 
+  val ttsUpgrade =
+    remember(catalog, rows) {
+      val codes = catalog.ttsUpgradeLanguageCodes().toSet()
+      val languages = rows.map { it.language }.filter { it.code in codes }
+      val plan = catalog.planTtsUpgrades(languages.map { it.code })
+      if (plan.tasks.isEmpty()) {
+        TtsUpgrade.EMPTY
+      } else {
+        TtsUpgrade(languages = languages, totalBytes = plan.totalSize.toLong())
+      }
+    }
+
   val sharedDictionaryUsersByLanguageCode =
     remember(rows) {
       rows
@@ -789,6 +810,21 @@ fun LanguageAssetManagerScreen(
           isDownloading = downloads[DownloadId.TranslationUpgrade].inFlightProgress != null,
           onDownload = {
             downloadManager.enqueue(DownloadRequest.TranslationUpgrade(translationUpgrade.languages))
+          },
+        )
+      }
+
+      if (ttsUpgrade.languages.isNotEmpty()) {
+        UpgradeCard(
+          text =
+            stringResource(
+              R.string.langmgr_tts_upgrade_available,
+              ttsUpgrade.languages.joinToString(", ") { it.displayName },
+            ),
+          totalBytes = ttsUpgrade.totalBytes,
+          isDownloading = downloads[DownloadId.TtsUpgrade].inFlightProgress != null,
+          onDownload = {
+            downloadManager.enqueue(DownloadRequest.TtsUpgrade(ttsUpgrade.languages))
           },
         )
       }

@@ -218,6 +218,10 @@ class LanguageCatalog private constructor(
 
   fun translationUpgradeLanguageCodes(): List<String> = handle.translationUpgradeLanguageCodes()
 
+  fun planTtsUpgrades(languageCodes: List<String>): DownloadPlan = handle.planTtsUpgrades(languageCodes)
+
+  fun ttsUpgradeLanguageCodes(): List<String> = handle.ttsUpgradeLanguageCodes()
+
   fun planRepair(): DownloadPlan = handle.planRepair()
 
   fun ocrEngineReady(): Boolean = handle.ocrEngineReady()

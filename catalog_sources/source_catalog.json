@@ -1,12 +1,12 @@
 {
   "formatVersion": 6,
-  "generatedAt": 1792796867,
+  "generatedAt": 1792798306,
   "translationModelsBaseUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
   "dictionaryBaseUrl": "https://offline-translator.davidv.dev/dictionaries",
   "dictionaryVersion": 1,
   "sources": {
     "languageIndexVersion": 1,
-    "languageIndexUpdatedAt": 1792796867,
+    "languageIndexUpdatedAt": 1792798306,
     "dictionaryIndexVersion": 1,
     "dictionaryIndexUpdatedAt": 1784028791,
     "gcsModelsUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
@@ -9516,6 +9516,24 @@
       "files": [
         {
           "name": "kokoro.mnn",
+          "sizeBytes": 967400,
+          "installPath": "bin/kokoro_mnn/v2/kokoro.mnn",
+          "url": "https://offline-translator.davidv.dev/tts/1/kokoro_mnn/v2/kokoro.mnn",
+          "role": "model",
+          "priority": 1,
+          "mirrorPath": "tts/1/kokoro_mnn/v2/kokoro.mnn"
+        },
+        {
+          "name": "kokoro.mnn.weight",
+          "sizeBytes": 70179368,
+          "installPath": "bin/kokoro_mnn/v2/kokoro.mnn.weight",
+          "url": "https://offline-translator.davidv.dev/tts/1/kokoro_mnn/v2/kokoro.mnn.weight",
+          "role": "modelWeight",
+          "priority": 1,
+          "mirrorPath": "tts/1/kokoro_mnn/v2/kokoro.mnn.weight"
+        },
+        {
+          "name": "kokoro.mnn",
           "sizeBytes": 1028464,
           "installPath": "bin/kokoro_mnn/kokoro.mnn",
           "url": "https://offline-translator.davidv.dev/tts/1/kokoro_mnn/kokoro.mnn",
@@ -12152,6 +12170,9 @@
           "url": "https://offline-translator.davidv.dev/tts/1/ja/ja_JP/jf_alpha/high/jf_alpha.bin",
           "role": "voices",
           "priority": 0,
+          "replaces": [
+            "bin/kokoro/voices-v1.0.bin"
+          ],
           "mirrorPath": "tts/1/ja/ja_JP/jf_alpha/high/jf_alpha.bin"
         }
       ],
@@ -12309,6 +12330,9 @@
           "url": "https://offline-translator.davidv.dev/tts/1/ko/ko_KR/jf_alpha/high/jf_alpha.bin",
           "role": "voices",
           "priority": 0,
+          "replaces": [
+            "bin/kokoro/voices-v1.0.bin"
+          ],
           "mirrorPath": "tts/1/ko/ko_KR/jf_alpha/high/jf_alpha.bin"
         }
       ],

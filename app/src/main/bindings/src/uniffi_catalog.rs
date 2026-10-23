@@ -703,6 +703,21 @@ impl CatalogHandle {
             .collect()
     }
 
+    fn plan_tts_upgrades(&self, language_codes: Vec<String>) -> translator::DownloadPlan {
+        let language_codes = language_codes
+            .into_iter()
+            .map(translator::LanguageCode::from)
+            .collect::<Vec<_>>();
+        translator::plan_tts_upgrades(&self.snapshot(), &language_codes)
+    }
+
+    fn tts_upgrade_language_codes(&self) -> Vec<String> {
+        translator::tts_upgrade_language_codes(&self.snapshot())
+            .into_iter()
+            .map(|language_code| language_code.code)
+            .collect()
+    }
+
     fn plan_repair(&self) -> translator::DownloadPlan {
         translator::plan_repair(&self.snapshot())
     }

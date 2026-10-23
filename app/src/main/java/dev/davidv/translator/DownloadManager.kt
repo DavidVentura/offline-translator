@@ -133,6 +133,7 @@ class DownloadManager(
       is DownloadRequest.Tts -> catalog.planDownload(request.language.code, Feature.TTS, request.packId)
       is DownloadRequest.OcrUpgrade -> catalog.planOcrEngineUpgrades(request.languages.map { it.code }, request.engine)
       is DownloadRequest.TranslationUpgrade -> catalog.planTranslationUpgrades(request.languages.map { it.code })
+      is DownloadRequest.TtsUpgrade -> catalog.planTtsUpgrades(request.languages.map { it.code })
       is DownloadRequest.Support -> catalog.planSupportDownloadByKind(request.kind.wire)
       DownloadRequest.Repair -> catalog.planRepair()
       DownloadRequest.Catalog -> error("The catalog index is fetched, not planned")
@@ -156,6 +157,7 @@ class DownloadManager(
       is DownloadRequest.Tts -> context.getString(R.string.download_failed_tts, request.language.displayName)
       is DownloadRequest.OcrUpgrade -> context.getString(R.string.download_failed_ocr_batch)
       is DownloadRequest.TranslationUpgrade -> context.getString(R.string.download_failed_translation_batch)
+      is DownloadRequest.TtsUpgrade -> context.getString(R.string.download_failed_tts_batch)
       is DownloadRequest.Support ->
         when (request.kind) {
           SupportKind.ADBLOCK -> context.getString(R.string.download_failed_adblock)

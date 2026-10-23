@@ -63,6 +63,10 @@ KOKORO_SHARED_PACK_ID = "tts-kokoro-v1.0-core"
 KOKORO_MNN_SHARED_PACK_ID = "tts-kokoro-mnn-v1.0-core"
 KOKORO_VOICES_PACK_ID = "tts-kokoro-voices-v1.0"
 
+# The previous catalog installed every Kokoro voice into this one shared file; a
+# voice pack that existed then lists it as replaced so those installs keep working.
+KOKORO_LEGACY_VOICES_INSTALL_PATH = "bin/kokoro/voices-v1.0.bin"
+
 COTOVIA_LEXICON_PACK_IDS = {"gl": "tts-cotovia-lexicon-gl"}
 COTOVIA_LEXICON_FILES = {
     "gl": {
@@ -635,6 +639,7 @@ EXTRA_TTS_VOICES = {
             "ja/ja_JP/jf_alpha/high/jf_alpha.bin": {
                 "size_bytes": 261390,
                 "url": f"{TTS_BASE_URL}/{TTS_VERSION}/ja/ja_JP/jf_alpha/high/jf_alpha.bin",
+                "replaces": [KOKORO_LEGACY_VOICES_INSTALL_PATH],
             },
         },
         "aliases": [],
@@ -680,6 +685,7 @@ EXTRA_TTS_VOICES = {
             "ko/ko_KR/jf_alpha/high/jf_alpha.bin": {
                 "size_bytes": 261390,
                 "url": f"{TTS_BASE_URL}/{TTS_VERSION}/ko/ko_KR/jf_alpha/high/jf_alpha.bin",
+                "replaces": [KOKORO_LEGACY_VOICES_INSTALL_PATH],
             },
         },
         "aliases": [],
@@ -1223,16 +1229,38 @@ KOKORO_SHARED_FILES = {
     },
 }
 
-KOKORO_MNN_SHARED_FILES = {
-    "kokoro.mnn": {
+# The previous model stays listed at lower priority so installs that already have
+# it keep working; fresh installs and the TTS upgrade fetch the current one.
+KOKORO_MNN_SHARED_FILES = [
+    {
+        "name": "kokoro.mnn",
+        "install_path": "bin/kokoro_mnn/v2/kokoro.mnn",
+        "size_bytes": 967400,
+        "url": f"{TTS_BASE_URL}/{TTS_VERSION}/kokoro_mnn/v2/kokoro.mnn",
+        "priority": 1,
+    },
+    {
+        "name": "kokoro.mnn.weight",
+        "install_path": "bin/kokoro_mnn/v2/kokoro.mnn.weight",
+        "size_bytes": 70179368,
+        "url": f"{TTS_BASE_URL}/{TTS_VERSION}/kokoro_mnn/v2/kokoro.mnn.weight",
+        "priority": 1,
+    },
+    {
+        "name": "kokoro.mnn",
+        "install_path": "bin/kokoro_mnn/kokoro.mnn",
         "size_bytes": 1028464,
         "url": f"{TTS_BASE_URL}/{TTS_VERSION}/kokoro_mnn/kokoro.mnn",
+        "priority": 0,
     },
-    "kokoro.mnn.weight": {
+    {
+        "name": "kokoro.mnn.weight",
+        "install_path": "bin/kokoro_mnn/kokoro.mnn.weight",
         "size_bytes": 86949555,
         "url": f"{TTS_BASE_URL}/{TTS_VERSION}/kokoro_mnn/kokoro.mnn.weight",
+        "priority": 0,
     },
-}
+]
 
 KOKORO_VOICES_FILES = {
     "voices-v1.0.bin": {
@@ -1442,14 +1470,14 @@ def build_shared_tts_support_packs(catalog: dict, voices: dict) -> None:
             "kind": "tts-kokoro-mnn-core",
             "files": [
                 {
-                    "name": filename,
+                    "name": file_info["name"],
                     "sizeBytes": file_info["size_bytes"],
-                    "installPath": f"bin/kokoro_mnn/{filename}",
+                    "installPath": file_info["install_path"],
                     "url": file_info["url"],
-                    "role": tts_file_role(filename),
-                    "priority": 0,
+                    "role": tts_file_role(file_info["name"]),
+                    "priority": file_info["priority"],
                 }
-                for filename, file_info in KOKORO_MNN_SHARED_FILES.items()
+                for file_info in KOKORO_MNN_SHARED_FILES
             ],
             "dependsOn": [],
         }
@@ -1557,6 +1585,7 @@ def merge_tts(
                         "url": file_info.get("url") or f"{piper_base_url.rstrip('/')}/{source_path}",
                         "role": tts_file_role(filename),
                         "priority": 0,
+                        **({"replaces": file_info["replaces"]} if "replaces" in file_info else {}),
                     }
                 )
 

@@ -92,6 +92,7 @@
     <string name="langmgr_filter">Filter languages</string>
     <string name="langmgr_ocr_upgrade_available">An improved text detection model is available.</string>
     <string name="langmgr_translation_upgrade_available">Better quality translations available for: %1$s</string>
+    <string name="langmgr_tts_upgrade_available">Faster, smaller voices available for: %1$s</string>
     <string name="langmgr_delete_shared_title">Delete shared dictionary?</string>
     <string name="langmgr_delete_shared_body">This dictionary is shared with %1$s.\nDeleting it will remove the dictionary for all of them.</string>
     <string name="langmgr_download_size">Download %1$s</string>
@@ -151,6 +152,7 @@
     <string name="download_failed_ocr">%1$s text recognition download failed</string>
     <string name="download_failed_ocr_batch">Text recognition batch download failed</string>
     <string name="download_failed_translation_batch">Failed to download better quality translations</string>
+    <string name="download_failed_tts_batch">Failed to download the faster voices</string>
     <string name="download_failed_dictionary">%1$s dictionary download failed</string>
     <string name="download_failed_tts">%1$s voice download failed</string>
     <string name="download_failed_adblock">Adblock download failed</string>

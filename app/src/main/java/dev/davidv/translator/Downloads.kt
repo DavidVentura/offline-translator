@@ -43,6 +43,8 @@ sealed interface DownloadId {
 
   data object TranslationUpgrade : DownloadId
 
+  data object TtsUpgrade : DownloadId
+
   data class Support(
     val kind: SupportKind,
   ) : DownloadId
@@ -85,6 +87,12 @@ sealed interface DownloadRequest {
     val languages: List<Language>,
   ) : DownloadRequest {
     override val id: DownloadId get() = DownloadId.TranslationUpgrade
+  }
+
+  data class TtsUpgrade(
+    val languages: List<Language>,
+  ) : DownloadRequest {
+    override val id: DownloadId get() = DownloadId.TtsUpgrade
   }
 
   data class Support(
