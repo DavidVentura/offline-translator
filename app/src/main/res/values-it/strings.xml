@@ -39,10 +39,13 @@
     <string name="settings_hide_input">Nascondi l\'input</string>
     <string name="settings_popup_position">Posizione del popup</string>
     <string name="settings_popup_size">Dimensione del popup: %1$d%%</string>
+    <string name="settings_popup_size_expanded">Dimensione del popup: espansa</string>
     <string name="settings_screen_translation">Traduzione dello schermo</string>
     <string name="settings_screen_translation_desc">Traduci il testo direttamente sopra le altre app.</string>
     <string name="settings_floating_button">Pulsante sempre attivo</string>
     <string name="settings_floating_button_desc">Richiede il ruolo di accessibilità</string>
+    <string name="settings_offer_accessibility_service">Servizio di accessibilità</string>
+    <string name="settings_offer_accessibility_service_desc">Disattivalo per rimuovere l\'app dalle impostazioni di accessibilità di Android; il pulsante sempre attivo smetterà di funzionare</string>
     <string name="settings_shortcut">Traduci lo schermo con scorciatoia</string>
     <string name="settings_shortcut_desc">Tieni premuto home o accensione per attivare</string>
     <string name="settings_on_shortcut">All\'attivazione della scorciatoia</string>
@@ -100,6 +103,7 @@
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">L\'autorizzazione per la fotocamera è necessaria per la traduzione in tempo reale.</string>
     <string name="camera_need_ocr_models">Devi scaricare i modelli di riconoscimento del testo per questa lingua</string>
+    <string name="browser_page_language_missing">Questa pagina è in %1$s, una lingua non installata</string>
     <string name="browser_no_source_language">Nessuna lingua di partenza disponibile. Installane una dalla schermata principale, oppure imposta una lingua di partenza predefinita nelle impostazioni.</string>
     <string name="browser_reader_unavailable">Modalità lettura non disponibile per questa pagina</string>
     <string name="browser_translate_image">Traduci immagine</string>
@@ -118,6 +122,7 @@
     <string name="tts_catalog_unavailable">Catalogo non disponibile</string>
     <string name="tts_no_voice">Nessuna voce installata per %1$s</string>
     <string name="tts_synthesis_failed">Sintesi vocale non riuscita per %1$s</string>
+    <string name="tts_synthesis_error">Sintesi vocale non riuscita per %1$s: %2$s</string>
     <string name="tts_sample_fallback">Questo è un esempio di sintesi vocale di Offline Translator.</string>
     <!-- translation -->
     <string name="translation_error">Errore di traduzione: %1$s</string>
@@ -125,6 +130,7 @@
     <string name="download_failed_core">Download di %1$s non riuscito</string>
     <string name="download_failed_ocr">Download del riconoscimento del testo di %1$s non riuscito</string>
     <string name="download_failed_ocr_batch">Download batch del riconoscimento del testo non riuscito</string>
+    <string name="download_failed_translation_batch">Download delle traduzioni di qualità migliore non riuscito</string>
     <string name="download_failed_dictionary">Download del dizionario di %1$s non riuscito</string>
     <string name="download_failed_tts">Download della voce di %1$s non riuscito</string>
     <string name="download_failed_adblock">Download Adblock non riuscito</string>
@@ -133,6 +139,9 @@
     <string name="download_catalog_save_failed">Impossibile salvare il catalogo</string>
     <string name="download_unknown_error">Errore sconosciuto</string>
     <string name="download_catalog_failed">Impossibile scaricare il catalogo: %1$s</string>
+    <string name="download_notif_channel_name">Download</string>
+    <string name="download_notif_channel_desc">Mostra l\'avanzamento durante il download dei dati delle lingue</string>
+    <string name="download_notif_title">Download delle lingue in corso</string>
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">Richiama questo assistente sopra il testo per tradurlo</string>
     <string name="assistant_collecting_context">Raccolta del contesto dello schermo…</string>
@@ -214,9 +223,10 @@
     <string name="detected_translate_from">Traduci da</string>
     <string name="detected_missing_language">Lingua mancante</string>
     <string name="langmgr_ocr_upgrade_available">È disponibile un modello di rilevamento del testo migliorato.</string>
+    <string name="langmgr_translation_upgrade_available">Traduzioni di qualità migliore disponibili per: %1$s</string>
     <string name="settings_experimental_screen_translate">Traduzione schermo (sperimentale)</string>
     <string name="feature_unavailable_tts">Sintetizzatore vocale non disponibile, scaricalo dalla pagina di gestione delle lingue</string>
-    <string name="feature_unavailable_dictionary">Ddizionario non disponibile, scaricalo dalla pagina di gestione delle lingue</string>
+    <string name="feature_unavailable_dictionary">Dizionario non disponibile, scaricalo dalla pagina di gestione delle lingue</string>
     <string name="image_crop_action">Taglia</string>
     <string name="howto_alt_title">Scegli parole alternative</string>
     <string name="howto_alt_body">Tocca il pulsante delle alternative, quindi tocca qualsiasi parola per sostituirla. Il modello può fornire alcune alternative, altrimenti puoi scegliere la tua. Il resto della frase si ritraduce per corrispondere.</string>
@@ -225,12 +235,14 @@
     <string name="a11y_region_confirm">Conferma regione</string>
     <string name="a11y_translate_screen_live">Traduci schermo in tempo reale</string>
     <string name="a11y_refresh">Ricarica</string>
+    <string name="a11y_select_text">Seleziona testo</string>
     <string name="a11y_set_translation_area">Imposta area traduzione</string>
     <string name="a11y_retry_download">Riprova scaricamento</string>
     <string name="a11y_download">Scarica</string>
     <string name="a11y_share_image">Condividi immagine</string>
     <string name="a11y_close_fullscreen">Chiudi visualizzazione schermo intero</string>
     <string name="a11y_translation_output">Output traduzione</string>
+    <string name="a11y_output_textview">Testo di output</string>
     <string name="a11y_copy_translation">Copia traduzione</string>
     <string name="a11y_alternatives_mode_on">Esci da modalità alternativa</string>
     <string name="a11y_alternatives_mode_off">Modalità alternativa: tocca una parola per vedere altre traduzioni</string>
@@ -241,9 +253,12 @@
     <string name="a11y_dictionary_mode_on">Esci da modalità dizionario</string>
     <string name="a11y_dictionary_mode_off">Modalità dizionario: tocca una parola per cercarla</string>
     <string name="a11y_source_document">Documento</string>
+    <string name="a11y_input_sources">Sorgenti di input</string>
     <string name="a11y_source_photos">Foto</string>
     <string name="a11y_source_gallery">Galleria</string>
     <string name="a11y_source_camera">Fotocamera</string>
+    <string name="shortcut_live_camera_short">Fotocamera</string>
+    <string name="shortcut_live_camera_long">Traduci con la fotocamera</string>
     <string name="a11y_back">Indietro</string>
     <string name="a11y_reverse_translation_direction">Direzione traduzione inversa</string>
     <string name="a11y_settings">Impostazioni</string>
@@ -254,10 +269,15 @@
     <string name="a11y_main_screen">Schermata principale</string>
     <string name="a11y_translate_image_or_file">Traduci immagine o file</string>
     <string name="a11y_clear_input">Pulisci input</string>
+    <string name="a11y_resize_split">Ridimensiona le aree di input e output</string>
     <string name="a11y_paste">Incolla</string>
     <string name="a11y_voice_input">Input vocale</string>
+    <string name="a11y_detected_language_toast">Avviso lingua rilevata</string>
+    <string name="a11y_switch_detected_language">Passa alla lingua rilevata</string>
     <string name="a11y_torch_on">Torcia accesa</string>
     <string name="a11y_torch_off">Torcia spenta</string>
+    <string name="a11y_live_overlay_on">Sovrapposizione in tempo reale attiva</string>
+    <string name="a11y_live_overlay_off">Sovrapposizione in tempo reale disattivata</string>
     <string name="a11y_collapse">Chiudi</string>
     <string name="a11y_expand">Espandi</string>
     <string name="a11y_delete">Cancella</string>
@@ -274,15 +294,17 @@
     <string name="a11y_zoomable_original_image">Immagine originale zoomabile</string>
     <string name="a11y_zoomable_translated_image">Immagine tradotta zoomabile</string>
     <string name="settings_http_server">Abilita server HTTP compatibile con LibreTranslate</string>
-    <string name="settings_http_server_desc">Consente ad altre app di richiedere traduzioni programmaticamente</string>
+    <string name="settings_http_server_desc">Consente ad altre app di richiedere traduzioni</string>
     <string name="settings_http_server_port">Porta</string>
     <string name="settings_http_server_bind">Collega su</string>
     <string name="settings_http_server_bind_all">tutte le interfacce</string>
+    <string name="settings_http_server_title">Server API</string>
     <string name="http_server_notif_channel_name">API traduzione</string>
     <string name="http_server_notif_channel_desc">Mostrato mentre il server compatibile LibreTranslate è in esecuzione</string>
     <string name="http_server_notif_running">API traduzione</string>
     <string name="http_server_notif_text">In ascolto su %1$s:%2$d</string>
     <string name="http_server_notif_error">Impossibile avviare sulla porta %1$d</string>
+    <string name="http_server_notif_disable">Disattiva</string>
     <string name="settings_multi_target">Lingue di destinazione multiple</string>
     <string name="a11y_add_target_language">Aggiungi lingua di destinazione</string>
     <string name="a11y_remove_target_language">Rimuovi lingua di destinazione</string>
@@ -291,6 +313,8 @@
     <string name="a11y_help">Aiuto</string>
     <string name="a11y_primary_input">Input principale</string>
     <string name="a11y_rotate_90">Ruota di 90 gradi</string>
+    <string name="a11y_switch_rectangular_crop">Passa al ritaglio rettangolare</string>
+    <string name="a11y_detect_document_corners">Rileva gli angoli del documento</string>
     <string name="a11y_cancel_download">Annulla Scaricamento</string>
     <string name="a11y_delete_language">Cancella Lingua</string>
     <string name="a11y_replace_text">Sostituisci testo</string>

@@ -39,10 +39,13 @@
     <string name="settings_hide_input">أخفِ الإدخال</string>
     <string name="settings_popup_position">موضع النافذة المنبثقة</string>
     <string name="settings_popup_size">حجم النافذة المنبثقة: %1$d%%</string>
+    <string name="settings_popup_size_expanded">حجم النافذة المنبثقة: موسَّع</string>
     <string name="settings_screen_translation">ترجمة الشاشة</string>
     <string name="settings_screen_translation_desc">ترجم النص مباشرةً فوق التطبيقات الأخرى.</string>
     <string name="settings_floating_button">زر دائم الظهور</string>
     <string name="settings_floating_button_desc">يتطلب دور إمكانية الوصول</string>
+    <string name="settings_offer_accessibility_service">خدمة إمكانية الوصول</string>
+    <string name="settings_offer_accessibility_service_desc">أوقفها لإزالة التطبيق من إعدادات إمكانية الوصول في أندرويد؛ سيتوقف الزر دائم الظهور عن العمل</string>
     <string name="settings_shortcut">ترجمة الشاشة عبر الاختصار</string>
     <string name="settings_shortcut_desc">اضغط مطولاً على زر الصفحة الرئيسية أو زر الطاقة للتفعيل</string>
     <string name="settings_on_shortcut">عند استدعاء الاختصار</string>
@@ -100,6 +103,7 @@
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">إذن الكاميرا مطلوب للترجمة المباشرة.</string>
     <string name="camera_need_ocr_models">تحتاج إلى تنزيل نماذج التعرُّف على النص لهذه اللغة</string>
+    <string name="browser_page_language_missing">هذه الصفحة باللغة %1$s، وهي غير مثبّتة</string>
     <string name="browser_no_source_language">لا توجد لغة مصدر متاحة. ثبّت واحدة من الشاشة الرئيسية أولاً، أو حدّد لغة مصدر افتراضية في الإعدادات.</string>
     <string name="browser_reader_unavailable">وضع القارئ غير متاح لهذه الصفحة</string>
     <string name="browser_translate_image">ترجمة الصورة</string>
@@ -133,6 +137,9 @@
     <string name="download_catalog_save_failed">تعذّر حفظ الفهرس المفصل</string>
     <string name="download_unknown_error">خطأ غير معروف</string>
     <string name="download_catalog_failed">تعذّر تنزيل الفهرس المفصل: %1$s</string>
+    <string name="download_notif_channel_name">التنزيلات</string>
+    <string name="download_notif_channel_desc">يعرض التقدّم أثناء تنزيل بيانات اللغة</string>
+    <string name="download_notif_title">يُنزِّل اللغات</string>
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">استدعِ هذا المساعد فوق النص لترجمته</string>
     <string name="assistant_collecting_context">يجمّع محتوى الشاشة…</string>
@@ -242,9 +249,12 @@
     <string name="a11y_output_textview">عرض النص الناتج</string>
     <string name="a11y_copy_translation">انسخ الترجمة</string>
     <string name="a11y_source_document">المستند</string>
+    <string name="a11y_input_sources">مصادر الإدخال</string>
     <string name="a11y_source_photos">الصور</string>
     <string name="a11y_source_gallery">المعرض</string>
     <string name="a11y_source_camera">الكاميرا</string>
+    <string name="shortcut_live_camera_short">الكاميرا</string>
+    <string name="shortcut_live_camera_long">ترجم بالكاميرا</string>
     <string name="a11y_back">ارجع</string>
     <string name="a11y_reverse_translation_direction">اعكس اتجاه الترجمة</string>
     <string name="a11y_settings">الإعدادات</string>
@@ -262,8 +272,8 @@
     <string name="a11y_switch_detected_language">بدّل إلى اللغة المكتشفة</string>
     <string name="a11y_torch_on">أشعل الشعلة</string>
     <string name="a11y_torch_off">أطفئ الشعلة</string>
-    <string name="a11y_live_overlay_on">شغّل التراكب المباشر</string>
-    <string name="a11y_live_overlay_off">عطّل التراكب المباشر</string>
+    <string name="a11y_live_overlay_on">التراكب المباشر مفعّل</string>
+    <string name="a11y_live_overlay_off">التراكب المباشر معطّل</string>
     <string name="a11y_collapse">اطوِ</string>
     <string name="a11y_expand">وسِّع</string>
     <string name="a11y_delete">احذف</string>
@@ -296,7 +306,7 @@
     <string name="a11y_dictionary_mode_on">اخرج من وضع القاموس</string>
     <string name="a11y_dictionary_mode_off">وضع القاموس: انقر على كلمة ما للبحث عنها</string>
     <string name="settings_http_server">فعِّل خادم HTTP متوافق مع LibreTranslate</string>
-    <string name="settings_http_server_desc">يسمح للتطبيقات الأخرى بطلب الترجمات برمجيًّا</string>
+    <string name="settings_http_server_desc">يسمح للتطبيقات الأخرى بطلب الترجمات</string>
     <string name="settings_http_server_port">المنفذ</string>
     <string name="settings_http_server_bind">ربط على</string>
     <string name="settings_http_server_bind_localhost">localhost</string>
@@ -309,8 +319,8 @@
     <string name="a11y_select_text">حدّد نصًا</string>
     <string name="http_server_notif_disable">عطِّل</string>
     <string name="a11y_resize_split">أعد تحجيم مناطق الإدخال والإخراج</string>
-    <string name="langmgr_translation_upgrade_available">تتوفّر ترجمة مُحسّنة لـ: %1$s</string>
-    <string name="download_failed_translation_batch">فشل تنزيل تحديث الترجمة</string>
+    <string name="langmgr_translation_upgrade_available">تتوفّر ترجمات بجودة أفضل لـ: %1$s</string>
+    <string name="download_failed_translation_batch">فشل تنزيل الترجمات ذات الجودة الأفضل</string>
     <string name="settings_http_server_title">خادم API</string>
     <string name="tts_synthesis_error">فشل توليف الكلام لـ %1$s: %2$s</string>
 </resources>

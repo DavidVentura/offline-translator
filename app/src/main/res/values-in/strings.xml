@@ -39,10 +39,13 @@
     <string name="settings_hide_input">Sembunyikan input</string>
     <string name="settings_popup_position">Posisi popup</string>
     <string name="settings_popup_size">Ukuran popup: %1$d%%</string>
+    <string name="settings_popup_size_expanded">Ukuran popup: Diperluas</string>
     <string name="settings_screen_translation">Terjemahan layar</string>
     <string name="settings_screen_translation_desc">Terjemahkan teks langsung di atas aplikasi lain.</string>
     <string name="settings_floating_button">Tombol selalu aktif</string>
     <string name="settings_floating_button_desc">Memerlukan izin aksesibilitas</string>
+    <string name="settings_offer_accessibility_service">Layanan aksesibilitas</string>
+    <string name="settings_offer_accessibility_service_desc">Matikan untuk menghapus aplikasi dari pengaturan aksesibilitas Android; tombol selalu aktif akan berhenti berfungsi</string>
     <string name="settings_shortcut">Terjemahkan layar lewat pintasan</string>
     <string name="settings_shortcut_desc">Tekan lama tombol beranda atau daya untuk memicu</string>
     <string name="settings_on_shortcut">Saat pintasan dijalankan</string>
@@ -103,6 +106,7 @@
     <!-- camera / browser / screen translate -->
     <string name="camera_permission_rationale">Izin kamera diperlukan untuk terjemahan langsung.</string>
     <string name="camera_need_ocr_models">Kamu perlu mengunduh model pengenalan teks (untuk gambar) untuk bahasa ini</string>
+    <string name="browser_page_language_missing">Halaman ini dalam bahasa %1$s, yang belum terpasang</string>
     <string name="browser_no_source_language">Tidak ada bahasa sumber yang tersedia. Pasang satu dari layar utama terlebih dahulu, atau tetapkan bahasa sumber bawaan di pengaturan.</string>
     <string name="browser_reader_unavailable">Mode baca tidak tersedia untuk halaman ini</string>
     <string name="browser_translate_image">Terjemahkan gambar</string>
@@ -121,6 +125,7 @@
     <string name="tts_catalog_unavailable">Katalog tidak tersedia</string>
     <string name="tts_no_voice">Tidak ada suara yang terpasang untuk %1$s</string>
     <string name="tts_synthesis_failed">Sintesis suara gagal untuk %1$s</string>
+    <string name="tts_synthesis_error">Sintesis suara gagal untuk %1$s: %2$s</string>
     <string name="tts_sample_fallback">Ini adalah contoh suara dari Offline Translator.</string>
     <!-- translation -->
     <string name="translation_error">Kesalahan terjemahan: %1$s</string>
@@ -136,6 +141,9 @@
     <string name="download_catalog_save_failed">Gagal menyimpan katalog</string>
     <string name="download_unknown_error">Kesalahan tidak diketahui</string>
     <string name="download_catalog_failed">Gagal mengunduh katalog: %1$s</string>
+    <string name="download_notif_channel_name">Unduhan</string>
+    <string name="download_notif_channel_desc">Menampilkan kemajuan saat data bahasa diunduh</string>
+    <string name="download_notif_title">Mengunduh bahasa</string>
     <!-- assistant overlay status -->
     <string name="assistant_invoke_prompt">Panggil asisten ini di atas teks untuk menerjemahkannya</string>
     <string name="assistant_collecting_context">Mengumpulkan konteks layar…</string>
@@ -219,9 +227,9 @@
     <string name="a11y_remove_target_language">Hapus bahasa target</string>
     <string name="feature_unavailable_tts">Text-to-speech tidak tersedia, unduh dari halaman kelola bahasa</string>
     <string name="feature_unavailable_dictionary">Kamus tidak tersedia, unduh dari halaman kelola bahasa</string>
-    <string name="langmgr_translation_upgrade_available">Terjemahan yang ditingkatkan tersedia untuk: %1$s</string>
+    <string name="langmgr_translation_upgrade_available">Terjemahan berkualitas lebih baik tersedia untuk: %1$s</string>
     <string name="image_crop_action">Potong</string>
-    <string name="download_failed_translation_batch">Pengunduhan peningkatan terjemahan gagal</string>
+    <string name="download_failed_translation_batch">Gagal mengunduh terjemahan berkualitas lebih baik</string>
     <string name="howto_alt_title">Pilih kata alternatif</string>
     <string name="howto_alt_body">Ketuk tombol alternatif, lalu ketuk kata apa pun untuk menggantinya. Model mungkin menyediakan beberapa alternatif, jika tidak, Anda dapat mengisinya sendiri. Sisa kalimat diterjemahkan ulang agar sesuai.</string>
     <string name="a11y_cancel">Batal</string>
@@ -256,9 +264,12 @@
     <string name="a11y_dictionary_mode_on">Keluar dari mode kamus</string>
     <string name="a11y_dictionary_mode_off">Mode kamus: ketuk kata untuk mencarinya</string>
     <string name="a11y_source_document">Dokumen</string>
+    <string name="a11y_input_sources">Sumber input</string>
     <string name="a11y_source_photos">Foto</string>
     <string name="a11y_source_gallery">Galeri</string>
     <string name="a11y_source_camera">Kamera</string>
+    <string name="shortcut_live_camera_short">Kamera</string>
+    <string name="shortcut_live_camera_long">Terjemahkan dengan kamera</string>
     <string name="a11y_back">Kembali</string>
     <string name="a11y_reverse_translation_direction">Balik arah terjemahan</string>
     <string name="a11y_settings">Pengaturan</string>
@@ -295,7 +306,7 @@
     <string name="a11y_zoomable_original_image">Gambar asli yang dapat diperbesar</string>
     <string name="a11y_zoomable_translated_image">Gambar terjemahan yang dapat diperbesar</string>
     <string name="settings_http_server">Aktifkan server HTTP yang kompatibel dengan LibreTranslate</string>
-    <string name="settings_http_server_desc">Memungkinkan aplikasi lain meminta terjemahan secara terprogram</string>
+    <string name="settings_http_server_desc">Memungkinkan aplikasi lain meminta terjemahan</string>
     <string name="settings_http_server_port">Port</string>
     <string name="settings_http_server_bind">Ikat pada</string>
     <string name="settings_http_server_bind_localhost">localhost</string>

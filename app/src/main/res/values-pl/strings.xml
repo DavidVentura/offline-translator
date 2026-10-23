@@ -222,9 +222,9 @@
     <string name="a11y_remove_target_language">Usuń język docelowy</string>
     <string name="feature_unavailable_tts">Funkcja zamiany tekstu na mowę nie jest dostępna – pobierz ją ze strony zarządzania językami</string>
     <string name="feature_unavailable_dictionary">Słownik jest niedostępny – pobierz go ze strony zarządzania językami</string>
-    <string name="langmgr_translation_upgrade_available">Dostępne jest ulepszone tłumaczenie dla: %1$s</string>
+    <string name="langmgr_translation_upgrade_available">Dostępne są tłumaczenia lepszej jakości dla: %1$s</string>
     <string name="image_crop_action">Przytnij</string>
-    <string name="download_failed_translation_batch">Pobieranie aktualizacji tłumaczenia nie powiodło się</string>
+    <string name="download_failed_translation_batch">Nie udało się pobrać tłumaczeń lepszej jakości</string>
     <string name="howto_alt_title">Wybierz inne słowa</string>
     <string name="howto_alt_body">Dotknij przycisku \"inne\", a następnie dotknij dowolne słowo, aby je zastąpić. Model może zaproponować kilka opcji. W przeciwnym razie możesz wpisać własne. Pozostała część zdania zostanie ponownie przetłumaczona tak, aby pasowała do zmiany.</string>
     <string name="a11y_cancel">Anuluj</string>
@@ -298,7 +298,7 @@
     <string name="a11y_zoomable_original_image">Oryginalny obraz z możliwością powiększania</string>
     <string name="a11y_zoomable_translated_image">Przetłumaczony obraz z możliwością powiększania</string>
     <string name="settings_http_server">Włącz serwer HTTP zgodny z LibreTranslate</string>
-    <string name="settings_http_server_desc">Umożliwia innym aplikacjom programowe wysyłanie żądań o przetłumaczenie</string>
+    <string name="settings_http_server_desc">Umożliwia innym aplikacjom wysyłanie żądań tłumaczenia</string>
     <string name="settings_http_server_port">Port</string>
     <string name="settings_http_server_bind">Włączono przypisywanie</string>
     <string name="settings_http_server_bind_localhost">localhost</string>
@@ -313,7 +313,7 @@
     <string name="tts_synthesis_error">Wystąpił błąd syntezy mowy dla %1$s: %2$s</string>
     <string name="download_notif_channel_name">Pobrane</string>
     <string name="download_notif_channel_desc">Pokaż postęp podczas pobieraniach danych językowych</string>
-    <string name="download_notif_title">Pobieranie danych językowych</string>
+    <string name="download_notif_title">Pobieranie języków</string>
     <string name="settings_offer_accessibility_service">Usługi dostępności</string>
     <string name="settings_offer_accessibility_service_desc">Wyłącz tę opcję, aby usunąć aplikację z ustawień ułatwień dostępu w systemie Android; przycisk „zawsze włączony” przestanie działać</string>
     <string name="browser_page_language_missing">Ta strona jest w języku %1$s, który nie jest zainstalowany</string>

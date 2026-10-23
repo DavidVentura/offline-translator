@@ -249,8 +249,8 @@
     <string name="a11y_region_reset">Lähtesta täisekraanivaateks</string>
     <string name="a11y_torch_on">Lülita taskulamp sisse</string>
     <string name="a11y_torch_off">Lülita taskulamp välja</string>
-    <string name="a11y_live_overlay_on">Lülita reaalajas ülekate sisse</string>
-    <string name="a11y_live_overlay_off">Lülita reaalajas ülekate välja</string>
+    <string name="a11y_live_overlay_on">Reaalajas ülekate sees</string>
+    <string name="a11y_live_overlay_off">Reaalajas ülekate väljas</string>
     <string name="a11y_collapse">Ahenda vaadet</string>
     <string name="a11y_expand">Laienda vaadet</string>
     <string name="a11y_delete">Kustuta</string>
@@ -258,10 +258,10 @@
     <string name="a11y_favorite_add">Lisa lemmikuks</string>
     <string name="feature_unavailable_tts">Kõnesüntees pole saadaval, laadi vajalikud failid alla keelte halduse lehelt</string>
     <string name="feature_unavailable_dictionary">Sõnastik pole saadaval, laadi vajalikud failid alla keelte halduse lehelt</string>
-    <string name="langmgr_translation_upgrade_available">Täiendatud tõlge on saadaval keele: %1$s</string>
+    <string name="langmgr_translation_upgrade_available">Parema kvaliteediga tõlked on saadaval: %1$s</string>
     <string name="image_crop_action">Kadreeri</string>
     <string name="tts_synthesis_error">Kõnesüntees ei toiminud antud keele puhul: %1$s. %2$s</string>
-    <string name="download_failed_translation_batch">Tõlkefailide uuendamiseks vajalik allalaadimine ei õnnestunud</string>
+    <string name="download_failed_translation_batch">Parema kvaliteediga tõlgete allalaadimine ebaõnnestus</string>
     <string name="howto_alt_title">Vali alternatiivsed sõnad</string>
     <string name="a11y_show_translated_image">Näita tõlgitud pilti</string>
     <string name="a11y_show_original_image">Näita algset pilti</string>
@@ -273,7 +273,7 @@
     <string name="a11y_zoomable_original_image">Suumitav algne pilt</string>
     <string name="a11y_zoomable_translated_image">Suumitav tõlgitud pilt</string>
     <string name="settings_http_server">Lülita sisse LibreTranslate\'iga ühilduv HTTP-server</string>
-    <string name="settings_http_server_desc">Sellega võimaldad muudel rakendustel programmaatiliselt tõlkimist juhtida</string>
+    <string name="settings_http_server_desc">Võimaldab teistel rakendustel tõlkeid küsida</string>
     <string name="settings_http_server_port">Port</string>
     <string name="settings_http_server_bind">Seo pordiga/aadressiga</string>
     <string name="settings_http_server_bind_localhost">Kohalik host (localhost)</string>
@@ -292,7 +292,7 @@
     <string name="howto_alt_body">Puuduta valikute nuppu ja seejärel puuduta mõnda sõna, et seda asendada. Mudel võib pakkuda mõningaid valikuid, muidu võid sisestada oma valiku. Ülejäänud lause tõlgitakse uuesti vastavalt sellele.</string>
     <string name="download_notif_channel_name">Allalaadimised</string>
     <string name="download_notif_channel_desc">Näita keelte andmete allalaadimiste edenemist</string>
-    <string name="download_notif_title">Keelte andmed on allalaadimisel</string>
+    <string name="download_notif_title">Keelte allalaadimine</string>
     <string name="settings_popup_size_expanded">Hüpikakna mõõdud: laiendatud</string>
     <string name="settings_offer_accessibility_service">Hõlbustusteenus</string>
     <string name="settings_offer_accessibility_service_desc">Eemaldamaks rakendust Androidi hõlbusseadistustest, lülita see välja. Sel puhul alati sisselülitatud nupuke enam ei toimi</string>
