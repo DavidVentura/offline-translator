@@ -48,7 +48,7 @@ class FilePathManager(
 
   fun getDictionaryFile(language: Language): File = File(getDictionariesDir(), "${language.dictionaryCode}.dict")
 
-  fun getCatalogFile(): File = File(baseDir, "index_v6.json")
+  fun getCatalogFile(): File = File(baseDir, "index_v7.json")
 
   fun getMucabFile(): File = File(getDataDir(), "mucab.bin")
 

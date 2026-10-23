@@ -26,7 +26,7 @@ import uniffi.bindings.CatalogHandle
 import uniffi.bindings.MigrationJobRecord
 import java.io.File
 
-private const val BUNDLED_INDEX_ASSET = "index_v6.json"
+private const val BUNDLED_INDEX_ASSET = "index_v7.json"
 
 private class CatalogIndex(
   val bundledJson: String,

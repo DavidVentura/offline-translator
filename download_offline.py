@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import quote, urlsplit, urlunsplit
 
-DEFAULT_INDEX_URL = "https://offline-translator.davidv.dev/index_v6.json"
+DEFAULT_INDEX_URL = "https://offline-translator.davidv.dev/index_v7.json"
 USER_AGENT = "download_offline/1.0"
 ALL_FEATURES = ("translation", "dictionary", "ocr", "tts")
 

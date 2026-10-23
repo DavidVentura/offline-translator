@@ -1,10 +1,10 @@
 {
   "formatVersion": 6,
-  "generatedAt": 1792780311,
+  "generatedAt": 1792796867,
   "dictionaryVersion": 1,
   "sources": {
     "languageIndexVersion": 1,
-    "languageIndexUpdatedAt": 1792780311,
+    "languageIndexUpdatedAt": 1792796867,
     "dictionaryIndexVersion": 1,
     "dictionaryIndexUpdatedAt": 1784028791,
     "gcsModelsUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
@@ -8495,21 +8495,6 @@
         "tts-espeak-core-v1"
       ]
     },
-    "tts-kokoro-voices-v1.0": {
-      "feature": "support",
-      "kind": "tts-kokoro-voices",
-      "files": [
-        {
-          "name": "voices-v1.0.bin",
-          "sizeBytes": 28214398,
-          "installPath": "bin/kokoro/voices-v1.0.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/kokoro/voices-v1.0.bin",
-          "role": "voices",
-          "priority": 0
-        }
-      ],
-      "dependsOn": []
-    },
     "tts-kokoro-mnn-v1.0-core": {
       "feature": "support",
       "kind": "tts-kokoro-mnn-core",
@@ -8531,9 +8516,7 @@
           "priority": 0
         }
       ],
-      "dependsOn": [
-        "tts-kokoro-voices-v1.0"
-      ]
+      "dependsOn": []
     },
     "tts-cotovia-lexicon-gl": {
       "feature": "support",
@@ -9376,7 +9359,16 @@
       "quality": "high",
       "numSpeakers": 1,
       "aliases": [],
-      "files": [],
+      "files": [
+        {
+          "name": "bf_emma.bin",
+          "sizeBytes": 261388,
+          "installPath": "bin/kokoro_mnn/en/en_GB/bf_emma/high/bf_emma.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/en/en_GB/bf_emma/high/bf_emma.bin",
+          "role": "voices",
+          "priority": 0
+        }
+      ],
       "dependsOn": [
         "tts-espeak-dict-en",
         "tts-kokoro-mnn-v1.0-core"
@@ -9530,7 +9522,16 @@
       "quality": "high",
       "numSpeakers": 1,
       "aliases": [],
-      "files": [],
+      "files": [
+        {
+          "name": "af_heart.bin",
+          "sizeBytes": 261390,
+          "installPath": "bin/kokoro_mnn/en/en_US/af_heart/high/af_heart.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/en/en_US/af_heart/high/af_heart.bin",
+          "role": "voices",
+          "priority": 0
+        }
+      ],
       "dependsOn": [
         "tts-espeak-dict-en",
         "tts-kokoro-mnn-v1.0-core"
@@ -9687,7 +9688,16 @@
       "quality": "high",
       "numSpeakers": 1,
       "aliases": [],
-      "files": [],
+      "files": [
+        {
+          "name": "ef_dora.bin",
+          "sizeBytes": 261388,
+          "installPath": "bin/kokoro_mnn/es/es_ES/ef_dora/high/ef_dora.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/es/es_ES/ef_dora/high/ef_dora.bin",
+          "role": "voices",
+          "priority": 0
+        }
+      ],
       "dependsOn": [
         "tts-espeak-dict-es",
         "tts-kokoro-mnn-v1.0-core"
@@ -10243,7 +10253,16 @@
       "quality": "high",
       "numSpeakers": 1,
       "aliases": [],
-      "files": [],
+      "files": [
+        {
+          "name": "ff_siwis.bin",
+          "sizeBytes": 261390,
+          "installPath": "bin/kokoro_mnn/fr/fr_FR/ff_siwis/high/ff_siwis.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/fr/fr_FR/ff_siwis/high/ff_siwis.bin",
+          "role": "voices",
+          "priority": 0
+        }
+      ],
       "dependsOn": [
         "tts-espeak-dict-fr",
         "tts-kokoro-mnn-v1.0-core"
@@ -10557,7 +10576,16 @@
       "quality": "high",
       "numSpeakers": 1,
       "aliases": [],
-      "files": [],
+      "files": [
+        {
+          "name": "hf_alpha.bin",
+          "sizeBytes": 261390,
+          "installPath": "bin/kokoro_mnn/hi/hi_IN/hf_alpha/high/hf_alpha.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/hi/hi_IN/hf_alpha/high/hf_alpha.bin",
+          "role": "voices",
+          "priority": 0
+        }
+      ],
       "dependsOn": [
         "tts-espeak-dict-hi",
         "tts-kokoro-mnn-v1.0-core"
@@ -10981,7 +11009,16 @@
       "quality": "high",
       "numSpeakers": 1,
       "aliases": [],
-      "files": [],
+      "files": [
+        {
+          "name": "if_sara.bin",
+          "sizeBytes": 261388,
+          "installPath": "bin/kokoro_mnn/it/it_IT/if_sara/high/if_sara.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/it/it_IT/if_sara/high/if_sara.bin",
+          "role": "voices",
+          "priority": 0
+        }
+      ],
       "dependsOn": [
         "tts-espeak-dict-it",
         "tts-kokoro-mnn-v1.0-core"
@@ -10999,7 +11036,16 @@
       "quality": "high",
       "numSpeakers": 1,
       "aliases": [],
-      "files": [],
+      "files": [
+        {
+          "name": "jf_alpha.bin",
+          "sizeBytes": 261390,
+          "installPath": "bin/kokoro_mnn/ja/ja_JP/jf_alpha/high/jf_alpha.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/ja/ja_JP/jf_alpha/high/jf_alpha.bin",
+          "role": "voices",
+          "priority": 0
+        }
+      ],
       "dependsOn": [
         "tts-espeak-dict-ja",
         "tts-kokoro-mnn-v1.0-core",
@@ -11126,7 +11172,16 @@
       "quality": "high",
       "numSpeakers": 1,
       "aliases": [],
-      "files": [],
+      "files": [
+        {
+          "name": "jf_alpha.bin",
+          "sizeBytes": 261390,
+          "installPath": "bin/kokoro_mnn/ko/ko_KR/jf_alpha/high/jf_alpha.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/ko/ko_KR/jf_alpha/high/jf_alpha.bin",
+          "role": "voices",
+          "priority": 0
+        }
+      ],
       "dependsOn": [
         "tts-espeak-dict-ko",
         "tts-kokoro-mnn-v1.0-core"
@@ -11955,7 +12010,16 @@
       "quality": "high",
       "numSpeakers": 1,
       "aliases": [],
-      "files": [],
+      "files": [
+        {
+          "name": "pf_dora.bin",
+          "sizeBytes": 261388,
+          "installPath": "bin/kokoro_mnn/pt/pt_BR/pf_dora/high/pf_dora.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/pt/pt_BR/pf_dora/high/pf_dora.bin",
+          "role": "voices",
+          "priority": 0
+        }
+      ],
       "dependsOn": [
         "tts-espeak-dict-pt",
         "tts-kokoro-mnn-v1.0-core"

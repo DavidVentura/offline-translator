@@ -111,7 +111,7 @@ def parse_args() -> argparse.Namespace:
 
 def default_output_for_mode(mode: str) -> Path:
     if mode == "public":
-        return SCRIPT_DIR / "app/src/main/assets/index_v6.json"
+        return SCRIPT_DIR / "app/src/main/assets/index_v7.json"
     return SCRIPT_DIR / "catalog_sources/source_catalog.json"
 
 

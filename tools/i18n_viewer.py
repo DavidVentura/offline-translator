@@ -28,7 +28,7 @@ WEBLATE_BASE = "https://hosted.weblate.org/browse"
 # handled by qualifier_to_weblate; only genuine exceptions live here — the CN/TW regions carry Han
 # script variants in Weblate rather than a bare region.
 QUALIFIER_OVERRIDES = {"zh-rCN": "zh_Hans", "zh-rTW": "zh_Hant"}
-# Weblate language code -> index_v6.json key, where the catalog names it differently.
+# Weblate language code -> index_v7.json key, where the catalog names it differently.
 WEBLATE_TO_INDEX = {"zh_Hans": "zh", "zh_Hant": "zh_hant", "in": "id"}
 
 REGION_QUALIFIER = re.compile(r"^([a-z]{2,3})-r([A-Z]{2})$")
@@ -101,10 +101,10 @@ def load_all_locales(res_dir: Path) -> dict[str, dict[str, str]]:
 
 
 def load_lang_names(res_dir: Path, langs: list[str]) -> dict[str, str]:
-    """Dropdown code -> human language name from index_v6.json (e.g. 'ta' -> 'Tamil'). A region/script
+    """Dropdown code -> human language name from index_v7.json (e.g. 'ta' -> 'Tamil'). A region/script
     variant the catalog has no entry for (e.g. 'pt_PT') derives '<base name> (<suffix>)' from its base
     language. Codes with no resolvable base are left out; the dropdown falls back to the code itself."""
-    meta = json.loads((res_dir.parent / "assets" / "index_v6.json").read_text())["languages"]
+    meta = json.loads((res_dir.parent / "assets" / "index_v7.json").read_text())["languages"]
     names = {}
     for code in langs:
         entry = meta.get(WEBLATE_TO_INDEX.get(code, code))

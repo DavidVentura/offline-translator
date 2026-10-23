@@ -20,7 +20,7 @@ package dev.davidv.translator
 import androidx.annotation.StringRes
 
 object Constants {
-  const val DEFAULT_CATALOG_INDEX_URL = "https://offline-translator.davidv.dev/index_v6.json"
+  const val DEFAULT_CATALOG_INDEX_URL = "https://offline-translator.davidv.dev/index_v7.json"
 }
 
 enum class AssistantAction(
