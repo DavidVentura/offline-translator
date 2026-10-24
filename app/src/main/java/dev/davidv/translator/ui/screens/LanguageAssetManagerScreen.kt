@@ -213,10 +213,10 @@ private fun VoicePickerDialog(
 
   val settings by settingsManager.settings.collectAsState()
   val override = parseVoiceOverride(settings.ttsVoiceOverrides[language.code])
-  val installedDisplayNames = downloaded.map { it.pack.displayName }
+  val installedVoiceNames = downloaded.map { it.pack.voiceName }
   val effectiveDefaultVoiceName =
-    override?.voiceName?.takeIf { it in installedDisplayNames }
-      ?: installedDisplayNames.minOrNull()
+    override?.voiceName?.takeIf { it in installedVoiceNames }
+      ?: installedVoiceNames.minOrNull()
 
   val initialDefaultVoiceName =
     remember(language.code) {
@@ -225,13 +225,13 @@ private fun VoicePickerDialog(
       val initialNames =
         catalog
           .installedTtsVoicePickerRegions(language.code)
-          .flatMap { region -> region.voices.map { it.displayName } }
+          .flatMap { region -> region.voices.map { it.voiceName } }
       initialOverride?.voiceName?.takeIf { it in initialNames } ?: initialNames.minOrNull()
     }
 
   val orderedDownloaded =
     downloaded.sortedWith(
-      compareByDescending<VoiceWithRegion> { it.pack.displayName == initialDefaultVoiceName }
+      compareByDescending<VoiceWithRegion> { it.pack.voiceName == initialDefaultVoiceName }
         .thenBy { it.regionName ?: "" }
         .thenBy { it.pack.displayName },
     )
@@ -316,20 +316,20 @@ private fun VoicePickerDialog(
               VoiceRow(
                 voice = entry,
                 isInstalled = true,
-                isDefault = entry.pack.displayName == effectiveDefaultVoiceName,
+                isDefault = entry.pack.voiceName == effectiveDefaultVoiceName,
                 dimmed = false,
                 player = samplePlayer,
-                onTap = { setDefault(entry.pack.packId, entry.pack.displayName) },
+                onTap = { setDefault(entry.pack.packId, entry.pack.voiceName) },
                 downloadStatus = VoiceRowStatus.Idle,
                 onAction = {
-                  if (entry.pack.displayName == effectiveDefaultVoiceName) {
+                  if (entry.pack.voiceName == effectiveDefaultVoiceName) {
                     val nextPack =
                       downloaded.firstOrNull { it.pack.packId != entry.pack.packId }?.pack
                     settingsManager.update { current ->
                       val newOverrides =
                         if (nextPack != null) {
                           current.ttsVoiceOverrides +
-                            (language.code to encodeVoiceOverride(nextPack.packId, nextPack.displayName))
+                            (language.code to encodeVoiceOverride(nextPack.packId, nextPack.voiceName))
                         } else {
                           current.ttsVoiceOverrides - language.code
                         }
@@ -460,7 +460,7 @@ private fun VoiceRow(
         )
       }
       Text(
-        text = formatVoiceName(pack.displayName),
+        text = pack.displayName,
         style = MaterialTheme.typography.bodyLarge,
         fontWeight = nameWeight,
         color = nameColor,
@@ -1608,13 +1608,3 @@ private fun formatQualityLabel(quality: String?): String =
     null, "" -> "Unknown"
     else -> quality.replace('_', '-').replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
   }
-
-private fun formatVoiceName(voice: String): String =
-  voice
-    .replace('_', ' ')
-    .replace('-', ' ')
-    .split(' ')
-    .filter { it.isNotBlank() }
-    .joinToString(" ") { token ->
-      token.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-    }
