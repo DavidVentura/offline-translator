@@ -472,7 +472,7 @@ private fun VoiceRow(
       val parts =
         buildList {
           add(formatQualityLabel(pack.quality).replaceFirstChar { it.uppercase() })
-          add(formatSize(pack.sizeBytes.toLong()))
+          add(formatSize((if (isInstalled) pack.sizeBytes else pack.downloadSizeBytes).toLong()))
           if (speakerCount > 1) {
             add(speakerCountLabel)
           }
