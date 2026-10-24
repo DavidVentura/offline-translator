@@ -20,6 +20,8 @@ package dev.davidv.translator
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import dev.davidv.translator.ui.components.ImageWordSelection
+import dev.davidv.translator.ui.components.WordLayer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import uniffi.bindings.PdfImages
@@ -174,7 +176,7 @@ class TranslationCoordinator(
           onDetectedRegions(boxes.map { it.orientedBox }, finalBitmap.width, finalBitmap.height)
         }
 
-        val plan =
+        val recognized =
           try {
             catalog.ocrImagePlan(
               ocrImage,
@@ -212,6 +214,10 @@ class TranslationCoordinator(
           "TranslationCoordinator",
           "detect+ocr (lockpixels, no marshal): ${System.currentTimeMillis() - translateStart}ms",
         )
+        val plan = recognized.overlay
+        val source =
+          catalog.languageByCode(recognized.sourceCode.code)
+            ?: error("OCR read the image as ${recognized.sourceCode.code}, which the catalog doesn't list")
         Log.d("OCR", "complete, blocks=${plan.blocks.size}")
 
         val extractedText = plan.extractedText
@@ -238,6 +244,7 @@ class TranslationCoordinator(
         Log.i("TranslationCoordinator", "OCR+translate+.. total: ${System.currentTimeMillis() - totalStart}ms")
 
         ProcessedImageResult(
+          source = source,
           correctedBitmap = output,
           extractedText = extractedText,
           translatedText = plan.translatedText,
@@ -294,6 +301,7 @@ class TranslationCoordinator(
             }
           val extractedText = res.plan.extractedText
           return@withContext ProcessedImageResult(
+            source = from,
             correctedBitmap = output,
             extractedText = extractedText,
             translatedText = res.plan.translatedText,
@@ -324,6 +332,7 @@ class TranslationCoordinator(
         Log.i("TranslationCoordinator", "Retranslate overpainting took ${translatePaint}ms")
 
         ProcessedImageResult(
+          source = from,
           correctedBitmap = overlayBitmap,
           extractedText = extractedText,
           translatedText = plan.translatedText,
@@ -380,6 +389,8 @@ class TranslationCoordinator(
 }
 
 data class ProcessedImageResult(
+  // The language the image's text was read as; under auto-detect only OCR knows it.
+  val source: Language,
   val correctedBitmap: Bitmap,
   val extractedText: String,
   val translatedText: String,
@@ -390,3 +401,11 @@ data class ProcessedImageResult(
   // Rust-side owner of the source pixels; reused for a language switch without re-OCR/copy.
   val ocrImage: uniffi.bindings.OcrImage? = null,
 )
+
+fun ProcessedImageResult.wordSelection(target: Language): ImageWordSelection =
+  ImageWordSelection(
+    imageWidth = metadata.width.toInt(),
+    imageHeight = metadata.height.toInt(),
+    source = WordLayer(source, metadata.sourceWords),
+    translated = WordLayer(target, translatedWords),
+  )

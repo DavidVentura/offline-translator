@@ -297,7 +297,7 @@ class LanguageCatalog private constructor(
     readingOrder: ReadingOrder?,
     backgroundMode: BackgroundMode,
     detection: List<uniffi.translator_core.DetectedTextBox>? = null,
-  ): uniffi.translator_core.PreparedImageOverlay =
+  ): uniffi.translator_core.RecognizedImageOverlay =
     handle.translateImagePlan(
       rgbaBytes(bitmap),
       bitmap.width.toUInt(),
@@ -346,7 +346,7 @@ class LanguageCatalog private constructor(
     readingOrder: ReadingOrder?,
     backgroundMode: BackgroundMode,
     detection: List<uniffi.translator_core.DetectedTextBox>?,
-  ): uniffi.translator_core.PreparedImageOverlay =
+  ): uniffi.translator_core.RecognizedImageOverlay =
     img.ocr(
       handle,
       maxImageSize.toUInt(),

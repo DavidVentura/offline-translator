@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import dev.davidv.translator.Language
 import dev.davidv.translator.Point
 import dev.davidv.translator.R
 import uniffi.bindings.selectionNearestWord
@@ -70,8 +71,13 @@ import kotlin.math.min
 data class ImageWordSelection(
   val imageWidth: Int,
   val imageHeight: Int,
-  val sourceWords: List<PositionedWord>,
-  val translatedWords: List<PositionedWord>,
+  val source: WordLayer,
+  val translated: WordLayer,
+)
+
+data class WordLayer(
+  val language: Language,
+  val words: List<PositionedWord>,
 )
 
 /** Local-space distance from a point to an image-space position, for handle grabbing. */
@@ -92,6 +98,7 @@ private fun copyToClipboard(
 private const val MENU_COPY = 1
 private const val MENU_SHARE = 2
 private const val MENU_SEARCH = 3
+private const val MENU_DICTIONARY = 4
 
 /**
  * A floating text-selection action bar (Copy / Share / Web search) over the image, mirroring the
@@ -102,22 +109,36 @@ private class SelectionActionModeCallback(
   private val context: Context,
   private val textProvider: () -> String,
   private val rectProvider: () -> android.graphics.Rect,
+  private val isSingleWord: () -> Boolean,
+  private val onDictionaryLookup: ((String) -> Unit)?,
   private val onFinished: () -> Unit,
 ) : ActionMode.Callback2() {
   override fun onCreateActionMode(
     mode: ActionMode,
     menu: Menu,
   ): Boolean {
-    menu.add(0, MENU_COPY, 0, android.R.string.copy)
-    menu.add(0, MENU_SHARE, 1, "Share")
-    menu.add(0, MENU_SEARCH, 2, "Web search")
+    menu.add(0, MENU_COPY, 1, android.R.string.copy)
+    menu.add(0, MENU_SHARE, 2, "Share")
+    menu.add(0, MENU_SEARCH, 3, "Web search")
     return true
   }
 
+  // A phrase has no dictionary entry, so the item comes and goes as the handles widen or narrow
+  // the selection.
   override fun onPrepareActionMode(
     mode: ActionMode,
     menu: Menu,
-  ): Boolean = false
+  ): Boolean {
+    val offered = onDictionaryLookup != null && isSingleWord()
+    val shown = menu.findItem(MENU_DICTIONARY) != null
+    if (offered == shown) return false
+    if (offered) {
+      menu.add(0, MENU_DICTIONARY, 0, "Dictionary")
+    } else {
+      menu.removeItem(MENU_DICTIONARY)
+    }
+    return true
+  }
 
   override fun onActionItemClicked(
     mode: ActionMode,
@@ -142,6 +163,7 @@ private class SelectionActionModeCallback(
           }
         runCatching { context.startActivity(intent) }
       }
+      MENU_DICTIONARY -> onDictionaryLookup?.invoke(text)
       else -> return false
     }
     mode.finish()
@@ -201,6 +223,7 @@ fun WordSelectionOverlay(
   imageWidth: Int,
   imageHeight: Int,
   scale: Float = 1f,
+  onDictionaryLookup: ((String) -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
   val context = LocalContext.current
@@ -232,6 +255,7 @@ fun WordSelectionOverlay(
       if (s != null && e != null) selectionResolve(words, s.toUInt(), e.toUInt()) else null
     }
   val selectedText = rememberUpdatedState(selection?.text ?: "")
+  val singleWord = rememberUpdatedState(selStart != null && selStart == selEnd)
   val rectState = rememberUpdatedState(contentRect)
 
   // Drive the floating action bar: present while there's a selection and no active drag.
@@ -245,11 +269,14 @@ fun WordSelectionOverlay(
               context = context,
               textProvider = { selectedText.value },
               rectProvider = { rectState.value },
+              isSingleWord = { singleWord.value },
+              onDictionaryLookup = onDictionaryLookup,
               onFinished = { actionMode = null },
             ),
             ActionMode.TYPE_FLOATING,
           )
       } else {
+        actionMode?.invalidate()
         actionMode?.invalidateContentRect()
       }
     } else {

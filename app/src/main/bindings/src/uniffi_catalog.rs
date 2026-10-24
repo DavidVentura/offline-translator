@@ -368,9 +368,9 @@ impl OcrImage {
         reading_order: Option<translator::ReadingOrder>,
         background_mode: translator::BackgroundMode,
         detection: Option<Vec<translator::DetectedTextBox>>,
-    ) -> Result<translator::PreparedImageOverlay, CatalogError> {
+    ) -> Result<translator::RecognizedImageOverlay, CatalogError> {
         let still = self.ensure_still(&catalog, max_image_size)?;
-        let mut overlay = catalog
+        let mut recognized = catalog
             .session
             .translate_from_still(
                 &still,
@@ -387,8 +387,8 @@ impl OcrImage {
             .map_err(CatalogError::from)?;
         // Stash the erased background (move, no clone) and hand back metadata only.
         *self.erased.lock().expect("ocr image erased lock") =
-            Some(std::mem::take(&mut overlay.rgba_bytes));
-        Ok(overlay)
+            Some(std::mem::take(&mut recognized.overlay.rgba_bytes));
+        Ok(recognized)
     }
 
     #[cfg(feature = "image-render")]
@@ -848,7 +848,7 @@ impl CatalogHandle {
         reading_order: Option<translator::ReadingOrder>,
         background_mode: translator::BackgroundMode,
         detection: Option<Vec<translator::DetectedTextBox>>,
-    ) -> Result<translator::PreparedImageOverlay, CatalogError> {
+    ) -> Result<translator::RecognizedImageOverlay, CatalogError> {
         #[cfg(feature = "ppocr")]
         {
             return self

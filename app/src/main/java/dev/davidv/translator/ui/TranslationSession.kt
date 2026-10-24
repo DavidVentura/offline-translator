@@ -39,6 +39,7 @@ import dev.davidv.translator.TranslatorMessage
 import dev.davidv.translator.nextReadingOrder
 import dev.davidv.translator.ui.components.DetectedRegions
 import dev.davidv.translator.ui.components.ImageWordSelection
+import dev.davidv.translator.wordSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -490,13 +491,7 @@ class TranslationSession(
       image.copy(
         display = result.correctedBitmap,
         text = result.extractedText,
-        words =
-          ImageWordSelection(
-            imageWidth = result.metadata.width.toInt(),
-            imageHeight = result.metadata.height.toInt(),
-            sourceWords = result.metadata.sourceWords,
-            translatedWords = result.translatedWords,
-          ),
+        words = result.wordSelection(toLang),
       )
     _output.value = TranslatedText(result.translatedText, null)
     ocrCache =

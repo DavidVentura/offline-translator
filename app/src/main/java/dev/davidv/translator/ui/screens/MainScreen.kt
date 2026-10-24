@@ -355,6 +355,9 @@ fun MainScreen(
                   detectedRegions = detectedRegions,
                   wordSelection = imageWordSelection,
                   maxHeight = parentHeight * 0.85f,
+                  onDictionaryLookup = { word, language ->
+                    onMessage(TranslatorMessage.DictionaryLookup(word, language))
+                  },
                   modifier = Modifier.fillMaxWidth().testTag("export-section:Image"),
                 )
                 Row(
@@ -630,6 +633,9 @@ fun MainScreen(
       onDismiss = { showFullScreenImage = false },
       onShare = {
         onMessage(TranslatorMessage.ShareTranslatedImage)
+      },
+      onDictionaryLookup = { word, language ->
+        onMessage(TranslatorMessage.DictionaryLookup(word, language))
       },
     )
   }

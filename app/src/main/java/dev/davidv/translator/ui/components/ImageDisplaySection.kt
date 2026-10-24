@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import dev.davidv.translator.Language
 import dev.davidv.translator.R
 import kotlin.math.roundToInt
 
@@ -63,6 +64,7 @@ fun ImageDisplaySection(
   detectedRegions: DetectedRegions?,
   wordSelection: ImageWordSelection?,
   maxHeight: Dp,
+  onDictionaryLookup: ((String, Language) -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
   val shown = if (showOriginal && originalImage != null) originalImage else displayImage
@@ -123,11 +125,13 @@ fun ImageDisplaySection(
           modifier = Modifier.matchParentSize(),
         )
       } else if (wordSelection != null) {
+        val layer = if (showOriginal) wordSelection.source else wordSelection.translated
         WordSelectionOverlay(
-          words = if (showOriginal) wordSelection.sourceWords else wordSelection.translatedWords,
+          words = layer.words,
           imageWidth = wordSelection.imageWidth,
           imageHeight = wordSelection.imageHeight,
           scale = scale,
+          onDictionaryLookup = onDictionaryLookup?.let { lookup -> { word -> lookup(word, layer.language) } },
           modifier = Modifier.matchParentSize(),
         )
       }

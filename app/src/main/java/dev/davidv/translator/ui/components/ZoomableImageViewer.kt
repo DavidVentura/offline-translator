@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import dev.davidv.translator.Language
 import dev.davidv.translator.R
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -62,6 +63,7 @@ fun ZoomableImageViewer(
   wordSelection: ImageWordSelection?,
   onDismiss: () -> Unit,
   onShare: () -> Unit,
+  onDictionaryLookup: (String, Language) -> Unit,
 ) {
   var showOriginal by remember { mutableStateOf(false) }
   val displayed = if (showOriginal) originalBitmap else bitmap
@@ -157,10 +159,12 @@ fun ZoomableImageViewer(
         )
 
         if (wordSelection != null) {
+          val layer = if (showOriginal) wordSelection.source else wordSelection.translated
           WordSelectionOverlay(
-            words = if (showOriginal) wordSelection.sourceWords else wordSelection.translatedWords,
+            words = layer.words,
             imageWidth = wordSelection.imageWidth,
             imageHeight = wordSelection.imageHeight,
+            onDictionaryLookup = { word -> onDictionaryLookup(word, layer.language) },
             modifier = Modifier.matchParentSize(),
           )
         }

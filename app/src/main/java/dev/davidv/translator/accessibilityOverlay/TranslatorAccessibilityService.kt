@@ -28,6 +28,7 @@ import dev.davidv.translator.screenTranslate.ScreenTranslateService
 import dev.davidv.translator.ui.components.DetectedRegions
 import dev.davidv.translator.ui.components.ImageWordSelection
 import dev.davidv.translator.ui.components.SelectionSurfaceState
+import dev.davidv.translator.wordSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -375,13 +376,7 @@ class TranslatorAccessibilityService : AccessibilityService() {
       return
     }
 
-    val words =
-      ImageWordSelection(
-        imageWidth = result.metadata.width.toInt(),
-        imageHeight = result.metadata.height.toInt(),
-        sourceWords = result.metadata.sourceWords,
-        translatedWords = result.translatedWords,
-      )
+    val words = result.wordSelection(requested.target)
     lastResult = TranslatedScreen(original = bitmap, translated = result.correctedBitmap, words = words, region = region)
     if (selectMode) {
       surfaceState.showResult(result.correctedBitmap, bitmap, words)

@@ -36,10 +36,10 @@ import dev.davidv.translator.overlayChrome.spanFullDisplay
 import dev.davidv.translator.overlayPickerLanguages
 import dev.davidv.translator.screenTranslate.ScreenCaptureRequestActivity
 import dev.davidv.translator.ui.components.DetectedRegions
-import dev.davidv.translator.ui.components.ImageWordSelection
 import dev.davidv.translator.ui.components.SelectionSurface
 import dev.davidv.translator.ui.components.SelectionSurfaceState
 import dev.davidv.translator.ui.components.WindowComposeHost
+import dev.davidv.translator.wordSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -413,13 +413,7 @@ class TranslatorVoiceInteractionSession(
         if (oldCropped != null && oldCropped !== screenshotBitmap) oldCropped.recycle()
         croppedBitmap = display
         screenshotView.setImageBitmap(croppedBitmap)
-        val selection =
-          ImageWordSelection(
-            imageWidth = result.metadata.width.toInt(),
-            imageHeight = result.metadata.height.toInt(),
-            sourceWords = result.metadata.sourceWords,
-            translatedWords = result.translatedWords,
-          )
+        val selection = result.wordSelection(requested.target)
         surfaceState.showResult(display, workingBitmap, selection)
         setFlipButtonVisible(true)
         resultHost?.view?.visibility = View.VISIBLE
