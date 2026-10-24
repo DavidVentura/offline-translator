@@ -619,31 +619,6 @@ EXTRA_TTS_VOICES = {
         "files": {},
         "aliases": [],
     },
-    "ja_JP-jf_alpha-kokoro-mnn-v1.0": {
-        "engine": "kokoro_mnn",
-        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
-        "key": "ja_JP-jf_alpha-kokoro-mnn-v1.0",
-        "name": "jf_alpha",
-        "language": {
-            "code": "ja_JP",
-            "family": "ja",
-            "region": "JP",
-            "name_native": "日本語",
-            "name_english": "Japanese",
-            "country_english": "Japan",
-        },
-        "quality": "high",
-        "num_speakers": 1,
-        "speaker_id_map": {},
-        "files": {
-            "ja/ja_JP/jf_alpha/high/jf_alpha.bin": {
-                "size_bytes": 261390,
-                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/ja/ja_JP/jf_alpha/high/jf_alpha.bin",
-                "replaces": [KOKORO_LEGACY_VOICES_INSTALL_PATH],
-            },
-        },
-        "aliases": [],
-    },
     # External Kokoro model metadata source:
     # https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0
     "ko_KR-jf_alpha-kokoro-v1.0": {
@@ -663,199 +638,6 @@ EXTRA_TTS_VOICES = {
         "num_speakers": 1,
         "speaker_id_map": {},
         "files": {},
-        "aliases": [],
-    },
-    "ko_KR-jf_alpha-kokoro-mnn-v1.0": {
-        "engine": "kokoro_mnn",
-        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
-        "key": "ko_KR-jf_alpha-kokoro-mnn-v1.0",
-        "name": "jf_alpha",
-        "language": {
-            "code": "ko_KR",
-            "family": "ko",
-            "region": "KR",
-            "name_native": "한국어",
-            "name_english": "Korean",
-            "country_english": "South Korea",
-        },
-        "quality": "high",
-        "num_speakers": 1,
-        "speaker_id_map": {},
-        "files": {
-            "ko/ko_KR/jf_alpha/high/jf_alpha.bin": {
-                "size_bytes": 261390,
-                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/ko/ko_KR/jf_alpha/high/jf_alpha.bin",
-                "replaces": [KOKORO_LEGACY_VOICES_INSTALL_PATH],
-            },
-        },
-        "aliases": [],
-    },
-    "en_US-af_heart-kokoro-mnn-v1.0": {
-        "engine": "kokoro_mnn",
-        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
-        "key": "en_US-af_heart-kokoro-mnn-v1.0",
-        "name": "af_heart",
-        "language": {
-            "code": "en_US",
-            "family": "en",
-            "region": "US",
-            "name_native": "English",
-            "name_english": "English",
-            "country_english": "United States",
-        },
-        "quality": "high",
-        "num_speakers": 1,
-        "speaker_id_map": {},
-        "files": {
-            "en/en_US/af_heart/high/af_heart.bin": {
-                "size_bytes": 261390,
-                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/en/en_US/af_heart/high/af_heart.bin",
-            },
-        },
-        "aliases": [],
-    },
-    "en_GB-bf_emma-kokoro-mnn-v1.0": {
-        "engine": "kokoro_mnn",
-        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
-        "key": "en_GB-bf_emma-kokoro-mnn-v1.0",
-        "name": "bf_emma",
-        "language": {
-            "code": "en_GB",
-            "family": "en",
-            "region": "GB",
-            "name_native": "English",
-            "name_english": "English",
-            "country_english": "Great Britain",
-        },
-        "quality": "high",
-        "num_speakers": 1,
-        "speaker_id_map": {},
-        "files": {
-            "en/en_GB/bf_emma/high/bf_emma.bin": {
-                "size_bytes": 261388,
-                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/en/en_GB/bf_emma/high/bf_emma.bin",
-            },
-        },
-        "aliases": [],
-    },
-    "es_ES-ef_dora-kokoro-mnn-v1.0": {
-        "engine": "kokoro_mnn",
-        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
-        "key": "es_ES-ef_dora-kokoro-mnn-v1.0",
-        "name": "ef_dora",
-        "language": {
-            "code": "es_ES",
-            "family": "es",
-            "region": "ES",
-            "name_native": "Español",
-            "name_english": "Spanish",
-            "country_english": "Spain",
-        },
-        "quality": "high",
-        "num_speakers": 1,
-        "speaker_id_map": {},
-        "files": {
-            "es/es_ES/ef_dora/high/ef_dora.bin": {
-                "size_bytes": 261388,
-                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/es/es_ES/ef_dora/high/ef_dora.bin",
-            },
-        },
-        "aliases": [],
-    },
-    "fr_FR-ff_siwis-kokoro-mnn-v1.0": {
-        "engine": "kokoro_mnn",
-        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
-        "key": "fr_FR-ff_siwis-kokoro-mnn-v1.0",
-        "name": "ff_siwis",
-        "language": {
-            "code": "fr_FR",
-            "family": "fr",
-            "region": "FR",
-            "name_native": "Français",
-            "name_english": "French",
-            "country_english": "France",
-        },
-        "quality": "high",
-        "num_speakers": 1,
-        "speaker_id_map": {},
-        "files": {
-            "fr/fr_FR/ff_siwis/high/ff_siwis.bin": {
-                "size_bytes": 261390,
-                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/fr/fr_FR/ff_siwis/high/ff_siwis.bin",
-            },
-        },
-        "aliases": [],
-    },
-    "hi_IN-hf_alpha-kokoro-mnn-v1.0": {
-        "engine": "kokoro_mnn",
-        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
-        "key": "hi_IN-hf_alpha-kokoro-mnn-v1.0",
-        "name": "hf_alpha",
-        "language": {
-            "code": "hi_IN",
-            "family": "hi",
-            "region": "IN",
-            "name_native": "हिन्दी",
-            "name_english": "Hindi",
-            "country_english": "India",
-        },
-        "quality": "high",
-        "num_speakers": 1,
-        "speaker_id_map": {},
-        "files": {
-            "hi/hi_IN/hf_alpha/high/hf_alpha.bin": {
-                "size_bytes": 261390,
-                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/hi/hi_IN/hf_alpha/high/hf_alpha.bin",
-            },
-        },
-        "aliases": [],
-    },
-    "it_IT-if_sara-kokoro-mnn-v1.0": {
-        "engine": "kokoro_mnn",
-        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
-        "key": "it_IT-if_sara-kokoro-mnn-v1.0",
-        "name": "if_sara",
-        "language": {
-            "code": "it_IT",
-            "family": "it",
-            "region": "IT",
-            "name_native": "Italiano",
-            "name_english": "Italian",
-            "country_english": "Italy",
-        },
-        "quality": "high",
-        "num_speakers": 1,
-        "speaker_id_map": {},
-        "files": {
-            "it/it_IT/if_sara/high/if_sara.bin": {
-                "size_bytes": 261388,
-                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/it/it_IT/if_sara/high/if_sara.bin",
-            },
-        },
-        "aliases": [],
-    },
-    "pt_BR-pf_dora-kokoro-mnn-v1.0": {
-        "engine": "kokoro_mnn",
-        "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
-        "key": "pt_BR-pf_dora-kokoro-mnn-v1.0",
-        "name": "pf_dora",
-        "language": {
-            "code": "pt_BR",
-            "family": "pt",
-            "region": "BR",
-            "name_native": "Português",
-            "name_english": "Portuguese",
-            "country_english": "Brazil",
-        },
-        "quality": "high",
-        "num_speakers": 1,
-        "speaker_id_map": {},
-        "files": {
-            "pt/pt_BR/pf_dora/high/pf_dora.bin": {
-                "size_bytes": 261388,
-                "url": f"{TTS_BASE_URL}/{TTS_VERSION}/pt/pt_BR/pf_dora/high/pf_dora.bin",
-            },
-        },
         "aliases": [],
     },
     # External Mimic3 model metadata source:
@@ -1268,6 +1050,81 @@ KOKORO_VOICES_FILES = {
         "url": f"{KOKORO_BASE_URL}/voices-v1.0.bin",
     },
 }
+
+# Each language pack ships every voice trained on its language that upstream
+# grades C- or better, bundled into one fp16 file. Korean has no Kokoro voices of
+# its own and reads with the Japanese ones, so ja and ko share that file.
+KOKORO_MNN_VOICE_SETS = {
+    "en_US": {
+        "size_bytes": 3136436,
+        "voices": [
+            "af_heart", "af_bella", "af_nicole", "af_aoede", "af_kore", "af_sarah",
+            "af_alloy", "af_nova", "af_sky", "am_fenrir", "am_michael", "am_puck",
+        ],
+    },
+    "en_GB": {"size_bytes": 1045500, "voices": ["bf_emma", "bf_isabella", "bm_fable", "bm_george"]},
+    "es_ES": {"size_bytes": 784122, "voices": ["ef_dora", "em_alex", "em_santa"]},
+    "fr_FR": {"size_bytes": 261390, "voices": ["ff_siwis"]},
+    "hi_IN": {"size_bytes": 1045488, "voices": ["hf_alpha", "hf_beta", "hm_omega", "hm_psi"]},
+    "it_IT": {"size_bytes": 522758, "voices": ["if_sara", "im_nicola"]},
+    "ja_JP": {"size_bytes": 1306878, "voices": ["jf_alpha", "jf_gongitsune", "jf_nezumi", "jf_tebukuro", "jm_kumo"]},
+    "pt_BR": {"size_bytes": 784122, "voices": ["pf_dora", "pm_alex", "pm_santa"]},
+}
+
+KOKORO_MNN_LANGUAGES = [
+    # (locale, family, region, native name, English name, country, default voice, voice set)
+    ("ja_JP", "ja", "JP", "日本語", "Japanese", "Japan", "jf_alpha", "ja_JP"),
+    ("ko_KR", "ko", "KR", "한국어", "Korean", "South Korea", "jf_alpha", "ja_JP"),
+    ("en_US", "en", "US", "English", "English", "United States", "af_heart", "en_US"),
+    ("en_GB", "en", "GB", "English", "English", "Great Britain", "bf_emma", "en_GB"),
+    ("es_ES", "es", "ES", "Español", "Spanish", "Spain", "ef_dora", "es_ES"),
+    ("fr_FR", "fr", "FR", "Français", "French", "France", "ff_siwis", "fr_FR"),
+    ("hi_IN", "hi", "IN", "हिन्दी", "Hindi", "India", "hf_alpha", "hi_IN"),
+    ("it_IT", "it", "IT", "Italiano", "Italian", "Italy", "if_sara", "it_IT"),
+    ("pt_BR", "pt", "BR", "Português", "Portuguese", "Brazil", "pf_dora", "pt_BR"),
+]
+
+# The previous catalog's ja and ko installs read their voice from the all-voices file.
+KOKORO_MNN_LEGACY_LOCALES = {"ja_JP", "ko_KR"}
+
+
+def kokoro_mnn_voices() -> dict:
+    voices = {}
+    for locale, family, region, native, english, country, default_voice, voice_set in KOKORO_MNN_LANGUAGES:
+        names = KOKORO_MNN_VOICE_SETS[voice_set]["voices"]
+        if default_voice not in names:
+            raise ValueError(f"Kokoro default voice {default_voice} is not in voice set {voice_set}")
+        # Kokoro numbers voices by their sorted name, as piper-rs reads the npz.
+        speaker_id_map = {name: index for index, name in enumerate(sorted(names))}
+        key = f"{locale}-{default_voice}-kokoro-mnn-v1.0"
+        set_path = f"{voice_set.split('_')[0]}/{voice_set}/kokoro_voices.bin"
+        file_info = {
+            "install_path": f"bin/kokoro_mnn/{set_path}",
+            "size_bytes": KOKORO_MNN_VOICE_SETS[voice_set]["size_bytes"],
+            "url": f"{TTS_BASE_URL}/{TTS_VERSION}/{set_path}",
+        }
+        if locale in KOKORO_MNN_LEGACY_LOCALES:
+            file_info["replaces"] = [KOKORO_LEGACY_VOICES_INSTALL_PATH]
+        voices[key] = {
+            "engine": "kokoro_mnn",
+            "shared_pack": KOKORO_MNN_SHARED_PACK_ID,
+            "key": key,
+            "name": default_voice,
+            "language": {
+                "code": locale,
+                "family": family,
+                "region": region,
+                "name_native": native,
+                "name_english": english,
+                "country_english": country,
+            },
+            "quality": "high",
+            "num_speakers": len(names),
+            "speaker_id_map": speaker_id_map,
+            "files": {"kokoro_voices.bin": file_info},
+            "aliases": [],
+        }
+    return voices
 def load_json(path: str) -> dict:
     with Path(path).open("r", encoding="utf-8") as handle:
         return json.load(handle)
@@ -1276,6 +1133,7 @@ def load_json(path: str) -> dict:
 def merge_voice_catalogs(voices: dict) -> dict:
     merged = deepcopy(voices)
     merged.update(EXTRA_TTS_VOICES)
+    merged.update(kokoro_mnn_voices())
     for key in BANNED_TTS_VOICES:
         merged.pop(key, None)
     return merged
@@ -1509,6 +1367,17 @@ def engine_supports_espeak(engine: str) -> bool:
     return engine in {"piper", "mimic3", "kokoro", "kokoro_mnn"}
 
 
+def speaker_names(speaker_id_map: dict[str, int]) -> list[str]:
+    """Speaker names in model speaker-id order, so the app can request a speaker
+    by the name the model knows it by. A single speaker needs no list."""
+    if len(speaker_id_map) < 2:
+        return []
+    by_id = sorted(speaker_id_map.items(), key=lambda item: item[1])
+    if [speaker_id for _, speaker_id in by_id] != list(range(len(by_id))):
+        raise ValueError(f"speaker ids are not contiguous from 0: {speaker_id_map}")
+    return [name for name, _ in by_id]
+
+
 def merge_tts(
     base_catalog: dict,
     voices: dict,
@@ -1574,7 +1443,8 @@ def merge_tts(
                     {
                         "name": filename,
                         "sizeBytes": file_info.get("size_bytes", 0),
-                        "installPath": tts_install_path(
+                        "installPath": file_info.get("install_path")
+                        or tts_install_path(
                             install_root=install_root,
                             app_language=app_language,
                             locale_code=locale_code,
@@ -1592,7 +1462,8 @@ def merge_tts(
             default_speaker_id = None
             speaker_id_map = voice.get("speaker_id_map") or {}
             if speaker_id_map:
-                default_speaker_id = sorted(speaker_id_map.values())[0]
+                default_speaker_id = speaker_id_map.get(voice["name"], min(speaker_id_map.values()))
+            speakers = speaker_names(speaker_id_map)
 
             depends_on = []
             if engine_supports_espeak(engine):
@@ -1612,7 +1483,7 @@ def merge_tts(
                 "region": region,
                 "voice": voice["name"],
                 "quality": quality,
-                "numSpeakers": voice.get("num_speakers", 1),
+                "speakers": speakers,
                 "defaultSpeakerId": default_speaker_id,
                 "aliases": voice.get("aliases", []),
                 "files": files,
@@ -1620,6 +1491,8 @@ def merge_tts(
             }
             if default_speaker_id is None:
                 pack.pop("defaultSpeakerId")
+            if not speakers:
+                pack.pop("speakers")
             catalog["packs"][pack_id] = pack
             voice_ids.append(pack_id)
 

@@ -183,6 +183,10 @@
     <string name="migration_delete_all">Delete all instead</string>
     <string name="migration_converting">Converting %1$d of %2$d</string>
     <string name="migration_optimizing">Optimizing models</string>
+    <plurals name="langmgr_voice_speaker_count">
+      <item quantity="one">%1$d voice</item>
+      <item quantity="other">%1$d voices</item>
+    </plurals>
     <plurals name="migration_convert_prompt">
       <item quantity="one">You have %1$d text-to-speech model to convert to a new format. It will take approximately %2$d seconds. You will save %3$.0f MB of disk space.</item>
       <item quantity="other">You have %1$d text-to-speech models to convert to a new format. It will take approximately %2$d seconds. You will save %3$.0f MB of disk space.</item>

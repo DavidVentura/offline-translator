@@ -1,12 +1,12 @@
 {
   "formatVersion": 6,
-  "generatedAt": 1792798306,
+  "generatedAt": 1792850839,
   "translationModelsBaseUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data",
   "dictionaryBaseUrl": "https://offline-translator.davidv.dev/dictionaries",
   "dictionaryVersion": 1,
   "sources": {
     "languageIndexVersion": 1,
-    "languageIndexUpdatedAt": 1792798306,
+    "languageIndexUpdatedAt": 1792850839,
     "dictionaryIndexVersion": 1,
     "dictionaryIndexUpdatedAt": 1784028791,
     "gcsModelsUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
@@ -9578,7 +9578,6 @@
       "region": "JO",
       "voice": "kareem",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -9613,7 +9612,6 @@
       "region": "JO",
       "voice": "kareem",
       "quality": "low",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -9648,7 +9646,6 @@
       "region": "AZ",
       "voice": "north_latin",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -9681,7 +9678,6 @@
       "region": "BY",
       "voice": "alex73",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -9723,7 +9719,6 @@
       "region": "BG",
       "voice": "dimitar",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -9758,7 +9753,6 @@
       "region": "IN",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -9791,7 +9785,6 @@
       "region": "BA",
       "voice": "cv",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -9851,7 +9844,6 @@
       "region": "ES",
       "voice": "upc_ona",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -9886,7 +9878,6 @@
       "region": "ES",
       "voice": "upc_ona",
       "quality": "x_low",
-      "numSpeakers": 1,
       "aliases": [
         "ca-upc_ona-x-low"
       ],
@@ -9923,7 +9914,6 @@
       "region": "ES",
       "voice": "upc_pau",
       "quality": "x_low",
-      "numSpeakers": 1,
       "aliases": [
         "ca-upc_pau-x-low"
       ],
@@ -9960,7 +9950,6 @@
       "region": "CZ",
       "voice": "jirka",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -9995,7 +9984,6 @@
       "region": "CZ",
       "voice": "jirka",
       "quality": "low",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10030,7 +10018,6 @@
       "region": "DK",
       "voice": "talesyntese",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [
         "da-nst_talesyntese-medium"
       ],
@@ -10067,7 +10054,6 @@
       "region": "DE",
       "voice": "thorsten",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10102,7 +10088,6 @@
       "region": "DE",
       "voice": "glados",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10137,7 +10122,16 @@
       "region": "DE",
       "voice": "thorsten_emotional",
       "quality": "medium",
-      "numSpeakers": 8,
+      "speakers": [
+        "amused",
+        "angry",
+        "disgusted",
+        "drunk",
+        "neutral",
+        "sleepy",
+        "surprised",
+        "whisper"
+      ],
       "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
@@ -10173,7 +10167,6 @@
       "region": "DE",
       "voice": "karlsson",
       "quality": "low",
-      "numSpeakers": 1,
       "aliases": [
         "de-karlsson-low"
       ],
@@ -10210,7 +10203,6 @@
       "region": "GR",
       "voice": "rapunzelina",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10245,7 +10237,6 @@
       "region": "GR",
       "voice": "rapunzelina",
       "quality": "low",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10280,7 +10271,6 @@
       "region": "GB",
       "voice": "alan",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10315,7 +10305,6 @@
       "region": "GB",
       "voice": "alba",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10350,7 +10339,6 @@
       "region": "GB",
       "voice": "jenny_dioco",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10385,7 +10373,6 @@
       "region": "GB",
       "voice": "northern_english_male",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10420,17 +10407,23 @@
       "region": "GB",
       "voice": "bf_emma",
       "quality": "high",
-      "numSpeakers": 1,
+      "speakers": [
+        "bf_emma",
+        "bf_isabella",
+        "bm_fable",
+        "bm_george"
+      ],
+      "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
         {
-          "name": "bf_emma.bin",
-          "sizeBytes": 261388,
-          "installPath": "bin/kokoro_mnn/en/en_GB/bf_emma/high/bf_emma.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/en/en_GB/bf_emma/high/bf_emma.bin",
+          "name": "kokoro_voices.bin",
+          "sizeBytes": 1045500,
+          "installPath": "bin/kokoro_mnn/en/en_GB/kokoro_voices.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/en/en_GB/kokoro_voices.bin",
           "role": "voices",
           "priority": 0,
-          "mirrorPath": "tts/1/en/en_GB/bf_emma/high/bf_emma.bin"
+          "mirrorPath": "tts/1/en/en_GB/kokoro_voices.bin"
         }
       ],
       "dependsOn": [
@@ -10447,7 +10440,6 @@
       "region": "US",
       "voice": "amy",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10482,7 +10474,6 @@
       "region": "US",
       "voice": "hfc_female",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10517,7 +10508,6 @@
       "region": "US",
       "voice": "hfc_male",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10552,7 +10542,6 @@
       "region": "US",
       "voice": "joe",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10587,17 +10576,31 @@
       "region": "US",
       "voice": "af_heart",
       "quality": "high",
-      "numSpeakers": 1,
+      "speakers": [
+        "af_alloy",
+        "af_aoede",
+        "af_bella",
+        "af_heart",
+        "af_kore",
+        "af_nicole",
+        "af_nova",
+        "af_sarah",
+        "af_sky",
+        "am_fenrir",
+        "am_michael",
+        "am_puck"
+      ],
+      "defaultSpeakerId": 3,
       "aliases": [],
       "files": [
         {
-          "name": "af_heart.bin",
-          "sizeBytes": 261390,
-          "installPath": "bin/kokoro_mnn/en/en_US/af_heart/high/af_heart.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/en/en_US/af_heart/high/af_heart.bin",
+          "name": "kokoro_voices.bin",
+          "sizeBytes": 3136436,
+          "installPath": "bin/kokoro_mnn/en/en_US/kokoro_voices.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/en/en_US/kokoro_voices.bin",
           "role": "voices",
           "priority": 0,
-          "mirrorPath": "tts/1/en/en_US/af_heart/high/af_heart.bin"
+          "mirrorPath": "tts/1/en/en_US/kokoro_voices.bin"
         }
       ],
       "dependsOn": [
@@ -10614,7 +10617,6 @@
       "region": "AR",
       "voice": "daniela",
       "quality": "high",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10649,7 +10651,6 @@
       "region": "ES",
       "voice": "davefx",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10684,7 +10685,10 @@
       "region": "ES",
       "voice": "sharvard",
       "quality": "medium",
-      "numSpeakers": 2,
+      "speakers": [
+        "M",
+        "F"
+      ],
       "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
@@ -10720,7 +10724,6 @@
       "region": "ES",
       "voice": "carlfm",
       "quality": "x_low",
-      "numSpeakers": 1,
       "aliases": [
         "es-carlfm-x-low"
       ],
@@ -10757,17 +10760,22 @@
       "region": "ES",
       "voice": "ef_dora",
       "quality": "high",
-      "numSpeakers": 1,
+      "speakers": [
+        "ef_dora",
+        "em_alex",
+        "em_santa"
+      ],
+      "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
         {
-          "name": "ef_dora.bin",
-          "sizeBytes": 261388,
-          "installPath": "bin/kokoro_mnn/es/es_ES/ef_dora/high/ef_dora.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/es/es_ES/ef_dora/high/ef_dora.bin",
+          "name": "kokoro_voices.bin",
+          "sizeBytes": 784122,
+          "installPath": "bin/kokoro_mnn/es/es_ES/kokoro_voices.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/es/es_ES/kokoro_voices.bin",
           "role": "voices",
           "priority": 0,
-          "mirrorPath": "tts/1/es/es_ES/ef_dora/high/ef_dora.bin"
+          "mirrorPath": "tts/1/es/es_ES/kokoro_voices.bin"
         }
       ],
       "dependsOn": [
@@ -10784,7 +10792,6 @@
       "region": "MX",
       "voice": "ald",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10819,7 +10826,6 @@
       "region": "MX",
       "voice": "claude",
       "quality": "high",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10854,7 +10860,6 @@
       "region": "EE",
       "voice": "cv",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10914,7 +10919,6 @@
       "region": "ES",
       "voice": "antton",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10949,7 +10953,6 @@
       "region": "ES",
       "voice": "maider",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -10984,7 +10987,6 @@
       "region": "IR",
       "voice": "gyro",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11019,7 +11021,6 @@
       "region": "IR",
       "voice": "reza_ibrahim",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11054,7 +11055,6 @@
       "region": "IR",
       "voice": "ganji",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11089,7 +11089,6 @@
       "region": "IR",
       "voice": "ganji_adabi",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11124,7 +11123,6 @@
       "region": "FI",
       "voice": "harri",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11159,7 +11157,6 @@
       "region": "FI",
       "voice": "harri",
       "quality": "low",
-      "numSpeakers": 1,
       "aliases": [
         "fi-harri-low"
       ],
@@ -11196,7 +11193,6 @@
       "region": "FR",
       "voice": "siwis",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [
         "fr-siwis-medium"
       ],
@@ -11233,7 +11229,6 @@
       "region": "FR",
       "voice": "tom",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11268,7 +11263,10 @@
       "region": "FR",
       "voice": "upmc",
       "quality": "medium",
-      "numSpeakers": 2,
+      "speakers": [
+        "jessica",
+        "pierre"
+      ],
       "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
@@ -11304,7 +11302,133 @@
       "region": "FR",
       "voice": "mls",
       "quality": "medium",
-      "numSpeakers": 125,
+      "speakers": [
+        "1840",
+        "3698",
+        "123",
+        "1474",
+        "12709",
+        "7423",
+        "9242",
+        "8778",
+        "3060",
+        "4512",
+        "6249",
+        "12541",
+        "13634",
+        "10065",
+        "6128",
+        "5232",
+        "5764",
+        "12713",
+        "12823",
+        "6070",
+        "12501",
+        "9121",
+        "1649",
+        "2776",
+        "11772",
+        "5612",
+        "11822",
+        "1590",
+        "5525",
+        "10827",
+        "1243",
+        "13142",
+        "62",
+        "13177",
+        "10620",
+        "8102",
+        "8582",
+        "11875",
+        "7239",
+        "9854",
+        "7377",
+        "10082",
+        "12512",
+        "1329",
+        "2506",
+        "6856",
+        "10058",
+        "103",
+        "14",
+        "6381",
+        "1664",
+        "11954",
+        "66",
+        "1127",
+        "3270",
+        "13611",
+        "13658",
+        "12968",
+        "1989",
+        "12981",
+        "7193",
+        "6348",
+        "7679",
+        "2284",
+        "3182",
+        "3503",
+        "2033",
+        "2771",
+        "7614",
+        "125",
+        "3204",
+        "5595",
+        "5553",
+        "694",
+        "1624",
+        "1887",
+        "2926",
+        "7150",
+        "3190",
+        "3344",
+        "4699",
+        "1798",
+        "1745",
+        "5077",
+        "753",
+        "52",
+        "4174",
+        "4018",
+        "12899",
+        "1844",
+        "4396",
+        "1817",
+        "2155",
+        "2946",
+        "4336",
+        "4609",
+        "1977",
+        "10957",
+        "204",
+        "4650",
+        "5295",
+        "5968",
+        "4744",
+        "2825",
+        "9804",
+        "707",
+        "30",
+        "115",
+        "5840",
+        "2587",
+        "2607",
+        "2544",
+        "28",
+        "27",
+        "177",
+        "112",
+        "94",
+        "2596",
+        "3595",
+        "7032",
+        "7848",
+        "11247",
+        "7439",
+        "2904",
+        "6362"
+      ],
       "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
@@ -11340,17 +11464,17 @@
       "region": "FR",
       "voice": "ff_siwis",
       "quality": "high",
-      "numSpeakers": 1,
+      "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
         {
-          "name": "ff_siwis.bin",
+          "name": "kokoro_voices.bin",
           "sizeBytes": 261390,
-          "installPath": "bin/kokoro_mnn/fr/fr_FR/ff_siwis/high/ff_siwis.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/fr/fr_FR/ff_siwis/high/ff_siwis.bin",
+          "installPath": "bin/kokoro_mnn/fr/fr_FR/kokoro_voices.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/fr/fr_FR/kokoro_voices.bin",
           "role": "voices",
           "priority": 0,
-          "mirrorPath": "tts/1/fr/fr_FR/ff_siwis/high/ff_siwis.bin"
+          "mirrorPath": "tts/1/fr/fr_FR/kokoro_voices.bin"
         }
       ],
       "dependsOn": [
@@ -11367,7 +11491,6 @@
       "region": "ES",
       "voice": "sabela",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11393,7 +11516,6 @@
       "region": "ES",
       "voice": "brais",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11419,7 +11541,6 @@
       "region": "ES",
       "voice": "iago",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11445,7 +11566,6 @@
       "region": "ES",
       "voice": "icia",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11471,7 +11591,6 @@
       "region": "ES",
       "voice": "paulo",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11497,7 +11616,6 @@
       "region": "IN",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11530,7 +11648,6 @@
       "region": "IL",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11563,7 +11680,6 @@
       "region": "IN",
       "voice": "rohan",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11598,7 +11714,6 @@
       "region": "IN",
       "voice": "pratham",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11633,7 +11748,6 @@
       "region": "IN",
       "voice": "priyamvada",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11668,17 +11782,23 @@
       "region": "IN",
       "voice": "hf_alpha",
       "quality": "high",
-      "numSpeakers": 1,
+      "speakers": [
+        "hf_alpha",
+        "hf_beta",
+        "hm_omega",
+        "hm_psi"
+      ],
+      "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
         {
-          "name": "hf_alpha.bin",
-          "sizeBytes": 261390,
-          "installPath": "bin/kokoro_mnn/hi/hi_IN/hf_alpha/high/hf_alpha.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/hi/hi_IN/hf_alpha/high/hf_alpha.bin",
+          "name": "kokoro_voices.bin",
+          "sizeBytes": 1045488,
+          "installPath": "bin/kokoro_mnn/hi/hi_IN/kokoro_voices.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/hi/hi_IN/kokoro_voices.bin",
           "role": "voices",
           "priority": 0,
-          "mirrorPath": "tts/1/hi/hi_IN/hf_alpha/high/hf_alpha.bin"
+          "mirrorPath": "tts/1/hi/hi_IN/kokoro_voices.bin"
         }
       ],
       "dependsOn": [
@@ -11695,7 +11815,6 @@
       "region": "HR",
       "voice": "cv",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11755,7 +11874,6 @@
       "region": "HU",
       "voice": "anna",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11790,7 +11908,6 @@
       "region": "HU",
       "voice": "berta",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11825,7 +11942,6 @@
       "region": "HU",
       "voice": "imre",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11860,7 +11976,6 @@
       "region": "ID",
       "voice": "news_tts",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -11895,7 +12010,6 @@
       "region": "IS",
       "voice": "bui",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [
         "is-bui-medium"
       ],
@@ -11932,7 +12046,6 @@
       "region": "IS",
       "voice": "salka",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [
         "is-salka-medium"
       ],
@@ -11969,7 +12082,6 @@
       "region": "IS",
       "voice": "steinn",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [
         "is-steinn-medium"
       ],
@@ -12006,7 +12118,6 @@
       "region": "IS",
       "voice": "ugla",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [
         "is-ugla-medium"
       ],
@@ -12043,7 +12154,6 @@
       "region": "IT",
       "voice": "paola",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12078,7 +12188,6 @@
       "region": "IT",
       "voice": "riccardo",
       "quality": "x_low",
-      "numSpeakers": 1,
       "aliases": [
         "it-riccardo_fasol-x-low"
       ],
@@ -12115,17 +12224,21 @@
       "region": "IT",
       "voice": "if_sara",
       "quality": "high",
-      "numSpeakers": 1,
+      "speakers": [
+        "if_sara",
+        "im_nicola"
+      ],
+      "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
         {
-          "name": "if_sara.bin",
-          "sizeBytes": 261388,
-          "installPath": "bin/kokoro_mnn/it/it_IT/if_sara/high/if_sara.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/it/it_IT/if_sara/high/if_sara.bin",
+          "name": "kokoro_voices.bin",
+          "sizeBytes": 522758,
+          "installPath": "bin/kokoro_mnn/it/it_IT/kokoro_voices.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/it/it_IT/kokoro_voices.bin",
           "role": "voices",
           "priority": 0,
-          "mirrorPath": "tts/1/it/it_IT/if_sara/high/if_sara.bin"
+          "mirrorPath": "tts/1/it/it_IT/kokoro_voices.bin"
         }
       ],
       "dependsOn": [
@@ -12142,7 +12255,6 @@
       "region": "JP",
       "voice": "jf_alpha (deprecated)",
       "quality": "high",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [],
       "dependsOn": [
@@ -12160,20 +12272,27 @@
       "region": "JP",
       "voice": "jf_alpha",
       "quality": "high",
-      "numSpeakers": 1,
+      "speakers": [
+        "jf_alpha",
+        "jf_gongitsune",
+        "jf_nezumi",
+        "jf_tebukuro",
+        "jm_kumo"
+      ],
+      "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
         {
-          "name": "jf_alpha.bin",
-          "sizeBytes": 261390,
-          "installPath": "bin/kokoro_mnn/ja/ja_JP/jf_alpha/high/jf_alpha.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/ja/ja_JP/jf_alpha/high/jf_alpha.bin",
+          "name": "kokoro_voices.bin",
+          "sizeBytes": 1306878,
+          "installPath": "bin/kokoro_mnn/ja/ja_JP/kokoro_voices.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/ja/ja_JP/kokoro_voices.bin",
           "role": "voices",
           "priority": 0,
           "replaces": [
             "bin/kokoro/voices-v1.0.bin"
           ],
-          "mirrorPath": "tts/1/ja/ja_JP/jf_alpha/high/jf_alpha.bin"
+          "mirrorPath": "tts/1/ja/ja_JP/kokoro_voices.bin"
         }
       ],
       "dependsOn": [
@@ -12191,7 +12310,6 @@
       "region": "GE",
       "voice": "natia",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12226,7 +12344,6 @@
       "region": "IN",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12259,7 +12376,6 @@
       "region": "KR",
       "voice": "kss",
       "quality": "low",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12303,7 +12419,6 @@
       "region": "KR",
       "voice": "jf_alpha (deprecated)",
       "quality": "high",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [],
       "dependsOn": [
@@ -12320,20 +12435,27 @@
       "region": "KR",
       "voice": "jf_alpha",
       "quality": "high",
-      "numSpeakers": 1,
+      "speakers": [
+        "jf_alpha",
+        "jf_gongitsune",
+        "jf_nezumi",
+        "jf_tebukuro",
+        "jm_kumo"
+      ],
+      "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
         {
-          "name": "jf_alpha.bin",
-          "sizeBytes": 261390,
-          "installPath": "bin/kokoro_mnn/ko/ko_KR/jf_alpha/high/jf_alpha.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/ko/ko_KR/jf_alpha/high/jf_alpha.bin",
+          "name": "kokoro_voices.bin",
+          "sizeBytes": 1306878,
+          "installPath": "bin/kokoro_mnn/ja/ja_JP/kokoro_voices.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/ja/ja_JP/kokoro_voices.bin",
           "role": "voices",
           "priority": 0,
           "replaces": [
             "bin/kokoro/voices-v1.0.bin"
           ],
-          "mirrorPath": "tts/1/ko/ko_KR/jf_alpha/high/jf_alpha.bin"
+          "mirrorPath": "tts/1/ja/ja_JP/kokoro_voices.bin"
         }
       ],
       "dependsOn": [
@@ -12350,7 +12472,6 @@
       "region": "LT",
       "voice": "cv",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12410,7 +12531,6 @@
       "region": "LV",
       "voice": "aivars",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12445,7 +12565,6 @@
       "region": "IN",
       "voice": "arjun",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12480,7 +12599,6 @@
       "region": "IN",
       "voice": "meera",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12515,7 +12633,17 @@
       "region": "IN",
       "voice": "google",
       "quality": "medium",
-      "numSpeakers": 9,
+      "speakers": [
+        "mrt_01523",
+        "mrt_02436",
+        "mrt_02484",
+        "mrt_02624",
+        "mrt_03349",
+        "mrt_03397",
+        "mrt_03398",
+        "mrt_04310",
+        "mrt_09697"
+      ],
       "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
@@ -12551,7 +12679,6 @@
       "region": "IN",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12584,7 +12711,6 @@
       "region": "MY",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12617,7 +12743,6 @@
       "region": "BE",
       "voice": "rdh",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [
         "nl-rdh-medium"
       ],
@@ -12654,7 +12779,6 @@
       "region": "BE",
       "voice": "nathalie",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12689,7 +12813,6 @@
       "region": "BE",
       "voice": "nathalie",
       "quality": "x_low",
-      "numSpeakers": 1,
       "aliases": [
         "nl-nathalie-x-low"
       ],
@@ -12726,7 +12849,6 @@
       "region": "BE",
       "voice": "rdh",
       "quality": "x_low",
-      "numSpeakers": 1,
       "aliases": [
         "nl-rdh-x-low"
       ],
@@ -12763,7 +12885,6 @@
       "region": "NL",
       "voice": "ronnie",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12798,7 +12919,6 @@
       "region": "NL",
       "voice": "pim",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12833,7 +12953,6 @@
       "region": "NL",
       "voice": "alex",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12868,7 +12987,6 @@
       "region": "NO",
       "voice": "talesyntese",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [
         "no-talesyntese-medium"
       ],
@@ -12905,7 +13023,6 @@
       "region": "PL",
       "voice": "darkman",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12940,7 +13057,6 @@
       "region": "PL",
       "voice": "gosia",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -12975,7 +13091,6 @@
       "region": "PL",
       "voice": "mc_speech",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13010,7 +13125,6 @@
       "region": "PL",
       "voice": "jarvis_wg_glos",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13045,7 +13159,6 @@
       "region": "BR",
       "voice": "cadu",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13080,7 +13193,6 @@
       "region": "BR",
       "voice": "jeff",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13115,7 +13227,6 @@
       "region": "BR",
       "voice": "faber",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13150,7 +13261,6 @@
       "region": "BR",
       "voice": "edresson",
       "quality": "low",
-      "numSpeakers": 1,
       "aliases": [
         "pt-br-edresson-low"
       ],
@@ -13187,17 +13297,22 @@
       "region": "BR",
       "voice": "pf_dora",
       "quality": "high",
-      "numSpeakers": 1,
+      "speakers": [
+        "pf_dora",
+        "pm_alex",
+        "pm_santa"
+      ],
+      "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
         {
-          "name": "pf_dora.bin",
-          "sizeBytes": 261388,
-          "installPath": "bin/kokoro_mnn/pt/pt_BR/pf_dora/high/pf_dora.bin",
-          "url": "https://offline-translator.davidv.dev/tts/1/pt/pt_BR/pf_dora/high/pf_dora.bin",
+          "name": "kokoro_voices.bin",
+          "sizeBytes": 784122,
+          "installPath": "bin/kokoro_mnn/pt/pt_BR/kokoro_voices.bin",
+          "url": "https://offline-translator.davidv.dev/tts/1/pt/pt_BR/kokoro_voices.bin",
           "role": "voices",
           "priority": 0,
-          "mirrorPath": "tts/1/pt/pt_BR/pf_dora/high/pf_dora.bin"
+          "mirrorPath": "tts/1/pt/pt_BR/kokoro_voices.bin"
         }
       ],
       "dependsOn": [
@@ -13214,7 +13329,6 @@
       "region": "PT",
       "voice": "tugão",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13249,7 +13363,6 @@
       "region": "RO",
       "voice": "mihai",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13284,7 +13397,6 @@
       "region": "RU",
       "voice": "denis",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13319,7 +13431,6 @@
       "region": "RU",
       "voice": "dmitri",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13354,7 +13465,6 @@
       "region": "RU",
       "voice": "irina",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [
         "ru-irinia-medium"
       ],
@@ -13391,7 +13501,6 @@
       "region": "RU",
       "voice": "ruslan",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13426,7 +13535,6 @@
       "region": "SK",
       "voice": "lili",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13461,7 +13569,6 @@
       "region": "SI",
       "voice": "artur",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13496,7 +13603,6 @@
       "region": "AL",
       "voice": "edon",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13531,7 +13637,10 @@
       "region": "RS",
       "voice": "serbski_institut",
       "quality": "medium",
-      "numSpeakers": 2,
+      "speakers": [
+        "dsb",
+        "hsb"
+      ],
       "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
@@ -13567,7 +13676,6 @@
       "region": "SE",
       "voice": "nst",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13602,7 +13710,6 @@
       "region": "SE",
       "voice": "alma",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13637,7 +13744,6 @@
       "region": "CD",
       "voice": "lanfrica",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13672,7 +13778,6 @@
       "region": "IN",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13705,7 +13810,6 @@
       "region": "IN",
       "voice": "maya",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13740,7 +13844,6 @@
       "region": "IN",
       "voice": "padmavathi",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13775,7 +13878,6 @@
       "region": "IN",
       "voice": "venkatesh",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13810,7 +13912,6 @@
       "region": "TH",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13843,7 +13944,6 @@
       "region": "PH",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13876,7 +13976,6 @@
       "region": "TR",
       "voice": "dfki",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13911,7 +14010,6 @@
       "region": "CN",
       "voice": "standard",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -13944,7 +14042,11 @@
       "region": "UA",
       "voice": "ukrainian_tts",
       "quality": "medium",
-      "numSpeakers": 3,
+      "speakers": [
+        "lada",
+        "mykyta",
+        "tetiana"
+      ],
       "defaultSpeakerId": 0,
       "aliases": [],
       "files": [
@@ -13980,7 +14082,6 @@
       "region": "UA",
       "voice": "lada",
       "quality": "x_low",
-      "numSpeakers": 1,
       "aliases": [
         "uk-lada-x-low"
       ],
@@ -14017,7 +14118,6 @@
       "region": "PK",
       "voice": "fasih",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -14052,7 +14152,6 @@
       "region": "PK",
       "voice": "aegis_female",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -14087,7 +14186,6 @@
       "region": "VN",
       "voice": "vais1000",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -14122,7 +14220,6 @@
       "region": "VN",
       "voice": "25hours_single",
       "quality": "low",
-      "numSpeakers": 1,
       "aliases": [
         "vi-25hours-single-low"
       ],
@@ -14159,7 +14256,73 @@
       "region": "VN",
       "voice": "vivos",
       "quality": "x_low",
-      "numSpeakers": 65,
+      "speakers": [
+        "VIVOSSPK13",
+        "VIVOSSPK14",
+        "VIVOSSPK15",
+        "VIVOSSPK16",
+        "VIVOSSPK17",
+        "VIVOSSPK18",
+        "VIVOSSPK19",
+        "VIVOSSPK20",
+        "VIVOSSPK21",
+        "VIVOSSPK22",
+        "VIVOSSPK26",
+        "VIVOSSPK34",
+        "VIVOSSPK40",
+        "VIVOSSPK41",
+        "VIVOSSPK42",
+        "VIVOSSPK43",
+        "VIVOSSPK44",
+        "VIVOSSPK45",
+        "VIVOSSPK46",
+        "VIVOSSPK38",
+        "VIVOSSPK31",
+        "VIVOSSPK35",
+        "VIVOSSPK01",
+        "VIVOSSPK02",
+        "VIVOSSPK03",
+        "VIVOSSPK04",
+        "VIVOSSPK05",
+        "VIVOSSPK06",
+        "VIVOSSPK07",
+        "VIVOSSPK08",
+        "VIVOSSPK09",
+        "VIVOSSPK10",
+        "VIVOSSPK11",
+        "VIVOSSPK12",
+        "VIVOSSPK27",
+        "VIVOSSPK36",
+        "VIVOSSPK33",
+        "VIVOSSPK32",
+        "VIVOSSPK29",
+        "VIVOSSPK39",
+        "VIVOSSPK25",
+        "VIVOSSPK28",
+        "VIVOSSPK30",
+        "VIVOSSPK37",
+        "VIVOSSPK23",
+        "VIVOSSPK24",
+        "VIVOSDEV02",
+        "VIVOSDEV03",
+        "VIVOSDEV01",
+        "VIVOSDEV04",
+        "VIVOSDEV05",
+        "VIVOSDEV06",
+        "VIVOSDEV07",
+        "VIVOSDEV08",
+        "VIVOSDEV09",
+        "VIVOSDEV10",
+        "VIVOSDEV11",
+        "VIVOSDEV12",
+        "VIVOSDEV13",
+        "VIVOSDEV14",
+        "VIVOSDEV15",
+        "VIVOSDEV16",
+        "VIVOSDEV17",
+        "VIVOSDEV18",
+        "VIVOSDEV19"
+      ],
       "defaultSpeakerId": 0,
       "aliases": [
         "vi-vivos-x-low"
@@ -14197,7 +14360,6 @@
       "region": "CN",
       "voice": "huayan",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -14232,7 +14394,6 @@
       "region": "CN",
       "voice": "huayan",
       "quality": "x_low",
-      "numSpeakers": 1,
       "aliases": [
         "zh-cn-huayan-x-low"
       ],
@@ -14269,7 +14430,6 @@
       "region": "HK",
       "voice": "Cantonese",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {
@@ -14329,7 +14489,6 @@
       "region": "TW",
       "voice": "Mandarin (Traditional)",
       "quality": "medium",
-      "numSpeakers": 1,
       "aliases": [],
       "files": [
         {

@@ -365,7 +365,7 @@ fun SpeechPlaybackButton(
                 )
                 pack.voices.forEach { speaker ->
                   VoiceRowEntry(
-                    label = speaker.name,
+                    label = speaker.displayName,
                     isSelected = speaker.name == selectedVoiceName,
                     indented = true,
                     onClick = {
