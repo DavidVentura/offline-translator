@@ -28,6 +28,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Magnifier
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -162,6 +163,27 @@ private class SelectionActionModeCallback(
 
 private enum class DragMode { START, END }
 
+// A composable that holds a Magnifier gets unguarded casts to it (remember's result, the dispose
+// lambda's capture) that fail to resolve below API 28, so only this class names the type.
+@RequiresApi(Build.VERSION_CODES.P)
+private class Loupe(view: View) {
+  private val magnifier = Magnifier(view)
+
+  // Raised a full bubble-height above the finger so it isn't occluded.
+  fun showAbove(
+    x: Float,
+    y: Float,
+  ) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      magnifier.show(x, y, x, y - magnifier.height.toFloat())
+    } else {
+      magnifier.show(x, y)
+    }
+  }
+
+  fun dismiss() = magnifier.dismiss()
+}
+
 /**
  * Persistent Lens-style word selection over the displayed image. Tapping a word selects it (and
  * starts the selection); tapping another word moves the selection; tapping empty space clears it.
@@ -186,9 +208,9 @@ fun WordSelectionOverlay(
   val handlePainter = painterResource(R.drawable.selection_handle)
   // Loupe under the dragging finger so the text/handle isn't obscured. Native Magnifier is API
   // 28+; older devices simply get no loupe.
-  val magnifier = remember(view) { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) Magnifier(view) else null }
-  DisposableEffect(magnifier) {
-    onDispose { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) magnifier?.dismiss() }
+  val loupe = remember(view) { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) Loupe(view) else null }
+  DisposableEffect(loupe) {
+    onDispose { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) loupe?.dismiss() }
   }
 
   var selStart by remember(words) { mutableStateOf<Int?>(null) }
@@ -270,17 +292,13 @@ fun WordSelectionOverlay(
               )
           }
 
-          // Loupe raised a full bubble-height above the finger so it isn't occluded. The finger's
-          // root-view position comes through the container transform, so it tracks under zoom.
+          // The finger's root-view position comes through the container transform, so the loupe
+          // tracks under zoom.
           fun showMagnifier(pos: Offset) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
-            val m = magnifier ?: return
+            val l = loupe ?: return
             val root = (layoutCoords ?: return).localToRoot(pos)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-              m.show(root.x, root.y, root.x, root.y - m.height.toFloat())
-            } else {
-              m.show(root.x, root.y)
-            }
+            l.showAbove(root.x, root.y)
           }
 
           // Word whose oriented box (slightly padded) contains the touched point, or null.
@@ -333,7 +351,7 @@ fun WordSelectionOverlay(
                 showMagnifier(change.position)
               }
               dragging = false
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) magnifier?.dismiss()
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) loupe?.dismiss()
             } else {
               // Not a handle: observe without consuming so the container can pan/zoom; a tap (no
               // drag) selects the word under the finger, or clears when it's on empty space.
