@@ -736,9 +736,10 @@ impl CatalogHandle {
         &self,
         language_code: String,
     ) -> Vec<translator::TtsVoicePickerRegion> {
-        self.snapshot()
-            .catalog
-            .tts_voice_picker_regions(&translator::LanguageCode::from(language_code))
+        translator::tts_voice_picker_regions(
+            &self.snapshot(),
+            &translator::LanguageCode::from(language_code),
+        )
     }
 
     fn installed_tts_voice_picker_regions(
