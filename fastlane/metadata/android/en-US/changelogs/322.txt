@@ -1,3 +1,7 @@
 - Fix some PDFs failing to open
 - Lower memory usage for long texts and documents
 - Transliteration of the input field can now be selected and copied
+- Enable Kokoro voices (higher quality) for English, Spanish, French, Hindi, Italian, Portuguese
+- Fix Android 8 crash on image translation
+- Show 'Dictionary' option on selected image words
+- Show 'Edit as text' on selected image text
