@@ -20,6 +20,7 @@ package dev.davidv.translator.ui
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import dev.davidv.translator.FromLangChange
 import dev.davidv.translator.Language
 import dev.davidv.translator.LanguageAvailabilityState
 import dev.davidv.translator.LanguageMetadataManager
@@ -229,6 +230,7 @@ class TranslationSession(
     val selection = currentPair(message)
     when (message) {
       is TranslatorMessage.TextInput -> setText(message.text, selection)
+      is TranslatorMessage.EditAsText -> editAsText(message.text, message.language, selection)
       is TranslatorMessage.FromLang -> {
         _isAutoSource.value = false
         select(selectionRules().withSource(selection, message.language, message.change))
@@ -331,6 +333,20 @@ class TranslationSession(
     _input.value = MainInput.Text(text)
     if (text.isBlank()) detection.value = null
     retranslate(selection)
+  }
+
+  private fun editAsText(
+    text: String,
+    language: Language,
+    selection: MainSelection.Ready,
+  ) {
+    resetInput(MainInput.Text(text))
+    if (language == selection.source) {
+      select(selection)
+      return
+    }
+    _isAutoSource.value = false
+    select(selectionRules().withSource(selection, language, FromLangChange.MovePreviousToTarget))
   }
 
   private fun removeTab(

@@ -99,6 +99,7 @@ private const val MENU_COPY = 1
 private const val MENU_SHARE = 2
 private const val MENU_SEARCH = 3
 private const val MENU_DICTIONARY = 4
+private const val MENU_EDIT_AS_TEXT = 5
 
 /**
  * A floating text-selection action bar (Copy / Share / Web search) over the image, mirroring the
@@ -111,6 +112,7 @@ private class SelectionActionModeCallback(
   private val rectProvider: () -> android.graphics.Rect,
   private val isSingleWord: () -> Boolean,
   private val onDictionaryLookup: ((String) -> Unit)?,
+  private val onEditAsText: ((String) -> Unit)?,
   private val onFinished: () -> Unit,
 ) : ActionMode.Callback2() {
   override fun onCreateActionMode(
@@ -123,19 +125,30 @@ private class SelectionActionModeCallback(
     return true
   }
 
-  // A phrase has no dictionary entry, so the item comes and goes as the handles widen or narrow
-  // the selection.
+  // A phrase has no dictionary entry and a single word isn't worth editing as text, so the two
+  // items trade places as the handles widen or narrow the selection.
   override fun onPrepareActionMode(
     mode: ActionMode,
     menu: Menu,
   ): Boolean {
-    val offered = onDictionaryLookup != null && isSingleWord()
-    val shown = menu.findItem(MENU_DICTIONARY) != null
+    val singleWord = isSingleWord()
+    val dictionaryChanged = syncItem(menu, MENU_DICTIONARY, "Dictionary", onDictionaryLookup != null && singleWord)
+    val editChanged = syncItem(menu, MENU_EDIT_AS_TEXT, "Edit as text", onEditAsText != null && !singleWord)
+    return dictionaryChanged || editChanged
+  }
+
+  private fun syncItem(
+    menu: Menu,
+    id: Int,
+    title: String,
+    offered: Boolean,
+  ): Boolean {
+    val shown = menu.findItem(id) != null
     if (offered == shown) return false
     if (offered) {
-      menu.add(0, MENU_DICTIONARY, 0, "Dictionary")
+      menu.add(0, id, 0, title)
     } else {
-      menu.removeItem(MENU_DICTIONARY)
+      menu.removeItem(id)
     }
     return true
   }
@@ -164,6 +177,7 @@ private class SelectionActionModeCallback(
         runCatching { context.startActivity(intent) }
       }
       MENU_DICTIONARY -> onDictionaryLookup?.invoke(text)
+      MENU_EDIT_AS_TEXT -> onEditAsText?.invoke(text)
       else -> return false
     }
     mode.finish()
@@ -224,6 +238,7 @@ fun WordSelectionOverlay(
   imageHeight: Int,
   scale: Float = 1f,
   onDictionaryLookup: ((String) -> Unit)? = null,
+  onEditAsText: ((String) -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
   val context = LocalContext.current
@@ -271,6 +286,7 @@ fun WordSelectionOverlay(
               rectProvider = { rectState.value },
               isSingleWord = { singleWord.value },
               onDictionaryLookup = onDictionaryLookup,
+              onEditAsText = onEditAsText,
               onFinished = { actionMode = null },
             ),
             ActionMode.TYPE_FLOATING,

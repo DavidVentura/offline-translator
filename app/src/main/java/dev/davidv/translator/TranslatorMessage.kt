@@ -34,6 +34,13 @@ sealed class TranslatorMessage {
   ) : TranslatorMessage(),
     PairMessage
 
+  // Text picked off an image, in the language that image layer was read or translated as.
+  data class EditAsText(
+    val text: String,
+    val language: Language,
+  ) : TranslatorMessage(),
+    PairMessage
+
   data class FromLang(
     val language: Language,
     val change: FromLangChange = FromLangChange.KeepTarget,

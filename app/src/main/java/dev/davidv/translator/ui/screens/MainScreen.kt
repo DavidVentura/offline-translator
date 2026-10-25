@@ -358,6 +358,7 @@ fun MainScreen(
                   onDictionaryLookup = { word, language ->
                     onMessage(TranslatorMessage.DictionaryLookup(word, language))
                   },
+                  onEditAsText = { text, language -> onMessage(TranslatorMessage.EditAsText(text, language)) },
                   modifier = Modifier.fillMaxWidth().testTag("export-section:Image"),
                 )
                 Row(
@@ -636,6 +637,10 @@ fun MainScreen(
       },
       onDictionaryLookup = { word, language ->
         onMessage(TranslatorMessage.DictionaryLookup(word, language))
+      },
+      onEditAsText = { text, language ->
+        showFullScreenImage = false
+        onMessage(TranslatorMessage.EditAsText(text, language))
       },
     )
   }

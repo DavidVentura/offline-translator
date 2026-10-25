@@ -65,6 +65,7 @@ fun ImageDisplaySection(
   wordSelection: ImageWordSelection?,
   maxHeight: Dp,
   onDictionaryLookup: ((String, Language) -> Unit)? = null,
+  onEditAsText: ((String, Language) -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
   val shown = if (showOriginal && originalImage != null) originalImage else displayImage
@@ -132,6 +133,7 @@ fun ImageDisplaySection(
           imageHeight = wordSelection.imageHeight,
           scale = scale,
           onDictionaryLookup = onDictionaryLookup?.let { lookup -> { word -> lookup(word, layer.language) } },
+          onEditAsText = onEditAsText?.let { edit -> { text -> edit(text, layer.language) } },
           modifier = Modifier.matchParentSize(),
         )
       }

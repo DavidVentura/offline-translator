@@ -64,6 +64,7 @@ fun ZoomableImageViewer(
   onDismiss: () -> Unit,
   onShare: () -> Unit,
   onDictionaryLookup: (String, Language) -> Unit,
+  onEditAsText: (String, Language) -> Unit,
 ) {
   var showOriginal by remember { mutableStateOf(false) }
   val displayed = if (showOriginal) originalBitmap else bitmap
@@ -165,6 +166,7 @@ fun ZoomableImageViewer(
             imageWidth = wordSelection.imageWidth,
             imageHeight = wordSelection.imageHeight,
             onDictionaryLookup = { word -> onDictionaryLookup(word, layer.language) },
+            onEditAsText = { text -> onEditAsText(text, layer.language) },
             modifier = Modifier.matchParentSize(),
           )
         }
