@@ -316,6 +316,8 @@ def build_public_catalog(source_catalog: dict, bucket_dir: Path, base_url: str, 
                     continue
 
             if local_path.exists():
+                if "archiveFormat" in file_info:
+                    catalog_base.validate_archive_contents(local_path, file_info)
                 file_info["sizeBytes"] = local_path.stat().st_size
                 file_info["url"] = catalog_mirror.mirror_url(base_url, mirror_path)
                 file_info.pop("sourcePath", None)

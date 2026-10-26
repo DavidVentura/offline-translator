@@ -1,7 +1,8 @@
 import json
 import time
 from collections import defaultdict
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from zipfile import ZipFile
 
 
 def load_json(path: Path) -> dict:
@@ -317,3 +318,35 @@ def validate_manifest(languages: dict, packs: dict) -> None:
             if install_path in seen_install_paths:
                 raise ValueError(f"{pack_id}: duplicate installPath {install_path}")
             seen_install_paths.add(install_path)
+            # The app drops a pack whose archive has no marker or whose marker has no archive.
+            if ("archiveFormat" in file_info) != ("installMarkerPath" in file_info):
+                raise ValueError(f"{pack_id}: {install_path} needs both archiveFormat and installMarkerPath, or neither")
+            if "archiveFormat" in file_info:
+                archive_root_dir(file_info)
+
+
+# The app installs an archive by moving its single top-level directory into place under
+# extractTo, where the marker lives; it rejects archives of any other shape.
+def archive_root_dir(file_info: dict) -> str:
+    extract_to = file_info["extractTo"]
+    marker_path = file_info["installMarkerPath"]
+    extract_parts = list(PurePosixPath(extract_to).parts)
+    marker_dir = list(PurePosixPath(marker_path).parts)[:-1]
+    escapes = any(part in ("..", "/") for part in extract_parts + marker_dir)
+    if escapes or marker_dir[:-1] != extract_parts or len(marker_dir) != len(extract_parts) + 1:
+        raise ValueError(
+            f"{file_info['installPath']}: install marker {marker_path} must sit in a directory directly under {extract_to}"
+        )
+    return marker_dir[-1]
+
+
+def validate_archive_contents(archive_path: Path, file_info: dict) -> None:
+    root_dir = archive_root_dir(file_info)
+    with ZipFile(archive_path) as archive:
+        outside = [
+            name
+            for name in archive.namelist()
+            if PurePosixPath(name).parts[:1] != (root_dir,) or ".." in PurePosixPath(name).parts
+        ]
+    if outside:
+        raise ValueError(f"{archive_path}: entries outside {root_dir}/: {outside[:5]}")

@@ -18,7 +18,9 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 gh run download "$run_id" -n apk-arm64 -n apk-armv7 -D "$tmp"
 
-dest=app/build/outputs/apk
+# Kept apart from gradle's own outputs so sign-apk.sh can never pick up a stale local build.
+dest=app/build/outputs/apk/ci-release
+rm -rf "$dest"
 mkdir -p "$dest"
 mv "$tmp/apk-arm64/release/app-arm64-v8a-release-unsigned.apk" "$dest/"
 mv "$tmp/apk-armv7/release/app-armeabi-v7a-release-unsigned.apk" "$dest/"

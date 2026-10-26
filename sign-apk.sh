@@ -18,12 +18,15 @@ STORE_PASSWORD="$2"
 KEY_PASSWORD="$3"
 KEY_ALIAS="$4"
 
-ARCHS=("arm64-v8a:arm64" "armeabi-v7a:armv7" "x86_64:x86_64")
-
 if [ -n "${SIGN_DEBUG:-}" ]; then
+  ARCHS=("arm64-v8a:arm64" "armeabi-v7a:armv7" "x86_64:x86_64")
+  apk_dir=app/build/outputs/apk/debug
   pattern="*-debug.apk"
   echo "Signing debug APKs"
 else
+  # Only the ABIs build.yml builds; fetch-release-apks.sh places them here.
+  ARCHS=("arm64-v8a:arm64" "armeabi-v7a:armv7")
+  apk_dir=app/build/outputs/apk/ci-release
   pattern="*-release-unsigned.apk"
   echo "Signing release APKs"
 fi
@@ -35,11 +38,21 @@ for entry in "${ARCHS[@]}"; do
   abi="${entry%%:*}"
   label="${entry##*:}"
 
-  unsigned_apk=$(find app/build/outputs/apk -name "*${abi}*" -name "$pattern" 2>/dev/null | head -1)
-  if [ -z "$unsigned_apk" ]; then
+  mapfile -t candidates < <(find "$apk_dir" -name "*${abi}*" -name "$pattern" 2>/dev/null)
+  if [ "${#candidates[@]}" -gt 1 ]; then
+    echo "Multiple APKs found for $abi, refusing to guess:" >&2
+    printf '  %s\n' "${candidates[@]}" >&2
+    exit 1
+  fi
+  if [ "${#candidates[@]}" -eq 0 ]; then
+    if [ -z "${SIGN_DEBUG:-}" ]; then
+      echo "No release APK found for $abi in $apk_dir; run ./fetch-release-apks.sh first" >&2
+      exit 1
+    fi
     echo "No APK found for $abi, skipping"
     continue
   fi
+  unsigned_apk="${candidates[0]}"
 
   VERSION_NAME=$(aapt dump badging "$unsigned_apk" | grep -oP "versionName='\K(.*?)'" | tr -d "'")
   echo "Signing APK: $unsigned_apk"
