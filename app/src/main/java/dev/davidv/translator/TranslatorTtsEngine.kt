@@ -29,6 +29,16 @@ import android.speech.tts.Voice
 import android.util.Log
 import java.util.Locale
 
+private sealed interface SpeechStep {
+  data class Speak(
+    val chunk: SpeechChunkPlan,
+  ) : SpeechStep
+
+  data class Silence(
+    val durationMs: Int,
+  ) : SpeechStep
+}
+
 class TranslatorTtsService : TextToSpeechService() {
   @Volatile
   private var stopped = false
@@ -116,6 +126,16 @@ class TranslatorTtsService : TextToSpeechService() {
       callback.done()
       return
     }
+    val segments =
+      when (val parsed = parseSystemTtsText(text)) {
+        is SystemTtsText.Segments -> parsed.segments
+        is SystemTtsText.MalformedSsml -> {
+          Log.w("TranslatorTtsService", "Rejecting malformed SSML: ${parsed.reason}")
+          callback.error(TextToSpeech.ERROR_INVALID_REQUEST)
+          callback.done()
+          return
+        }
+      }
 
     val voice =
       TranslatorTtsEngine.voiceForRequest(
@@ -142,7 +162,7 @@ class TranslatorTtsService : TextToSpeechService() {
     try {
       synthesizeVoice(
         voice = voice,
-        text = text,
+        segments = segments,
         speechSpeed = finalSpeed,
         callback = callback,
       )
@@ -160,47 +180,72 @@ class TranslatorTtsService : TextToSpeechService() {
 
   private fun synthesizeVoice(
     voice: TranslatorTtsVoice,
-    text: String,
+    segments: List<SystemTtsSegment>,
     speechSpeed: Float,
     callback: SynthesisCallback,
   ) {
     val catalog = catalog()
     val readUrlsAndHashtags = (application as TranslatorApplication).settingsManager.settings.value.ttsReadUrlsAndHashtags
-    val chunks = catalog.planSpeechChunks(voice.languageCode, text, voice.packId, readUrlsAndHashtags)
-    if (chunks.isEmpty()) {
+    val steps =
+      segments.flatMap { segment ->
+        when (segment) {
+          is SystemTtsSegment.Text ->
+            catalog
+              .planSpeechChunks(voice.languageCode, segment.text, voice.packId, readUrlsAndHashtags)
+              .flatMap { chunk -> listOfNotNull(SpeechStep.Speak(chunk), chunk.pauseAfterMs?.let { SpeechStep.Silence(it) }) }
+          is SystemTtsSegment.Pause -> listOf(SpeechStep.Silence(segment.durationMs))
+        }
+      }
+    if (steps.none { it is SpeechStep.Speak }) {
       error("No speech chunks planned")
     }
 
-    var started = false
     var sampleRate: Int? = null
-    for (chunk in chunks) {
+    // Silence requested before the first chunk can only be written once callback.start has fixed the sample rate.
+    var leadingSilenceMs = 0
+    for (step in steps) {
       if (stopped) return
-      val audio =
-        catalog.synthesizeSpeechPcm(
-          languageCode = voice.languageCode,
-          text = chunk.content,
-          speechSpeed = speechSpeed,
-          voiceName = voice.speakerName,
-          isPhonemes = chunk.isPhonemes,
-          packId = voice.packId,
-        )
+      when (step) {
+        is SpeechStep.Silence -> {
+          val rate = sampleRate
+          if (rate == null) {
+            leadingSilenceMs += step.durationMs
+          } else if (!writeSilence(rate, step.durationMs, callback)) {
+            return
+          }
+        }
+        is SpeechStep.Speak -> {
+          val audio =
+            catalog.synthesizeSpeechPcm(
+              languageCode = voice.languageCode,
+              text = step.chunk.content,
+              speechSpeed = speechSpeed,
+              voiceName = voice.speakerName,
+              isPhonemes = step.chunk.isPhonemes,
+              packId = voice.packId,
+            )
 
-      if (!started) {
-        callback.start(audio.sampleRate, AudioFormat.ENCODING_PCM_16BIT, 1)
-        started = true
-        sampleRate = audio.sampleRate
-      } else if (sampleRate != audio.sampleRate) {
-        error("TTS sample rate changed from $sampleRate to ${audio.sampleRate}")
-      }
+          if (sampleRate == null) {
+            callback.start(audio.sampleRate, AudioFormat.ENCODING_PCM_16BIT, 1)
+            sampleRate = audio.sampleRate
+            if (!writeSilence(audio.sampleRate, leadingSilenceMs, callback)) return
+          } else if (sampleRate != audio.sampleRate) {
+            error("TTS sample rate changed from $sampleRate to ${audio.sampleRate}")
+          }
 
-      if (!writePcm(audio.pcmSamples, callback)) return
-
-      val pause = chunk.pauseAfterMs
-      if (pause != null && pause > 0) {
-        val silence = PcmAudio.silence(audio.sampleRate, pause)
-        if (!writePcm(silence.pcmSamples, callback)) return
+          if (!writePcm(audio.pcmSamples, callback)) return
+        }
       }
     }
+  }
+
+  private fun writeSilence(
+    sampleRate: Int,
+    durationMs: Int,
+    callback: SynthesisCallback,
+  ): Boolean {
+    if (durationMs <= 0) return true
+    return writePcm(PcmAudio.silence(sampleRate, durationMs).pcmSamples, callback)
   }
 
   private fun writePcm(
