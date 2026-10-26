@@ -253,16 +253,6 @@ fn map_dictionary_word(word: translator::tarkka::WordWithTaggedEntries) -> Dicti
 /// equivalent of the old Kotlin `minTextSize`, typically 8.0).
 #[cfg(feature = "image-render")]
 #[uniffi::export]
-fn plan_zip_extraction(
-    extract_to: String,
-    marker: Option<translator::InstallMarker>,
-    entry_names: Vec<String>,
-) -> Result<translator::ZipExtractionPlan, CatalogError> {
-    translator::plan_zip_extraction(&extract_to, marker.as_ref(), &entry_names)
-        .map_err(|reason| CatalogError::Other { reason })
-}
-
-#[uniffi::export]
 fn render_translated_overlay(
     prepared: translator::PreparedImageOverlay,
     language: String,
@@ -508,6 +498,23 @@ impl From<translator::document::DocumentError> for CatalogError {
 }
 
 #[derive(uniffi::Object)]
+pub struct PackInstallation(translator::Installation);
+
+#[uniffi::export]
+impl PackInstallation {
+    fn stage_target(
+        &self,
+        task: translator::DownloadTask,
+    ) -> Result<translator::StageTarget, translator::InstallError> {
+        self.0.stage_target(&task)
+    }
+
+    fn mark_staged(&self, task: translator::DownloadTask) -> Result<(), translator::InstallError> {
+        self.0.mark_staged(&task)
+    }
+}
+
+#[derive(uniffi::Object)]
 pub struct CatalogHandle {
     pub(crate) session: Arc<TranslatorSession>,
 }
@@ -553,6 +560,24 @@ impl CatalogHandle {
 
     fn apply_delete_plan(&self, plan: translator::DeletePlan) {
         self.session.apply_delete_plan(&plan);
+    }
+
+    fn begin_install(
+        &self,
+        plan: translator::DownloadPlan,
+    ) -> Result<Arc<PackInstallation>, translator::InstallError> {
+        Ok(Arc::new(PackInstallation(self.session.begin_install(plan)?)))
+    }
+
+    fn commit_install(
+        &self,
+        installation: Arc<PackInstallation>,
+    ) -> Result<(), translator::InstallError> {
+        self.session.commit_install(&installation.0)
+    }
+
+    fn discard_abandoned_installs(&self) -> Result<(), translator::InstallError> {
+        self.session.discard_abandoned_installs()
     }
 
     fn base_dir(&self) -> String {

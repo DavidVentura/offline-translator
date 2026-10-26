@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import uniffi.bindings.CatalogHandle
 import uniffi.bindings.MigrationJobRecord
+import uniffi.bindings.PackInstallation
 import java.io.File
 
 private const val BUNDLED_INDEX_ASSET = "index_v7.json"
@@ -95,13 +96,11 @@ class CatalogRepository private constructor(
 
   fun applyDeletePlan(plan: DeletePlan) = publishAfter { handle.applyDeletePlan(plan) }
 
-  fun commitInstall(
-    staging: StagedInstall,
-    deleteAfter: DeletePlan,
-  ) = publishAfter {
-    staging.moveIntoPlace()
-    handle.applyDeletePlan(deleteAfter)
-  }
+  fun discardAbandonedInstalls() = handle.discardAbandonedInstalls()
+
+  fun beginInstall(plan: DownloadPlan): PackInstallation = handle.beginInstall(plan)
+
+  fun commitInstall(installation: PackInstallation) = publishAfter { handle.commitInstall(installation) }
 
   fun discardMigration(jobs: List<MigrationJobRecord>) = publishAfter { handle.discardMigration(jobs) }
 

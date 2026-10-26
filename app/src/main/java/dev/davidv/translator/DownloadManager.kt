@@ -48,7 +48,7 @@ class DownloadManager(
   private val settingsManager: SettingsManager,
   private val adblockManager: AdblockManager,
 ) {
-  private val installer = PackInstaller(filePathManager, catalogRepository)
+  private val installer = PackInstaller(catalogRepository)
 
   // Guards runs and every state write. A run may only touch its id while it is still the Job
   // registered there, so a cancelled or superseded run can neither publish nor remove a newer one.
