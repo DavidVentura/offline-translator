@@ -26,7 +26,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -38,8 +40,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -94,6 +96,10 @@ private const val HANDLE_DRAW_RADIUS_PX = 18f
 class DocAlignActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    enableEdgeToEdge(
+      statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+      navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+    )
 
     val inputUri: Uri =
       IntentCompat.getParcelableExtra(intent, EXTRA_INPUT_URI, Uri::class.java)
@@ -248,8 +254,8 @@ private fun DocAlignScreen(
     detecting = false
   }
 
-  Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
-    Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
+  Box(modifier = Modifier.fillMaxSize().background(Color.Black).safeDrawingPadding()) {
+    Column(modifier = Modifier.fillMaxSize()) {
       Box(
         modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp, vertical = 24.dp),
         contentAlignment = Alignment.Center,
@@ -301,7 +307,7 @@ private fun DocAlignScreen(
       }
     }
 
-    Box(modifier = Modifier.align(Alignment.TopStart).statusBarsPadding().padding(8.dp)) {
+    Box(modifier = Modifier.align(Alignment.TopStart).padding(8.dp)) {
       IconButton(onClick = { helpVisible = true }) {
         Icon(
           painter = painterResource(id = R.drawable.help_outline),
@@ -334,7 +340,7 @@ private fun DocAlignScreen(
     }
 
     Row(
-      modifier = Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(8.dp),
+      modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       IconButton(onClick = { rotate90Clockwise() }) {
@@ -358,7 +364,6 @@ private fun DocAlignScreen(
         modifier =
           Modifier
             .align(Alignment.TopCenter)
-            .statusBarsPadding()
             .padding(top = 24.dp)
             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
             .padding(horizontal = 12.dp, vertical = 6.dp),
