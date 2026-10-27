@@ -148,6 +148,8 @@
     <string name="translation_error">Translation error: %1$s</string>
 
     <!-- download errors -->
+    <string name="download_stopped_service_timeout">Android stopped background downloads after the time limit was reached. Open the app and retry.</string>
+    <string name="download_stopped_service_denied">Android could not start the download service. Keep the app open and retry.</string>
     <string name="download_failed_core">%1$s download failed</string>
     <string name="download_failed_ocr">%1$s text recognition download failed</string>
     <string name="download_failed_ocr_batch">Text recognition batch download failed</string>

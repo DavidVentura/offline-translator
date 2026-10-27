@@ -18,7 +18,7 @@ RUN apt-get update && \
         rustup && \
     rm -rf /var/lib/apt/lists/*
 
-RUN sdkmanager "ndk;${ANDROID_NDK_VERSION}" "platforms;android-34" "build-tools;34.0.0"
+RUN sdkmanager "ndk;${ANDROID_NDK_VERSION}" "platforms;android-36" "build-tools;35.0.0" "build-tools;34.0.0"
 
 ENV ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION
 ENV ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION

@@ -65,7 +65,7 @@ class AppCropActivity : UCropActivity() {
 
     findViewById<View>(R.id.ucrop_photobox)?.let { root ->
       ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-        val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
         v.setPadding(sys.left, sys.top, sys.right, sys.bottom)
         insets
       }
