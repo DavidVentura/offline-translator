@@ -40,21 +40,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 private const val TAG = "DownloadManager"
 
-// Caller holds the manager's lock. Detach runs before cancellation so their cleanup
-// cannot remove the failure state or a subsequently retried download.
-internal fun failForegroundDownloadRuns(
-  runs: MutableMap<DownloadId, Job>,
-  published: MutableStateFlow<Map<DownloadId, DownloadStatus>>,
-  reason: String,
-): Boolean {
-  val ids = runs.keys.filter { it != DownloadId.Catalog }
-  if (ids.isEmpty()) return false
-  val jobs = ids.mapNotNull { runs.remove(it) }
-  published.value += ids.associateWith { DownloadStatus.Failed(reason) }
-  jobs.forEach { it.cancel() }
-  return true
-}
-
 class DownloadManager(
   private val context: Context,
   private val scope: CoroutineScope,
@@ -95,12 +80,6 @@ class DownloadManager(
       published.value -= id
     }
     Log.i(TAG, "Cancelled $id")
-  }
-
-  // The catalog is owned by the Manage screen, not the dataSync foreground service.
-  fun failForegroundDownloads(reason: String) {
-    val failed = synchronized(lock) { failForegroundDownloadRuns(runs, published, reason) }
-    if (failed) scope.launch { failures.emit(reason) }
   }
 
   private suspend fun execute(request: DownloadRequest) {

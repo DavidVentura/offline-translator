@@ -652,7 +652,6 @@ fun LanguageAssetManagerScreen(
   val catalog by languageStateManager.catalog.collectAsState()
   val languageMetadata by languageMetadataManager.metadata.collectAsState()
   val downloads by downloadManager.state.collectAsState()
-  val downloadErrors = downloads.values.filterIsInstance<DownloadStatus.Failed>().map { it.reason }.distinct()
   val expandedLanguages = remember { mutableStateMapOf<String, Boolean>() }
   var filterQuery by remember { mutableStateOf("") }
   var pendingSharedDictionaryDelete by remember { mutableStateOf<PendingSharedDictionaryDelete?>(null) }
@@ -839,13 +838,6 @@ fun LanguageAssetManagerScreen(
       LazyColumn(
         modifier = Modifier.fillMaxSize(),
       ) {
-        itemsIndexed(downloadErrors, key = { _, reason -> "download-error:$reason" }) { _, reason ->
-          Text(
-            text = reason,
-            color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.padding(vertical = 8.dp),
-          )
-        }
         if (listHeader != null) {
           item(key = "list-header") { listHeader() }
         }

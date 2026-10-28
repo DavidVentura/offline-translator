@@ -141,13 +141,7 @@ class PackInstaller(
       target.parentFile?.let(::ensureDirectory)
       val tempFile = File(target.parentFile, "${target.name}.tmp")
       try {
-        // Bound network stalls so downloads cancelled by a foreground-service timeout
-        // can reach the cancellation checks between reads.
-        val connection =
-          URL(url).openConnection().apply {
-            connectTimeout = 30_000
-            readTimeout = 30_000
-          }
+        val connection = URL(url).openConnection()
         val progress = ProgressReporter(expectedBytes, onProgress)
         connection.getInputStream().use { raw ->
           val counted = CountingInputStream(raw, progress::advance)
@@ -158,14 +152,12 @@ class PackInstaller(
               while (true) {
                 ensureActive()
                 val read = input.read(buffer)
-                ensureActive()
                 if (read == -1) break
                 output.write(buffer, 0, read)
               }
             }
           }
         }
-        ensureActive()
         progress.flush()
         if (!tempFile.renameTo(target)) {
           throw IOException("Failed to move $tempFile to $target")
