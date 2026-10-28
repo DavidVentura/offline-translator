@@ -51,6 +51,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -131,7 +132,7 @@ private fun LanguageDropdown(
       trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
       modifier =
         Modifier
-          .menuAnchor()
+          .menuAnchor(MenuAnchorType.PrimaryNotEditable)
           .fillMaxWidth(),
       colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
     )
@@ -213,7 +214,7 @@ private fun HttpServerCard(
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = bindExpanded) },
           modifier =
             Modifier
-              .menuAnchor()
+              .menuAnchor(MenuAnchorType.PrimaryNotEditable)
               .fillMaxWidth(),
           colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
         )
@@ -604,7 +605,7 @@ fun SettingsScreen(
               },
               modifier =
                 Modifier
-                  .menuAnchor()
+                  .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                   .fillMaxWidth()
                   .testTag("export-options:settings_popup_position"),
               colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
@@ -750,7 +751,7 @@ fun SettingsScreen(
               },
               modifier =
                 Modifier
-                  .menuAnchor()
+                  .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                   .fillMaxWidth(),
               colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
             )
@@ -806,7 +807,7 @@ fun SettingsScreen(
               trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = backgroundModeExpanded) },
               modifier =
                 Modifier
-                  .menuAnchor()
+                  .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                   .fillMaxWidth()
                   .testTag("export-options:settings_background_mode"),
               colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),

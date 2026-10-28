@@ -66,7 +66,7 @@ class TranslatorTtsService : TextToSpeechService() {
         ttsVoice.quality,
         Voice.LATENCY_NORMAL,
         false,
-        setOf(TextToSpeech.Engine.KEY_FEATURE_EMBEDDED_SYNTHESIS),
+        emptySet(),
       )
     }
   }

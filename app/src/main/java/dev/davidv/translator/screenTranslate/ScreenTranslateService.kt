@@ -43,6 +43,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.IntentCompat
 import dev.davidv.translator.LanguageAvailabilityState
 import dev.davidv.translator.OverlayLanguageSelection
 import dev.davidv.translator.OverlayLanguageSide
@@ -146,7 +147,7 @@ class ScreenTranslateService : Service() {
     }
 
     val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0)
-    val data = intent.getParcelableExtra<Intent>(EXTRA_DATA)
+    val data = IntentCompat.getParcelableExtra(intent, EXTRA_DATA, Intent::class.java)
     if (resultCode == 0 || data == null) {
       Log.e(TAG, "Missing projection token; stopping")
       stopEverything()

@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import androidx.core.content.IntentCompat
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.lifecycleScope
 import dev.davidv.translator.R
@@ -95,14 +96,14 @@ class DocAlignActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     val inputUri: Uri =
-      intent.getParcelableExtra(EXTRA_INPUT_URI)
+      IntentCompat.getParcelableExtra(intent, EXTRA_INPUT_URI, Uri::class.java)
         ?: run {
           Log.e(TAG, "missing input URI")
           finishWithCancel()
           return
         }
     val outputUri: Uri =
-      intent.getParcelableExtra(EXTRA_OUTPUT_URI)
+      IntentCompat.getParcelableExtra(intent, EXTRA_OUTPUT_URI, Uri::class.java)
         ?: run {
           Log.e(TAG, "missing output URI")
           finishWithCancel()

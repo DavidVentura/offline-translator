@@ -32,6 +32,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -75,6 +76,7 @@ class DownloadService : Service() {
 
   override fun onBind(intent: Intent?): IBinder? = null
 
+  @OptIn(FlowPreview::class)
   override fun onStartCommand(
     intent: Intent?,
     flags: Int,

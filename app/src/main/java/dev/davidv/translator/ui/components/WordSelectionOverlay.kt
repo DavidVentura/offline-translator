@@ -203,7 +203,13 @@ private enum class DragMode { START, END }
 // lambda's capture) that fail to resolve below API 28, so only this class names the type.
 @RequiresApi(Build.VERSION_CODES.P)
 private class Loupe(view: View) {
-  private val magnifier = Magnifier(view)
+  private val magnifier =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      Magnifier.Builder(view).build()
+    } else {
+      @Suppress("DEPRECATION")
+      Magnifier(view)
+    }
 
   // Raised a full bubble-height above the finger so it isn't occluded.
   fun showAbove(
