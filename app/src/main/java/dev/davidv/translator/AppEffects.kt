@@ -22,6 +22,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.speech.tts.TextToSpeech
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
@@ -29,7 +31,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -117,17 +118,29 @@ fun launchAppEffects(
           bindMode = it.httpServerBindMode,
         )
       }.distinctUntilChanged()
-      .withIndex()
-      // Stopping goes through startService, which background-started processes may not call,
-      // and at startup there is no running server to stop anyway.
-      .filter { (index, server) -> index > 0 || server.enabled }
-      .collect { (_, server) ->
+      // Changes come from the settings screen or the server's own notification, both of which may
+      // start and stop services; the value at process start is handled by the foreground effect.
+      .drop(1)
+      .collect { server ->
         if (server.enabled) {
           TranslationApiService.start(context, server.port, server.bindMode)
         } else {
           TranslationApiService.stop(context)
         }
       }
+  }
+
+  // The process also starts in the background for the assistant, TTS or tile services, where
+  // Android refuses to start a foreground service, so the server is restored whenever the app
+  // becomes visible instead of at process start. BootReceiver covers the boot case.
+  scope.launch {
+    ProcessLifecycleOwner
+      .get()
+      .lifecycle.currentStateFlow
+      .map { it.isAtLeast(Lifecycle.State.STARTED) }
+      .distinctUntilChanged()
+      .filter { it }
+      .collect { TranslationApiService.restore(context, settings.value) }
   }
 
   scope.launch {

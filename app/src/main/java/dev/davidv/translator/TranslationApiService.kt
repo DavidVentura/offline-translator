@@ -76,6 +76,14 @@ class TranslationApiService : Service() {
       ContextCompat.startForegroundService(context, intent)
     }
 
+    fun restore(
+      context: Context,
+      settings: AppSettings,
+    ) {
+      if (!settings.httpServerEnabled) return
+      start(context, settings.httpServerPort, settings.httpServerBindMode)
+    }
+
     fun stop(context: Context) {
       val intent =
         Intent(context, TranslationApiService::class.java).apply {

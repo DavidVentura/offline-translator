@@ -102,12 +102,3 @@ class TapToTranslateDismissReceiver : BroadcastReceiver() {
     app.settingsManager.update { it.copy(tapToTranslateEnabled = false) }
   }
 }
-
-// Delivering BOOT_COMPLETED starts the process, and the app's settings effects restore the
-// notification at startup, so the receiver only has to exist.
-class TapToTranslateBootReceiver : BroadcastReceiver() {
-  override fun onReceive(
-    context: Context,
-    intent: Intent,
-  ) = Unit
-}
