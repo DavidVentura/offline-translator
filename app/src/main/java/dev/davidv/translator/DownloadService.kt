@@ -17,7 +17,6 @@
 
 package dev.davidv.translator
 
-import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -28,7 +27,6 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -72,22 +70,7 @@ class DownloadService : Service() {
 
   companion object {
     fun start(context: Context) {
-      try {
-        ContextCompat.startForegroundService(context, Intent(context, DownloadService::class.java))
-      } catch (e: IllegalStateException) {
-        failIfStartNotAllowed(context, e)
-      }
-    }
-
-    private fun failIfStartNotAllowed(
-      context: Context,
-      error: IllegalStateException,
-    ) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || error !is ForegroundServiceStartNotAllowedException) throw error
-      Log.w("DownloadService", "Foreground download service start denied", error)
-      (context.applicationContext as TranslatorApplication).downloadManager.failForegroundDownloads(
-        context.getString(R.string.download_stopped_service_denied),
-      )
+      ContextCompat.startForegroundService(context, Intent(context, DownloadService::class.java))
     }
   }
 
@@ -102,13 +85,7 @@ class DownloadService : Service() {
     val downloads = (application as TranslatorApplication).downloadManager
     lastStartId = startId
     ensureChannel()
-    try {
-      startForegroundCompat(buildNotification(foregroundDownloads(downloads.state.value)))
-    } catch (e: IllegalStateException) {
-      failIfStartNotAllowed(this, e)
-      stopSelf()
-      return START_NOT_STICKY
-    }
+    startForegroundCompat(buildNotification(foregroundDownloads(downloads.state.value)))
     if (progressJob == null) {
       progressJob =
         scope.launch {
@@ -132,17 +109,6 @@ class DownloadService : Service() {
   override fun onDestroy() {
     scope.cancel()
     super.onDestroy()
-  }
-
-  override fun onTimeout(
-    startId: Int,
-    fgsType: Int,
-  ) {
-    progressJob?.cancel()
-    progressJob = null
-    (application as TranslatorApplication).downloadManager.failForegroundDownloads(getString(R.string.download_stopped_service_timeout))
-    stopForegroundCompat()
-    stopSelf()
   }
 
   private fun buildNotification(progress: ForegroundDownloads?): Notification {

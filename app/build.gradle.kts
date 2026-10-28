@@ -448,7 +448,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.kotlinx.serialization.json.v162)
   implementation("com.github.yalantis:ucrop:2.2.11")
-  implementation("net.java.dev.jna:jna:5.18.1@aar")
+  implementation("net.java.dev.jna:jna:5.14.0@aar")
   implementation(libs.androidx.camera.core)
   implementation(libs.androidx.camera.camera2)
   implementation(libs.androidx.camera.lifecycle)
@@ -466,11 +466,6 @@ ktlint {
   filter {
     exclude { it.file.path.contains("generated/") }
   }
-}
-
-// Generated sources stay excluded, but joint build/check runs must order their producer.
-tasks.matching { it.name == "runKtlintCheckOverMainSourceSet" }.configureEach {
-  mustRunAfter(generateUniffiBindings)
 }
 
 detekt {
