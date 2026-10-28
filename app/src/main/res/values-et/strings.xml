@@ -300,4 +300,10 @@
     <string name="a11y_input_sources">Sisendallikad</string>
     <string name="shortcut_live_camera_short">Kaamera</string>
     <string name="shortcut_live_camera_long">Tõlgi kaamera sisendist</string>
+    <string name="langmgr_tts_upgrade_available">Saadaval on kiiremad ja väiksemad keelemudelifailid: %1$s</string>
+    <string name="download_failed_tts_batch">Kiiremate mudelifailide allalaadimine ei õnnestunud</string>
+    <plurals name="langmgr_voice_speaker_count">
+        <item quantity="one">%1$d hääl</item>
+        <item quantity="other">%1$d häält</item>
+    </plurals>
 </resources>
