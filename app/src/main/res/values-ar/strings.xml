@@ -323,4 +323,14 @@
     <string name="download_failed_translation_batch">فشل تنزيل الترجمات ذات الجودة الأفضل</string>
     <string name="settings_http_server_title">خادم API</string>
     <string name="tts_synthesis_error">فشل توليف الكلام لـ %1$s: %2$s</string>
+    <string name="settings_popup_size_expanded">حجم النافذة المنبثقة: موسَّع</string>
+    <string name="settings_offer_accessibility_service">خدمة تيسير الوصول</string>
+    <string name="settings_offer_accessibility_service_desc">عطّل تشغيل هذه الميزة لإزالة التطبيق من إعدادات إمكانية الوصول في نظام أندرويد؛ حيث يتوقف زر «التشغيل الدائم» عن العمل</string>
+    <string name="browser_page_language_missing">هذه الصفحة مكتوبة في %1$s، وهي غير مثبتة</string>
+    <string name="download_notif_channel_name">التنزيلات</string>
+    <string name="download_notif_channel_desc">يعرض التقدم المحرز أثناء تنزيل بيانات اللغة</string>
+    <string name="download_notif_title">يُنزّل بيانات اللغة</string>
+    <string name="a11y_input_sources">مصادر الإدخال</string>
+    <string name="shortcut_live_camera_short">الكاميرا</string>
+    <string name="shortcut_live_camera_long">ترجم بالكاميرا</string>
 </resources>
