@@ -42,6 +42,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -95,6 +96,7 @@ fun TranslationField(
   selectedVoiceName: String? = null,
   availableVoices: List<uniffi.translator_core.InstalledTtsPack> = emptyList(),
   onSpeak: () -> Unit = {},
+  onShare: () -> Unit = {},
   onSpeechPlaybackSpeedChange: (Float) -> Unit = {},
   onVoiceSelected: (String, String) -> Unit = { _, _ -> },
 ) {
@@ -129,6 +131,7 @@ fun TranslationField(
             selectedVoiceName = selectedVoiceName,
             availableVoices = availableVoices,
             onSpeak = onSpeak,
+            onShare = onShare,
             onSpeechPlaybackSpeedChange = onSpeechPlaybackSpeedChange,
             onVoiceSelected = onVoiceSelected,
             contentDescription =
@@ -259,6 +262,7 @@ fun SpeechPlaybackButton(
   selectedVoiceName: String?,
   availableVoices: List<uniffi.translator_core.InstalledTtsPack>,
   onSpeak: () -> Unit,
+  onShare: () -> Unit,
   onSpeechPlaybackSpeedChange: (Float) -> Unit,
   onVoiceSelected: (String, String) -> Unit,
   contentDescription: String,
@@ -388,6 +392,24 @@ fun SpeechPlaybackButton(
               }
             }
           }
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+        TextButton(
+          onClick = {
+            showSpeechOptions = false
+            onShare()
+          },
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.share),
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+          )
+          Spacer(modifier = Modifier.size(8.dp))
+          Text(text = stringResource(R.string.tts_share_audio))
         }
       }
     }

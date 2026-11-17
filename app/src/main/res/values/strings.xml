@@ -114,6 +114,8 @@
     <string name="voice_playback_speed">Playback speed</string>
     <string name="voice_label">Voice</string>
     <string name="voice_default">Default voice</string>
+    <string name="tts_share_audio">Share audio</string>
+    <string name="tts_share_failed">Could not share audio</string>
     <string name="langsel_auto">✨ Auto</string>
     <string name="dict_also_as">Also as:</string>
 

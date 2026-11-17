@@ -150,6 +150,20 @@ fun shareImageUri(
   startActivity(context, intent, null)
 }
 
+fun shareAudioFile(
+  file: File,
+  context: Context,
+) {
+  val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+  val intent =
+    Intent(Intent.ACTION_SEND).apply {
+      type = "audio/mp4"
+      putExtra(Intent.EXTRA_STREAM, uri)
+      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+  startActivity(context, Intent.createChooser(intent, context.getString(R.string.tts_share_audio)), null)
+}
+
 fun openDocumentPath(
   path: String,
   mimeType: String,
@@ -421,6 +435,9 @@ fun TranslatorApp(
           if (imageUri != null) {
             shareImageUri(imageUri, context)
           }
+        }
+        is UiEvent.ShareAudio -> {
+          shareAudioFile(event.file, context)
         }
       }
     }
@@ -766,6 +783,8 @@ fun TranslatorApp(
                     },
                     onSpeakInput = { text, language -> viewModel.speech.speak(text, language, SpeechTarget.INPUT) },
                     onSpeakOutput = { text, language -> viewModel.speech.speak(text, language, SpeechTarget.OUTPUT) },
+                    onShareInput = { text, language -> viewModel.speech.share(text, language, SpeechTarget.INPUT) },
+                    onShareOutput = { text, language -> viewModel.speech.share(text, language, SpeechTarget.OUTPUT) },
                     launchMode = currentLaunchMode,
                     pendingSharedImage = viewModel.pendingSharedImage,
                     isAutoSource = isAutoSource,
