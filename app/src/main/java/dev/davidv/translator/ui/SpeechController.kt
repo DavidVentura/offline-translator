@@ -27,8 +27,12 @@ import dev.davidv.translator.R
 import dev.davidv.translator.SpeechError
 import dev.davidv.translator.SpeechSynthesisResult
 import dev.davidv.translator.TranslationCoordinator
+import dev.davidv.translator.concatenatePcmAudio
 import dev.davidv.translator.localizedName
+import dev.davidv.translator.writeM4a
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,8 +42,44 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.math.BigInteger
+import java.util.UUID
+
+private const val AUDIO_SUFFIX_LENGTH = 12
+private const val BASE36_RADIX = 36
+private const val AUDIO_EXTENSION = ".m4a"
+private const val MAX_SHARED_FILE_NAME_LENGTH = 100
+private val INVALID_FILE_NAME_CHARS = setOf('/', '\\', ':', '*', '?', '"', '<', '>', '|')
+
+private fun audioFileSuffix(): String {
+  val hex = UUID.randomUUID().toString().replace("-", "")
+  return BigInteger(hex, 16)
+    .toString(BASE36_RADIX)
+    .padStart(AUDIO_SUFFIX_LENGTH, '0')
+    .takeLast(AUDIO_SUFFIX_LENGTH)
+}
+
+private fun sharedAudioFileName(
+  requestedName: String,
+  languageCode: String,
+): String {
+  val name = requestedName.trim()
+  val invalid =
+    name.isEmpty() ||
+      name == "." ||
+      name == ".." ||
+      name.length > MAX_SHARED_FILE_NAME_LENGTH ||
+      name.any { it in INVALID_FILE_NAME_CHARS || it.isISOControl() }
+  if (invalid) {
+    return "offline-translator-$languageCode-${audioFileSuffix()}$AUDIO_EXTENSION"
+  }
+  return if (name.endsWith(AUDIO_EXTENSION, ignoreCase = true)) name else name + AUDIO_EXTENSION
+}
 
 enum class SpeechTarget { INPUT, OUTPUT }
 
@@ -116,6 +156,55 @@ class SpeechController(
               _speech.value = SpeechState.Idle
               uiEvents.send(UiEvent.ShowToast(appContext.getString(R.string.translator_audio_playback_failed, message)))
             }
+          is SpeechSynthesisResult.Error -> {
+            _speech.value = SpeechState.Idle
+            uiEvents.send(UiEvent.ShowToast(speechErrorMessage(result.reason)))
+          }
+        }
+      }
+  }
+
+  fun share(
+    text: String,
+    language: Language,
+    target: SpeechTarget,
+    requestedFileName: String = "",
+  ) {
+    speechJob?.cancel()
+    audioPlayer.stop()
+    _speech.value = SpeechState.Loading(target)
+    speechJob =
+      scope.launch {
+        when (val result = translationCoordinator.synthesizeSpeech(language, text)) {
+          is SpeechSynthesisResult.Success -> {
+            val file =
+              try {
+                withContext(Dispatchers.IO) {
+                  val chunks = result.audioChunks.toList()
+                  if (chunks.isEmpty()) return@withContext null
+                  val audio = concatenatePcmAudio(chunks)
+                  val directory = File(appContext.cacheDir, "shared_audio")
+                  check(directory.isDirectory || directory.mkdirs()) { "Unable to create audio cache directory" }
+                  File(
+                    directory,
+                    sharedAudioFileName(requestedFileName, language.code),
+                  ).also { writeM4a(it, audio) }
+                }
+              } catch (e: CancellationException) {
+                throw e
+              } catch (_: Exception) {
+                _speech.value = SpeechState.Idle
+                uiEvents.send(UiEvent.ShowToast(appContext.getString(R.string.tts_share_failed)))
+                return@launch
+              }
+            if (file == null) {
+              _speech.value = SpeechState.Idle
+              uiEvents.send(UiEvent.ShowToast(speechErrorMessage(SpeechError.SynthesisFailed(language))))
+            } else {
+              _speech.value = SpeechState.Idle
+              uiEvents.send(UiEvent.ShareAudio(file))
+            }
+          }
           is SpeechSynthesisResult.Error -> {
             _speech.value = SpeechState.Idle
             uiEvents.send(UiEvent.ShowToast(speechErrorMessage(result.reason)))

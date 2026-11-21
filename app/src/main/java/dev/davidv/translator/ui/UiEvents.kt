@@ -23,11 +23,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 sealed class UiEvent {
   data class ShowToast(val message: String) : UiEvent()
 
   data class ShareImage(val bitmap: Bitmap) : UiEvent()
+
+  data class ShareAudio(val file: File) : UiEvent()
 }
 
 // One-shot UI events (Toast, errors, etc.). Emitting suspends until the screen has taken the
