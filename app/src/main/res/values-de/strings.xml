@@ -123,7 +123,7 @@
     <string name="assistant_action_live_screen">Live-Übersetzung starten</string>
     <string name="background_mode_white_on_black">Weiß auf Schwarz</string>
     <string name="background_mode_black_on_white">Schwarz auf Weiß</string>
-    <string name="background_mode_auto_detect">Farben automatisch erkennen</string>
+    <string name="background_mode_auto_detect">Originalfarben des Bildes</string>
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Nichts vorzulesen</string>
     <string name="tts_catalog_unavailable">Katalog nicht verfügbar</string>
@@ -215,7 +215,7 @@
     <string name="howto_docs_title">Dokumenten und Bilder übersetzen</string>
     <string name="howto_docs_body">Öffne den Tab Dokumente, um Bilder, EPUB-, PDF- und TXT-Dateien zu übersetzen.</string>
     <string name="howto_dict_title">Wörterbuch nachschlagen</string>
-    <string name="howto_dict_body">Drücke lange auf ein beliebiges Wort in einer Übersetzung, um seine Definition zu sehen. Daten von Wiktionary.</string>
+    <string name="howto_dict_body">Drücke lange auf ein beliebiges Wort und wähle dann „Wörterbuch“, um dessen Definition anzuzeigen. Alternativ kannst du auf die Schaltfläche für das Wörterbuch tippen und anschließend ein beliebiges Wort auswählen. Die Daten von Wiktionary.</string>
     <string name="howto_alt_title">Alternative Wörter wählen</string>
     <string name="howto_alt_body">Tippe auf die Alternativen-Taste und dann auf ein beliebiges Wort, um es zu ersetzen. Das Modell schlägt eventuell Alternativen vor, ansonsten kannst du ein eigenes Wort eingeben. Der Rest des Satzes wird passend neu übersetzt.</string>
     <string name="howto_voice_title">Stimme oder Geschwindigkeit ändern</string>
