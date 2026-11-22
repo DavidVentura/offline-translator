@@ -123,7 +123,7 @@
     <string name="assistant_action_live_screen">Starta live-översättning</string>
     <string name="background_mode_white_on_black">Vitt på svart</string>
     <string name="background_mode_black_on_white">Svart på vitt</string>
-    <string name="background_mode_auto_detect">Identifiera färger automatiskt</string>
+    <string name="background_mode_auto_detect">Originalbildens färger</string>
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Inget att läsa upp</string>
     <string name="tts_catalog_unavailable">Katalogen är inte tillgänglig</string>
@@ -210,12 +210,12 @@
     <string name="howto_share_title">Dela för att översätta</string>
     <string name="howto_share_body">Dela text, länkar eller bilder från valfri app för att översätta dem.</string>
     <string name="howto_copy_title">Översätt utan att lämna andra appar</string>
-    <string name="howto_copy_body">Markera text var som helst och tryck sedan på \"Översätt\" i kopieringsverktygsfältet för att se översättningen i ett kompakt fönster.</string>
+    <string name="howto_copy_body">Markera text i vilken app som helst och tryck sedan på \"Översätt\" i kopieringsverktygsfältet för att se översättningen i ett kompakt fönster.</string>
     <string name="howto_section_in_app">Inuti appen</string>
-    <string name="howto_docs_title">Översätt dokument</string>
-    <string name="howto_docs_body">Öppna fliken Dokument för att översätta EPUB-, PDF- och TXT-filer.</string>
+    <string name="howto_docs_title">Översätt dokument och bilder</string>
+    <string name="howto_docs_body">Öppna fliken Dokument för att översätta bilder eller EPUB, PDF och TXT-filer.</string>
     <string name="howto_dict_title">Slå upp i ordbok</string>
-    <string name="howto_dict_body">Håll in valfritt ord i en översättning för att se dess definition. Data hämtad från Wiktionary.</string>
+    <string name="howto_dict_body">Tryck länge på valfritt ord och tryck sedan på \"Ordbok\" för att se dess definition. Alternativt kan du trycka på ordboksknappen och därefter på ett valfritt ord. Uppgifterna hämtas från Wiktionary.</string>
     <string name="howto_alt_title">Välj alternativa ord</string>
     <string name="howto_alt_body">Tryck på alternativknappen och tryck sedan på valfritt ord för att ersätta det. Modellen kan föreslå några alternativ, annars kan du skriva ett eget. Resten av meningen översätts om så att den passar.</string>
     <string name="howto_voice_title">Ändra röst eller hastighet</string>
@@ -319,4 +319,10 @@
     <string name="detected_missing_language">Språk saknas</string>
     <string name="langmgr_ocr_upgrade_available">En förbättrad textigenkänningsmodell är tillgänglig.</string>
     <string name="langmgr_translation_upgrade_available">Översättningar av bättre kvalitet finns för: %1$s</string>
+    <string name="langmgr_tts_upgrade_available">Snabbare, mindre röster tillgängliga för: %1$s</string>
+    <string name="download_failed_tts_batch">Misslyckades med att ladda ner snabbare röster</string>
+    <plurals name="langmgr_voice_speaker_count">
+        <item quantity="one">%1$d röst</item>
+        <item quantity="other">%1$d röster</item>
+    </plurals>
 </resources>

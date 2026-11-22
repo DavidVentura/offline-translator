@@ -34,7 +34,7 @@
     <string name="settings_clear_browsing_desc">Löscht Cookies, Cache und lokalen Speicher.</string>
     <string name="settings_tts_section">Sprachausgabe</string>
     <string name="settings_tts_read_urls_hashtags">URLs und Hashtags vorlesen</string>
-    <string name="settings_popup_settings">Popup</string>
+    <string name="settings_popup_settings">Pop-up</string>
     <string name="settings_popup_desc">Das Popup erscheint, wenn du \'Übersetzen\' im Textauswahl-Menü wählst</string>
     <string name="settings_hide_input">Eingabe ausblenden</string>
     <string name="settings_popup_position">Popup-Position</string>
@@ -123,7 +123,7 @@
     <string name="assistant_action_live_screen">Live-Übersetzung starten</string>
     <string name="background_mode_white_on_black">Weiß auf Schwarz</string>
     <string name="background_mode_black_on_white">Schwarz auf Weiß</string>
-    <string name="background_mode_auto_detect">Farben automatisch erkennen</string>
+    <string name="background_mode_auto_detect">Originalfarben des Bildes</string>
     <!-- tts / speech errors -->
     <string name="tts_nothing_to_speak">Nichts vorzulesen</string>
     <string name="tts_catalog_unavailable">Katalog nicht verfügbar</string>
@@ -210,12 +210,12 @@
     <string name="howto_share_title">Zum Übersetzen teilen</string>
     <string name="howto_share_body">Teile Text, Links oder Bilder aus jeder App, um sie zu übersetzen.</string>
     <string name="howto_copy_title">Übersetzen, ohne andere Apps zu verlassen</string>
-    <string name="howto_copy_body">Markiere irgendwo Text und tippe dann auf \"Übersetzen\" in der Kopierleiste, um die Übersetzung in einem kompakten Popup zu sehen.</string>
+    <string name="howto_copy_body">Markiere in jeder app Text und tippe dann auf \"Übersetzen\" in der Kopierleiste, um die Übersetzung in einem kompakten Popup zu sehen.</string>
     <string name="howto_section_in_app">In der App</string>
-    <string name="howto_docs_title">Dokumente übersetzen</string>
-    <string name="howto_docs_body">Öffne den Tab Dokumente, um EPUB-, PDF- und TXT-Dateien zu übersetzen.</string>
+    <string name="howto_docs_title">Dokumenten und Bilder übersetzen</string>
+    <string name="howto_docs_body">Öffne den Tab Dokumente, um Bilder, EPUB-, PDF- und TXT-Dateien zu übersetzen.</string>
     <string name="howto_dict_title">Wörterbuch nachschlagen</string>
-    <string name="howto_dict_body">Drücke lange auf ein beliebiges Wort in einer Übersetzung, um seine Definition zu sehen. Daten von Wiktionary.</string>
+    <string name="howto_dict_body">Drücke lange auf ein beliebiges Wort und wähle dann „Wörterbuch“, um dessen Definition anzuzeigen. Alternativ kannst du auf die Schaltfläche für das Wörterbuch tippen und anschließend ein beliebiges Wort auswählen. Die Daten von Wiktionary.</string>
     <string name="howto_alt_title">Alternative Wörter wählen</string>
     <string name="howto_alt_body">Tippe auf die Alternativen-Taste und dann auf ein beliebiges Wort, um es zu ersetzen. Das Modell schlägt eventuell Alternativen vor, ansonsten kannst du ein eigenes Wort eingeben. Der Rest des Satzes wird passend neu übersetzt.</string>
     <string name="howto_voice_title">Stimme oder Geschwindigkeit ändern</string>
@@ -319,4 +319,10 @@
     <string name="detected_missing_language">Sprache fehlt</string>
     <string name="langmgr_ocr_upgrade_available">Ein verbessertes Texterkennungsmodell ist verfügbar.</string>
     <string name="langmgr_translation_upgrade_available">Übersetzungen in besserer Qualität verfügbar für: %1$s</string>
+    <string name="langmgr_tts_upgrade_available">Schnellere, kleinere Stimmen verfügbar für: %1$s</string>
+    <string name="download_failed_tts_batch">Schnellere Stimmen konnten nicht heruntergeladen werden</string>
+    <plurals name="langmgr_voice_speaker_count">
+        <item quantity="one">%1$d Stimme</item>
+        <item quantity="other">%1$d Stimmen</item>
+    </plurals>
 </resources>

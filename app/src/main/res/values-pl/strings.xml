@@ -321,4 +321,12 @@
     <string name="shortcut_live_camera_short">Aparat</string>
     <string name="shortcut_live_camera_long">Tłumacz z aparatem</string>
     <string name="settings_popup_size_expanded">Rozmiar wyskakującego okna: Rozszerzone</string>
+    <string name="langmgr_tts_upgrade_available">Dostępne są szybsze i cichsze głosy dla: %1$s</string>
+    <string name="download_failed_tts_batch">Nie udało się pobrać szybszych wersji głosów</string>
+    <plurals name="langmgr_voice_speaker_count">
+        <item quantity="one">%1$d głos</item>
+        <item quantity="few">%1$d głosy</item>
+        <item quantity="many">%1$d głosów</item>
+        <item quantity="other">%1$d głosów</item>
+    </plurals>
 </resources>
